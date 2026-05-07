@@ -2,6 +2,7 @@
 
 use App\Models\Tenant;
 use App\Models\AppRelease;
+use App\Support\SingleDbMigrationMode;
 use App\Services\ReleaseRegistryService;
 use App\Services\TenantSelfUpdateService;
 use App\Services\TenantUpdateService;
@@ -17,6 +18,11 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('tenants:migrate {tenantId?}', function (?string $tenantId = null) {
+    if (! SingleDbMigrationMode::allowTenantSwitching()) {
+        $this->warn('Tenant DB switching is disabled by single-db migration mode. Run landlord migrations instead.');
+        return 0;
+    }
+
     $id = ($tenantId !== null && $tenantId !== '') ? (int) $tenantId : null;
 
     $query = Tenant::query()->where('database_provisioned', true)->orderBy('id');
@@ -74,6 +80,11 @@ Artisan::command('tenants:migrate {tenantId?}', function (?string $tenantId = nu
 })->purpose('Run database/migrations/tenant against one or all provisioned tenant databases');
 
 Artisan::command('tenants:provision-db {tenantId}', function (int $tenantId) {
+    if (! SingleDbMigrationMode::allowLegacyProvisioning()) {
+        $this->error('Legacy tenant database provisioning is disabled during single-db migration mode.');
+        return 1;
+    }
+
     /** @var Tenant|null $tenant */
     $tenant = Tenant::find($tenantId);
 
@@ -166,6 +177,11 @@ Artisan::command('tenants:provision-db {tenantId}', function (int $tenantId) {
 })->purpose('Create and grant a dedicated database for a tenant');
 
 Artisan::command('tenants:sync-rbac {tenantId?}', function (?string $tenantId = null) {
+    if (! SingleDbMigrationMode::allowTenantSwitching()) {
+        $this->warn('Tenant DB switching is disabled by single-db migration mode. Sync RBAC through landlord schema tooling.');
+        return 0;
+    }
+
     $id = ($tenantId !== null && $tenantId !== '') ? (int) $tenantId : null;
 
     $query = Tenant::query()->orderBy('id');
@@ -353,5 +369,361 @@ Artisan::command('tenant:update {tenantId} {releaseId}', function (TenantSelfUpd
     $this->info($result['message']);
     return 0;
 })->purpose('Apply a release to a tenant and record adoption state');
+
+Artisan::command('single-db:etl {--tenant=} {--tables=users,accommodations,bookings,messages} {--chunk=200} {--dry-run}', function () {
+    $tenantId = (int) ($this->option('tenant') ?? 0);
+    $chunk = max(50, (int) ($this->option('chunk') ?? 200));
+    $dryRun = (bool) $this->option('dry-run');
+    $tables = collect(explode(',', (string) $this->option('tables')))
+        ->map(fn (string $value): string => trim($value))
+        ->filter()
+        ->values()
+        ->all();
+
+    $allowed = ['users', 'accommodations', 'bookings', 'messages'];
+    foreach ($tables as $tableName) {
+        if (! in_array($tableName, $allowed, true)) {
+            $this->error("Unsupported table for ETL: {$tableName}");
+            return 1;
+        }
+    }
+
+    $tenantQuery = Tenant::query()
+        ->whereNotNull('database')
+        ->where('database', '!=', '')
+        ->orderBy('id');
+
+    if ($tenantId > 0) {
+        $tenantQuery->whereKey($tenantId);
+    }
+
+    $tenants = $tenantQuery->get();
+    if ($tenants->isEmpty()) {
+        $this->warn('No tenants matched.');
+        return 0;
+    }
+
+    $this->line($dryRun ? 'Mode: DRY RUN' : 'Mode: APPLY');
+    $this->line('Tables: '.implode(', ', $tables));
+
+    $processed = 0;
+    foreach ($tenants as $tenant) {
+        $this->newLine();
+        $this->info("Tenant {$tenant->id} ({$tenant->name}) from DB {$tenant->database}");
+
+        foreach ($tables as $tableName) {
+            $connection = config('multitenancy.tenant_database_connection_name', 'tenant');
+            $tenant->makeCurrent();
+
+            try {
+                if (! DB::connection($connection)->getSchemaBuilder()->hasTable($tableName)) {
+                    $this->warn("Skipping {$tableName}: table not found in tenant DB.");
+                    continue;
+                }
+
+                $checkpoint = DB::connection('landlord')->table('single_db_migration_checkpoints')
+                    ->where('tenant_id', (int) $tenant->id)
+                    ->where('table_name', $tableName)
+                    ->first();
+
+                $lastLegacyId = (int) ($checkpoint->last_legacy_id ?? 0);
+                $this->line("- {$tableName}: starting after legacy id {$lastLegacyId}");
+
+                DB::connection($connection)->table($tableName)
+                    ->where('id', '>', $lastLegacyId)
+                    ->orderBy('id')
+                    ->chunkById($chunk, function ($rows) use ($tenant, $tableName, $dryRun, &$processed): void {
+                        foreach ($rows as $row) {
+                            $payload = (array) $row;
+                            $legacyId = (int) ($payload['id'] ?? 0);
+                            if ($legacyId <= 0) {
+                                continue;
+                            }
+
+                            $existingMap = DB::connection('landlord')->table('single_db_legacy_id_maps')
+                                ->where('tenant_id', (int) $tenant->id)
+                                ->where('table_name', $tableName)
+                                ->where('legacy_id', $legacyId)
+                                ->value('new_id');
+                            if ($existingMap) {
+                                continue;
+                            }
+
+                            unset($payload['id']);
+                            if (array_key_exists('tenant_id', $payload)) {
+                                $payload['tenant_id'] = (int) $tenant->id;
+                            }
+
+                            $mapLegacy = function (string $refTable, ?int $refId) use ($tenant): ?int {
+                                if (! $refId) {
+                                    return null;
+                                }
+
+                                $newId = DB::connection('landlord')->table('single_db_legacy_id_maps')
+                                    ->where('tenant_id', (int) $tenant->id)
+                                    ->where('table_name', $refTable)
+                                    ->where('legacy_id', $refId)
+                                    ->value('new_id');
+
+                                return $newId ? (int) $newId : null;
+                            };
+
+                            if ($tableName === 'accommodations' && array_key_exists('owner_id', $payload)) {
+                                $payload['owner_id'] = $mapLegacy('users', isset($payload['owner_id']) ? (int) $payload['owner_id'] : null);
+                            }
+
+                            if ($tableName === 'bookings') {
+                                if (array_key_exists('accommodation_id', $payload)) {
+                                    $payload['accommodation_id'] = $mapLegacy('accommodations', isset($payload['accommodation_id']) ? (int) $payload['accommodation_id'] : null);
+                                }
+                                if (array_key_exists('client_id', $payload)) {
+                                    $payload['client_id'] = $mapLegacy('users', isset($payload['client_id']) ? (int) $payload['client_id'] : null);
+                                }
+                            }
+
+                            if ($tableName === 'messages') {
+                                if (array_key_exists('sender_id', $payload)) {
+                                    $payload['sender_id'] = $mapLegacy('users', isset($payload['sender_id']) ? (int) $payload['sender_id'] : null);
+                                }
+                                if (array_key_exists('receiver_id', $payload)) {
+                                    $payload['receiver_id'] = $mapLegacy('users', isset($payload['receiver_id']) ? (int) $payload['receiver_id'] : null);
+                                }
+                                if (array_key_exists('booking_id', $payload)) {
+                                    $payload['booking_id'] = $mapLegacy('bookings', isset($payload['booking_id']) ? (int) $payload['booking_id'] : null);
+                                }
+                            }
+
+                            if (! $dryRun) {
+                                $newId = DB::connection('landlord')->table($tableName)->insertGetId($payload);
+                                DB::connection('landlord')->table('single_db_legacy_id_maps')->updateOrInsert(
+                                    [
+                                        'tenant_id' => (int) $tenant->id,
+                                        'source_database' => (string) $tenant->database,
+                                        'table_name' => $tableName,
+                                        'legacy_id' => $legacyId,
+                                    ],
+                                    [
+                                        'new_id' => $newId,
+                                        'updated_at' => now(),
+                                        'created_at' => now(),
+                                    ]
+                                );
+                                DB::connection('landlord')->table('single_db_migration_checkpoints')->updateOrInsert(
+                                    [
+                                        'tenant_id' => (int) $tenant->id,
+                                        'source_database' => (string) $tenant->database,
+                                        'table_name' => $tableName,
+                                    ],
+                                    [
+                                        'last_legacy_id' => $legacyId,
+                                        'completed_at' => null,
+                                        'updated_at' => now(),
+                                        'created_at' => now(),
+                                    ]
+                                );
+                            }
+
+                            $processed++;
+                        }
+                    }, 'id');
+
+                if (! $dryRun) {
+                    DB::connection('landlord')->table('single_db_migration_checkpoints')
+                        ->where('tenant_id', (int) $tenant->id)
+                        ->where('table_name', $tableName)
+                        ->update([
+                            'completed_at' => now(),
+                            'notes' => 'Completed via single-db:etl',
+                            'updated_at' => now(),
+                        ]);
+                }
+
+                $this->line("  done: {$tableName}");
+            } finally {
+                Tenant::forgetCurrent();
+            }
+        }
+    }
+
+    $this->newLine();
+    $this->info("ETL finished. Rows processed: {$processed}");
+
+    return 0;
+})->purpose('Incrementally import tenant-db rows into landlord single-db tables with checkpoint tracking');
+
+Artisan::command('single-db:reconcile {--tenant=} {--tables=users,accommodations,bookings,messages}', function () {
+    $tenantId = (int) ($this->option('tenant') ?? 0);
+    $tables = collect(explode(',', (string) $this->option('tables')))
+        ->map(fn (string $value): string => trim($value))
+        ->filter()
+        ->values()
+        ->all();
+
+    $tenantQuery = Tenant::query()->orderBy('id');
+    if ($tenantId > 0) {
+        $tenantQuery->whereKey($tenantId);
+    }
+
+    $tenants = $tenantQuery->get();
+    if ($tenants->isEmpty()) {
+        $this->warn('No tenants matched.');
+        return 0;
+    }
+
+    foreach ($tenants as $tenant) {
+        $this->newLine();
+        $this->info("Tenant {$tenant->id} ({$tenant->name})");
+
+        foreach ($tables as $tableName) {
+            $mappedCount = DB::connection('landlord')->table('single_db_legacy_id_maps')
+                ->where('tenant_id', (int) $tenant->id)
+                ->where('table_name', $tableName)
+                ->count();
+
+            $landlordCount = DB::connection('landlord')->table($tableName)
+                ->when(
+                    DB::connection('landlord')->getSchemaBuilder()->hasColumn($tableName, 'tenant_id'),
+                    fn ($query) => $query->where('tenant_id', (int) $tenant->id)
+                )
+                ->count();
+
+            $this->line("- {$tableName}: mapped={$mappedCount}, landlordScoped={$landlordCount}");
+        }
+    }
+
+    return 0;
+})->purpose('Show reconciliation counters for imported tenant rows in single-db migration');
+
+Artisan::command('single-db:status', function () {
+    $this->info('Single-DB migration flags');
+    $this->table(
+        ['Flag', 'Value'],
+        [
+            ['enabled', config('single_db_migration.enabled') ? 'true' : 'false'],
+            ['single_db_reads', config('single_db_migration.single_db_reads') ? 'true' : 'false'],
+            ['single_db_writes', config('single_db_migration.single_db_writes') ? 'true' : 'false'],
+            ['shadow_reads', config('single_db_migration.shadow_reads') ? 'true' : 'false'],
+            ['allow_legacy_provisioning', config('single_db_migration.allow_legacy_provisioning') ? 'true' : 'false'],
+            ['allow_tenant_switching', config('single_db_migration.allow_tenant_switching') ? 'true' : 'false'],
+        ]
+    );
+
+    return 0;
+})->purpose('Show active single-db migration rollout flags');
+
+Artisan::command('single-db:verify-shadow', function () {
+    $mismatchCount = DB::connection('landlord')
+        ->table('update_logs')
+        ->where('channel_status', 'single_db_shadow_mismatch')
+        ->count();
+
+    $this->info("Shadow mismatches logged: {$mismatchCount}");
+    return 0;
+})->purpose('Summarize single-db shadow-read mismatch telemetry');
+
+Artisan::command('single-db:cutover-readiness {--tenant=}', function () {
+    $tenantId = (int) ($this->option('tenant') ?? 0);
+
+    $tenantQuery = Tenant::query()->orderBy('id');
+    if ($tenantId > 0) {
+        $tenantQuery->whereKey($tenantId);
+    }
+    $tenants = $tenantQuery->get();
+
+    if ($tenants->isEmpty()) {
+        $this->warn('No tenants matched.');
+        return 0;
+    }
+
+    $tables = ['users', 'accommodations', 'bookings', 'messages'];
+    $notReady = 0;
+
+    foreach ($tenants as $tenant) {
+        foreach ($tables as $tableName) {
+            $checkpoint = DB::connection('landlord')->table('single_db_migration_checkpoints')
+                ->where('tenant_id', (int) $tenant->id)
+                ->where('table_name', $tableName)
+                ->first();
+
+            if (! $checkpoint || ! $checkpoint->completed_at) {
+                $notReady++;
+                $this->warn("Tenant {$tenant->id} not ready for {$tableName}.");
+            }
+        }
+    }
+
+    if ($notReady > 0) {
+        $this->error("Cutover not ready: {$notReady} incomplete table checkpoints found.");
+        return 1;
+    }
+
+    $this->info('Cutover readiness passed: all required checkpoints are completed.');
+    return 0;
+})->purpose('Validate tenant ETL checkpoint readiness before final single-db cutover');
+
+Artisan::command('single-db:final-delta {--tenant=} {--chunk=200}', function () {
+    $tenant = $this->option('tenant');
+    $chunk = (int) ($this->option('chunk') ?? 200);
+
+    $args = [
+        '--tables' => 'users,accommodations,bookings,messages',
+        '--chunk' => max(50, $chunk),
+    ];
+    if ($tenant !== null && (string) $tenant !== '') {
+        $args['--tenant'] = (string) $tenant;
+    }
+
+    $this->info('Running final incremental ETL pass...');
+    $exit = Artisan::call('single-db:etl', $args);
+    $this->line(Artisan::output());
+
+    if ($exit !== 0) {
+        $this->error('Final delta ETL failed.');
+        return 1;
+    }
+
+    $exit = Artisan::call('single-db:cutover-readiness', $tenant ? ['--tenant' => (string) $tenant] : []);
+    $this->line(Artisan::output());
+
+    return $exit;
+})->purpose('Run final incremental sync and readiness checks before cutover');
+
+Artisan::command('single-db:decommission-legacy {--apply}', function () {
+    $apply = (bool) $this->option('apply');
+    $tenants = Tenant::query()->orderBy('id')->get(['id', 'name', 'database', 'db_host', 'db_username', 'database_provisioned']);
+
+    $this->info($apply ? 'Mode: APPLY' : 'Mode: DRY RUN');
+    $updated = 0;
+
+    foreach ($tenants as $tenant) {
+        if ($tenant->database === null && $tenant->db_host === null && $tenant->db_username === null) {
+            continue;
+        }
+
+        if (! $apply) {
+            $this->line("[DRY RUN] Would clear legacy DB credentials for tenant {$tenant->id} ({$tenant->name})");
+            continue;
+        }
+
+        $tenant->update([
+            'database' => null,
+            'db_host' => null,
+            'db_port' => null,
+            'db_username' => null,
+            'db_password' => null,
+            'database_provisioned' => true,
+            'provisioning_error' => null,
+        ]);
+        $updated++;
+    }
+
+    if ($apply) {
+        $this->info("Legacy DB credential fields cleared for {$updated} tenant(s).");
+    } else {
+        $this->info('Dry-run complete. Re-run with --apply after backups are confirmed.');
+    }
+
+    return 0;
+})->purpose('Dry-run/apply legacy tenant DB credential decommission after single-db cutover');
 
 Schedule::command('releases:sync')->dailyAt('02:00');

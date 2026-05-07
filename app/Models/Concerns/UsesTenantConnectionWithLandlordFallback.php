@@ -3,6 +3,7 @@
 namespace App\Models\Concerns;
 
 use App\Models\Tenant;
+use App\Support\SingleDbMigrationMode;
 
 trait UsesTenantConnectionWithLandlordFallback
 {
@@ -12,14 +13,18 @@ trait UsesTenantConnectionWithLandlordFallback
         $defaultConnection = config('database.default');
         $landlordConnection = config('multitenancy.landlord_database_connection_name', $defaultConnection);
 
-        // If tenant resolution has already happened, always use tenant connection.
-        if (Tenant::checkCurrent()) {
-            return $tenantConnection;
-        }
-
         // Keep framework tests on the configured test connection.
         if (app()->environment('testing')) {
             return $defaultConnection;
+        }
+
+        if (SingleDbMigrationMode::readsEnabled()) {
+            return $landlordConnection;
+        }
+
+        // If tenant resolution has already happened, always use tenant connection.
+        if (Tenant::checkCurrent()) {
+            return $tenantConnection;
         }
 
         if (! $this->isTenantAppRequest()) {

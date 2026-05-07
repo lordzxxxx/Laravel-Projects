@@ -6,6 +6,7 @@ use App\Mail\TenantAdminProvisionedMail;
 use App\Models\Tenant;
 use App\Models\TenantLifecycleLog;
 use App\Models\User;
+use App\Support\SingleDbMigrationMode;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -19,6 +20,18 @@ class TenantOnboardingService
 {
     public function provisionDatabaseIfNeeded(Tenant $tenant): bool
     {
+        if (! SingleDbMigrationMode::allowLegacyProvisioning()) {
+            if (! $tenant->database_provisioned) {
+                $tenant->update([
+                    'database_provisioned' => true,
+                    'database_provisioned_at' => now(),
+                    'provisioning_error' => null,
+                ]);
+            }
+
+            return true;
+        }
+
         if (! $tenant->database) {
             Log::warning('Tenant has no database name for provisioning.', ['tenant_id' => $tenant->id]);
 

@@ -4,80 +4,68 @@ namespace App\Services;
 
 use App\Models\AppRelease;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class ReleaseRegistryService
 {
+    /** @var array<string, ?Carbon> */
+    private array $commitPublishedAtCache = [];
+
     public function syncFromGitHub(): array
     {
-        $repo = trim((string) config('releases.github_repo', ''));
-        $token = trim((string) config('releases.github_token', ''));
+        $repo = (string) config('releases.github_repo');
+        $token = (string) config('releases.github_token');
 
         if ($repo === '') {
-            return ['synced' => 0, 'updated' => 0, 'skipped' => 0, 'error' => 'GitHub repository is not configured.'];
+            return ['synced' => 0, 'updated' => 0, 'skipped' => 0, 'error' => 'GitHub repository is not configured. Set GITHUB_REPO in .env.'];
         }
 
-        $request = Http::acceptJson()
-            ->timeout(30)
-            ->withUserAgent((string) config('app.name', 'Laravel').' release-sync')
-            ->withOptions([
-                'verify' => $this->resolveTlsVerifyOption(),
-            ]);
-        if ($token !== '') {
-            $request = $request->withToken($token);
-        }
+        $this->commitPublishedAtCache = [];
+        $request = $this->buildGithubClient($token);
 
         try {
-            $response = $request->get("https://api.github.com/repos/{$repo}/releases", [
-                'per_page' => 100,
-            ]);
+            $releases = $this->fetchGithubPaginated($request, "repos/{$repo}/releases");
         } catch (ConnectionException $exception) {
-            $message = 'GitHub connection failed: '.$exception->getMessage();
-            Log::warning('Failed to sync releases from GitHub.', [
+            Log::warning('GitHub release sync failed due to TLS/connection issue.', [
                 'repo' => $repo,
-                'error' => $message,
-            ]);
-            return ['synced' => 0, 'updated' => 0, 'skipped' => 0, 'error' => $message];
-        }
-
-        if (! $response->ok()) {
-            $message = "GitHub request failed with HTTP {$response->status()}.";
-            Log::warning('Failed to sync releases from GitHub.', [
-                'repo' => $repo,
-                'status' => $response->status(),
-                'body' => $response->body(),
+                'error' => $exception->getMessage(),
             ]);
 
-            return ['synced' => 0, 'updated' => 0, 'skipped' => 0, 'error' => $message];
+            return [
+                'synced' => 0,
+                'updated' => 0,
+                'skipped' => 0,
+                'error' => 'Unable to connect to GitHub over HTTPS. Check CA bundle/certificate settings (GITHUB_CA_BUNDLE or php.ini curl.cainfo).',
+            ];
         }
 
-        $payloads = (array) $response->json();
-        if ($payloads === []) {
-            // Some environments/tokens intermittently return an empty list.
-            // Fall back to the latest release endpoint so new tags are still discovered.
-            try {
-                $latestResponse = $request->get("https://api.github.com/repos/{$repo}/releases/latest");
-                if ($latestResponse->ok()) {
-                    $latestPayload = (array) $latestResponse->json();
-                    if (($latestPayload['tag_name'] ?? '') !== '') {
-                        $payloads = [$latestPayload];
-                    }
-                }
-            } catch (\Throwable) {
-                // Keep payloads empty and return zero counts below.
-            }
+        if ($releases === null) {
+            return [
+                'synced' => 0,
+                'updated' => 0,
+                'skipped' => 0,
+                'error' => 'GitHub API request failed while listing releases. Check GITHUB_REPO, token scopes (repo/public_repo), and rate limits.',
+            ];
         }
 
         $synced = 0;
         $updated = 0;
         $skipped = 0;
 
-        foreach ($payloads as $releasePayload) {
+        foreach ($releases as $releasePayload) {
+            if (! is_array($releasePayload)) {
+                $skipped++;
+
+                continue;
+            }
+
             $tag = trim((string) ($releasePayload['tag_name'] ?? ''));
             if ($tag === '') {
                 $skipped++;
+
                 continue;
             }
 
@@ -105,6 +93,60 @@ class ReleaseRegistryService
             }
         }
 
+        // Tags exist without a GitHub "Release" object; /releases omits them. Import missing tags so sync works after `git tag` + push.
+        try {
+            $tags = $this->fetchGithubPaginated($request, "repos/{$repo}/tags");
+        } catch (ConnectionException $exception) {
+            Log::warning('GitHub tag sync failed due to TLS/connection issue.', [
+                'repo' => $repo,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return array_merge(compact('synced', 'updated', 'skipped'), [
+                'error' => 'Releases synced, but listing tags failed (connection). Partial sync.',
+            ]);
+        }
+
+        if ($tags === null) {
+            return array_merge(compact('synced', 'updated', 'skipped'), [
+                'error' => 'Releases synced, but GitHub failed while listing tags (HTTP error). Tag-only versions may be missing.',
+            ]);
+        }
+
+        foreach ($tags as $tagPayload) {
+            if (! is_array($tagPayload)) {
+                $skipped++;
+
+                continue;
+            }
+
+            $tag = trim((string) ($tagPayload['name'] ?? ''));
+            if ($tag === '') {
+                $skipped++;
+
+                continue;
+            }
+
+            if (AppRelease::query()->where('tag', $tag)->exists()) {
+                $skipped++;
+
+                continue;
+            }
+
+            $publishedAt = $this->resolveCommitPublishedAt($request, $tagPayload);
+            $attributes = [
+                'title' => $tag,
+                'changelog' => '',
+                'release_url' => "https://github.com/{$repo}/tree/{$tag}",
+                'published_at' => $publishedAt,
+                'is_stable' => ! $this->tagLooksLikePrerelease($tag),
+                'synced_at' => now(),
+            ];
+
+            AppRelease::query()->create(array_merge($attributes, ['tag' => $tag]));
+            $synced++;
+        }
+
         return compact('synced', 'updated', 'skipped');
     }
 
@@ -129,6 +171,142 @@ class ReleaseRegistryService
         return $release->fresh();
     }
 
+    private function buildGithubClient(string $token): PendingRequest
+    {
+        $request = Http::acceptJson()
+            ->timeout(25)
+            ->withHeaders([
+                'User-Agent' => 'Laravel-Impastay-ReleaseSync',
+            ])
+            ->withOptions([
+                'verify' => $this->resolveTlsVerifyOption(),
+            ]);
+
+        if ($token !== '') {
+            $request = $request->withToken($token);
+        }
+
+        return $request;
+    }
+
+    /**
+     * @return list<mixed>|null null when the first page returns a non-success HTTP status
+     */
+    private function fetchGithubPaginated(PendingRequest $request, string $path): ?array
+    {
+        $items = [];
+        $page = 1;
+
+        do {
+            try {
+                $response = $request->get("https://api.github.com/{$path}", [
+                    'per_page' => 100,
+                    'page' => $page,
+                ]);
+            } catch (ConnectionException $exception) {
+                throw $exception;
+            }
+
+            if (! $response->ok()) {
+                Log::warning('GitHub API paginated request failed.', [
+                    'path' => $path,
+                    'page' => $page,
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+
+                return $page === 1 ? null : $items;
+            }
+
+            $batch = $response->json();
+            if (! is_array($batch)) {
+                break;
+            }
+
+            if ($batch === []) {
+                break;
+            }
+
+            foreach ($batch as $row) {
+                $items[] = $row;
+            }
+
+            if (count($batch) < 100) {
+                break;
+            }
+
+            $page++;
+        } while (true);
+
+        return $items;
+    }
+
+    private function resolveCommitPublishedAt(PendingRequest $request, array $tagPayload): ?Carbon
+    {
+        $sha = isset($tagPayload['commit']['sha']) && is_string($tagPayload['commit']['sha'])
+            ? $tagPayload['commit']['sha']
+            : '';
+        if ($sha === '') {
+            return null;
+        }
+
+        if (array_key_exists($sha, $this->commitPublishedAtCache)) {
+            return $this->commitPublishedAtCache[$sha];
+        }
+
+        $commitUrl = isset($tagPayload['commit']['url']) && is_string($tagPayload['commit']['url'])
+            ? $tagPayload['commit']['url']
+            : '';
+        if ($commitUrl === '') {
+            $this->commitPublishedAtCache[$sha] = null;
+
+            return null;
+        }
+
+        try {
+            $response = $request->get($commitUrl);
+        } catch (ConnectionException $exception) {
+            Log::warning('GitHub commit lookup failed during tag sync.', [
+                'sha' => $sha,
+                'error' => $exception->getMessage(),
+            ]);
+            $this->commitPublishedAtCache[$sha] = null;
+
+            return null;
+        }
+
+        if (! $response->ok()) {
+            $this->commitPublishedAtCache[$sha] = null;
+
+            return null;
+        }
+
+        $json = $response->json();
+        if (! is_array($json)) {
+            $this->commitPublishedAtCache[$sha] = null;
+
+            return null;
+        }
+
+        $raw = data_get($json, 'commit.committer.date') ?? data_get($json, 'commit.author.date');
+        $parsed = $this->parseDate(is_string($raw) ? $raw : null);
+        $this->commitPublishedAtCache[$sha] = $parsed;
+
+        return $parsed;
+    }
+
+    private function tagLooksLikePrerelease(string $tag): bool
+    {
+        $t = strtolower($tag);
+        foreach (['-dev', '-alpha', '-beta', '-rc', '-preview', '-canary'] as $needle) {
+            if (str_contains($t, $needle)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private function parseDate(mixed $value): ?Carbon
     {
         if (! is_string($value) || trim($value) === '') {
@@ -148,10 +326,10 @@ class ReleaseRegistryService
 
         if (is_string($verify)) {
             $normalized = strtolower(trim($verify));
-            if (in_array($normalized, ['false', '0', 'off'], true)) {
+            if ($normalized === 'false' || $normalized === '0' || $normalized === 'off') {
                 return false;
             }
-            if (in_array($normalized, ['true', '1', 'on'], true)) {
+            if ($normalized === 'true' || $normalized === '1' || $normalized === 'on') {
                 $verify = true;
             }
         }

@@ -3,6 +3,7 @@
 namespace App\Models\Concerns;
 
 use App\Models\Tenant;
+use App\Support\SingleDbMigrationMode;
 
 trait UsesTenantConnectionForTenantData
 {
@@ -15,6 +16,10 @@ trait UsesTenantConnectionForTenantData
         // Keep framework tests on the configured test/default connection.
         if (app()->environment('testing')) {
             return $defaultConnection;
+        }
+
+        if (SingleDbMigrationMode::readsEnabled()) {
+            return $landlordConnection;
         }
 
         // If tenant is already resolved, always use tenant DB.

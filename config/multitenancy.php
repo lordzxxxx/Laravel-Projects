@@ -39,11 +39,11 @@ return [
      *
      * A valid task is any class that implements Spatie\Multitenancy\Tasks\SwitchTenantTask
      */
-    'switch_tenant_tasks' => [
+    'switch_tenant_tasks' => (bool) env('SINGLE_DB_ALLOW_TENANT_SWITCHING', true) ? [
         // \Spatie\Multitenancy\Tasks\PrefixCacheTask::class,
         \App\Multitenancy\Tasks\SwitchTenantDatabaseConnectionTask::class,
         // \Spatie\Multitenancy\Tasks\SwitchRouteCacheTask::class,
-    ],
+    ] : [],
 
     /*
      * This class is the model used for storing configuration on tenants.

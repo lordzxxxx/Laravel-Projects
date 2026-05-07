@@ -2,6 +2,7 @@
 
 namespace App\Multitenancy\Tasks;
 
+use App\Support\SingleDbMigrationMode;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
@@ -23,6 +24,10 @@ class SwitchTenantDatabaseConnectionTask implements SwitchTenantTask
 
     public function makeCurrent(IsTenant $tenant): void
     {
+        if (! SingleDbMigrationMode::allowTenantSwitching()) {
+            return;
+        }
+
         $fallbackHost = $this->tenantConnectionDefaults['host']
             ?? config('database.connections.mysql.host')
             ?? config('database.connections.landlord.host');
@@ -47,6 +52,10 @@ class SwitchTenantDatabaseConnectionTask implements SwitchTenantTask
 
     public function forgetCurrent(): void
     {
+        if (! SingleDbMigrationMode::allowTenantSwitching()) {
+            return;
+        }
+
         $this->setTenantConnectionConfig([
             'database' => $this->tenantConnectionDefaults['database'] ?? null,
             'host' => $this->tenantConnectionDefaults['host'] ?? null,

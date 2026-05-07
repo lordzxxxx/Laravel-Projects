@@ -3,6 +3,7 @@
 namespace App\Models\Concerns;
 
 use App\Models\Tenant;
+use App\Support\SingleDbMigrationMode;
 
 trait UsesPermissionTablesConnection
 {
@@ -17,6 +18,10 @@ trait UsesPermissionTablesConnection
 
         if (app()->environment('testing')) {
             return config('database.default');
+        }
+
+        if (SingleDbMigrationMode::readsEnabled()) {
+            return $landlordConnection;
         }
 
         return $landlordConnection;

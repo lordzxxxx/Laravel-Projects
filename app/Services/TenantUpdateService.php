@@ -5,11 +5,16 @@ namespace App\Services;
 use App\Models\AppRelease;
 use App\Models\Tenant;
 use App\Models\TenantUpdate;
+use App\Support\SingleDbQueryBridge;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class TenantUpdateService
 {
+    public function __construct(
+        private readonly SingleDbQueryBridge $queryBridge
+    ) {}
+
     public function getCurrentRelease(int $tenantId): ?TenantUpdate
     {
         return TenantUpdate::query()
@@ -24,14 +29,21 @@ class TenantUpdateService
         $current = $this->getCurrentRelease($tenantId);
         $currentPublishedAt = $current?->release?->published_at;
 
-        // Include prereleases: GitHub marks typical `-dev` releases as prerelease, which we store as
-        // is_stable=false. Tenants still need to see and apply those tags.
-        return AppRelease::query()
-            ->when($currentPublishedAt, fn ($query) => $query->where('published_at', '>', $currentPublishedAt))
-            ->orderByDesc('is_stable')
-            ->orderByDesc('published_at')
-            ->orderByDesc('id')
-            ->get();
+        return $this->queryBridge->read(
+            singleDbRead: fn () => AppRelease::query()
+                ->when($currentPublishedAt, fn ($query) => $query->where('published_at', '>', $currentPublishedAt))
+                ->orderByDesc('is_stable')
+                ->orderByDesc('published_at')
+                ->orderByDesc('id')
+                ->get(),
+            legacyRead: fn () => AppRelease::query()
+                ->where('is_stable', true)
+                ->when($currentPublishedAt, fn ($query) => $query->where('published_at', '>', $currentPublishedAt))
+                ->orderByDesc('published_at')
+                ->orderByDesc('id')
+                ->get(),
+            scope: 'tenant_updates.available_releases'
+        );
     }
 
     public function markAsUpdated(int $tenantId, int $releaseId): TenantUpdate

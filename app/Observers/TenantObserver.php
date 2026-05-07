@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Tenant;
+use App\Support\SingleDbMigrationMode;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
@@ -25,6 +26,16 @@ class TenantObserver
      */
     private function provisionTenantDatabase(Tenant $tenant): void
     {
+        if (! SingleDbMigrationMode::allowLegacyProvisioning()) {
+            $tenant->update([
+                'database_provisioned' => true,
+                'database_provisioned_at' => now(),
+                'provisioning_error' => null,
+            ]);
+
+            return;
+        }
+
         if (! $tenant->database) {
             Log::warning('Tenant has no database name assigned.', [
                 'tenant_id' => $tenant->id,
