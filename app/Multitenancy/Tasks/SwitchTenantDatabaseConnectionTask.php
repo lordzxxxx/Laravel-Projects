@@ -23,12 +23,25 @@ class SwitchTenantDatabaseConnectionTask implements SwitchTenantTask
 
     public function makeCurrent(IsTenant $tenant): void
     {
+        $fallbackHost = $this->tenantConnectionDefaults['host']
+            ?? config('database.connections.mysql.host')
+            ?? config('database.connections.landlord.host');
+        $fallbackPort = $this->tenantConnectionDefaults['port']
+            ?? config('database.connections.mysql.port')
+            ?? config('database.connections.landlord.port');
+        $fallbackUsername = $this->tenantConnectionDefaults['username']
+            ?? config('database.connections.mysql.username')
+            ?? config('database.connections.landlord.username');
+        $fallbackPassword = $this->tenantConnectionDefaults['password']
+            ?? config('database.connections.mysql.password')
+            ?? config('database.connections.landlord.password');
+
         $this->setTenantConnectionConfig([
             'database' => $tenant->database,
-            'host' => $tenant->db_host ?: ($this->tenantConnectionDefaults['host'] ?? null),
-            'port' => $tenant->db_port ?: ($this->tenantConnectionDefaults['port'] ?? null),
-            'username' => $tenant->db_username ?: ($this->tenantConnectionDefaults['username'] ?? null),
-            'password' => $tenant->db_password ?: ($this->tenantConnectionDefaults['password'] ?? null),
+            'host' => $tenant->db_host ?: $fallbackHost,
+            'port' => $tenant->db_port ?: $fallbackPort,
+            'username' => $tenant->db_username ?: $fallbackUsername,
+            'password' => $tenant->db_password ?: $fallbackPassword,
         ]);
     }
 
