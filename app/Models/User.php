@@ -464,6 +464,16 @@ class User extends Authenticatable
         return $this->belongsTo(Tenant::class);
     }
 
+    public function tenantUser(): HasOne
+    {
+        return $this->hasOne(TenantUser::class);
+    }
+
+    public function clientUser(): HasOne
+    {
+        return $this->hasOne(ClientUser::class);
+    }
+
     public function tenantCustomRole(): BelongsTo
     {
         return $this->belongsTo(TenantCustomRole::class);

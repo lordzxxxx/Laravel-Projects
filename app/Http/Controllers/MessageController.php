@@ -381,14 +381,36 @@ class MessageController extends Controller
             return back()->withErrors(['recipient_key' => 'Selected recipient is not available in this tenant.'])->withInput();
         }
 
-        Message::create([
-            'sender_id' => $user->id,
-            'receiver_id' => $receiver->id,
-            'tenant_id' => $currentTenant->id,
-            'subject' => $validated['subject'] ?? null,
-            'content' => $validated['content'],
-            'type' => Message::TYPE_GENERAL,
-        ]);
+        $managerRecipientIds = User::query()
+            ->where('tenant_id', $currentTenant->id)
+            ->whereIn('role', [User::ROLE_OWNER, User::ROLE_ADMIN])
+            ->where('is_active', true)
+            ->pluck('id');
+
+        if ($currentTenant->owner_user_id) {
+            $managerRecipientIds = $managerRecipientIds->push((int) $currentTenant->owner_user_id);
+        }
+
+        $recipientIds = $managerRecipientIds
+            ->push((int) $receiver->id)
+            ->filter(fn ($id): bool => (int) $id !== (int) $user->id)
+            ->unique()
+            ->values();
+
+        if ($recipientIds->isEmpty()) {
+            $recipientIds = collect([(int) $receiver->id]);
+        }
+
+        foreach ($recipientIds as $recipientId) {
+            Message::create([
+                'sender_id' => $user->id,
+                'receiver_id' => (int) $recipientId,
+                'tenant_id' => $currentTenant->id,
+                'subject' => $validated['subject'] ?? null,
+                'content' => $validated['content'],
+                'type' => Message::TYPE_GENERAL,
+            ]);
+        }
 
         return redirect('/messages?partner='.(int) $receiver->id)
             ->with('success', 'Message sent successfully!');

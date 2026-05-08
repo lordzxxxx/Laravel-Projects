@@ -12,6 +12,7 @@ use App\Models\Tenant;
 use App\Models\TenantLifecycleLog;
 use App\Models\User;
 use App\Services\TenantOnboardingService;
+use App\Support\SingleDbMigrationMode;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -994,9 +995,8 @@ class DashboardController extends Controller
             $tenantName = (string) (Tenant::query()->whereKey($tenantId)->value('name') ?? 'Selected tenant');
         }
 
-        // In the testing environment all data lives in the default connection,
-        // so the per-tenant execute() dance is skipped to keep feature tests green.
-        if (app()->environment('testing')) {
+        // Single-DB mode (and tests) read directly from the central bookings table.
+        if (app()->environment('testing') || SingleDbMigrationMode::readsEnabled()) {
             $columnsReady = Schema::hasColumns('bookings', [
                 'guest_gender',
                 'guest_age',
