@@ -6,6 +6,7 @@
     @include('admin.partials.favicon')
     <title>Bookings Management - Admin Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -33,8 +34,8 @@
         .nav-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4); }
         .dashboard-layout { display: flex; padding-top: 80px; }
         .main-content { flex: 1; padding: 30px 40px; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .page-header h1 { font-size: 2rem; color: var(--green-dark); }
+        .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+        /* Title styling provided by ui-foundation-styles for cross-system consistency. */
         .search-filter { display: flex; gap: 15px; margin-bottom: 25px; }
         .search-input { flex: 1; max-width: 400px; padding: 12px 20px; border: 2px solid var(--green-soft); border-radius: 10px; font-size: 1rem; outline: none; }
         .search-input:focus { border-color: var(--green-primary); }
@@ -58,13 +59,14 @@
         .status-badge.confirmed { background: var(--green-soft); color: var(--green-dark); }
         .status-badge.cancelled { background: #FFEBEE; color: #C62828; }
         .status-badge.completed { background: #E3F2FD; color: #1565C0; }
-        .status-badge.paid { background: #E9; color: #2E78F5ED32; }
+        .status-badge.paid { background: #E8F5E9; color: #2E7D32; }
         @media (max-width: 768px) {
             .navbar { padding: 0 20px; height: 60px; }
             .nav-links { display: none; }
             .main-content { padding: 20px; }
         }
 
+        @include('partials.ui-foundation-styles')
         @include('admin.partials.admin-shell-styles')
     </style>
 </head>
@@ -74,7 +76,11 @@
     <div class="dashboard-layout">
         <main class="main-content">
             <div class="page-header">
-                <h1>Bookings Management</h1>
+                <h1>
+                    <span class="page-title-icon"><i class="fa-solid fa-calendar-check"></i></span>
+                    <span>Bookings Management</span>
+                </h1>
+                <p>Review every reservation across all tulogans on the platform.</p>
             </div>
             
             <div class="search-filter">

@@ -6,17 +6,7 @@
     @include('partials.tenant-favicon')
     <title>User Management - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind = {
-            config: {
-                corePlugins: {
-                    preflight: false,
-                },
-            },
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -152,6 +142,14 @@
     @include('owner.partials.top-navbar', ['active' => 'users'])
 
     <main class="main-content with-owner-nav space-y-4">
+        <div class="page-header">
+            <h1>
+                <span class="page-title-icon"><i class="fa-solid fa-users-gear"></i></span>
+                <span>User Management</span>
+            </h1>
+            <p>Tenant: <strong>{{ $currentTenant->name }}</strong> &middot; Manage users and role-based access within this tenant only.</p>
+        </div>
+
         @if(session('success'))
             <div class="flash success rounded-lg border border-emerald-200 bg-emerald-100 px-4 py-3 text-sm font-medium text-emerald-800">{{ session('success') }}</div>
         @endif
@@ -195,10 +193,6 @@
         @endphp
 
         <section class="panel rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="panel-header border-b border-slate-200 px-5 py-4">
-                <h1 class="text-2xl font-bold tracking-tight text-green-900">User Management</h1>
-                <p class="mt-1 text-sm text-slate-600">Tenant: {{ $currentTenant->name }} | Manage users and role-based access within this tenant only.</p>
-            </div>
             <div class="section-body px-5 py-4">
                 @php
                     $viewer = auth()->user();
@@ -214,7 +208,7 @@
                 </div>
                 <p class="rbac-note mt-2 text-sm text-slate-500">Access is managed through role templates. If a row is your own account, actions are read-only for safety.</p>
                 @if(!($customRbacReady ?? false))
-                    <p class="rbac-note mt-2 text-sm font-medium text-amber-700">Custom role templates are temporarily unavailable for this tenant database. Run tenant migrations, then reload this page.</p>
+                    <p class="rbac-note mt-2 text-sm font-medium text-amber-700">Custom role templates are temporarily unavailable. Run <code class="text-xs font-mono">php artisan migrate</code> on the central database, then reload this page.</p>
                 @endif
             </div>
             @if($canCreateUsers)

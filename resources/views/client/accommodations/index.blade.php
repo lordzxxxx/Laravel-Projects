@@ -6,16 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Properties - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind = {
-            config: {
-                corePlugins: {
-                    preflight: false,
-                },
-            },
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
             @include('partials.tenant-theme-css-vars')

@@ -24,112 +24,20 @@
             min-height: 100vh;
             color: var(--gray-800);
         }
-        
-        /* Navigation */
-        .navbar {
-            background: var(--white);
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.1);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1000;
+
+        /* Same top offset + padding as all other owner pages (shared top bar does not “jump”). */
+        body.owner-nav-page .main-content.with-owner-nav.owner-dashboard-main {
+            width: min(1600px, 100%);
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: clamp(20px, 3vw, 40px);
+            padding-right: clamp(20px, 3vw, 40px);
+            padding-bottom: 40px;
         }
-        
-        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .nav-logo img { width: 45px; height: 45px; border-radius: 0; border: none; object-fit: contain; }
-        .nav-logo span { font-size: 1.3rem; font-weight: 700; color: var(--green-dark); }
-        
-        .nav-links { display: flex; gap: 8px; list-style: none; }
-        .nav-links a { 
-            text-decoration: none; 
-            color: var(--gray-600); 
-            font-weight: 500; 
-            padding: 10px 16px; 
-            border-radius: 8px; 
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .nav-links a:hover, .nav-links a.active { 
-            background: linear-gradient(135deg, var(--green-primary), var(--green-medium)); 
-            color: var(--white);
-            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
-        }
-        
-        .nav-actions { display: flex; gap: 15px; align-items: center; }
-        .user-display {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 16px;
-            background: linear-gradient(135deg, var(--green-soft), var(--green-white));
-            border-radius: 10px;
-            border: 1px solid var(--green-soft);
-        }
-        .user-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--green-dark), var(--green-primary));
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        .user-info {
-            text-align: left;
-        }
-        .user-name {
-            font-weight: 700;
-            color: var(--green-dark);
-            font-size: 0.95rem;
-            line-height: 1.2;
-        }
-        .user-role {
-            font-size: 0.75rem;
-            color: var(--green-medium);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .nav-btn {
-            padding: 10px 20px; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            text-decoration: none; 
-            transition: all 0.3s; 
-            cursor: pointer; 
-            border: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .nav-btn.primary { 
-            background: linear-gradient(135deg, var(--green-dark), var(--green-primary)); 
-            color: var(--white); 
-        }
-        .nav-btn.primary:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
-        }
-        
-        /* Main Layout */
-        .dashboard-layout { display: flex; padding-top: 80px; }
-        
-        /* Main Content */
-        .main-content { flex: 1; padding: 30px 40px; min-height: calc(100vh - 80px); }
         
         /* Page Header */
         .page-header { margin-bottom: 20px; }
-        .page-header h1 { font-size: 1.7rem; color: var(--green-dark); margin-bottom: 4px; font-weight: 700; }
-        .page-header p { color: var(--gray-500); font-size: 0.88rem; }
+        /* Title styling provided by ui-foundation-styles for cross-system consistency. */
         
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 18px; }
@@ -450,9 +358,10 @@
         
         /* Responsive */
         @media (max-width: 768px) {
-            .navbar { padding: 15px 20px; }
-            .nav-links { display: none; }
-            .main-content { padding: 20px; }
+            body.owner-nav-page .main-content.with-owner-nav.owner-dashboard-main {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .chart-grid { grid-template-columns: 1fr; }
         }
@@ -465,20 +374,21 @@
         .delay-3 { animation-delay: 0.3s; }
         .delay-4 { animation-delay: 0.4s; }
 
+        @include('admin.partials.admin-shell-styles')
         @include('owner.partials.top-navbar-styles')
     </style>
 </head>
 <body class="owner-nav-page">
     @include('owner.partials.top-navbar')
     
-    <!-- Dashboard Layout -->
-    <div class="dashboard-layout">
-        <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content with-owner-nav owner-dashboard-main">
             <!-- Page Header -->
             <div class="page-header animate">
-                <h1><i class="fas fa-home" style="color: var(--green-primary); margin-right: 12px;"></i>Unit Management Dashboard</h1>
-                <p>Monitor your properties and booking performance</p>
+                <h1>
+                    <span class="page-title-icon"><i class="fa-solid fa-house-laptop"></i></span>
+                    <span>Unit Management Dashboard</span>
+                </h1>
+                <p>Monitor your properties and booking performance.</p>
             </div>
 
             <!-- Quick Stats -->
@@ -650,11 +560,7 @@
                                 <tr>
                                     <td>
                                         <div style="display: flex; align-items: center; gap: 15px;">
-                                            @if($property->primary_image)
-                                                <img src="{{ $property->primary_image_url }}" alt="{{ $property->name }}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;">
-                                            @else
-                                                <img src="/COMMUNAL.jpg" alt="{{ $property->name }}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;">
-                                            @endif
+                                            <img src="{{ $property->primary_image_url }}" alt="{{ $property->name }}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;">
                                             <div>
                                                 <div style="font-weight: 600; color: var(--gray-800);">{{ $property->name }}</div>
                                                 <div style="font-size: 0.85rem; color: var(--gray-500);">{{ $property->address }}</div>
@@ -737,7 +643,6 @@
                 @endif
             </div>
         </main>
-    </div>
 
     <script>
         (function () {

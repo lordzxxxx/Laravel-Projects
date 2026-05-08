@@ -13,7 +13,7 @@
         
         body {
             font-family: "Times New Roman", Times, serif;
-            color: #333;
+            color: #000000;
             line-height: 1.6;
             font-size: 12px;
         }
@@ -26,110 +26,122 @@
         
         @include('reports.partials.municipal-pdf-header-styles')
 
-        .report-meta {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 6px 8px;
-            background: #E8F5E9;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-        
-        .meta-item {
-            font-size: 12px;
-        }
-        
-        .meta-item strong {
-            color: #2E7D32;
-            display: block;
-            margin-bottom: 1px;
-            font-size: 12px;
-        }
-        
-        /* Summary Cards */
-        .summary {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
+        .pdf-section {
+            margin-bottom: 14px;
             page-break-inside: avoid;
         }
-        
-        .summary-card {
-            flex: 1;
-            padding: 8px;
-            background: #F1F8E9;
-            border-left: 3px solid #2E7D32;
-            border-radius: 4px;
-            text-align: center;
-        }
-        
-        .summary-card h4 {
-            color: #666;
+
+        .pdf-section-title {
+            color: #000000;
             font-size: 12px;
+            font-weight: 700;
+            margin: 0 0 6px 0;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #C8E6C9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table.report-layout {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+            font-size: 12px;
+            border: 1px solid #bdbdbd;
+        }
+
+        table.report-layout th,
+        table.report-layout td {
+            padding: 7px 8px;
+            border: 1px solid #bdbdbd;
+            vertical-align: top;
+        }
+
+        table.report-kv th {
+            width: 32%;
+            background: #f3f4f6;
+            color: #000000;
+            font-weight: 600;
+            text-align: left;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            margin-bottom: 4px;
-            font-weight: 600;
         }
-        
-        .summary-card .value {
-            font-size: 12px;
-            color: #1B5E20;
+
+        table.report-kv td {
+            background: #fff;
+            color: #000000;
+        }
+
+        table.report-metrics thead th {
+            background: #E8F5E9;
+            color: #000000;
             font-weight: 700;
+            text-align: center;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.35px;
+            border: 1px solid #81C784;
         }
-        
-        /* Table */
+
+        table.report-metrics tbody td {
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+            color: #000000;
+            background: #fafafa;
+            border: 1px solid #bdbdbd;
+        }
+
+        /* Tenant detail grid */
         .table-section {
             margin-bottom: 15px;
             page-break-inside: avoid;
         }
-        
-        .table-section h3 {
-            color: #2E7D32;
-            font-size: 12px;
-            margin-bottom: 8px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #E8F5E9;
-        }
-        
-        table {
+
+        table.report-detail {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 12px;
             font-size: 12px;
+            border: 1px solid #9e9e9e;
         }
-        
-        table th {
+
+        table.report-detail thead th {
             background: #2E7D32;
             color: white;
-            padding: 6px;
+            padding: 7px 8px;
             text-align: left;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.4px;
+            border: 1px solid #1B5E20;
         }
-        
-        table td {
-            padding: 6px;
-            border-bottom: 1px solid #E0E0E0;
+
+        table.report-detail thead th.num-col {
+            text-align: right;
+        }
+
+        table.report-detail tbody td {
+            padding: 7px 8px;
+            border: 1px solid #e0e0e0;
             font-size: 12px;
         }
-        
-        table tr:nth-child(even) {
+
+        table.report-detail tbody tr:nth-child(even) {
             background: #F9FAFB;
         }
         
         .tenant-name {
             font-weight: 600;
-            color: #1B5E20;
+            color: #000000;
         }
         
         .number {
             text-align: right;
             font-weight: 600;
-            color: #2E7D32;
+            color: #000000;
         }
         
         
@@ -137,12 +149,21 @@
         .summary-row {
             background: #E8F5E9;
             font-weight: 700;
-            color: #1B5E20;
+            color: #000000;
         }
         
         .summary-row td {
             font-weight: 700;
-            color: #1B5E20;
+            color: #000000;
+            border: 1px solid #81C784 !important;
+            background: #E8F5E9 !important;
+        }
+
+        table.report-empty td {
+            text-align: center;
+            color: #000000;
+            padding: 20px;
+            font-style: italic;
         }
         
         /* Footer */
@@ -151,7 +172,7 @@
             padding-top: 10px;
             border-top: 1px solid #d1d5db;
             font-size: 12px;
-            color: #374151;
+            color: #000000;
         }
         .footer-row {
             width: 100%;
@@ -160,7 +181,7 @@
         .footer-row td {
             border: none;
             font-size: 12px;
-            color: #374151;
+            color: #000000;
             padding: 2px 0;
         }
         .footer-left { text-align: left; }
@@ -168,13 +189,6 @@
         .footer-right { text-align: right; }
         .pagenum:before { content: counter(page); }
         .pagecount:before { content: counter(pages); }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 30px;
-            color: #999;
-        }
         
         /* Print Styles */
         @media print {
@@ -199,52 +213,63 @@
             'pdfReportSubtitle' => $monthName.' - Tenant Guest Analytics',
         ])
 
-        <!-- Report Meta - Compact -->
-        <div class="report-meta">
-            <div class="meta-item">
-                <strong>Period:</strong> {{ $startDate->format('M d') }} - {{ $endDate->format('M d, Y') }}
-            </div>
-            <div class="meta-item">
-                <strong>Generated:</strong> {{ now('Asia/Manila')->format('M d, Y') }}
-            </div>
-            <div class="meta-item">
-                <strong>Tenants:</strong> {{ $tenantBookings->count() }}
-            </div>
+        <div class="pdf-section">
+            <div class="pdf-section-title">1. Report parameters</div>
+            <table class="report-layout report-kv">
+                <tbody>
+                    <tr>
+                        <th scope="row">Reporting period</th>
+                        <td>{{ $startDate->format('M j, Y') }} — {{ $endDate->format('M j, Y') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Calendar month</th>
+                        <td>{{ $monthName }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Generated</th>
+                        <td>{{ now('Asia/Manila')->format('M j, Y') }} (Philippines)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Tenants with bookings (this period)</th>
+                        <td>{{ $tenantBookings->count() }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        
-        <!-- Summary Cards - Compact Grid -->
-        <div class="summary">
-            <div class="summary-card">
-                <h4>Bookings</h4>
-                <div class="value">{{ $summary['total_bookings'] }}</div>
-            </div>
-            <div class="summary-card">
-                <h4>Guests</h4>
-                <div class="value">{{ $summary['total_guests'] }}</div>
-            </div>
-            <div class="summary-card">
-                <h4>Avg guests / booking</h4>
-                <div class="value">{{ $summary['average_guests_per_booking'] }}</div>
-            </div>
-            <div class="summary-card">
-                <h4>Tenants</h4>
-                <div class="value">{{ $summary['tenant_count'] }}</div>
-            </div>
-        </div>
-        
-        <!-- Table Section -->
 
-        <div class="table-section">
-            <h3>Tenant Booking Details</h3>
-            
+        <div class="pdf-section">
+            <div class="pdf-section-title">2. Consolidated totals</div>
+            <table class="report-layout report-metrics">
+                <thead>
+                    <tr>
+                        <th scope="col">Bookings</th>
+                        <th scope="col">Total guests</th>
+                        <th scope="col">Avg guests / booking</th>
+                        <th scope="col">Tenants</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ $summary['total_bookings'] }}</td>
+                        <td>{{ $summary['total_guests'] }}</td>
+                        <td>{{ number_format((float) $summary['average_guests_per_booking'], 2) }}</td>
+                        <td>{{ $summary['tenant_count'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-section pdf-section">
+            <div class="pdf-section-title">3. Tenant booking breakdown</div>
+
             @if($tenantBookings->count() > 0)
-                <table>
+                <table class="report-detail">
                     <thead>
                         <tr>
-                            <th>Tenant Name</th>
-                            <th style="text-align: right;">Bookings</th>
-                            <th style="text-align: right;">Total Guests</th>
-                            <th style="text-align: right;">Avg guests / booking</th>
+                            <th scope="col">Tenant</th>
+                            <th scope="col" class="num-col">Bookings</th>
+                            <th scope="col" class="num-col">Total guests</th>
+                            <th scope="col" class="num-col">Avg guests / booking</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -257,17 +282,21 @@
                             </tr>
                         @endforeach
                         <tr class="summary-row">
-                            <td><strong>TOTAL</strong></td>
+                            <td><strong>Total / weighted average</strong></td>
                             <td class="number"><strong>{{ $summary['total_bookings'] }}</strong></td>
                             <td class="number"><strong>{{ $summary['total_guests'] }}</strong></td>
-                            <td class="number"><strong>{{ $summary['average_guests_per_booking'] }}</strong></td>
+                            <td class="number"><strong>{{ number_format((float) $summary['average_guests_per_booking'], 2) }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <p>No bookings data available for {{ $monthName }}</p>
-                </div>
+                <table class="report-layout report-empty">
+                    <tbody>
+                        <tr>
+                            <td>No booking data recorded for {{ $monthName }} under the selected criteria.</td>
+                        </tr>
+                    </tbody>
+                </table>
             @endif
         </div>
         

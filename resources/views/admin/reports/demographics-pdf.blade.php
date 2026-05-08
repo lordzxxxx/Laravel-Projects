@@ -5,25 +5,25 @@
     @include('admin.partials.favicon')
     <title>Demographics Report</title>
     <style>
-        body { font-family: "Times New Roman", Times, serif; color: #1f2937; font-size: 12px; }
+        body { font-family: "Times New Roman", Times, serif; color: #000000; font-size: 12px; }
 
         @include('reports.partials.municipal-pdf-header-styles')
 
-        h1, h2 { margin: 0 0 6px 0; color: #166534; }
+        h1, h2 { margin: 0 0 6px 0; color: #000000; }
         h1 { font-size: 16px; }
         h2 { font-size: 13px; }
         .summary { width: 100%; border-collapse: collapse; margin: 6px 0 8px; }
         .summary td { border: 1px solid #d1d5db; padding: 3px 4px; text-align: center; }
-        .label { font-size: 9px; text-transform: uppercase; color: #6b7280; line-height: 1.2; }
-        .value { font-size: 11px; font-weight: 700; color: #166534; line-height: 1.2; }
+        .label { font-size: 9px; text-transform: uppercase; color: #000000; line-height: 1.2; }
+        .value { font-size: 11px; font-weight: 700; color: #000000; line-height: 1.2; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
         th, td { border: 1px solid #e5e7eb; padding: 5px 6px; text-align: left; font-size: 12px; }
-        th { background: #f3f4f6; font-size: 12px; text-transform: uppercase; color: #374151; }
+        th { background: #f3f4f6; font-size: 12px; text-transform: uppercase; color: #000000; }
         .columns { width: 100%; }
         .columns td { vertical-align: top; width: 50%; padding-right: 8px; }
         .footer { margin-top: 10px; border-top: 1px solid #d1d5db; padding-top: 6px; }
         .footer-row { width: 100%; border-collapse: collapse; }
-        .footer-row td { border: none; font-size: 12px; color: #374151; padding: 2px 0; }
+        .footer-row td { border: none; font-size: 12px; color: #000000; padding: 2px 0; }
         .footer-left { text-align: left; }
         .footer-center { text-align: center; }
         .footer-right { text-align: right; }

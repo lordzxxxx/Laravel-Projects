@@ -27,17 +27,22 @@ class EnsureUserIsAdmin
                 ->with('error', 'You do not have access to this tenant.');
         }
 
-        // Only admins can access these routes.
+        // Default-deny: only `admin` may proceed. Unknown roles are rejected outright.
         if ($user->role !== 'admin') {
             if ($user->role === 'owner') {
                 return redirect('/owner/dashboard')
                     ->with('error', 'This section is for administrators only.');
-            } elseif ($user->role === 'client') {
+            }
+
+            if ($user->role === 'client') {
                 return redirect('/dashboard')
                     ->with('error', 'This section is for administrators only.');
             }
+
+            return redirect('/')
+                ->with('error', 'This section is for administrators only.');
         }
-        
+
         return $next($request);
     }
 }

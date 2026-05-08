@@ -356,7 +356,7 @@
                         <h3>Cannot Add Listings</h3>
                         <p>Your subscription may be inactive or your plan does not allow new listings. Contact support or upgrade your plan.</p>
                     @endif
-                    <a href="{{ route('owner.updates.index') }}" class="upgrade-btn">
+                    <a href="{{ route('owner.settings.updates.index', [], false) }}" class="upgrade-btn">
                         <i class="fas fa-arrow-up"></i> View plan &amp; updates
                     </a>
                 </div>

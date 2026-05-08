@@ -87,7 +87,7 @@
                 $btnD = 'inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-md bg-red-600 px-2 py-1.5 text-[11px] font-semibold text-white shadow-sm transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1';
                 $btnN = 'inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-[11px] font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1';
                 $btnB = 'inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-md bg-sky-600 px-2 py-1.5 text-[11px] font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1';
-                $badgeBase = 'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold';
+                $badgeBase = 'inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none';
                 $dangerCard = 'flex w-56 min-w-[14rem] max-w-[14rem] shrink-0 flex-col rounded-lg border border-red-200 bg-gradient-to-b from-red-50/90 to-white p-2.5 shadow-sm';
             @endphp
 
@@ -112,8 +112,8 @@
                         <div class="w-44 shrink-0">Owner</div>
                         <div class="w-24 shrink-0">Plan</div>
                         <div class="w-52 shrink-0">Domain</div>
-                        <div class="w-28 shrink-0">Billing</div>
-                        <div class="w-28 shrink-0">Onboarding</div>
+                        <div class="w-32 shrink-0">Billing</div>
+                        <div class="w-36 shrink-0">Onboarding</div>
                         <div class="w-16 shrink-0 text-right">DB</div>
                         <div class="w-36 shrink-0">Bandwidth</div>
                         <div class="w-24 shrink-0">Period</div>
@@ -143,6 +143,16 @@
                                 'approved' => 'bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-600/15',
                                 'rejected' => 'bg-red-100 text-red-800 ring-1 ring-inset ring-red-600/15',
                                 default => 'bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-500/12',
+                            };
+                            $subscriptionStatusLabel = match ($statusValue) {
+                                'trialing' => 'Trialing',
+                                'past_due' => 'Past due',
+                                default => ucfirst(str_replace('_', ' ', $statusValue)),
+                            };
+                            $onboardingStatusLabel = match ($onboardingStatus) {
+                                'pending_approval' => 'Pending',
+                                'awaiting_payment' => 'Awaiting',
+                                default => ucfirst(str_replace('_', ' ', $onboardingStatus)),
                             };
 
                             $domainLabel = $tenant->domain
@@ -183,11 +193,11 @@
                                         @endif
                                         <span class="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-gray-400">{{ $domainEnabled ? 'Enabled' : 'Disabled' }}</span>
                                     </div>
-                                    <div class="flex w-28 shrink-0 items-center">
-                                        <span class="{{ $badgeBase }} {{ $statusBadgeClass }}">{{ ucfirst(str_replace('_', ' ', $statusValue)) }}</span>
+                                    <div class="flex w-32 shrink-0 items-center">
+                                        <span class="{{ $badgeBase }} {{ $statusBadgeClass }}">{{ $subscriptionStatusLabel }}</span>
                                     </div>
-                                    <div class="flex w-28 shrink-0 items-center">
-                                        <span class="{{ $badgeBase }} {{ $onboardingBadgeClass }}">{{ str_replace('_', ' ', ucfirst($onboardingStatus)) }}</span>
+                                    <div class="flex w-36 shrink-0 items-center">
+                                        <span class="{{ $badgeBase }} {{ $onboardingBadgeClass }}">{{ $onboardingStatusLabel }}</span>
                                     </div>
                                     <div class="flex w-16 shrink-0 items-center justify-end">
                                         <span class="tabular-nums text-sm font-medium text-gray-800">{{ is_null($dbUsed) ? '—' : number_format((float) $dbUsed, 2) }}</span>

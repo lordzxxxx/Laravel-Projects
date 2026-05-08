@@ -3,35 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('partials.tenant-favicon')
     <title>Profile Settings - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind = {
-            config: {
-                corePlugins: {
-                    preflight: false,
-                },
-            },
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @php
             $authUser = auth()->user();
             $isTenantAdminContext = $authUser && $authUser->isAdmin() && \App\Models\Tenant::checkCurrent();
             $useLegacyProfileNav = $authUser && ! $authUser->isOwner() && ! $authUser->isClient() && ! $authUser->isAdmin();
         @endphp
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         :root {
             @include('partials.tenant-theme-css-vars')
             --gray-50: #F9FAFB; --gray-100: #F3F4F6; --gray-200: #E5E7EB;
             --gray-300: #D1D5DB; --gray-400: #9CA3AF; --gray-500: #6B7280;
             --gray-600: #4B5563; --gray-700: #374151; --gray-800: #1F2937;
             --gray-900: #111827;
+            --emerald-50: #ECFDF5; --emerald-100: #D1FAE5; --emerald-200: #A7F3D0;
+            --emerald-300: #6EE7B7; --emerald-500: #10B981; --emerald-600: #059669;
+            --emerald-700: #047857; --emerald-800: #065F46; --emerald-900: #064E3B;
+            --slate-50: #F8FAFC; --slate-100: #F1F5F9; --slate-200: #E2E8F0;
+            --slate-300: #CBD5E1; --slate-400: #94A3B8; --slate-500: #64748B;
+            --slate-600: #475569; --slate-700: #334155; --slate-800: #1E293B;
+            --rose-50: #FFF1F2; --rose-200: #FECDD3; --rose-700: #BE123C;
+            --amber-50: #FFFBEB; --amber-200: #FDE68A; --amber-700: #B45309;
+            --indigo-50: #EEF2FF; --indigo-200: #C7D2FE; --indigo-700: #4338CA;
         }
-        
+
+        * { box-sizing: border-box; }
+
         @if($useLegacyProfileNav)
         .navbar {
             background: var(--white);
@@ -43,23 +45,19 @@
             box-shadow: 0 2px 20px rgba(27, 94, 32, 0.1);
             position: fixed;
             width: 100%;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             z-index: 1000;
         }
         .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .nav-logo img { width: 45px; height: 45px; border-radius: 0; border: none; object-fit: contain; }
         .nav-logo span { font-size: 1.2rem; font-weight: 700; color: var(--green-dark); }
-        .nav-links { display: flex; gap: 25px; list-style: none; }
-        .nav-links a { text-decoration: none; color: var(--gray-600); font-weight: 500; padding: 8px 12px; border-radius: 8px; transition: all 0.3s; }
+        .nav-links { display: flex; gap: 25px; list-style: none; padding: 0; margin: 0; }
+        .nav-links a { text-decoration: none; color: var(--gray-600); font-weight: 500; padding: 8px 12px; border-radius: 8px; transition: all 0.2s; }
         .nav-links a:hover, .nav-links a.active { background: var(--green-soft); color: var(--green-dark); }
         .nav-actions { display: flex; gap: 15px; align-items: center; }
-        .nav-btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer; border: none; }
+        .nav-btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; }
         .nav-btn.primary { background: var(--green-primary); color: var(--white); }
-        .nav-btn.primary:hover { background: var(--green-dark); transform: translateY(-2px); }
-        .nav-btn.secondary { background: var(--green-soft); color: var(--green-dark); }
-        .nav-btn.secondary:hover { background: var(--green-pale); }
+        .nav-btn.primary:hover { background: var(--green-dark); transform: translateY(-1px); }
         @endif
 
         @if(auth()->user()?->isOwner() || $isTenantAdminContext)
@@ -72,108 +70,206 @@
 
         body {
             font-family: var(--client-nav-font, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
-            background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
+            background:
+                radial-gradient(1200px 600px at -10% -20%, rgba(16,185,129,0.08), transparent 60%),
+                radial-gradient(900px 500px at 110% 0%, rgba(5,150,105,0.06), transparent 55%),
+                linear-gradient(180deg, #F8FAFC 0%, #F4F8F5 100%);
             min-height: 100vh;
             color: var(--gray-800);
-        }
-        
-        /* Main Container */
-        .main-container {
-            width: min(1700px, 100%);
-            margin: 0 auto;
-            padding-top: var(--client-nav-offset, 90px);
-            padding-left: clamp(12px, 2vw, 28px);
-            padding-right: clamp(12px, 2vw, 28px);
-            padding-bottom: 24px;
-            min-height: calc(100vh - var(--client-nav-offset, 90px));
-        }
-        
-        /* Page Header */
-        .page-header { margin-bottom: 30px; }
-        .page-header h1 { font-size: 1.8rem; color: var(--green-dark); margin-bottom: 8px; }
-        .page-header p { color: var(--gray-500); }
-        
-        /* User Info Card */
-        .user-card {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.08);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        /* Scoped so .user-avatar / .user-info in the fixed client nav are not overridden */
-        .user-card .user-avatar,
-        .avatar-upload .user-avatar {
-            border-radius: 50%;
-            background: var(--green-primary);
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            border: 4px solid var(--green-soft);
-            overflow: hidden;
-        }
-        .user-card .user-avatar {
-            width: 80px;
-            height: 80px;
-            font-size: 1.8rem;
-        }
-        .avatar-upload .user-avatar {
-            width: 100px;
-            height: 100px;
-            font-size: 2.2rem;
-            flex-shrink: 0;
-        }
-        .user-card .user-avatar img,
-        .avatar-upload .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .user-card .user-info h2 { font-size: 1.3rem; color: var(--gray-800); margin-bottom: 4px; }
-        .user-card .user-info p { color: var(--gray-500); margin-bottom: 8px; }
-        
-        .role-badge {
-            display: inline-block;
-            padding: 5px 14px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: capitalize;
-        }
-        
-        .role-badge.admin { background: #FEE2E2; color: #991B1B; }
-        .role-badge.owner { background: #FEF3C7; color: #92400E; }
-        .role-badge.client { background: var(--green-soft); color: var(--green-dark); }
-        
-        /* Settings Sections */
-        .settings-section {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.08);
+            margin: 0;
         }
 
+        /* Layout */
+        .main-container {
+            width: min(1200px, 100%);
+            margin: 0 auto;
+            padding-top: var(--client-nav-offset, 90px);
+            padding-left: clamp(14px, 2vw, 28px);
+            padding-right: clamp(14px, 2vw, 28px);
+            padding-bottom: 40px;
+            min-height: calc(100vh - var(--client-nav-offset, 90px));
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 14px;
+            font-size: 0.825rem;
+            color: var(--slate-500);
+        }
+        .breadcrumb a {
+            color: var(--emerald-700);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb i { font-size: 0.65rem; color: var(--slate-400); }
+
+        /* Page header (compact) */
+        /* Canonical page title (matches /admin pages) */
+        .page-title {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 16px; margin-bottom: 22px; flex-wrap: wrap;
+        }
+        .page-title h1 {
+            display: flex; align-items: center; gap: 0.875rem;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #0F172A;
+            line-height: 1.2;
+            letter-spacing: -0.015em;
+            margin: 0;
+        }
+        .page-title h1 .icon-wrap {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 44px; height: 44px;
+            border-radius: 0.75rem;
+            background: #ECFDF5;
+            color: #047857;
+            border: 1px solid #D1FAE5;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .page-title p {
+            color: #64748B;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin: 0.5rem 0 0 3.65rem;
+        }
+
+        /* Surfaces */
+        .surface {
+            background: #FFFFFF;
+            border: 1px solid var(--slate-200);
+            border-radius: 16px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        /* Hero (identity) card */
+        .identity-card {
+            position: relative;
+            padding: 22px;
+            margin-bottom: 22px;
+            overflow: hidden;
+            background:
+                linear-gradient(135deg, rgba(16,185,129,0.06), rgba(5,150,105,0.02)),
+                #FFFFFF;
+            border: 1px solid var(--emerald-100);
+        }
+        .identity-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(800px 200px at 0% 0%, rgba(16,185,129,0.10), transparent 60%);
+            pointer-events: none;
+        }
+        .identity-row {
+            display: flex; align-items: center; gap: 18px;
+            position: relative;
+        }
+        .identity-avatar {
+            width: 84px; height: 84px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--emerald-500), var(--emerald-700));
+            color: #FFFFFF;
+            font-weight: 700; font-size: 1.6rem; letter-spacing: 0.02em;
+            border: 4px solid #FFFFFF;
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .identity-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .identity-info { min-width: 0; flex: 1; }
+        .identity-info h2 {
+            font-size: 1.25rem; font-weight: 700;
+            color: var(--slate-800); margin: 0 0 4px;
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        }
+        .identity-info .email {
+            color: var(--slate-500); font-size: 0.9rem; margin: 0 0 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .identity-info .email i { color: var(--slate-400); font-size: 0.8rem; }
+        .identity-meta {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            font-size: 0.78rem; color: var(--slate-500);
+        }
+        .meta-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px; border-radius: 999px;
+            background: var(--slate-50); color: var(--slate-600);
+            border: 1px solid var(--slate-200);
+            font-weight: 500;
+        }
+        .meta-pill i { font-size: 0.7rem; color: var(--slate-400); }
+
+        /* Role chip — aligned to system palette */
+        .role-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px; border-radius: 999px;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border: 1px solid transparent;
+        }
+        .role-chip i { font-size: 0.65rem; }
+        .role-chip.admin {
+            background: var(--indigo-50); color: var(--indigo-700);
+            border-color: var(--indigo-200);
+        }
+        .role-chip.owner {
+            background: var(--emerald-50); color: var(--emerald-800);
+            border-color: var(--emerald-200);
+        }
+        .role-chip.client {
+            background: var(--slate-100); color: var(--slate-700);
+            border-color: var(--slate-200);
+        }
+
+        /* Settings sections */
         .settings-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 16px;
+            gap: 18px;
+        }
+        .section-card { padding: 24px; }
+
+        .section-header {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--slate-100);
+            margin-bottom: 20px;
+        }
+        .section-header .ico {
+            width: 36px; height: 36px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--emerald-50); color: var(--emerald-700);
+            border-radius: 10px; border: 1px solid var(--emerald-100);
+            font-size: 0.9rem; flex-shrink: 0;
+        }
+        .section-header.danger .ico {
+            background: var(--rose-50); color: var(--rose-700);
+            border-color: var(--rose-200);
+        }
+        .section-header h2 {
+            font-size: 1.02rem; font-weight: 700;
+            color: var(--slate-800); margin: 0 0 3px;
+        }
+        .section-header p {
+            font-size: 0.85rem; color: var(--slate-500); margin: 0;
         }
 
-        .settings-section.danger-wrap {
-            margin-bottom: 0;
+        /* Form */
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--slate-700);
+            font-size: 0.82rem;
         }
-        
-        .section-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--gray-200); }
-        .section-header h2 { font-size: 1.2rem; color: var(--gray-800); margin-bottom: 5px; }
-        .section-header p { font-size: 0.9rem; color: var(--gray-500); }
-        
-        /* Form Styles */
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-700); font-size: 0.9rem; }
+        .form-group label .req { color: var(--rose-700); }
+
         .form-group input[type="text"],
         .form-group input[type="email"],
         .form-group input[type="tel"],
@@ -181,429 +277,690 @@
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid var(--gray-200);
+            padding: 10px 14px;
+            border: 1px solid var(--slate-200);
             border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-            background: var(--white);
+            font-size: 0.92rem;
+            color: var(--slate-800);
+            background: #FFFFFF;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+            font-family: inherit;
         }
-        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder { color: var(--slate-400); }
+
+        .form-group .field-with-icon {
+            position: relative;
+            display: block;
+        }
+        .form-group .field-with-icon .field-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate-400);
+            font-size: 0.85rem;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 2;
+        }
+        /* Reserve space on the left for the icon — placed AFTER the input shorthand
+           so the inline-start padding is not reset by the `padding: 10px 14px` rule above. */
+        .form-group .field-with-icon input[type="text"],
+        .form-group .field-with-icon input[type="email"],
+        .form-group .field-with-icon input[type="tel"],
+        .form-group .field-with-icon input[type="password"] {
+            padding-left: 38px;
+        }
+
+        .form-group input:hover,
+        .form-group textarea:hover,
+        .form-group select:hover { border-color: var(--slate-300); }
+
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: var(--green-primary);
-            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+            border-color: var(--emerald-500);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+            background: #FFFFFF;
         }
-        
-        .form-group textarea { resize: vertical; min-height: 100px; }
-        
-        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        
-        /* Avatar Upload */
-        .avatar-upload { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
-        .avatar-upload-area { flex: 1; }
-        .avatar-upload-area input[type="file"] { display: none; }
-        .avatar-upload-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: var(--green-soft);
-            color: var(--green-dark);
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
+        .form-group textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
         }
-        .avatar-upload-btn:hover { background: var(--green-pale); }
-        .avatar-upload-area p { margin-top: 8px; font-size: 0.8rem; color: var(--gray-500); }
-        
-        /* Buttons */
-        .btn-group { display: flex; gap: 15px; margin-top: 25px; }
-        .btn {
-            padding: 12px 28px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-        }
-        
-        .btn-primary { background: linear-gradient(135deg, var(--green-primary), var(--green-medium)); color: var(--white); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3); }
-        
-        .btn-danger { background: #FEE2E2; color: #991B1B; }
-        .btn-danger:hover { background: #FECACA; }
-        
-        .btn-secondary { background: var(--gray-100); color: var(--gray-700); }
-        .btn-secondary:hover { background: var(--gray-200); }
-        
-        /* Password Section */
-        .password-fields { display: grid; gap: 15px; }
-        .password-field { position: relative; }
-        .password-field input { padding-right: 45px; }
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: var(--gray-400);
-        }
-        
-        /* Danger Zone */
-        .danger-zone {
-            background: #FEF2F2;
-            border: 1px solid #FECACA;
+
+        /* Avatar upload */
+        .avatar-upload {
+            display: flex; align-items: center; gap: 18px;
+            padding: 16px;
+            background: var(--slate-50);
+            border: 1px dashed var(--slate-200);
             border-radius: 12px;
-            padding: 25px;
+            margin-bottom: 18px;
         }
-        
-        .danger-zone h3 { color: #991B1B; margin-bottom: 10px; font-size: 1rem; }
-        .danger-zone p { color: #7F1D1D; font-size: 0.9rem; margin-bottom: 15px; }
-        
+        .avatar-upload .upload-avatar {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--emerald-500), var(--emerald-700));
+            color: #FFFFFF; font-weight: 700; font-size: 1.5rem;
+            border: 3px solid #FFFFFF;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.18);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .avatar-upload .upload-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-upload .upload-meta { flex: 1; min-width: 0; }
+        .avatar-upload .upload-meta .upload-title {
+            font-size: 0.92rem; font-weight: 600; color: var(--slate-700); margin: 0 0 2px;
+        }
+        .avatar-upload .upload-meta .upload-hint {
+            font-size: 0.78rem; color: var(--slate-500); margin: 0;
+        }
+        .avatar-upload input[type="file"] { display: none; }
+        .avatar-upload-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 9px 14px;
+            background: #FFFFFF;
+            color: var(--emerald-700);
+            border: 1px solid var(--emerald-200);
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+            margin-top: 8px;
+        }
+        .avatar-upload-btn:hover {
+            background: var(--emerald-50);
+            border-color: var(--emerald-300);
+            color: var(--emerald-800);
+        }
+        .avatar-upload-btn:active { transform: translateY(1px); }
+        .avatar-upload-btn i { font-size: 0.78rem; }
+
+        /* Notification toggles */
+        .notify-card {
+            padding: 14px 16px;
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+        }
+        .notify-card .notify-label {
+            font-size: 0.82rem; font-weight: 600; color: var(--slate-700);
+            margin: 0 0 10px;
+        }
+        .notify-list { display: grid; gap: 8px; }
+        .notify-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 12px;
+            background: #FFFFFF;
+            border: 1px solid var(--slate-200);
+            border-radius: 9px;
+            font-size: 0.88rem;
+            color: var(--slate-700);
+            cursor: pointer;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+        .notify-item:hover { border-color: var(--slate-300); }
+        .notify-item .notify-text {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .notify-item .notify-text .ico {
+            width: 28px; height: 28px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--emerald-50); color: var(--emerald-700);
+            border-radius: 8px; font-size: 0.78rem;
+        }
+        .notify-item .notify-text .notify-name {
+            font-weight: 600; color: var(--slate-700);
+        }
+
+        /* Toggle switch */
+        .switch {
+            position: relative; display: inline-block;
+            width: 38px; height: 22px; flex-shrink: 0;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .switch .slider {
+            position: absolute; cursor: pointer;
+            inset: 0; background: var(--slate-300);
+            transition: 0.2s ease; border-radius: 999px;
+        }
+        .switch .slider::before {
+            content: ''; position: absolute;
+            height: 16px; width: 16px;
+            left: 3px; top: 3px;
+            background: #FFFFFF;
+            transition: 0.2s ease; border-radius: 999px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+        }
+        .switch input:checked + .slider { background: var(--emerald-500); }
+        .switch input:checked + .slider::before { transform: translateX(16px); }
+        .switch input:focus-visible + .slider {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+        }
+
+        /* Buttons */
+        .btn-group { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+            border: 1px solid transparent;
+            font-family: inherit;
+            line-height: 1;
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn i { font-size: 0.82rem; }
+
+        .btn-primary {
+            background: var(--emerald-600);
+            color: #FFFFFF;
+            border-color: var(--emerald-600);
+            box-shadow: 0 1px 2px rgba(16, 185, 129, 0.25);
+        }
+        .btn-primary:hover { background: var(--emerald-700); border-color: var(--emerald-700); }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: var(--slate-700);
+            border-color: var(--slate-200);
+        }
+        .btn-secondary:hover { background: var(--slate-50); border-color: var(--slate-300); }
+
+        .btn-danger {
+            background: #FFFFFF;
+            color: var(--rose-700);
+            border-color: var(--rose-200);
+        }
+        .btn-danger:hover {
+            background: var(--rose-50);
+            border-color: var(--rose-200);
+        }
+        .btn-danger.solid {
+            background: var(--rose-700);
+            color: #FFFFFF;
+            border-color: var(--rose-700);
+        }
+        .btn-danger.solid:hover { background: #9F1239; border-color: #9F1239; }
+
+        /* Field-level error */
+        .field-error {
+            color: var(--rose-700);
+            font-size: 0.78rem;
+            margin-top: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .field-error i { font-size: 0.72rem; }
+
         /* Messages */
         .message {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
             font-weight: 500;
+            font-size: 0.88rem;
+            border: 1px solid transparent;
         }
-        
-        .message.success { background: #D1FAE5; color: #065F46; }
-        .message.error { background: #FEE2E2; color: #991B1B; }
-        
+        .message i { margin-top: 2px; flex-shrink: 0; }
+        .message.success {
+            background: var(--emerald-50); color: var(--emerald-800);
+            border-color: var(--emerald-200);
+        }
+        .message.error {
+            background: var(--rose-50); color: var(--rose-700);
+            border-color: var(--rose-200);
+        }
+        .message ul { margin: 0; padding-left: 18px; }
+
+        /* Danger zone styling */
+        .danger-zone {
+            background: var(--rose-50);
+            border: 1px solid var(--rose-200);
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 4px;
+        }
+        .danger-zone .dz-title {
+            display: flex; align-items: center; gap: 8px;
+            color: var(--rose-700); font-weight: 700; font-size: 0.92rem; margin: 0 0 6px;
+        }
+        .danger-zone .dz-text {
+            color: #7F1D1D; font-size: 0.85rem; margin: 0 0 14px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             @if($useLegacyProfileNav)
-            .navbar { padding: 0 20px; height: 60px; }
+            .navbar { padding: 0 18px; height: 60px; }
             .nav-links { display: none; }
             @endif
             .main-container {
-                padding-top: calc(var(--client-nav-offset, 90px) - 10px);
+                padding-top: calc(var(--client-nav-offset, 90px) - 8px);
                 padding-left: 12px;
                 padding-right: 12px;
-                padding-bottom: 24px;
+                padding-bottom: 28px;
             }
             .form-row { grid-template-columns: 1fr; }
-            .user-card { flex-direction: column; text-align: center; }
-            .avatar-upload { flex-direction: column; }
+            .identity-row { flex-direction: column; align-items: flex-start; text-align: left; }
+            .identity-avatar { width: 72px; height: 72px; font-size: 1.4rem; }
+            .avatar-upload { flex-direction: column; align-items: flex-start; }
+            .page-title h1 { font-size: 1.4rem; }
+            .page-title p { margin-left: 0; }
+            .section-card { padding: 18px; }
         }
 
         body.owner-nav-page .main-container.with-owner-nav {
             padding-top: 100px;
         }
 
-        @media (min-width: 1280px) {
+        @media (min-width: 1100px) {
             .settings-grid {
-                grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+                grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
                 align-items: start;
             }
-
-            .settings-grid .settings-section:first-child {
-                grid-column: 1 / 2;
-            }
-
-            .settings-grid .settings-section:nth-child(2) {
-                grid-column: 2 / 3;
-            }
-
-            .settings-grid .settings-section.danger-wrap {
+            .settings-grid .section-card.full-width {
                 grid-column: 1 / -1;
             }
         }
-        
-        /* Breadcrumb */
-        .breadcrumb { display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.85rem; }
-        .breadcrumb a { color: var(--green-primary); text-decoration: none; }
-        .breadcrumb a:hover { text-decoration: underline; }
-        .breadcrumb span { color: var(--gray-500); }
     </style>
 </head>
 <body class="{{ (auth()->user()?->isOwner() || $isTenantAdminContext) ? 'owner-nav-page' : '' }}">
-    <!-- Navigation -->
     @if(auth()->user()?->isOwner() || $isTenantAdminContext)
-    @include('owner.partials.top-navbar', ['active' => 'settings'])
+        @include('owner.partials.top-navbar', ['active' => 'settings'])
     @elseif(auth()->user()?->isClient())
         @include('client.partials.top-navbar', ['active' => 'settings'])
     @elseif(auth()->user()?->isAdmin())
         @include('admin.partials.top-navbar', ['active' => 'settings'])
     @else
-    <nav class="navbar">
-        <a href="{{ route('landing') }}" class="nav-logo">
-            <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
-            <span>Impasugong</span>
-        </a>
-        
-        @auth
-        <ul class="nav-links">
-            @if(Auth::user()->role === 'admin')
-                @php
-                    $adminDashboardHref = \App\Models\Tenant::checkCurrent() ? '/owner/dashboard' : '/admin/dashboard';
-                    $adminTenantsHref = \App\Models\Tenant::checkCurrent() ? '/owner/accommodations' : '/admin/tenants';
-                @endphp
-                <li><a href="{{ $adminDashboardHref }}">Dashboard</a></li>
-                <li><a href="{{ $adminTenantsHref }}">Tenants</a></li>
-            @else
-                <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
-            @endif
-            <li><a href="{{ route('messages.index', [], false) }}">Messages</a></li>
-            <li><a href="{{ route('profile.edit') }}" class="active">Settings</a></li>
-        </ul>
-        
-        <div class="nav-actions">
-            <form action="/logout" method="POST" style="display: inline;">
-                @csrf
-                <button type="submit" class="nav-btn primary">Logout</button>
-            </form>
-        </div>
-        @endauth
-    </nav>
+        <nav class="navbar">
+            <a href="{{ route('landing') }}" class="nav-logo">
+                <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
+                <span>Impasugong</span>
+            </a>
+            @auth
+            <ul class="nav-links">
+                @if(Auth::user()->role === 'admin')
+                    @php
+                        $adminDashboardHref = \App\Models\Tenant::checkCurrent() ? '/owner/dashboard' : '/admin/dashboard';
+                        $adminTenantsHref = \App\Models\Tenant::checkCurrent() ? '/owner/accommodations' : '/admin/tenants';
+                    @endphp
+                    <li><a href="{{ $adminDashboardHref }}">Dashboard</a></li>
+                    <li><a href="{{ $adminTenantsHref }}">Tenants</a></li>
+                @else
+                    <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                @endif
+                <li><a href="{{ route('messages.index', [], false) }}">Messages</a></li>
+                <li><a href="{{ route('profile.edit') }}" class="active">Settings</a></li>
+            </ul>
+            <div class="nav-actions">
+                <form action="/logout" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="nav-btn primary">Logout</button>
+                </form>
+            </div>
+            @endauth
+        </nav>
     @endif
-    
-    <!-- Main Content -->
+
     <div class="main-container {{ (auth()->user()?->isOwner() || $isTenantAdminContext) ? 'with-owner-nav' : '' }}">
-        <!-- Breadcrumb -->
+        {{-- Breadcrumb --}}
         <div class="breadcrumb">
-            <a href="{{ route('landing') }}">Home</a>
-            <span>›</span>
+            <a href="{{ route('landing') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <i class="fa-solid fa-chevron-right"></i>
             <span>Profile Settings</span>
         </div>
-        
-        <!-- Page Header -->
-        <div class="page-header rounded-2xl border border-emerald-100 bg-white/85 p-4 shadow-sm">
-            <h1>Profile Settings</h1>
-            <p>Manage your account information and preferences</p>
+
+        {{-- Page title --}}
+        <div class="page-title">
+            <div>
+                <h1>
+                    <span class="icon-wrap"><i class="fa-solid fa-user-gear"></i></span>
+                    Profile Settings
+                </h1>
+                <p>Manage your account information, security, and notification preferences.</p>
+            </div>
         </div>
-        
-        <!-- Session Status -->
+
+        {{-- Flash messages --}}
         @if(session('status') && str_contains(session('status'), 'profile'))
             <div class="message success">
-                {{ session('status') === 'profile-updated' ? 'Your profile has been updated successfully!' : session('status') }}
+                <i class="fa-solid fa-circle-check"></i>
+                <span>{{ session('status') === 'profile-updated' ? 'Your profile has been updated successfully.' : session('status') }}</span>
             </div>
         @endif
-        
+
         @if(session('status') === 'password-updated')
-            <div class="message success">Your password has been updated successfully!</div>
+            <div class="message success">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Your password has been updated successfully.</span>
+            </div>
         @endif
-        
+
         @if(session('success'))
-            <div class="message success">{{ session('success') }}</div>
+            <div class="message success">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>{{ session('success') }}</span>
+            </div>
         @endif
-        
-        @if($errors->any())
+
+        @if($errors->any() && ! $errors->updatePassword->any())
             <div class="message error">
-                <ul style="margin: 0; padding-left: 20px;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <ul>
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
         @endif
-        
-        <!-- User Info Card -->
-        <div class="user-card rounded-2xl border border-emerald-100 bg-white/95">
-            @if(Auth::user()->avatar)
-                <div class="user-avatar">
-                    <img src="{{ '/storage/avatars/' . Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" onerror="this.onerror=null;this.src='{{ asset('SYSTEMLOGO.png') }}';">
+
+        {{-- Identity hero --}}
+        @php
+            $u = Auth::user();
+            $roleLabels = ['admin' => 'Administrator', 'owner' => 'Property Owner', 'client' => 'Client'];
+            $roleIcons = ['admin' => 'fa-user-shield', 'owner' => 'fa-user-tie', 'client' => 'fa-user'];
+        @endphp
+        <div class="surface identity-card">
+            <div class="identity-row">
+                @if($u->avatar)
+                    <div class="identity-avatar">
+                        <img src="{{ '/storage/avatars/' . $u->avatar }}" alt="{{ $u->name }}"
+                             onerror="this.onerror=null;this.parentElement.innerHTML='{{ strtoupper(substr($u->name, 0, 2)) }}';">
+                    </div>
+                @else
+                    <div class="identity-avatar">{{ strtoupper(substr($u->name, 0, 2)) }}</div>
+                @endif
+                <div class="identity-info">
+                    <h2>
+                        {{ $u->name }}
+                        <span class="role-chip {{ $u->role }}">
+                            <i class="fa-solid {{ $roleIcons[$u->role] ?? 'fa-user' }}"></i>
+                            {{ $roleLabels[$u->role] ?? ucfirst($u->role) }}
+                        </span>
+                    </h2>
+                    <p class="email"><i class="fa-solid fa-envelope"></i> {{ $u->email }}</p>
+                    <div class="identity-meta">
+                        <span class="meta-pill">
+                            <i class="fa-solid fa-calendar-plus"></i>
+                            Joined {{ $u->created_at?->format('M Y') ?? '—' }}
+                        </span>
+                        @if($u->last_login)
+                            <span class="meta-pill">
+                                <i class="fa-solid fa-clock"></i>
+                                Last login {{ $u->last_login->diffForHumans() }}
+                            </span>
+                        @endif
+                        @if($u->phone)
+                            <span class="meta-pill">
+                                <i class="fa-solid fa-phone"></i>
+                                {{ $u->phone }}
+                            </span>
+                        @endif
+                    </div>
                 </div>
-            @else
-                <div class="user-avatar">{{ substr(Auth::user()->name, 0, 2) }}</div>
-            @endif
-            <div class="user-info">
-                <h2>{{ Auth::user()->name }}</h2>
-                <p>{{ Auth::user()->email }}</p>
-                <span class="role-badge {{ Auth::user()->role }}">{{ Auth::user()->role }}</span>
             </div>
         </div>
-        
+
         <div class="settings-grid">
-        <!-- Profile Information Section -->
-        <div class="settings-section rounded-2xl border border-emerald-100 bg-white/95">
-            <div class="section-header">
-                <h2>Personal Information</h2>
-                <p>Update your personal details and contact information</p>
-            </div>
-            
-            <form method="POST" action="/profile" enctype="multipart/form-data">
-                @csrf
-                @method('patch')
-                
-                <!-- Avatar Upload -->
-                <div class="avatar-upload">
-                    @if(Auth::user()->avatar)
-                        <div class="user-avatar">
-                            <img src="{{ '/storage/avatars/' . Auth::user()->avatar }}" alt="Avatar" onerror="this.onerror=null;this.src='{{ asset('SYSTEMLOGO.png') }}';">
-                        </div>
-                    @else
-                        <div class="user-avatar">{{ substr(Auth::user()->name, 0, 2) }}</div>
-                    @endif
-                    <div class="avatar-upload-area">
-                        <label for="avatar" class="avatar-upload-btn">
-                            📷 Change Photo
-                        </label>
-                        <input type="file" id="avatar" name="avatar" accept="image/*">
-                        <p>JPEG, PNG, JPG. Max 2MB. Recommended: 200x200px</p>
+            {{-- Personal Information --}}
+            <div class="surface section-card">
+                <div class="section-header">
+                    <span class="ico"><i class="fa-solid fa-id-card"></i></span>
+                    <div>
+                        <h2>Personal Information</h2>
+                        <p>Update your personal details and contact information.</p>
                     </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="name">Full Name *</label>
-                        <input type="text" id="name" name="name" value="{{ old('name', Auth::user()->name) }}" required autocomplete="name">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email Address *</label>
-                        <input type="email" id="email" name="email" value="{{ old('email', Auth::user()->email) }}" required autocomplete="email">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" value="{{ old('phone', Auth::user()->phone) }}" placeholder="Enter your phone number">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <input type="text" id="address" name="address" value="{{ old('address', Auth::user()->address) }}" placeholder="Enter your address">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="bio">Bio</label>
-                    <textarea id="bio" name="bio" placeholder="Tell us about yourself...">{{ old('bio', Auth::user()->bio) }}</textarea>
                 </div>
 
-                @php
-                    $notify = Auth::user()->notification_preferences ?? [];
-                @endphp
-
-                <div class="form-group" style="padding: 16px; border: 1px solid var(--gray-200); border-radius: 12px; background: var(--gray-50);">
-                    <label style="margin-bottom: 12px;">Notification Preferences</label>
-                    <div style="display: grid; gap: 10px; color: var(--gray-700); font-size: 0.92rem;">
-                        <label style="display:flex; align-items:center; gap:10px; margin:0; font-weight:500;">
-                            <input type="checkbox" name="notify_booking_updates" value="1" {{ old('notify_booking_updates', $notify['booking_updates'] ?? true) ? 'checked' : '' }}>
-                            Booking status updates
-                        </label>
-                        <label style="display:flex; align-items:center; gap:10px; margin:0; font-weight:500;">
-                            <input type="checkbox" name="notify_messages" value="1" {{ old('notify_messages', $notify['messages'] ?? true) ? 'checked' : '' }}>
-                            New message alerts
-                        </label>
-                        <label style="display:flex; align-items:center; gap:10px; margin:0; font-weight:500;">
-                            <input type="checkbox" name="notify_marketing" value="1" {{ old('notify_marketing', $notify['marketing'] ?? false) ? 'checked' : '' }}>
-                            Promotions and product updates
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="btn-group">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
-            </form>
-        </div>
-        
-        <!-- Password Section -->
-        <div class="settings-section rounded-2xl border border-emerald-100 bg-white/95">
-            <div class="section-header">
-                <h2>Change Password</h2>
-                <p>Ensure your account is using a secure password</p>
-            </div>
-
-            @if (session('status') === 'password-updated')
-                <div class="message success">Password updated successfully.</div>
-            @endif
-
-            @if ($errors->updatePassword->any())
-                <div class="message error">
-                    @foreach ($errors->updatePassword->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
-                </div>
-            @endif
-            
-            <form method="POST" action="/password">
-                @csrf
-                @method('put')
-                
-                <div class="password-fields">
-                    <div class="form-group">
-                        <label for="current_password">Current Password</label>
-                        <input type="password" id="current_password" name="current_password" required autocomplete="current-password">
-                        @if ($errors->updatePassword->has('current_password'))
-                            <small style="color:#991B1B; display:block; margin-top:6px;">{{ $errors->updatePassword->first('current_password') }}</small>
-                        @endif
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="password">New Password</label>
-                        <input type="password" id="password" name="password" required autocomplete="new-password">
-                        @if ($errors->updatePassword->has('password'))
-                            <small style="color:#991B1B; display:block; margin-top:6px;">{{ $errors->updatePassword->first('password') }}</small>
-                        @endif
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="password_confirmation">Confirm New Password</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
-                        @if ($errors->updatePassword->has('password_confirmation'))
-                            <small style="color:#991B1B; display:block; margin-top:6px;">{{ $errors->updatePassword->first('password_confirmation') }}</small>
-                        @endif
-                    </div>
-                </div>
-                
-                <div class="btn-group">
-                    <button type="submit" class="btn btn-primary">Update Password</button>
-                </div>
-            </form>
-        </div>
-        
-        <!-- Danger Zone -->
-        <div class="settings-section danger-wrap rounded-2xl border border-rose-100 bg-white/95">
-            <div class="danger-zone">
-                <h3>Delete Account</h3>
-                <p>Once your account is deleted, all of its resources and data will be permanently deleted. This action cannot be undone.</p>
-                
-                <form method="POST" action="/profile" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                <form method="POST" action="/profile" enctype="multipart/form-data" data-loading-form>
                     @csrf
-                    @method('delete')
-                    
-                    <div class="form-group">
-                        <label for="password_delete">Enter your password to confirm</label>
-                        <input type="password" id="password_delete" name="password" required autocomplete="new-password" placeholder="Your current password">
+                    @method('patch')
+
+                    <div class="avatar-upload">
+                        @if($u->avatar)
+                            <div class="upload-avatar">
+                                <img src="{{ '/storage/avatars/' . $u->avatar }}" alt="Avatar"
+                                     onerror="this.onerror=null;this.parentElement.innerHTML='{{ strtoupper(substr($u->name, 0, 2)) }}';">
+                            </div>
+                        @else
+                            <div class="upload-avatar">{{ strtoupper(substr($u->name, 0, 2)) }}</div>
+                        @endif
+                        <div class="upload-meta">
+                            <p class="upload-title">Profile photo</p>
+                            <p class="upload-hint">JPEG, PNG, or GIF. Up to 2&nbsp;MB. Recommended 200×200&nbsp;px.</p>
+                            <label for="avatar" class="avatar-upload-btn">
+                                <i class="fa-solid fa-camera"></i>
+                                Change photo
+                            </label>
+                            <input type="file" id="avatar" name="avatar" accept="image/*">
+                        </div>
                     </div>
-                    
-                    <button type="submit" class="btn btn-danger">Delete Account</button>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Full name <span class="req">*</span></label>
+                            <div class="field-with-icon">
+                                <i class="fa-solid fa-user field-icon"></i>
+                                <input type="text" id="name" name="name" value="{{ old('name', $u->name) }}" required autocomplete="name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email address <span class="req">*</span></label>
+                            <div class="field-with-icon">
+                                <i class="fa-solid fa-envelope field-icon"></i>
+                                <input type="email" id="email" name="email" value="{{ old('email', $u->email) }}" required autocomplete="email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone number</label>
+                            <div class="field-with-icon">
+                                <i class="fa-solid fa-phone field-icon"></i>
+                                <input type="tel" id="phone" name="phone" value="{{ old('phone', $u->phone) }}" placeholder="e.g. +63 912 345 6789">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <div class="field-with-icon">
+                                <i class="fa-solid fa-location-dot field-icon"></i>
+                                <input type="text" id="address" name="address" value="{{ old('address', $u->address) }}" placeholder="Street, city, province">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea id="bio" name="bio" placeholder="Tell us a little about yourself…">{{ old('bio', $u->bio) }}</textarea>
+                    </div>
+
+                    @php
+                        $notify = $u->notification_preferences ?? [];
+                    @endphp
+
+                    <div class="notify-card">
+                        <p class="notify-label">Notification preferences</p>
+                        <div class="notify-list">
+                            <label class="notify-item">
+                                <span class="notify-text">
+                                    <span class="ico"><i class="fa-solid fa-calendar-check"></i></span>
+                                    <span>
+                                        <span class="notify-name">Booking status updates</span>
+                                    </span>
+                                </span>
+                                <span class="switch">
+                                    <input type="checkbox" name="notify_booking_updates" value="1" {{ old('notify_booking_updates', $notify['booking_updates'] ?? true) ? 'checked' : '' }}>
+                                    <span class="slider"></span>
+                                </span>
+                            </label>
+                            <label class="notify-item">
+                                <span class="notify-text">
+                                    <span class="ico"><i class="fa-solid fa-comment-dots"></i></span>
+                                    <span>
+                                        <span class="notify-name">New message alerts</span>
+                                    </span>
+                                </span>
+                                <span class="switch">
+                                    <input type="checkbox" name="notify_messages" value="1" {{ old('notify_messages', $notify['messages'] ?? true) ? 'checked' : '' }}>
+                                    <span class="slider"></span>
+                                </span>
+                            </label>
+                            <label class="notify-item">
+                                <span class="notify-text">
+                                    <span class="ico"><i class="fa-solid fa-bullhorn"></i></span>
+                                    <span>
+                                        <span class="notify-name">Promotions and product updates</span>
+                                    </span>
+                                </span>
+                                <span class="switch">
+                                    <input type="checkbox" name="notify_marketing" value="1" {{ old('notify_marketing', $notify['marketing'] ?? false) ? 'checked' : '' }}>
+                                    <span class="slider"></span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" data-loading-button data-loading-label="Saving…">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Save changes
+                        </button>
+                    </div>
                 </form>
             </div>
-        </div>
+
+            {{-- Security --}}
+            <div class="surface section-card">
+                <div class="section-header">
+                    <span class="ico"><i class="fa-solid fa-shield-halved"></i></span>
+                    <div>
+                        <h2>Security</h2>
+                        <p>Use a strong password unique to this account.</p>
+                    </div>
+                </div>
+
+                @if (session('status') === 'password-updated')
+                    <div class="message success">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Password updated successfully.</span>
+                    </div>
+                @endif
+
+                <form method="POST" action="/password" data-loading-form>
+                    @csrf
+                    @method('put')
+
+                    <div class="form-group">
+                        <label for="current_password">Current password</label>
+                        <div class="field-with-icon">
+                            <i class="fa-solid fa-lock field-icon"></i>
+                            <input type="password" id="current_password" name="current_password" required autocomplete="current-password" placeholder="Your current password">
+                        </div>
+                        @if ($errors->updatePassword->has('current_password'))
+                            <div class="field-error">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ $errors->updatePassword->first('current_password') }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">New password</label>
+                        <div class="field-with-icon">
+                            <i class="fa-solid fa-key field-icon"></i>
+                            <input type="password" id="password" name="password" required autocomplete="new-password" placeholder="At least 8 characters">
+                        </div>
+                        @if ($errors->updatePassword->has('password'))
+                            <div class="field-error">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ $errors->updatePassword->first('password') }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password_confirmation">Confirm new password</label>
+                        <div class="field-with-icon">
+                            <i class="fa-solid fa-key field-icon"></i>
+                            <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password" placeholder="Re-enter the new password">
+                        </div>
+                        @if ($errors->updatePassword->has('password_confirmation'))
+                            <div class="field-error">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ $errors->updatePassword->first('password_confirmation') }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" data-loading-button data-loading-label="Updating…">
+                            <i class="fa-solid fa-rotate"></i>
+                            Update password
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Danger zone --}}
+            <div class="surface section-card full-width">
+                <div class="section-header danger">
+                    <span class="ico"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                    <div>
+                        <h2>Danger zone</h2>
+                        <p>Permanently remove your account and all associated data.</p>
+                    </div>
+                </div>
+
+                <div class="danger-zone">
+                    <p class="dz-title"><i class="fa-solid fa-circle-exclamation"></i> Delete account</p>
+                    <p class="dz-text">Once your account is deleted, all of its resources and data will be permanently removed. This action cannot be undone.</p>
+
+                    <form method="POST" action="/profile" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                        @csrf
+                        @method('delete')
+
+                        <div class="form-group" style="max-width: 420px;">
+                            <label for="password_delete">Confirm with your password</label>
+                            <div class="field-with-icon">
+                                <i class="fa-solid fa-lock field-icon"></i>
+                                <input type="password" id="password_delete" name="password" required autocomplete="current-password" placeholder="Your current password">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger solid">
+                            <i class="fa-solid fa-trash"></i>
+                            Delete account
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-    
+
     <script>
-        // Avatar preview
-        document.getElementById('avatar').addEventListener('change', function(e) {
+        document.getElementById('avatar')?.addEventListener('change', function (e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const avatarContainer = document.querySelector('.avatar-upload .user-avatar');
-                    if (avatarContainer.querySelector('img')) {
-                        avatarContainer.querySelector('img').src = e.target.result;
-                    } else {
-                        avatarContainer.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                document.querySelectorAll('.identity-avatar, .upload-avatar').forEach(function (el) {
+                    el.innerHTML = '<img src="' + ev.target.result + '" alt="Preview">';
+                });
+            };
+            reader.readAsDataURL(file);
         });
-        
-        // Confirm before delete
-        function confirmDelete() {
-            return confirm('Are you sure you want to delete your account? This action cannot be undone.');
-        }
     </script>
 </body>
 </html>

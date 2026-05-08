@@ -10,6 +10,10 @@ return new class extends Migration
     {
         $landlord = (string) config('multitenancy.landlord_database_connection_name', 'landlord');
 
+        if (Schema::connection($landlord)->hasTable('update_tickets')) {
+            return;
+        }
+
         Schema::connection($landlord)->create('update_tickets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();

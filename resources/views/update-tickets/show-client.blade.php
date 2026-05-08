@@ -68,9 +68,9 @@
             <h1>{{ $ticket->subject }}</h1>
             <div class="status-row">
                 @if($ticket->status === \App\Models\UpdateTicket::STATUS_RESOLVED)
-                    <span class="pill resolved"><i class="fas fa-check"></i> Resolved</span>
+                    <span class="status-badge resolved"><i class="fas fa-check mr-1"></i> Resolved</span>
                 @else
-                    <span class="pill open"><i class="fas fa-inbox"></i> Open</span>
+                    <span class="status-badge open"><i class="fas fa-inbox mr-1"></i> Open</span>
                 @endif
             </div>
 

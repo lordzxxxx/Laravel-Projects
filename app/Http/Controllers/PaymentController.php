@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Tenant;
 use App\Models\TenantLifecycleLog;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Stripe\Checkout\Session;
@@ -15,16 +16,28 @@ use UnexpectedValueException;
 
 class PaymentController extends Controller
 {
+    private const CHECKOUT_MAX_AMOUNT_PHP = 500000;
+
     public function showCheckoutForm()
     {
+        if (! $this->isStripeCheckoutConfigured()) {
+            abort(503, 'Stripe checkout is not configured.');
+        }
+
         return view('payments.checkout');
     }
 
-    public function checkout(Request $request)
+    public function checkout(Request $request): RedirectResponse
     {
+        if (! $this->isStripeCheckoutConfigured()) {
+            return back()->withErrors([
+                'stripe' => 'Stripe checkout is unavailable. Please contact support.',
+            ])->withInput();
+        }
+
         $validated = $request->validate([
             'product_name' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'numeric', 'min:1'],
+            'amount' => ['required', 'numeric', 'min:1', 'max:'.self::CHECKOUT_MAX_AMOUNT_PHP],
         ]);
 
         $productName = trim(strip_tags((string) $validated['product_name']));
@@ -60,7 +73,7 @@ class PaymentController extends Controller
                 ],
             ]);
 
-            return redirect()->away($session->url);
+            return redirect()->away((string) $session->url);
         } catch (\Throwable $exception) {
             Log::error('Stripe checkout session creation failed.', [
                 'error' => $exception->getMessage(),
@@ -74,8 +87,14 @@ class PaymentController extends Controller
         }
     }
 
-    public function success(Request $request)
+    public function success(Request $request): RedirectResponse
     {
+        if (! $this->isStripeCheckoutConfigured()) {
+            return redirect()->route('payments.form')->withErrors([
+                'stripe' => 'Stripe checkout is unavailable. Please contact support.',
+            ]);
+        }
+
         $validated = $request->validate([
             'session_id' => ['required', 'string'],
         ]);
@@ -89,25 +108,31 @@ class PaymentController extends Controller
                 'session_id' => $validated['session_id'],
             ]);
 
-            return response(
-                'Payment flow returned to success page, but session verification failed. Please check logs.',
-                500
-            );
+            return redirect()->route('payments.form')->withErrors([
+                'stripe' => 'Payment verification failed. Please contact support if you were charged.',
+            ]);
         }
 
         $paymentStatus = (string) ($session->payment_status ?? 'unknown');
         $productName = (string) ($session->metadata->product_name ?? 'N/A');
         $amountTotal = isset($session->amount_total) ? ((int) $session->amount_total / 100) : 0;
 
-        return response(
-            "Checkout session verified. Product: {$productName}, Amount: PHP ".number_format($amountTotal, 2).", Payment status: {$paymentStatus}. Final confirmation should rely on webhook logs.",
-            200
-        );
+        if ($paymentStatus !== 'paid') {
+            return redirect()->route('payments.form')->withErrors([
+                'stripe' => 'Payment is not marked as paid yet. Please check your transactions.',
+            ]);
+        }
+
+        return redirect()->route('payments.form')->with('success', sprintf(
+            'Payment successful for %s (PHP %s).',
+            $productName,
+            number_format($amountTotal, 2)
+        ));
     }
 
-    public function cancel()
+    public function cancel(): RedirectResponse
     {
-        return response('Payment was canceled. No charge was completed.', 200);
+        return redirect()->route('payments.form')->with('info', 'Payment was canceled. No charge was completed.');
     }
 
     public function webhook(Request $request)
@@ -284,5 +309,11 @@ class PaymentController extends Controller
         }
 
         return response('Webhook received', 200);
+    }
+
+    private function isStripeCheckoutConfigured(): bool
+    {
+        return trim((string) config('services.stripe.secret')) !== ''
+            && trim((string) config('services.stripe.key')) !== '';
     }
 }

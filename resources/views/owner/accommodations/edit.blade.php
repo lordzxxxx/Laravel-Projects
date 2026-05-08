@@ -7,7 +7,9 @@
     <title>Edit Accommodation - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        @include('partials.ui-foundation-styles')
+
+        * { box-sizing: border-box; }
         :root {
             @include('partials.tenant-theme-css-vars')
             --red-light: #fee2e2; --red-dark: #991b1b;
@@ -27,28 +29,13 @@
             padding: 30px;
             box-shadow: 0 8px 24px rgba(27, 94, 32, 0.1);
         }
+        /* Page-header layout overrides; title styling itself comes from
+           ui-foundation-styles (.page-header h1) for cross-system consistency. */
         .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid var(--green-soft);
         }
-        .page-header h1 {
-            margin: 0;
-            color: var(--green-dark);
-            font-size: 1.8rem;
-        }
-        .page-header a {
-            color: var(--green-primary);
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .page-header a:hover { color: var(--green-dark); }
         .section-title {
             font-size: 1.1rem;
             font-weight: 700;
@@ -102,9 +89,17 @@
 </head>
 <body>
     <div class="container">
-        <div class="page-header">
-            <h1><i class="fas fa-pen-to-square"></i> Edit Accommodation</h1>
-            <a href="/owner/accommodations"><i class="fas fa-arrow-left"></i> Back to Listings</a>
+        <div class="page-header flex flex-wrap items-start justify-between gap-3">
+            <div>
+                <h1>
+                    <span class="page-title-icon"><i class="fa-solid fa-pen-to-square"></i></span>
+                    <span>Edit Accommodation</span>
+                </h1>
+                <p>Update photos, pricing, availability, and amenities for this listing.</p>
+            </div>
+            <a href="/owner/accommodations" class="inline-flex items-center gap-2 rounded-lg border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-400 hover:bg-emerald-50">
+                <i class="fa-solid fa-arrow-left"></i> Back to Listings
+            </a>
         </div>
 
         @if ($errors->any())

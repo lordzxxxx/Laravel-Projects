@@ -1,0 +1,31 @@
+# Defense-in-depth: deny access to sensitive files if Apache is ever misconfigured
+# to serve the project root instead of the dedicated `public/` directory.
+#
+# In a correct production deployment the document root must point at `public/`,
+# in which case this file is never consulted. This file is intentionally placed at
+# the project root only to stop accidental exposure (.env, .git, vendor/, etc.).
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Send all requests to public/index.php so the project root can never serve
+    # raw files like .env, composer.json, README.md, etc.
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Block dot-files (.env, .git/, .htaccess, etc.) explicitly.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Block other files that should never be served from the project root.
+<FilesMatch "(?i)\.(env|env\..*|json|lock|log|md|sh|sql|sqlite|sqlite3|yaml|yml|ini|conf|bak|backup|old|swp|orig)$">
+    Require all denied
+</FilesMatch>
+
+# Block server-side script files at the project root (only public/index.php is allowed).
+<FilesMatch "(?i)\.(php|phtml|phar)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes

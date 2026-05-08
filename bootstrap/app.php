@@ -16,9 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prependToGroup('web', \App\Http\Middleware\ForceRootUrlWhenRequestHostDiffersFromAppUrl::class);
+        $middleware->appendToGroup('web', \App\Http\Middleware\HardenHttpHeaders::class);
 
         $middleware->validateCsrfTokens(except: [
-            'logout',
             'stripe/webhook',
         ]);
 

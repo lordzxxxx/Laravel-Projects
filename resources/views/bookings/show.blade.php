@@ -6,16 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Booking Details - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind = {
-            config: {
-                corePlugins: {
-                    preflight: false,
-                },
-            },
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @php
             $authUser = auth()->user();
@@ -129,16 +120,7 @@
         @if(! $isTenantManager) style="padding-top: calc(var(--client-nav-offset, 108px) + 16px);" @endif
     >
         <div class="mx-auto flex w-full max-w-[1920px] flex-1 flex-col gap-4">
-            @if (session('success'))
-                <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900 shadow-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-900 shadow-sm">
-                    {{ session('error') }}
-                </div>
-            @endif
+            @include('partials.flash-alerts')
 
             <a
                 href="{{ route($bookingsIndexRoute, [], false) }}"
@@ -158,10 +140,10 @@
                                 alt="GCash QR"
                                 class="h-24 w-24 rounded-xl border border-slate-200 object-cover"
                             >
-                            <form method="POST" action="{{ route('owner.bookings.payment-settings.gcash-qr.remove', [], false) }}">
+                            <form method="POST" action="{{ route('owner.bookings.payment-settings.gcash-qr.remove', [], false) }}" data-loading-form>
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700">
+                                <button type="submit" data-loading-button class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700">
                                     Remove QR
                                 </button>
                             </form>
@@ -172,6 +154,7 @@
                         action="{{ route('owner.bookings.payment-settings.gcash-qr.upload', [], false) }}"
                         enctype="multipart/form-data"
                         class="flex flex-wrap items-center gap-3"
+                        data-loading-form
                     >
                         @csrf
                         <input
@@ -181,7 +164,7 @@
                             required
                             class="max-w-full text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-emerald-700"
                         >
-                        <button type="submit" class="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800">
+                        <button type="submit" data-loading-button class="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800">
                             {{ $currentTenant?->getGcashQrUrl() ? 'Replace' : 'Upload' }} GCash QR Photo
                         </button>
                     </form>
@@ -352,20 +335,21 @@
 
                         @if(Auth::check() && $isTenantManager && $booking->status === 'pending')
                             <div class="flex flex-wrap gap-3 border-t border-slate-100 pt-8">
-                                <form action="{{ route('owner.bookings.update-status', $booking, false) }}" method="POST" class="inline">
+                                <form action="{{ route('owner.bookings.update-status', $booking, false) }}" method="POST" class="inline" data-loading-form>
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="status" value="confirmed">
-                                    <button type="submit" class="rounded-xl bg-emerald-700 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-emerald-800">
+                                    <button type="submit" data-loading-button class="rounded-xl bg-emerald-700 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-emerald-800">
                                         Approve booking
                                     </button>
                                 </form>
-                                <form action="{{ route('owner.bookings.update-status', $booking, false) }}" method="POST" class="inline">
+                                <form action="{{ route('owner.bookings.update-status', $booking, false) }}" method="POST" class="inline" data-loading-form>
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="status" value="cancelled">
                                     <button
                                         type="submit"
+                                        data-loading-button
                                         class="rounded-xl bg-red-600 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-red-700"
                                         onclick="return confirm('Decline this booking request?')"
                                     >
@@ -399,11 +383,12 @@
                                         Pay via Stripe
                                     </a>
                                 @endif
-                                <form action="{{ route('bookings.cancel', $booking, false) }}" method="POST" class="inline">
+                                <form action="{{ route('bookings.cancel', $booking, false) }}" method="POST" class="inline" data-loading-form>
                                     @csrf
                                     @method('PUT')
                                     <button
                                         type="submit"
+                                        data-loading-button
                                         class="rounded-xl border-2 border-red-200 bg-white px-6 py-3 text-sm font-bold text-red-700 shadow-sm transition hover:bg-red-50"
                                         onclick="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.')"
                                     >
@@ -434,5 +419,15 @@
             @endif
         </div>
     </main>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                button.textContent = 'Processing...';
+            });
+        });
+    </script>
 </body>
 </html>

@@ -6,6 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Message Detail - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @php
             $authUser = auth()->user();
@@ -42,136 +43,28 @@
         @endif
 
         body {
-            font-family: var(--client-nav-font, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
-            background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
+            font-family: var(--client-nav-font, 'Segoe UI', system-ui, sans-serif);
+            background: linear-gradient(145deg, #ecfdf5 0%, #f8fafc 45%, #f1f5f9 100%);
             min-height: 100vh;
             color: var(--gray-800);
         }
 
         .main-content {
-            max-width: 1100px;
+            max-width: min(920px, 100%);
             margin: 0 auto;
             padding-top: var(--client-nav-offset, 100px);
-            padding-left: 20px;
-            padding-right: 20px;
-            padding-bottom: 40px;
+            padding-left: clamp(16px, 3vw, 24px);
+            padding-right: clamp(16px, 3vw, 24px);
+            padding-bottom: 48px;
         }
 
         body.owner-nav-page .main-content.with-owner-nav {
             padding-top: 100px;
         }
 
-        .top-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 12px; flex-wrap: wrap; }
+        .top-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 12px; flex-wrap: wrap; }
 
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--green-primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .back-link:hover { color: var(--green-dark); }
-
-        .chat-panel {
-            background: var(--white);
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.08);
-            overflow: hidden;
-        }
-        .chat-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--gray-200);
-            background: var(--cream);
-        }
-        .chat-title {
-            font-size: 1.2rem;
-            color: var(--green-dark);
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .chat-subtitle {
-            font-size: 0.85rem;
-            color: var(--gray-500);
-        }
-        .chat-body {
-            background: #f3f4f6;
-            min-height: 380px;
-            max-height: 560px;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        .bubble-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 12px; }
-        .bubble-row.incoming { justify-content: flex-start; }
-        .bubble-row.outgoing { justify-content: flex-end; }
-        .bubble-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--green-dark);
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-        .bubble-wrap { max-width: 74%; }
-        .bubble {
-            border-radius: 18px;
-            padding: 12px 16px;
-            font-size: 1rem;
-            line-height: 1.45;
-            word-break: break-word;
-        }
-        .bubble-incoming { background: #e5e7eb; color: #111827; border-top-left-radius: 8px; }
-        .bubble-outgoing { background: #4361ee; color: var(--white); border-top-right-radius: 8px; }
-        .bubble-meta { margin-top: 4px; font-size: 0.72rem; color: var(--gray-500); }
-        .bubble-row.outgoing .bubble-meta { text-align: right; }
-
-        .chat-composer {
-            padding: 16px 20px;
-            border-top: 1px solid var(--gray-200);
-            background: var(--white);
-        }
-        .reply-textarea {
-            width: 100%;
-            min-height: 86px;
-            border: 2px solid var(--green-soft);
-            border-radius: 10px;
-            padding: 12px;
-            resize: vertical;
-            font-size: 0.95rem;
-            margin-bottom: 10px;
-            outline: none;
-            font-family: inherit;
-        }
-        .reply-textarea:focus { border-color: var(--green-primary); }
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--green-primary), var(--green-medium));
-            color: var(--white);
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .delete-conversation-form { margin: 0; }
-        .btn-delete {
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 2px solid #B91C1C;
-            background: var(--white);
-            color: #991B1B;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-delete:hover { background: #FEE2E2; }
+        @include('partials.messaging-ui-styles')
 
         @media (max-width: 768px) {
             @if($useLegacyMessagesNav)
@@ -180,9 +73,7 @@
             @endif
             .main-content {
                 padding-top: calc(var(--client-nav-offset, 100px) - 14px);
-                padding-left: 15px;
-                padding-right: 15px;
-                padding-bottom: 30px;
+                padding-bottom: 32px;
             }
         }
     </style>
@@ -224,49 +115,72 @@
 
     <main class="main-content {{ $useOwnerNavbar ? 'with-owner-nav' : '' }}">
         <div class="top-actions">
-            <a href="{{ route('messages.index', [], false) }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Messages</a>
+            <a href="{{ route('messages.index', [], false) }}" class="msg-back-link"><i class="fas fa-arrow-left"></i> Back to Messages</a>
             @if(!empty($canDeleteConversation))
-                <form method="POST" action="{{ route('messages.destroy', $message, false) }}" class="delete-conversation-form"
+                <form method="POST" action="{{ route('messages.destroy', $message, false) }}" class="delete-conversation-form m-0" data-loading-form
                       onsubmit="return confirm('Delete this entire conversation? This cannot be undone.');">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn-delete"><i class="fas fa-trash-alt"></i> Delete conversation</button>
+                    <button type="submit" data-loading-button class="msg-btn-danger"><i class="fas fa-trash-alt"></i> Delete conversation</button>
                 </form>
             @endif
         </div>
+        @include('partials.flash-alerts')
 
-        <section class="chat-panel">
-            <div class="chat-header">
-                <div class="chat-title">{{ $chatPartner->name ?? 'Conversation' }}</div>
-                <div class="chat-subtitle">{{ $chatPartner->email ?? 'Chat thread' }}</div>
+        <section class="msg-chat-shell">
+            <div class="msg-chat-head">
+                <h1 style="font-size:1.25rem;">{{ $chatPartner->name ?? 'Conversation' }}</h1>
+                <p>{{ $chatPartner->email ?? 'Chat thread' }}</p>
             </div>
 
-            <div class="chat-body">
+            <div class="msg-chat-scroll msg-scrollbar">
                 @foreach($conversation as $item)
                     @php
                         $isMine = (int) $item->sender_id === (int) $currentUserId;
                         $senderName = $isMine ? 'You' : ($item->sender->name ?? 'User');
                     @endphp
-                    <div class="bubble-row {{ $isMine ? 'outgoing' : 'incoming' }}">
-                        @if(!$isMine)
-                            <div class="bubble-avatar">{{ strtoupper(substr($senderName, 0, 1)) }}</div>
+                    <div class="msg-bubble-row {{ $isMine ? 'msg-bubble-row--out' : 'msg-bubble-row--in' }}">
+                        @if($isMine)
+                            <div>
+                                <div class="msg-bubble msg-bubble--out">{{ $item->content }}</div>
+                                <div class="msg-bubble-meta">{{ $senderName }} · {{ $item->created_at->format('M d, h:i A') }}</div>
+                            </div>
+                        @else
+                            <div style="display:flex;align-items:flex-end;gap:10px;">
+                                <div class="msg-thread-avatar" style="width:36px;height:36px;border-radius:10px;font-size:0.68rem;flex-shrink:0;">
+                                    {{ strtoupper(mb_substr($senderName, 0, 1)) }}
+                                </div>
+                                <div style="min-width:0;">
+                                    <div class="msg-bubble msg-bubble--in">{{ $item->content }}</div>
+                                    <div class="msg-bubble-meta">{{ $senderName }} · {{ $item->created_at->format('M d, h:i A') }}</div>
+                                </div>
+                            </div>
                         @endif
-                        <div class="bubble-wrap">
-                            <div class="bubble {{ $isMine ? 'bubble-outgoing' : 'bubble-incoming' }}">{{ $item->content }}</div>
-                            <div class="bubble-meta">{{ $senderName }} · {{ $item->created_at->format('M d, h:i A') }}</div>
-                        </div>
                     </div>
                 @endforeach
             </div>
 
-            <div class="chat-composer">
-                <form method="POST" action="{{ route('messages.reply', $message, false) }}">
+            <div class="msg-composer">
+                <form method="POST" action="{{ route('messages.reply', $message, false) }}" data-loading-form>
                     @csrf
-                    <textarea name="content" class="reply-textarea" placeholder="Type your message..." required></textarea>
-                    <button type="submit" class="btn">Send</button>
+                    <textarea name="content" required placeholder="Write a reply…"></textarea>
+                    <button type="submit" data-loading-button class="msg-btn-primary"><i class="fas fa-paper-plane"></i> Send</button>
                 </form>
             </div>
         </section>
     </main>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                const label = button.textContent.trim().toLowerCase();
+                button.innerHTML = label.includes('delete')
+                    ? '<i class="fas fa-circle-notch fa-spin"></i> Deleting…'
+                    : '<i class="fas fa-circle-notch fa-spin"></i> Sending…';
+            });
+        });
+    </script>
 </body>
 </html>

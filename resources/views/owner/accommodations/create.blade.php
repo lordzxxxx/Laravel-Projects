@@ -14,18 +14,33 @@
     @include('partials.tenant-favicon')
     <title>Create Accommodation - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind = {
-            config: {
-                corePlugins: {
-                    preflight: false,
-                },
-            },
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        :root {
+            @include('partials.tenant-theme-css-vars')
+        }
+        body.owner-accommodation-create {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(16, 185, 129, 0.06), transparent 55%),
+                radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.04), transparent 50%),
+                var(--cream, #f8fafc);
+            color: #1f2937;
+            min-height: 100vh;
+        }
+        .owner-accommodation-create .main-content.with-owner-nav {
+            width: min(1800px, 100%);
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: clamp(14px, 2.5vw, 36px);
+            padding-right: clamp(14px, 2.5vw, 36px);
+            padding-bottom: 2rem;
+        }
+        @include('owner.partials.top-navbar-styles')
+    </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-white text-gray-800">
+<body class="owner-nav-page owner-accommodation-create min-h-screen text-gray-800">
+    @include('owner.partials.top-navbar', ['active' => 'accommodations'])
     @php
         $basicAmenities = [
             'WiFi',
@@ -48,14 +63,19 @@
             ->all();
     @endphp
 
-    <div class="mx-auto min-h-screen w-full max-w-[1800px] px-4 py-6 sm:px-6 lg:px-10">
+    <main class="main-content with-owner-nav">
+    <div class="mx-auto w-full max-w-[1800px] py-6 sm:py-8">
+        @include('partials.flash-alerts')
         <div class="mb-6 rounded-2xl border border-green-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm">
-            <div class="flex flex-col gap-4 border-b border-green-100 pb-4 md:flex-row md:items-center md:justify-between">
-                <h1 class="text-2xl font-bold text-green-900 sm:text-3xl">
-                    <i class="fas fa-plus-circle mr-2 text-green-600"></i>
-                    Create New Accommodation
-                </h1>
-                <a href="/owner/accommodations" class="inline-flex items-center gap-2 rounded-lg border border-green-200 px-4 py-2 text-sm font-semibold text-green-700 transition hover:border-green-400 hover:bg-green-50">
+            <div class="page-header flex flex-col gap-4 border-b border-green-100 pb-4 md:flex-row md:items-start md:justify-between">
+                <div>
+                    <h1>
+                        <span class="page-title-icon"><i class="fa-solid fa-circle-plus"></i></span>
+                        <span>Create Accommodation</span>
+                    </h1>
+                    <p>Add a new listing to your properties. Required fields are marked with an asterisk.</p>
+                </div>
+                <a href="{{ route('owner.accommodations.index', [], false) }}" class="inline-flex items-center gap-2 rounded-lg border border-green-200 px-4 py-2 text-sm font-semibold text-green-700 transition hover:border-green-400 hover:bg-green-50">
                     <i class="fas fa-arrow-left"></i> Back to Listings
                 </a>
             </div>
@@ -91,7 +111,7 @@
                             <h3 class="mb-1 text-base font-semibold">Cannot Add Listings</h3>
                             <p class="mb-3">Your subscription may be inactive or your plan does not allow new listings. Contact support or upgrade your plan.</p>
                         @endif
-                        <a href="{{ route('owner.updates.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-green-700 px-4 py-2 font-semibold text-white transition hover:bg-green-800">
+                        <a href="{{ route('owner.settings.updates.index', [], false) }}" class="inline-flex items-center gap-2 rounded-lg bg-green-700 px-4 py-2 font-semibold text-white transition hover:bg-green-800">
                             <i class="fas fa-arrow-up"></i> View plan &amp; updates
                         </a>
                     </div>
@@ -110,7 +130,7 @@
             </div>
         @endif
 
-        <form action="/owner/accommodations" method="POST" enctype="multipart/form-data" class="@if($cannotCreate) pointer-events-none opacity-60 @endif">
+        <form action="{{ route('owner.accommodations.store', [], false) }}" method="POST" enctype="multipart/form-data" class="@if($cannotCreate) pointer-events-none opacity-60 @endif">
             @csrf
 
             <div class="grid gap-6 xl:grid-cols-2">
@@ -223,7 +243,7 @@
 
             <div class="sticky bottom-0 mt-6 rounded-2xl border border-green-100 bg-white/95 p-4 shadow-md backdrop-blur-sm">
                 <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
-                    <a href="/owner/accommodations" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-gray-100 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200">
+                    <a href="{{ route('owner.accommodations.index', [], false) }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-gray-100 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200">
                         <i class="fas fa-times"></i> Cancel
                     </a>
                     <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-gray-400" @if($cannotCreate) disabled @endif>
@@ -233,5 +253,6 @@
             </div>
         </form>
     </div>
+    </main>
 </body>
 </html>

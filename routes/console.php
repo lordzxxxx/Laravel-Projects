@@ -1,11 +1,14 @@
 <?php
 
-use App\Models\Tenant;
+use App\Models\Accommodation;
 use App\Models\AppRelease;
-use App\Support\SingleDbMigrationMode;
+use App\Models\Booking;
+use App\Models\Tenant;
+use App\Models\User;
 use App\Services\ReleaseRegistryService;
 use App\Services\TenantSelfUpdateService;
 use App\Services\TenantUpdateService;
+use App\Support\SingleDbMigrationMode;
 use Database\Seeders\TenantRbacSeeder;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -20,6 +23,7 @@ Artisan::command('inspire', function () {
 Artisan::command('tenants:migrate {tenantId?}', function (?string $tenantId = null) {
     if (! SingleDbMigrationMode::allowTenantSwitching()) {
         $this->warn('Tenant DB switching is disabled by single-db migration mode. Run landlord migrations instead.');
+
         return 0;
     }
 
@@ -82,6 +86,7 @@ Artisan::command('tenants:migrate {tenantId?}', function (?string $tenantId = nu
 Artisan::command('tenants:provision-db {tenantId}', function (int $tenantId) {
     if (! SingleDbMigrationMode::allowLegacyProvisioning()) {
         $this->error('Legacy tenant database provisioning is disabled during single-db migration mode.');
+
         return 1;
     }
 
@@ -179,6 +184,7 @@ Artisan::command('tenants:provision-db {tenantId}', function (int $tenantId) {
 Artisan::command('tenants:sync-rbac {tenantId?}', function (?string $tenantId = null) {
     if (! SingleDbMigrationMode::allowTenantSwitching()) {
         $this->warn('Tenant DB switching is disabled by single-db migration mode. Sync RBAC through landlord schema tooling.');
+
         return 0;
     }
 
@@ -320,6 +326,7 @@ Artisan::command('tenants:backfill-updates {--tenant=} {--dry-run}', function (T
 
     if (! $latest) {
         $this->error('No stable release found in app_releases. Run releases:sync first.');
+
         return 1;
     }
 
@@ -331,6 +338,7 @@ Artisan::command('tenants:backfill-updates {--tenant=} {--dry-run}', function (T
     $tenants = $query->get();
     if ($tenants->isEmpty()) {
         $this->warn('No tenants found to backfill.');
+
         return 0;
     }
 
@@ -339,6 +347,7 @@ Artisan::command('tenants:backfill-updates {--tenant=} {--dry-run}', function (T
         if ($dryRun) {
             $this->line("[DRY RUN] Would backfill tenant {$tenant->id} to {$latest->tag}");
             $count++;
+
             continue;
         }
 
@@ -348,6 +357,7 @@ Artisan::command('tenants:backfill-updates {--tenant=} {--dry-run}', function (T
     }
 
     $this->info("Backfill complete. Processed {$count} tenant(s).");
+
     return 0;
 })->purpose('Backfill current release adoption records for tenants');
 
@@ -357,16 +367,19 @@ Artisan::command('tenant:update {tenantId} {releaseId}', function (TenantSelfUpd
 
     if (! AppRelease::query()->whereKey($releaseId)->exists()) {
         $this->error('Release not found.');
+
         return 1;
     }
 
     $result = $tenantSelfUpdateService->applyUpdate($tenantId, $releaseId);
     if (! $result['ok']) {
         $this->error($result['message']);
+
         return 1;
     }
 
     $this->info($result['message']);
+
     return 0;
 })->purpose('Apply a release to a tenant and record adoption state');
 
@@ -384,6 +397,7 @@ Artisan::command('single-db:etl {--tenant=} {--tables=users,accommodations,booki
     foreach ($tables as $tableName) {
         if (! in_array($tableName, $allowed, true)) {
             $this->error("Unsupported table for ETL: {$tableName}");
+
             return 1;
         }
     }
@@ -400,6 +414,7 @@ Artisan::command('single-db:etl {--tenant=} {--tables=users,accommodations,booki
     $tenants = $tenantQuery->get();
     if ($tenants->isEmpty()) {
         $this->warn('No tenants matched.');
+
         return 0;
     }
 
@@ -418,6 +433,7 @@ Artisan::command('single-db:etl {--tenant=} {--tables=users,accommodations,booki
             try {
                 if (! DB::connection($connection)->getSchemaBuilder()->hasTable($tableName)) {
                     $this->warn("Skipping {$tableName}: table not found in tenant DB.");
+
                     continue;
                 }
 
@@ -567,6 +583,7 @@ Artisan::command('single-db:reconcile {--tenant=} {--tables=users,accommodations
     $tenants = $tenantQuery->get();
     if ($tenants->isEmpty()) {
         $this->warn('No tenants matched.');
+
         return 0;
     }
 
@@ -608,6 +625,19 @@ Artisan::command('single-db:status', function () {
         ]
     );
 
+    $landlordDb = (string) config('database.connections.landlord.database');
+    $tenantDb = (string) config('database.connections.tenant.database');
+    $this->newLine();
+    $this->line('Connection database names (from config)');
+    $this->line("  landlord: <fg=cyan>{$landlordDb}</>");
+    $this->line("  tenant:   <fg=cyan>{$tenantDb}</>");
+
+    if ($landlordDb !== '' && $landlordDb === $tenantDb) {
+        $this->info('Landlord and tenant connections use the same database (standard single-DB deployment).');
+    } elseif (config('single_db_migration.allow_tenant_switching')) {
+        $this->comment('Tenant switching may override the tenant connection at runtime (legacy multi-database).');
+    }
+
     return 0;
 })->purpose('Show active single-db migration rollout flags');
 
@@ -618,6 +648,7 @@ Artisan::command('single-db:verify-shadow', function () {
         ->count();
 
     $this->info("Shadow mismatches logged: {$mismatchCount}");
+
     return 0;
 })->purpose('Summarize single-db shadow-read mismatch telemetry');
 
@@ -632,6 +663,7 @@ Artisan::command('single-db:cutover-readiness {--tenant=}', function () {
 
     if ($tenants->isEmpty()) {
         $this->warn('No tenants matched.');
+
         return 0;
     }
 
@@ -654,10 +686,12 @@ Artisan::command('single-db:cutover-readiness {--tenant=}', function () {
 
     if ($notReady > 0) {
         $this->error("Cutover not ready: {$notReady} incomplete table checkpoints found.");
+
         return 1;
     }
 
     $this->info('Cutover readiness passed: all required checkpoints are completed.');
+
     return 0;
 })->purpose('Validate tenant ETL checkpoint readiness before final single-db cutover');
 
@@ -679,6 +713,7 @@ Artisan::command('single-db:final-delta {--tenant=} {--chunk=200}', function () 
 
     if ($exit !== 0) {
         $this->error('Final delta ETL failed.');
+
         return 1;
     }
 
@@ -702,6 +737,7 @@ Artisan::command('single-db:decommission-legacy {--apply}', function () {
 
         if (! $apply) {
             $this->line("[DRY RUN] Would clear legacy DB credentials for tenant {$tenant->id} ({$tenant->name})");
+
             continue;
         }
 
@@ -725,5 +761,65 @@ Artisan::command('single-db:decommission-legacy {--apply}', function () {
 
     return 0;
 })->purpose('Dry-run/apply legacy tenant DB credential decommission after single-db cutover');
+
+Artisan::command('demo:purge-sarah-chen-demo-data', function () {
+    $tenant = Tenant::query()
+        ->where(function ($q) {
+            $q->where('name', 'like', '%Sarah Chen%')
+                ->orWhere('slug', 'like', '%sarah-chen%');
+        })
+        ->orderBy('id')
+        ->first();
+
+    if (! $tenant) {
+        $this->error('No tenant matching Sarah Chen was found.');
+
+        return 1;
+    }
+
+    $tid = (int) $tenant->id;
+
+    $demoBookingMarkers = [
+        '[demo-visualization]',
+        '[admin-dashboard-demo]',
+    ];
+
+    $deletedBookings = 0;
+    $deletedAccommodations = 0;
+    $deletedUsers = 0;
+
+    DB::transaction(function () use ($tid, $demoBookingMarkers, &$deletedBookings, &$deletedAccommodations, &$deletedUsers): void {
+        $deletedBookings = Booking::query()
+            ->where('tenant_id', $tid)
+            ->whereIn('special_requests', $demoBookingMarkers)
+            ->delete();
+
+        $deletedAccommodations = Accommodation::query()
+            ->where('tenant_id', $tid)
+            ->where(function ($q) {
+                $q->where('description', 'like', '%DashboardVisualizationSeeder%')
+                    ->orWhere('description', 'like', '%admin dashboard visualization.%')
+                    ->orWhere('description', 'like', '%Auto-generated for admin dashboard visualization.%')
+                    ->orWhere('address', 'Demo Address, Bukidnon')
+                    ->orWhere('address', 'Demo Street, Impasugong, Bukidnon');
+            })
+            ->delete();
+
+        $deletedUsers = User::query()
+            ->where('tenant_id', $tid)
+            ->where(function ($q) {
+                $q->where('email', 'like', 'demo.visual.client.%')
+                    ->orWhere('email', 'like', 'admin.demo.client.%');
+            })
+            ->delete();
+    });
+
+    $this->info("Tenant #{$tid}: {$tenant->name}");
+    $this->line("  Deleted demo bookings: {$deletedBookings}");
+    $this->line('  Deleted demo accommodations: '.$deletedAccommodations);
+    $this->line('  Deleted demo guest users: '.$deletedUsers);
+
+    return 0;
+})->purpose('Remove visualization demo rows created by DashboardVisualizationSeeder / AdminDashboardVisualizationSeeder for Sarah Chen\'s Space');
 
 Schedule::command('releases:sync')->dailyAt('02:00');

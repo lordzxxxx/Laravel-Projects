@@ -202,9 +202,10 @@ class OnboardingPaymentController extends Controller
 
         if ($tenant->onboarding_gcash_proof_path) {
             Storage::disk('public')->delete($tenant->onboarding_gcash_proof_path);
+            Storage::disk('local')->delete($tenant->onboarding_gcash_proof_path);
         }
 
-        $proofPath = $request->file('gcash_payment_proof')->store('tenant-onboarding-payment-proofs', 'public');
+        $proofPath = $request->file('gcash_payment_proof')->store('private/tenant-onboarding-payment-proofs', 'local');
         $reference = $this->ensurePaymentReference($tenant);
 
         $this->markTenantPaymentSubmitted(

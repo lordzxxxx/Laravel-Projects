@@ -6,16 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Updates - Owner Settings</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind = {
-            config: {
-                corePlugins: {
-                    preflight: false,
-                },
-            },
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
             @include('partials.tenant-theme-css-vars')
@@ -44,10 +35,13 @@
     @include('owner.partials.top-navbar', ['active' => 'updates'])
     <main class="tenant-updates-shell with-owner-nav">
         <div class="h-full space-y-4">
-            <div class="flex flex-wrap items-end justify-between gap-3">
+            <div class="page-header flex flex-wrap items-start justify-between gap-3">
                 <div>
-                <h1 class="text-3xl font-bold text-green-900">Updates</h1>
-                <p class="mt-1 text-sm text-slate-600">Track and apply app releases for this tenant.</p>
+                    <h1>
+                        <span class="page-title-icon"><i class="fa-solid fa-cloud-arrow-down"></i></span>
+                        <span>Updates</span>
+                    </h1>
+                    <p>Track and apply app releases for this tenant.</p>
                 </div>
                 <div class="rounded-lg border border-emerald-200 bg-white/80 px-3 py-2 text-xs text-slate-600">
                     Available releases: <span class="font-semibold text-slate-800">{{ $availableReleases->count() }}</span>

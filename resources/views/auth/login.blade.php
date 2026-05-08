@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @include('partials.tenant-favicon')
     <title>Login - Impasugong Accommodations</title>
     <style>
         * {
@@ -22,10 +23,7 @@
             --white: #FFFFFF;
         }
         
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
+        html, body { min-height: 100%; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -45,7 +43,7 @@
             padding: 40px;
             color: var(--white);
             position: relative;
-            overflow: hidden;
+            overflow: auto;
         }
         
         .branding-section::before {

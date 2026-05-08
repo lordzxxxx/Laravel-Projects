@@ -88,8 +88,12 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // Accommodations and bookings live in tenant databases only — not seeded on the central (landlord) DB.
-        // Per-tenant demo data: make tenant current, then e.g. php artisan db:seed --class=AccommodationSeeder
+        // Demo bookings / charts (single-DB): php artisan db:seed --class=DashboardVisualizationSeeder
+        // Admin dashboard KPIs/charts (central): php artisan db:seed --class=AdminDashboardVisualizationSeeder
+        // Optional: ADMIN_DEMO_BOOKING_COUNT=36, ADMIN_DEMO_MAX_TENANTS=5, ADMIN_DEMO_DEMOGRAPHICS_EXTRAS=18
+        // Optional: DEMO_SEED_TENANT_ID=8 or DEMO_SEED_DOMAIN=inns in .env to pick a tenant.
+
+        // Legacy multi-DB note: Per-tenant listings used AccommodationSeeder with a current tenant context.
 
         $this->command->info('========================================');
         $this->command->info('Database seeding completed!');

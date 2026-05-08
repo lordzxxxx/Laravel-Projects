@@ -40,14 +40,17 @@
 
     <div class="dashboard-layout">
         <main class="main-content">
-            @if(session('success'))
-                <div class="flash">{{ session('success') }}</div>
-            @endif
+            @include('partials.flash-alerts')
+
+            <div class="page-header">
+                <h1>
+                    <span class="page-title-icon"><i class="fa-solid fa-life-ring"></i></span>
+                    <span>Support</span>
+                </h1>
+                <p>Tickets reported by tulogans and their staff. Filter by status or tulogan, then open a ticket to view the full report and respond.</p>
+            </div>
 
             <div class="card" style="margin-bottom: 18px;">
-                <div class="card-header">
-                    <h3 class="support-title"><i class="fas fa-life-ring"></i> Support</h3>
-                </div>
                 <div style="padding: 16px 20px;">
                     <form method="GET" action="{{ route('admin.update-tickets.index', [], false) }}" class="filters">
                         <div>
@@ -99,9 +102,9 @@
                                         <td><span class="cell-ellipsis">{{ $ticket->reporter_name }} <span style="color:#6B7280;font-size:0.8rem;">({{ $ticket->reporter_role }})</span></span></td>
                                         <td>
                                             @if($ticket->status === \App\Models\UpdateTicket::STATUS_RESOLVED)
-                                                <span class="pill resolved">Fixed</span>
+                                                <span class="status-badge resolved">Fixed</span>
                                             @else
-                                                <span class="pill open">Pending</span>
+                                                <span class="status-badge open">Pending</span>
                                             @endif
                                         </td>
                                         <td><a href="{{ route('admin.update-tickets.show', ['updateTicket' => $ticket->getKey()], false) }}" class="btn primary">Open</a></td>

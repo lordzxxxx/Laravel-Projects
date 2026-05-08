@@ -35,13 +35,13 @@ return new class extends Migration
 
         DB::connection('landlord')
             ->table('tenants')
-            ->select(['id', 'db_password', 'payment_reference', 'onboarding_stripe_session_id'])
+            ->select(['id', 'db_password', 'onboarding_stripe_session_id'])
             ->orderBy('id')
             ->chunkById(200, function ($tenants): void {
                 foreach ($tenants as $tenant) {
                     $updates = [];
 
-                    foreach (['db_password', 'payment_reference', 'onboarding_stripe_session_id'] as $column) {
+                    foreach (['db_password', 'onboarding_stripe_session_id'] as $column) {
                         $value = $tenant->{$column} ?? null;
                         if (! is_string($value) || $value === '') {
                             continue;

@@ -48,7 +48,7 @@ class DashboardController extends Controller
             [$demographicsStartDate, $demographicsEndDate] = [$demographicsEndDate->copy()->startOfDay(), $demographicsStartDate->copy()->endOfDay()];
         }
 
-        // ============ PER-TENANT AGGREGATION (runs against each tenant DB) ============
+        // ============ PER-TENANT AGGREGATION (landlord DB rows scoped by tenant_id) ============
         $metrics = $this->aggregateTenantDashboardMetrics($now, $startOfMonth, $endOfMonth);
 
         $totalBookings = $metrics['total_bookings'];
@@ -98,7 +98,28 @@ class DashboardController extends Controller
     }
 
     /**
-     * Aggregate booking/accommodation metrics across every provisioned tenant DB in one pass.
+     * All unit-owner tenants whose landlord-scoped rows should roll up into the central admin dashboard.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Tenant>
+     */
+    private function tenantsForAdminDashboardMetrics()
+    {
+        return Tenant::query()
+            ->whereNotNull('owner_user_id')
+            ->orderBy('id')
+            ->get();
+    }
+
+    /**
+     * Landlord connection where tenant-scoped bookings/accommodations are stored (single-DB mode).
+     */
+    private function landlordSchemaConnection(): string
+    {
+        return (string) config('multitenancy.landlord_database_connection_name', config('database.default'));
+    }
+
+    /**
+     * Aggregate booking/accommodation metrics across all unit-owner tenants (single database).
      *
      * @return array{total_bookings:int,total_accommodations:int,pending_bookings:int,verified_properties:int,booked_nights:int,total_capacity:int,monthly_bookings:array<string,int>,monthly_guests:array<string,int>,bookings_by_type:array<string,int>,recent_bookings:\Illuminate\Support\Collection,top_tenant_by_bookings:?object,tenant_bookings_today:\Illuminate\Support\Collection}
      */
@@ -179,8 +200,15 @@ class DashboardController extends Controller
             return $metrics;
         }
 
-        $tenantConnection = config('multitenancy.tenant_database_connection_name', 'tenant');
-        $tenants = Tenant::query()->where('database_provisioned', true)->get();
+        $schemaConnection = $this->landlordSchemaConnection();
+
+        if (! Schema::connection($schemaConnection)->hasTable('bookings')) {
+            return $metrics;
+        }
+
+        $hasAccommodationsTable = Schema::connection($schemaConnection)->hasTable('accommodations');
+
+        $tenants = $this->tenantsForAdminDashboardMetrics();
 
         $daysInMonth = $startOfMonth->diffInDays($endOfMonth) + 1;
         $tenantBookingsThisMonth = [];
@@ -191,7 +219,7 @@ class DashboardController extends Controller
             try {
                 $tenant->execute(function () use (
                     $tenant,
-                    $tenantConnection,
+                    $hasAccommodationsTable,
                     &$metrics,
                     $monthRanges,
                     $bookingTypes,
@@ -204,41 +232,49 @@ class DashboardController extends Controller
                     &$tenantBookingsToday,
                     &$recentBookingsByTenant
                 ) {
-                    if (! Schema::connection($tenantConnection)->hasTable('bookings')) {
-                        return;
-                    }
+                    $tenantKey = (int) $tenant->id;
 
                     $accommodationCount = 0;
                     $verifiedCount = 0;
-                    if (Schema::connection($tenantConnection)->hasTable('accommodations')) {
-                        $accommodationCount = (int) Accommodation::count();
-                        $verifiedCount = (int) Accommodation::where('is_verified', true)->count();
+                    if ($hasAccommodationsTable) {
+                        $accommodationCount = (int) Accommodation::query()->where('tenant_id', $tenantKey)->count();
+                        $verifiedCount = (int) Accommodation::query()->where('tenant_id', $tenantKey)->where('is_verified', true)->count();
                     }
 
-                    $metrics['total_bookings'] += (int) Booking::count();
+                    $metrics['total_bookings'] += (int) Booking::query()->where('tenant_id', $tenantKey)->count();
                     $metrics['total_accommodations'] += $accommodationCount;
-                    $metrics['pending_bookings'] += (int) Booking::where('status', 'pending')->count();
+                    $metrics['pending_bookings'] += (int) Booking::query()->where('tenant_id', $tenantKey)->where('status', 'pending')->count();
                     $metrics['verified_properties'] += $verifiedCount;
 
                     foreach ($monthRanges as $monthKey => [$monthStart, $monthEnd]) {
-                        $metrics['monthly_bookings'][$monthKey] += (int) Booking::whereBetween('created_at', [$monthStart, $monthEnd])->count();
-                        $metrics['monthly_guests'][$monthKey] += (int) Booking::whereBetween('created_at', [$monthStart, $monthEnd])->sum('number_of_guests');
+                        $metrics['monthly_bookings'][$monthKey] += (int) Booking::query()
+                            ->where('tenant_id', $tenantKey)
+                            ->whereBetween('created_at', [$monthStart, $monthEnd])
+                            ->count();
+                        $metrics['monthly_guests'][$monthKey] += (int) Booking::query()
+                            ->where('tenant_id', $tenantKey)
+                            ->whereBetween('created_at', [$monthStart, $monthEnd])
+                            ->sum('number_of_guests');
                     }
 
                     foreach ($bookingTypes as $type) {
-                        $metrics['bookings_by_type'][$type] += (int) Booking::whereHas('accommodation', function ($query) use ($type) {
-                            $query->where('type', $type);
-                        })
+                        $metrics['bookings_by_type'][$type] += (int) Booking::query()
+                            ->where('tenant_id', $tenantKey)
+                            ->whereHas('accommodation', function ($query) use ($type) {
+                                $query->where('type', $type);
+                            })
                             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                             ->whereIn('status', $paidStatuses)
                             ->count();
                     }
 
                     $metrics['total_capacity'] += $accommodationCount * $daysInMonth;
-                    $metrics['booked_nights'] += (int) Booking::where(function ($query) use ($startOfMonth, $endOfMonth) {
-                        $query->whereBetween('check_in_date', [$startOfMonth, $endOfMonth])
-                            ->orWhereBetween('check_out_date', [$startOfMonth, $endOfMonth]);
-                    })
+                    $metrics['booked_nights'] += (int) Booking::query()
+                        ->where('tenant_id', $tenantKey)
+                        ->where(function ($query) use ($startOfMonth, $endOfMonth) {
+                            $query->whereBetween('check_in_date', [$startOfMonth, $endOfMonth])
+                                ->orWhereBetween('check_out_date', [$startOfMonth, $endOfMonth]);
+                        })
                         ->whereIn('status', $paidStatuses)
                         ->get()
                         ->sum(function ($booking) use ($startOfMonth, $endOfMonth) {
@@ -251,12 +287,16 @@ class DashboardController extends Controller
                     $tenantBookingsThisMonth[] = [
                         'tenant_id' => $tenant->id,
                         'name' => $tenant->name,
-                        'count' => (int) Booking::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                        'count' => (int) Booking::query()
+                            ->where('tenant_id', $tenantKey)
+                            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                             ->whereIn('status', $paidStatuses)
                             ->count(),
                     ];
 
-                    $todayBookings = Booking::whereDate('check_in_date', '<=', $today)
+                    $todayBookings = Booking::query()
+                        ->where('tenant_id', $tenantKey)
+                        ->whereDate('check_in_date', '<=', $today)
                         ->whereDate('check_out_date', '>=', $today)
                         ->whereIn('status', $paidStatuses)
                         ->get(['number_of_guests']);
@@ -270,7 +310,9 @@ class DashboardController extends Controller
                         ];
                     }
 
-                    $recentBookingsByTenant[] = Booking::with(['client', 'accommodation'])
+                    $recentBookingsByTenant[] = Booking::query()
+                        ->where('tenant_id', $tenantKey)
+                        ->with(['client', 'accommodation'])
                         ->latest()
                         ->take(5)
                         ->get()
@@ -1022,35 +1064,30 @@ class DashboardController extends Controller
             return $this->buildDemographicsStatsPayload($bookings, $tenantId, $tenantName, $startDate, $endDate, $columnsReady);
         }
 
-        // Aggregate bookings by executing queries inside each tenant's database.
-        // Central admin has no tenant scope, so per-tenant execution is required
-        // to see booking data that lives inside each tenant's DB.
+        // Aggregate tenant-scoped booking rows on the landlord database (single-DB).
         $tenants = $tenantId !== null
-            ? Tenant::query()->whereKey($tenantId)->where('database_provisioned', true)->get()
-            : Tenant::query()->where('database_provisioned', true)->get();
+            ? Tenant::query()->whereKey($tenantId)->whereNotNull('owner_user_id')->get()
+            : $this->tenantsForAdminDashboardMetrics();
 
-        $tenantConnection = config('multitenancy.tenant_database_connection_name', 'tenant');
+        $schemaConnection = $this->landlordSchemaConnection();
+        $columnsReady = Schema::connection($schemaConnection)->hasColumns('bookings', [
+            'guest_gender',
+            'guest_age',
+            'guest_is_local',
+            'guest_local_place',
+            'guest_country',
+        ]);
+
+        if (! $columnsReady) {
+            return $this->buildDemographicsStatsPayload(collect(), $tenantId, $tenantName, $startDate, $endDate, false);
+        }
+
         $bookings = collect();
-        $columnsReady = false;
 
         foreach ($tenants as $tenant) {
             try {
-                $tenant->execute(function () use (&$bookings, &$columnsReady, $tenantConnection, $startDate, $endDate) {
-                    $hasColumns = Schema::connection($tenantConnection)->hasColumns('bookings', [
-                        'guest_gender',
-                        'guest_age',
-                        'guest_is_local',
-                        'guest_local_place',
-                        'guest_country',
-                    ]);
-
-                    if (! $hasColumns) {
-                        return;
-                    }
-
-                    $columnsReady = true;
-
-                    $tenantBookings = $this->demographicsBaseQuery(null, $startDate, $endDate)
+                $tenant->execute(function () use (&$bookings, $startDate, $endDate, $tenant) {
+                    $tenantBookings = $this->demographicsBaseQuery((int) $tenant->getKey(), $startDate, $endDate)
                         ->get([
                             'bookings.id',
                             'bookings.number_of_guests',
@@ -1337,45 +1374,44 @@ class DashboardController extends Controller
                 ->orderByDesc('total_guests')
                 ->get();
         } else {
-            $tenantConnection = config('multitenancy.tenant_database_connection_name', 'tenant');
+            $schemaConnection = $this->landlordSchemaConnection();
             $rows = [];
 
-            foreach (Tenant::query()->where('database_provisioned', true)->get() as $tenant) {
-                try {
-                    $tenant->execute(function () use ($tenant, $tenantConnection, $startDate, $endDate, $paidStatuses, &$rows) {
-                        if (! Schema::connection($tenantConnection)->hasTable('bookings')) {
-                            return;
-                        }
+            if (Schema::connection($schemaConnection)->hasTable('bookings')) {
+                foreach ($this->tenantsForAdminDashboardMetrics() as $tenant) {
+                    try {
+                        $tenant->execute(function () use ($tenant, $startDate, $endDate, $paidStatuses, &$rows) {
+                            $bookings = Booking::query()
+                                ->where('tenant_id', (int) $tenant->getKey())
+                                ->where(function ($query) use ($startDate, $endDate) {
+                                    $query->whereBetween('check_in_date', [$startDate, $endDate])
+                                        ->orWhereBetween('check_out_date', [$startDate, $endDate]);
+                                })
+                                ->whereIn('status', $paidStatuses)
+                                ->get(['number_of_guests']);
 
-                        $bookings = Booking::query()
-                            ->where(function ($query) use ($startDate, $endDate) {
-                                $query->whereBetween('check_in_date', [$startDate, $endDate])
-                                    ->orWhereBetween('check_out_date', [$startDate, $endDate]);
-                            })
-                            ->whereIn('status', $paidStatuses)
-                            ->get(['number_of_guests']);
+                            if ($bookings->isEmpty()) {
+                                return;
+                            }
 
-                        if ($bookings->isEmpty()) {
-                            return;
-                        }
+                            $count = $bookings->count();
+                            $totalGuests = (int) $bookings->sum('number_of_guests');
 
-                        $count = $bookings->count();
-                        $totalGuests = (int) $bookings->sum('number_of_guests');
-
-                        $rows[] = (object) [
-                            'id' => $tenant->id,
-                            'name' => $tenant->name,
-                            'slug' => $tenant->slug,
-                            'booking_count' => $count,
-                            'total_guests' => $totalGuests,
-                            'avg_guests_per_booking' => $count > 0 ? $totalGuests / $count : 0,
-                        ];
-                    });
-                } catch (\Throwable $exception) {
-                    Log::warning('Failed to aggregate monthly booking report for tenant.', [
-                        'tenant_id' => $tenant->id,
-                        'error' => $exception->getMessage(),
-                    ]);
+                            $rows[] = (object) [
+                                'id' => $tenant->id,
+                                'name' => $tenant->name,
+                                'slug' => $tenant->slug,
+                                'booking_count' => $count,
+                                'total_guests' => $totalGuests,
+                                'avg_guests_per_booking' => $count > 0 ? $totalGuests / $count : 0,
+                            ];
+                        });
+                    } catch (\Throwable $exception) {
+                        Log::warning('Failed to aggregate monthly booking report for tenant.', [
+                            'tenant_id' => $tenant->id,
+                            'error' => $exception->getMessage(),
+                        ]);
+                    }
                 }
             }
 

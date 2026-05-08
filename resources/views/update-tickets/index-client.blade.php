@@ -6,16 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Support - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind = {
-            config: {
-                corePlugins: {
-                    preflight: false,
-                },
-            },
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
             @include('partials.tenant-theme-css-vars')
@@ -32,11 +23,7 @@
     @include('client.partials.top-navbar', ['active' => 'update-tickets'])
 
     <main class="mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10" style="padding-top: calc(var(--client-nav-offset, 108px) + 24px);">
-        @if(session('success'))
-            <div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
-                {{ session('success') }}
-            </div>
-        @endif
+        @include('partials.flash-alerts')
 
         <div class="mb-6 rounded-2xl border border-green-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm">
             <h1 class="mb-2 text-2xl font-bold text-green-900 sm:text-3xl">
@@ -48,7 +35,7 @@
         <div class="grid gap-6 xl:grid-cols-5">
             <section class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm xl:col-span-2">
                 <h2 class="mb-4 text-lg font-bold text-gray-800">New Ticket</h2>
-                <form method="POST" action="/update-tickets" enctype="multipart/form-data" class="space-y-4">
+                <form method="POST" action="/update-tickets" enctype="multipart/form-data" class="space-y-4" data-loading-form>
                     @csrf
 
                     <div>
@@ -66,12 +53,8 @@
                         <input id="attachment" name="attachment" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm">
                     </div>
 
-                    @if ($errors->any())
-                        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">{{ $errors->first() }}</div>
-                    @endif
-
                     <div class="pt-2">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800">
+                        <button type="submit" data-loading-button class="inline-flex items-center gap-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800">
                             <i class="fas fa-paper-plane"></i> Submit
                         </button>
                     </div>
@@ -98,9 +81,9 @@
                             <td class="px-4 py-3 text-sm text-gray-800">{{ \Illuminate\Support\Str::limit($ticket->subject, 50) }}</td>
                             <td class="px-4 py-3">
                                 @if($ticket->status === \App\Models\UpdateTicket::STATUS_RESOLVED)
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700"><i class="fas fa-check"></i> Resolved</span>
+                                    <span class="status-badge resolved"><i class="fas fa-check mr-1"></i> Resolved</span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800"><i class="fas fa-inbox"></i> Open</span>
+                                    <span class="status-badge open"><i class="fas fa-inbox mr-1"></i> Open</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3">
@@ -120,5 +103,16 @@
             </section>
         </div>
     </main>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                button.dataset.originalText = button.textContent;
+                button.textContent = 'Submitting...';
+            });
+        });
+    </script>
 </body>
 </html>

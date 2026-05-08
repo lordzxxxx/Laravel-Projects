@@ -21,7 +21,8 @@ class AuthenticatedSessionController extends Controller
     {
         if (Tenant::checkCurrent()) {
             $portal = $request->query('portal');
-            if (! in_array($portal, ['admin', 'client'], true)) {
+            // Unit owners use the same staff portal rules as tenant admins; `owner` is a UI alias.
+            if (! in_array($portal, ['admin', 'client', 'owner'], true)) {
                 $portal = null;
             }
 
@@ -40,6 +41,9 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $portal = $request->input('portal');
+        if ($portal === 'owner') {
+            $portal = 'admin';
+        }
         if (! in_array($portal, ['admin', 'client'], true)) {
             $portal = null;
         }

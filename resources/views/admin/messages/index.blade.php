@@ -6,60 +6,37 @@
     @include('admin.partials.favicon')
     <title>Messaging — Central Admin</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --green-dark: #1B5E20; --green-primary: #2E7D32; --green-medium: #43A047;
-            --green-soft: #C8E6C9; --green-white: #E8F5E9; --cream: #F1F8E9; --white: #FFFFFF;
-            --gray-200: #E5E7EB; --gray-500: #6B7280; --gray-700: #374151; --gray-800: #1F2937;
-        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(145deg, #ecfdf5 0%, #f0fdf4 35%, #f8fafc 100%);
             min-height: 100vh;
-            color: var(--gray-800);
+            color: #0f172a;
         }
         .dashboard-layout { padding-top: 82px; }
-        .main-content { padding: 28px 36px; max-width: 1200px; margin: 0 auto; }
-        .page-header { margin-bottom: 20px; }
-        .page-header h1 { font-size: 2rem; color: var(--green-dark); margin-bottom: 6px; }
-        .page-header p { color: var(--gray-500); max-width: 720px; line-height: 1.5; }
+        .page-header { margin-bottom: 1.25rem; }
+        .page-header p { max-width: 62ch; color: #64748b; font-size: 0.9375rem; line-height: 1.55; }
         .flash {
-            background: #ECFDF5; border: 1px solid #86EFAC; color: #166534;
-            padding: 10px 12px; border-radius: 10px; margin-bottom: 16px; font-weight: 600;
+            background: #ECFDF5;
+            border: 1px solid #86EFAC;
+            color: #166534;
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 600;
         }
-        .card {
-            background: var(--white); border-radius: 14px; border: 1px solid var(--green-soft);
-            box-shadow: 0 8px 30px rgba(27, 94, 32, 0.1); overflow: hidden; margin-bottom: 22px;
+        .msg-field-stack > * + * {
+            margin-top: 1rem;
         }
-        .card-header { padding: 16px 20px; border-bottom: 1px solid var(--green-soft); }
-        .card-header h2 { font-size: 1.1rem; color: var(--green-dark); }
-        .card-body { padding: 20px; }
-        label { display: block; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; font-size: 0.9rem; }
-        input, select, textarea {
-            width: 100%; max-width: 480px; padding: 10px 12px; border-radius: 8px;
-            border: 1px solid var(--gray-200); font-size: 0.95rem; margin-bottom: 14px; font-family: inherit;
+        .msg-error {
+            color: #b91c1c;
+            font-size: 0.8125rem;
+            margin-top: 0.35rem;
         }
-        textarea { min-height: 120px; max-width: 100%; }
-        .error { color: #B91C1C; font-size: 0.85rem; margin-top: -10px; margin-bottom: 10px; }
-        .btn {
-            display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
-            border-radius: 10px; font-weight: 600; border: none; cursor: pointer;
-            background: linear-gradient(135deg, var(--green-primary), var(--green-medium)); color: var(--white);
-        }
-        table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
-        th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
-        th { color: var(--green-dark); font-weight: 700; background: var(--green-white); }
-        tr:hover td { background: #fafafa; }
-        .badge-unread {
-            display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #EF4444;
-        }
-        .link-open {
-            color: var(--green-primary); font-weight: 600; text-decoration: none;
-        }
-        .link-open:hover { text-decoration: underline; }
-        .muted { color: var(--gray-500); font-size: 0.85rem; }
-        .pagination { padding: 16px 20px; border-top: 1px solid var(--green-soft); }
+        @include('partials.messaging-ui-styles')
+        @include('partials.ui-foundation-styles')
         @include('admin.partials.admin-shell-styles')
     </style>
 </head>
@@ -67,104 +44,133 @@
     @include('admin.partials.top-navbar', ['active' => 'messages'])
 
     <div class="dashboard-layout">
-        <main class="main-content">
+        <main class="main-content msg-admin-main">
             <div class="page-header">
-                <h1><i class="fas fa-envelope"></i> Tulogan messaging</h1>
+                <h1>
+                    <span class="page-title-icon"><i class="fa-solid fa-comment-dots"></i></span>
+                    <span>Tulogan messaging</span>
+                </h1>
                 <p>
-                    Conversations where a tulogan messaged <strong>ImpaStay (Central Admin)</strong>, or you started a thread from here.
-                    The inbox shows <strong>one row per person</strong> per tulogan (latest message in that thread). Messages are stored in each tulogan’s database.
+                    Conversations where a tulogan messaged <strong class="text-slate-800">ImpaStay (Central Admin)</strong>, or you started a thread from here.
+                    The inbox shows <strong class="text-slate-800">one row per person</strong> per tulogan (latest message in that thread).
                 </p>
             </div>
 
-            @if (session('success'))
-                <div class="flash">{{ session('success') }}</div>
-            @endif
+            @include('partials.flash-alerts')
 
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-paper-plane"></i> New message to a tulogan user</h2>
+            <div class="msg-admin-layout">
+                <div class="msg-compose-sticky">
+                    <section class="msg-card">
+                        <div class="msg-card-header">
+                            <h2><i class="fas fa-paper-plane"></i> New message</h2>
+                        </div>
+                        <div class="msg-card-body">
+                            <form method="POST" action="{{ route('admin.messages.contact', [], false) }}" class="msg-field-stack" data-loading-form>
+                                @csrf
+                                <div>
+                                    <label class="msg-field-label" for="tenant_id">Tulogan</label>
+                                    <select name="tenant_id" id="tenant_id" required class="msg-select">
+                                        <option value="">Choose a tulogan…</option>
+                                        @foreach ($tenants as $t)
+                                            <option value="{{ $t->id }}" @selected(old('tenant_id') == $t->id)>{{ $t->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('tenant_id')
+                                        <div class="msg-error">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label class="msg-field-label" for="subject">Subject <span style="font-weight:500;color:#94a3b8;">(optional)</span></label>
+                                    <input type="text" name="subject" id="subject" value="{{ old('subject') }}" maxlength="255" class="msg-input" placeholder="Support request…">
+                                </div>
+                                <div>
+                                    <label class="msg-field-label" for="content">Message</label>
+                                    <textarea name="content" id="content" required class="msg-textarea" placeholder="Write your message…">{{ old('content') }}</textarea>
+                                    @error('content')
+                                        <div class="msg-error">{{ $message }}</div>
+                                    @enderror
+                                    <p class="msg-field-hint" style="margin-top:0.65rem;">
+                                        Recipient is chosen automatically from the tulogan’s active contacts (owner/admin first)—no email field required.
+                                    </p>
+                                </div>
+                                <button type="submit" data-loading-button class="msg-btn-primary" style="width:100%;">
+                                    <i class="fas fa-paper-plane"></i> Send
+                                </button>
+                            </form>
+                        </div>
+                    </section>
                 </div>
-                <div class="card-body">
-                    <form method="POST" action="{{ route('admin.messages.contact', [], false) }}">
-                        @csrf
-                        <label for="tenant_id">Tulogan</label>
-                        <select name="tenant_id" id="tenant_id" required>
-                            <option value="">— Select a tulogan —</option>
-                            @foreach ($tenants as $t)
-                                <option value="{{ $t->id }}" @selected(old('tenant_id') == $t->id)>{{ $t->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('tenant_id')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
 
-                        <label for="subject">Subject <span class="muted">(optional)</span></label>
-                        <input type="text" name="subject" id="subject" value="{{ old('subject') }}" maxlength="255">
-
-                        <label for="content">Message</label>
-                        <textarea name="content" id="content" required>{{ old('content') }}</textarea>
-                        @error('content')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                        <p class="muted" style="margin-top:-6px; margin-bottom: 12px; max-width: 760px;">
-                            Recipient is auto-selected from the tulogan's active contacts (owner/admin first), so no email entry is required.
-                        </p>
-
-                        <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Send</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-inbox"></i> Inbox</h2>
-                </div>
-                @if ($paginator->isEmpty())
-                    <div class="card-body">
-                        <p class="muted">No support threads yet. When a tulogan writes to ImpaStay (Central Admin), it will appear here.</p>
+                <section class="msg-card" style="min-height: 280px;">
+                    <div class="msg-card-header" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.75rem;">
+                        <h2 style="margin:0;"><i class="fas fa-inbox"></i> Inbox</h2>
+                        @if(!$paginator->isEmpty())
+                            <span class="msg-thread-meta" style="font-weight:650;color:#475569;">
+                                {{ $paginator->total() }} conversation{{ $paginator->total() === 1 ? '' : 's' }}
+                            </span>
+                        @endif
                     </div>
-                @else
-                    <table>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>When</th>
-                                <th>Tulogan</th>
-                                <th>With</th>
-                                <th>Preview</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
+
+                    @if ($paginator->isEmpty())
+                        <div class="msg-empty">
+                            <div class="msg-empty-icon" aria-hidden="true"><i class="fas fa-comments"></i></div>
+                            <p><strong class="text-slate-700">No threads yet.</strong><br>
+                                When a tulogan writes to ImpaStay (Central Admin), it will appear here.</p>
+                        </div>
+                    @else
+                        <div class="msg-thread-list msg-scrollbar" style="max-height: min(68vh, 720px); overflow-y: auto;">
                             @foreach ($paginator as $row)
-                                <tr>
-                                    <td style="width:24px;">
-                                        @if ($row->is_unread)
-                                            <span class="badge-unread" title="Unread"></span>
-                                        @endif
-                                    </td>
-                                    <td class="muted">{{ $row->created_at->format('M j, Y g:i A') }}</td>
-                                    <td><strong>{{ $row->tenant_name }}</strong></td>
-                                    <td>{{ $row->counterpart_name }}</td>
-                                    <td>
+                                <a
+                                    href="{{ route('admin.messages.thread', ['tenant' => $row->tenant_id, 'message' => $row->message_id], false) }}"
+                                    class="msg-thread-item {{ $row->is_unread ? 'msg-thread-item-unread' : '' }}"
+                                >
+                                    @php
+                                        $name = trim((string) $row->counterpart_name);
+                                        $parts = array_values(array_filter(preg_split('/\s+/u', $name) ?: []));
+                                        $initials = '';
+                                        foreach (array_slice($parts, 0, 2) as $w) {
+                                            $initials .= mb_strtoupper(mb_substr($w, 0, 1));
+                                        }
+                                        $initials = $initials !== '' ? $initials : 'U';
+                                    @endphp
+                                    <div class="msg-thread-avatar" aria-hidden="true">{{ $initials }}</div>
+                                    <div class="msg-thread-body" style="min-width:0;">
+                                        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.5rem;margin-bottom:0.2rem;">
+                                            @if ($row->is_unread)
+                                                <span class="msg-dot-unread" title="Unread"></span>
+                                            @endif
+                                            <span class="msg-thread-meta">{{ $row->created_at->format('M j, Y · g:i A') }}</span>
+                                        </div>
+                                        <div class="msg-thread-tenant">{{ $row->tenant_name }}</div>
+                                        <div class="msg-thread-title">{{ $row->counterpart_name }}</div>
                                         @if ($row->subject)
-                                            <strong>{{ $row->subject }}</strong><br>
+                                            <div style="font-size:0.8125rem;font-weight:650;color:#334155;margin-bottom:0.2rem;">{{ $row->subject }}</div>
                                         @endif
-                                        <span class="muted">{{ $row->preview }}</span>
-                                    </td>
-                                    <td>
-                                        <a class="link-open" href="{{ route('admin.messages.thread', ['tenant' => $row->tenant_id, 'message' => $row->message_id], false) }}">Open</a>
-                                    </td>
-                                </tr>
+                                        <div class="msg-thread-preview">{{ $row->preview }}</div>
+                                    </div>
+                                    <span class="msg-thread-open">
+                                        Open <i class="fas fa-chevron-right" style="font-size:0.65rem;opacity:0.65;"></i>
+                                    </span>
+                                </a>
                             @endforeach
-                        </tbody>
-                    </table>
-                    <div class="pagination">
-                        {{ $paginator->links() }}
-                    </div>
-                @endif
+                        </div>
+                        <div class="msg-pagination">
+                            {{ $paginator->links() }}
+                        </div>
+                    @endif
+                </section>
             </div>
         </main>
     </div>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending…';
+            });
+        });
+    </script>
 </body>
 </html>

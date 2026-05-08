@@ -23,3 +23,13 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Block dot-files served accidentally from public/.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Block backup/source files that should never reach the browser.
+<FilesMatch "(?i)\.(env|sql|sqlite|sqlite3|log|bak|backup|old|swp|orig|ini|conf)$">
+    Require all denied
+</FilesMatch>

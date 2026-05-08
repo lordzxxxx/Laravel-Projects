@@ -6,16 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Messages - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind = {
-            config: {
-                corePlugins: {
-                    preflight: false,
-                },
-            },
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @php
             $authUser = auth()->user();
@@ -59,6 +50,8 @@
             .nav-links { display: none; }
             @endif
         }
+
+        @include('partials.messaging-ui-styles')
 
         /* Messages index: full-width shell, minimal side gutters, flex-fill split pane */
         body.owner-nav-page main.messages-index-main.main-content.with-owner-nav {
@@ -119,15 +112,18 @@
         class="messages-index-main {{ $useOwnerNavbar ? 'main-content with-owner-nav flex w-full min-h-screen flex-col' : 'mx-auto flex min-h-screen w-full max-w-none flex-col px-3 pb-6 sm:px-4 lg:px-6' }}"
         @if(! $useOwnerNavbar) style="padding-top: calc(var(--client-nav-offset, 108px) + 12px);" @endif
     >
-        <header class="mb-3 flex flex-shrink-0 flex-col gap-3 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
+        <header class="page-header mb-4 flex flex-shrink-0 flex-col gap-3 sm:mb-5 sm:flex-row sm:items-start sm:justify-between">
             <div class="min-w-0 flex-1">
-                <h1 class="text-2xl font-bold tracking-tight text-[var(--green-dark)] sm:text-3xl">Messages</h1>
-                <p class="mt-1 text-sm text-gray-600 sm:text-base">Your conversations and inquiries</p>
+                <h1>
+                    <span class="page-title-icon"><i class="fa-solid fa-comment-dots"></i></span>
+                    <span>Messages</span>
+                </h1>
+                <p class="text-slate-600">Inbox and replies in one place—pick a thread or start a new conversation.</p>
             </div>
             @if($showComposeButton)
                 <a
                     href="{{ route('messages.create', [], false) }}"
-                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--green-primary)] to-[var(--green-medium)] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-green-900/15 transition hover:brightness-105"
+                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-900/20 transition hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
                 >
                     <i class="fas fa-plus text-xs"></i>
                     New conversation
@@ -135,32 +131,29 @@
             @endif
         </header>
 
-        @if (session('success'))
-            <div class="mb-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-[var(--green-dark)]">
-                {{ session('success') }}
-            </div>
-        @endif
+        @include('partials.flash-alerts')
 
         @if(isset($messages) && count($messages) > 0)
             <div
-                class="messages-split grid min-h-0 flex-1 grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(0,1fr)] lg:gap-4"
+                class="messages-split grid min-h-0 flex-1 grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-12 lg:grid-rows-[minmax(0,1fr)] xl:gap-5"
             >
-                <aside class="flex min-h-[220px] flex-col overflow-hidden rounded-xl border border-green-100/80 bg-white shadow-sm shadow-green-900/5 sm:rounded-2xl lg:col-span-4 lg:h-full lg:min-h-0 xl:col-span-4">
-                    <div class="flex flex-shrink-0 flex-wrap items-center justify-between gap-2 border-b border-green-100 bg-white px-3 py-3 sm:px-4 sm:py-3.5">
-                        <h2 class="text-base font-semibold text-[var(--green-dark)]">Inbox</h2>
+                <aside class="flex min-h-[240px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm shadow-slate-900/[0.06] ring-1 ring-slate-900/[0.03] lg:col-span-4 lg:h-full lg:min-h-0 xl:col-span-4">
+                    <div class="flex flex-shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-white px-4 py-3.5 sm:px-5">
+                        <h2 class="text-base font-bold tracking-tight text-slate-900">Inbox</h2>
                         @if(($unreadCount ?? 0) > 0)
-                            <form method="POST" action="{{ route('messages.mark-all-read', [], false) }}" class="m-0">
+                            <form method="POST" action="{{ route('messages.mark-all-read', [], false) }}" class="m-0" data-loading-form>
                                 @csrf
                                 <button
                                     type="submit"
-                                    class="rounded-lg border-2 border-[var(--green-primary)] bg-white px-3 py-1.5 text-xs font-semibold text-[var(--green-dark)] transition hover:bg-[var(--green-soft)]"
+                                    data-loading-button
+                                    class="rounded-lg border border-teal-600/30 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-900 transition hover:bg-teal-100/80"
                                 >
-                                    Mark all as read
+                                    Mark all read
                                 </button>
                             </form>
                         @endif
                     </div>
-                    <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                    <div class="msg-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
                         @foreach($messages as $message)
                             @php
                                 $otherParty = (int) $message->sender_id === (int) Auth::id()
@@ -177,18 +170,18 @@
                             @endphp
                             <a
                                 href="{{ url('/messages') }}?partner={{ $otherId }}{{ request()->get('page') ? '&page='.(int) request()->get('page') : '' }}"
-                                class="flex gap-3 border-b border-green-50 px-3 py-3 transition sm:gap-3 sm:px-4 sm:py-3.5 {{ $isActiveThread ? 'bg-[var(--green-white)]' : 'hover:bg-[var(--green-white)]/70' }} {{ $hasUnreadFromPartner ? 'border-l-4 border-l-[var(--green-primary)] bg-green-50/50' : '' }}"
+                                class="flex gap-3 border-b border-slate-50 px-4 py-3.5 transition sm:gap-3 sm:px-5 sm:py-4 {{ $isActiveThread ? 'bg-teal-50/40 ring-1 ring-inset ring-teal-500/15' : 'hover:bg-slate-50/90' }} {{ $hasUnreadFromPartner ? 'border-l-[3px] border-l-teal-500 bg-teal-50/35 pl-[calc(1rem-3px)] sm:pl-[calc(1.25rem-3px)]' : '' }}"
                             >
-                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--green-primary)] text-sm font-semibold text-white sm:h-12 sm:w-12">
+                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-600 to-emerald-600 text-sm font-bold text-white shadow-sm shadow-teal-900/20 sm:h-12 sm:w-12">
                                     {{ strtoupper(substr($otherParty->name ?? 'U', 0, 2)) }}
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <div class="mb-0.5 flex items-center justify-between gap-2">
-                                        <span class="truncate text-sm font-semibold text-[var(--green-dark)]">{{ $otherParty->name ?? 'Unknown' }}</span>
-                                        <span class="shrink-0 text-xs text-gray-500">{{ $message->created_at->diffForHumans() }}</span>
+                                        <span class="truncate text-sm font-bold text-slate-900">{{ $otherParty->name ?? 'Unknown' }}</span>
+                                        <span class="shrink-0 text-xs font-medium text-slate-500">{{ $message->created_at->diffForHumans() }}</span>
                                     </div>
-                                    <div class="truncate text-sm text-[var(--green-dark)]">{{ $message->subject ?? 'No Subject' }}</div>
-                                    <div class="truncate text-xs text-gray-500">{{ Str::limit($message->content, 50) }}</div>
+                                    <div class="truncate text-sm font-medium text-slate-700">{{ $message->subject ?? 'No subject' }}</div>
+                                    <div class="truncate text-xs text-slate-500">{{ Str::limit($message->content, 56) }}</div>
                                 </div>
                             </a>
                         @endforeach
@@ -202,11 +195,11 @@
                         : null;
                 @endphp
 
-                <section class="flex min-h-[260px] flex-col overflow-hidden rounded-xl border border-green-100/80 bg-white shadow-sm shadow-green-900/5 sm:rounded-2xl lg:col-span-8 lg:h-full lg:min-h-0 xl:col-span-8">
-                    <div class="flex flex-shrink-0 flex-wrap items-start justify-between gap-2 border-b border-green-100 bg-[var(--cream)] px-3 py-3 sm:gap-3 sm:px-4 sm:py-3.5 lg:px-5">
+                <section class="flex min-h-[280px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm shadow-slate-900/[0.06] ring-1 ring-slate-900/[0.03] lg:col-span-8 lg:h-full lg:min-h-0 xl:col-span-8">
+                    <div class="flex flex-shrink-0 flex-wrap items-start justify-between gap-3 border-b border-slate-100 bg-slate-50/95 px-4 py-3.5 sm:gap-3 sm:px-5 sm:py-4 lg:px-6">
                         <div class="min-w-0 flex-1">
-                            <h2 class="text-lg font-semibold text-[var(--green-dark)]">{{ $chatPartner->name ?? 'Conversation' }}</h2>
-                            <p class="mt-0.5 text-xs text-gray-600 sm:text-sm">{{ $chatPartner->email ?? 'Select a conversation from the inbox to start chatting.' }}</p>
+                            <h2 class="text-lg font-bold tracking-tight text-slate-900">{{ $chatPartner->name ?? 'Conversation' }}</h2>
+                            <p class="mt-0.5 text-xs text-slate-600 sm:text-sm">{{ $chatPartner->email ?? 'Select a conversation from the inbox.' }}</p>
                         </div>
                         @if($canDeleteSelectedConversation)
                             <form
@@ -219,7 +212,7 @@
                                 @method('DELETE')
                                 <button
                                     type="submit"
-                                    class="inline-flex items-center gap-1.5 rounded-lg border-2 border-red-700 bg-white px-3 py-1.5 text-xs font-semibold text-red-800 transition hover:bg-red-50"
+                                    class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-800 shadow-sm transition hover:bg-red-50"
                                 >
                                     <i class="fas fa-trash-alt"></i>
                                     Delete
@@ -228,7 +221,7 @@
                         @endif
                     </div>
 
-                    <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-gray-100 px-3 py-3 sm:px-4 sm:py-4 lg:px-5">
+                    <div class="msg-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain bg-slate-100/90 px-4 py-4 sm:px-5 sm:py-5 lg:px-6">
                         @forelse($conversationMessages as $chatMessage)
                             @php
                                 $isMine = (int) $chatMessage->sender_id === (int) $currentUserId;
@@ -236,43 +229,47 @@
                             @endphp
                             <div class="mb-3 flex items-end gap-2 sm:mb-4 {{ $isMine ? 'justify-end' : 'justify-start' }}">
                                 @if(! $isMine)
-                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--green-dark)] text-xs font-bold text-white">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-xs font-bold text-white shadow-sm">
                                         {{ strtoupper(substr($senderName, 0, 1)) }}
                                     </div>
                                 @endif
                                 <div class="max-w-[85%] sm:max-w-[74%]">
                                     <div
-                                        class="rounded-2xl px-4 py-3 text-sm leading-relaxed sm:text-base {{ $isMine ? 'rounded-tr-md bg-gradient-to-br from-[var(--green-primary)] to-[var(--green-medium)] text-white' : 'rounded-tl-md bg-gray-200 text-gray-900' }}"
+                                        class="rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm sm:text-[0.9375rem] {{ $isMine ? 'rounded-tr-md bg-gradient-to-br from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-900/20' : 'rounded-tl-md border border-slate-200/90 bg-white text-slate-900' }}"
                                     >
                                         {{ $chatMessage->content }}
                                     </div>
-                                    <p class="mt-1 text-[0.7rem] text-gray-500 {{ $isMine ? 'text-right' : '' }}">
+                                    <p class="mt-1.5 text-[0.7rem] font-medium text-slate-500 {{ $isMine ? 'text-right' : '' }}">
                                         {{ $senderName }} · {{ $chatMessage->created_at->format('M d, h:i A') }}
                                     </p>
                                 </div>
                             </div>
                         @empty
-                            <div class="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-white/80 px-4 py-12 text-center">
-                                <h3 class="text-base font-semibold text-gray-700">No conversation yet</h3>
-                                <p class="mt-2 max-w-sm text-sm text-gray-500">Open a thread from the inbox to view messages here.</p>
+                            <div class="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white/90 px-4 py-12 text-center shadow-inner">
+                                <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                                    <i class="fas fa-comments text-xl"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-slate-800">No conversation selected</h3>
+                                <p class="mt-2 max-w-sm text-sm text-slate-500">Choose a thread from the inbox to read and reply.</p>
                             </div>
                         @endforelse
                     </div>
 
                     @if($selectedMessage && $replyAnchorMessage)
-                        <div class="flex-shrink-0 border-t border-green-100 bg-white px-3 py-3 sm:px-4 sm:py-3.5 lg:px-5">
-                            <form method="POST" action="{{ route('messages.reply', $replyAnchorMessage, false) }}" class="flex flex-col gap-2.5 sm:gap-3">
+                        <div class="flex-shrink-0 border-t border-slate-100 bg-white px-4 py-3.5 sm:px-5 sm:py-4 lg:px-6">
+                            <form method="POST" action="{{ route('messages.reply', $replyAnchorMessage, false) }}" class="flex flex-col gap-3 sm:gap-3" data-loading-form>
                                 @csrf
                                 <textarea
                                     name="content"
-                                    class="min-h-[80px] w-full resize-y rounded-xl border-2 border-green-100 px-3 py-2.5 text-sm outline-none transition focus:border-[var(--green-primary)] sm:min-h-[88px] sm:text-base"
-                                    placeholder="Type your message..."
+                                    class="msg-scrollbar min-h-[88px] w-full resize-y rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none ring-teal-500/0 transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/25 sm:min-h-[96px] sm:text-[0.9375rem]"
+                                    placeholder="Write a reply…"
                                     required
                                 ></textarea>
                                 <div class="flex justify-end">
                                     <button
                                         type="submit"
-                                        class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--green-primary)] to-[var(--green-medium)] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-green-900/15 transition hover:brightness-105 sm:w-auto sm:min-w-[7.5rem]"
+                                        data-loading-button
+                                        class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-900/20 transition hover:brightness-105 sm:w-auto"
                                     >
                                         Send
                                     </button>
@@ -283,10 +280,12 @@
                 </section>
             </div>
         @else
-            <div class="flex flex-1 flex-col items-center justify-center rounded-2xl border border-green-100/80 bg-white px-6 py-20 text-center shadow-sm shadow-green-900/5 sm:py-28">
-                <div class="mb-4 text-5xl sm:text-6xl" aria-hidden="true">💬</div>
-                <h3 class="text-xl font-semibold text-gray-800">No messages yet</h3>
-                <p class="mx-auto mt-3 max-w-md text-sm text-gray-600 sm:text-base">
+            <div class="flex flex-1 flex-col items-center justify-center rounded-2xl border border-slate-200/90 bg-white px-6 py-20 text-center shadow-sm shadow-slate-900/[0.05] ring-1 ring-slate-900/[0.03] sm:py-28">
+                <div class="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-lg shadow-teal-900/25" aria-hidden="true">
+                    <i class="fas fa-comment-dots text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold tracking-tight text-slate-900">No messages yet</h3>
+                <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-600 sm:text-base">
                     You do not have any conversations yet.
                     @if($showComposeButton)
                         Start one with
@@ -300,7 +299,7 @@
                 @if($showComposeButton)
                     <a
                         href="{{ route('messages.create', [], false) }}"
-                        class="mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--green-primary)] to-[var(--green-medium)] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-green-900/15 transition hover:brightness-105"
+                        class="mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-teal-900/20 transition hover:brightness-105"
                     >
                         <i class="fas fa-plus text-xs"></i>
                         New conversation
@@ -309,5 +308,19 @@
             </div>
         @endif
     </main>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                if (button.textContent.trim().toLowerCase().includes('mark all')) {
+                    button.textContent = 'Updating...';
+                } else {
+                    button.textContent = 'Sending...';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Spatie\Multitenancy\Models\Tenant as BaseTenant;
 
 #[ObservedBy([TenantObserver::class])]
@@ -94,7 +95,6 @@ class Tenant extends BaseTenant
             'db_port' => 'integer',
             'db_username' => 'encrypted',
             'db_password' => 'encrypted',
-            'payment_reference' => 'encrypted',
             'onboarding_stripe_session_id' => 'encrypted',
             'database_provisioned' => 'boolean',
             'database_provisioned_at' => 'datetime',
@@ -112,6 +112,30 @@ class Tenant extends BaseTenant
             'promo_max_listings' => 'integer',
             'promo_price' => 'decimal:2',
         ];
+    }
+
+    public function getPaymentReferenceAttribute($value): ?string
+    {
+        if (! is_string($value) || $value === '') {
+            return $value;
+        }
+
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Throwable) {
+            return $value;
+        }
+    }
+
+    public function setPaymentReferenceAttribute($value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['payment_reference'] = null;
+
+            return;
+        }
+
+        $this->attributes['payment_reference'] = (string) $value;
     }
 
     /**
@@ -504,7 +528,9 @@ class Tenant extends BaseTenant
 
     public function getOnboardingGcashProofUrlAttribute(): ?string
     {
-        return $this->onboarding_gcash_proof_path ? asset('storage/'.$this->onboarding_gcash_proof_path) : null;
+        return $this->onboarding_gcash_proof_path
+            ? route('secure-media.onboarding-proof', ['tenant' => $this], false)
+            : null;
     }
 
     /**

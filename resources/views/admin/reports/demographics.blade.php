@@ -6,8 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('admin.partials.favicon')
     <title>Demographics Report - IMPASUGONG TOURISM</title>
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <style>
         @include('admin.partials.admin-shell-styles')
+        @include('partials.ui-foundation-styles')
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
         .report-page { background: #F3F4F6; color: #1F2937; min-height: 100vh; }
@@ -49,7 +51,7 @@
         <div class="card">
             <h1 class="title">Demographics Report</h1>
             <p class="muted">{{ $demographics['scope_label'] }} | {{ $demographics['start_date']->toFormattedDateString() }} - {{ $demographics['end_date']->toFormattedDateString() }}</p>
-            <form method="GET" action="{{ route('admin.reports.demographics', [], false) }}" class="filters-grid" style="margin-top:12px;">
+            <form method="GET" action="{{ route('admin.reports.demographics', [], false) }}" class="filters-grid" style="margin-top:12px;" data-loading-form>
                 <div class="field">
                     <label for="tenant_id">Tenant Scope</label>
                     <select id="tenant_id" name="tenant_id">
@@ -68,12 +70,12 @@
                     <input id="end_date" type="date" name="end_date" value="{{ optional($demographicsEndDate)->toDateString() }}">
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn primary" type="submit">Apply</button>
+                    <button class="btn primary" data-loading-button type="submit">Apply</button>
                     <a class="btn secondary" href="{{ route('admin.dashboard', ['tenant_id' => $selectedTenantId, 'start_date' => optional($demographicsStartDate)->toDateString(), 'end_date' => optional($demographicsEndDate)->toDateString()], false) }}">Back</a>
                 </div>
             </form>
             <div class="actions-row">
-                <form method="POST" action="{{ route('admin.reports.demographics.export', [], false) }}">
+                <form method="POST" action="{{ route('admin.reports.demographics.export', [], false) }}" data-loading-form>
                     @csrf
                     <input type="hidden" name="format" value="pdf">
                     @if($selectedTenantId !== null)
@@ -81,9 +83,9 @@
                     @endif
                     <input type="hidden" name="start_date" value="{{ optional($demographicsStartDate)->toDateString() }}">
                     <input type="hidden" name="end_date" value="{{ optional($demographicsEndDate)->toDateString() }}">
-                    <button class="btn export" type="submit">Export PDF</button>
+                    <button class="btn export" data-loading-button type="submit">Export PDF</button>
                 </form>
-                <form method="POST" action="{{ route('admin.reports.demographics.export', [], false) }}">
+                <form method="POST" action="{{ route('admin.reports.demographics.export', [], false) }}" data-loading-form>
                     @csrf
                     <input type="hidden" name="format" value="csv">
                     @if($selectedTenantId !== null)
@@ -91,7 +93,7 @@
                     @endif
                     <input type="hidden" name="start_date" value="{{ optional($demographicsStartDate)->toDateString() }}">
                     <input type="hidden" name="end_date" value="{{ optional($demographicsEndDate)->toDateString() }}">
-                    <button class="btn export" type="submit">Export CSV</button>
+                    <button class="btn export" data-loading-button type="submit">Export CSV</button>
                 </form>
             </div>
 
@@ -169,5 +171,15 @@
         </div>
     </div>
     </div>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                button.textContent = 'Processing...';
+            });
+        });
+    </script>
 </body>
 </html>

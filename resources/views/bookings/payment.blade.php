@@ -6,8 +6,11 @@
     @include('partials.tenant-favicon')
     <title>Checkout Payment - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        @include('partials.ui-foundation-styles')
+
+        * { box-sizing: border-box; }
 
         :root {
             @include('partials.tenant-theme-css-vars')
@@ -31,16 +34,7 @@
         .header {
             margin-bottom: 18px;
         }
-
-        .header h1 {
-            color: var(--green-dark);
-            font-size: 1.8rem;
-            margin-bottom: 6px;
-        }
-
-        .header p {
-            color: var(--gray-500);
-        }
+        /* Title styling provided by ui-foundation-styles (.page-header h1). */
 
         .checkout-grid {
             display: grid;
@@ -169,9 +163,13 @@
         $gcashQrUrl = $currentTenant?->getGcashQrUrl();
     @endphp
     <div class="wrapper">
-        <div class="header">
-            <h1><i class="fas fa-credit-card"></i> Checkout Payment</h1>
-            <p>Complete your reservation payment for booking #{{ $booking->id }}</p>
+        @include('partials.flash-alerts')
+        <div class="header page-header">
+            <h1>
+                <span class="page-title-icon"><i class="fa-solid fa-credit-card"></i></span>
+                <span>Checkout Payment</span>
+            </h1>
+            <p>Complete your reservation payment for booking #{{ $booking->id }}.</p>
         </div>
 
         <div class="checkout-grid">
@@ -224,28 +222,13 @@
             <section class="card">
                 <h2><i class="fas fa-lock"></i> Payment Details</h2>
 
-                @if(session('error'))
-                    <div class="error-list" style="margin-bottom:12px;">
-                        {{ session('error') }}
-                    </div>
-                @endif
-
-                @if($errors->any())
-                    <div class="error-list">
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                <form action="{{ route('bookings.payment.confirm', $booking) }}" method="POST">
+                <form action="{{ route('bookings.payment.confirm', $booking) }}" method="POST" data-loading-form>
                     @csrf
 
                     <div class="actions">
                         <button
                             type="submit"
+                            data-loading-button
                             class="btn btn-primary"
                             @disabled(! $stripeConfigured || in_array($booking->status, ['paid', 'completed', 'cancelled']))
                         >
@@ -269,19 +252,19 @@
                         <p style="margin-top:8px;">Tenant admin has not uploaded a GCash QR photo yet.</p>
                     @endif
 
-                    <form action="{{ route('bookings.payment-proof.upload', $booking) }}" method="POST" enctype="multipart/form-data" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <form action="{{ route('bookings.payment-proof.upload', $booking) }}" method="POST" enctype="multipart/form-data" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;" data-loading-form>
                         @csrf
                         <input type="file" name="gcash_payment_proof" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
-                        <button type="submit" class="btn btn-secondary">Upload Proof Screenshot</button>
+                        <button type="submit" data-loading-button class="btn btn-secondary">Upload Proof Screenshot</button>
                     </form>
 
                     @if($booking->gcash_payment_proof_url)
                         <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
                             <a href="{{ $booking->gcash_payment_proof_url }}" target="_blank" class="btn btn-secondary">View Uploaded Proof</a>
-                            <form action="{{ route('bookings.payment-proof.remove', $booking) }}" method="POST">
+                            <form action="{{ route('bookings.payment-proof.remove', $booking) }}" method="POST" data-loading-form>
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-secondary">Remove Proof</button>
+                                <button type="submit" data-loading-button class="btn btn-secondary">Remove Proof</button>
                             </form>
                         </div>
                     @endif
@@ -289,5 +272,15 @@
             </section>
         </div>
     </div>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                button.textContent = 'Processing...';
+            });
+        });
+    </script>
 </body>
 </html>

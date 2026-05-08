@@ -40,14 +40,50 @@ body {
     margin-bottom: 20px;
 }
 
+/* ── Canonical page title used by every admin page ─────────────────────────
+   • size:   1.75rem (28px)
+   • weight: 800 (extra bold)
+   • color:  slate-900
+   • icon:   44px emerald-50 tile with emerald-700 glyph
+   Use markup: <h1><span class="page-title-icon"><i class="fa-solid fa-…"></i></span><span>Title</span></h1>
+   ───────────────────────────────────────────────────────────────────────── */
 .page-header h1 {
-    font-size: 2rem;
-    color: var(--green-dark);
-    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0F172A;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    margin: 0;
+}
+
+.page-header h1 .page-title-icon,
+.page-header h1 > .icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 0.75rem;
+    background: #ECFDF5;
+    color: #047857;
+    border: 1px solid #D1FAE5;
+    font-size: 18px;
+    flex-shrink: 0;
 }
 
 .page-header p {
-    color: var(--gray-500);
+    color: #64748B;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 0.5rem 0 0 3.65rem;
+}
+
+@media (max-width: 640px) {
+    .page-header h1 { font-size: 1.4rem; }
+    .page-header p { margin-left: 0; }
 }
 
 .page-header-row {

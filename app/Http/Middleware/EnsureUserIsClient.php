@@ -27,17 +27,22 @@ class EnsureUserIsClient
                 ->with('error', 'You do not have access to this tenant.');
         }
 
-        // Only clients can access these routes.
+        // Default-deny: only `client` may proceed. Unknown roles are rejected outright.
         if ($user->role !== 'client') {
             if ($user->role === 'admin') {
                 return redirect('/admin/dashboard')
                     ->with('error', 'This section is for clients only.');
-            } elseif ($user->role === 'owner') {
+            }
+
+            if ($user->role === 'owner') {
                 return redirect('/owner/dashboard')
                     ->with('error', 'This section is for clients only.');
             }
+
+            return redirect('/')
+                ->with('error', 'This section is for clients only.');
         }
-        
+
         return $next($request);
     }
 }

@@ -6,7 +6,7 @@
     <title>Monthly Sales Report - {{ $monthName }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: "Times New Roman", Times, serif; color: #333; line-height: 1.6; font-size: 12px; }
+        body { font-family: "Times New Roman", Times, serif; color: #000000; line-height: 1.6; font-size: 12px; }
         .container { padding: 20px; max-width: 1120px; margin: 0 auto; }
 
         @include('reports.partials.municipal-pdf-header-styles')
@@ -19,14 +19,14 @@
             padding: 8px;
             text-align: center;
         }
-        .kpi-title { font-size: 10px; color: #4B5563; text-transform: uppercase; margin-bottom: 4px; }
-        .kpi-value { font-size: 16px; color: #1B5E20; font-weight: 700; }
+        .kpi-title { font-size: 10px; color: #000000; text-transform: uppercase; margin-bottom: 4px; }
+        .kpi-value { font-size: 16px; color: #000000; font-weight: 700; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; }
         th, td { border-bottom: 1px solid #E5E7EB; padding: 8px; text-align: left; }
-        th { background: #E8F5E9; font-size: 10px; color: #374151; text-transform: uppercase; }
+        th { background: #E8F5E9; font-size: 10px; color: #000000; text-transform: uppercase; }
         td.num { text-align: right; }
-        .empty { text-align: center; color: #6B7280; padding: 20px; }
-        .footer { margin-top: 12px; border-top: 1px solid #E5E7EB; padding-top: 8px; font-size: 10px; color: #6B7280; }
+        .empty { text-align: center; color: #000000; padding: 20px; }
+        .footer { margin-top: 12px; border-top: 1px solid #E5E7EB; padding-top: 8px; font-size: 10px; color: #000000; }
     </style>
 </head>
 <body>

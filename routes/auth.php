@@ -57,7 +57,4 @@ Route::middleware(['auth', 'tenant.client_guest_rbac'])->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
-    // Fallback route for direct browser navigation to /logout.
-    Route::get('logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout.get');
 });

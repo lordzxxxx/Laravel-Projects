@@ -159,7 +159,7 @@ class Booking extends Model
             return null;
         }
 
-        return asset('storage/'.$this->gcash_payment_proof_path);
+        return route('secure-media.booking-proof', ['booking' => $this], false);
     }
 
     public function getPaymentUiStateAttribute(): array

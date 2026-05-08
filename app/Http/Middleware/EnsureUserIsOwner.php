@@ -32,17 +32,22 @@ class EnsureUserIsOwner
             }
         }
 
-        // Only owners can access these routes.
+        // Default-deny: only `owner` may proceed. Unknown roles are rejected outright.
         if ($user->role !== 'owner') {
             if ($user->role === 'admin') {
                 return redirect('/admin/dashboard')
                     ->with('error', 'This section is for property owners only.');
-            } elseif ($user->role === 'client') {
+            }
+
+            if ($user->role === 'client') {
                 return redirect('/dashboard')
                     ->with('error', 'This section is for property owners only.');
             }
+
+            return redirect('/')
+                ->with('error', 'This section is for property owners only.');
         }
-        
+
         return $next($request);
     }
 }

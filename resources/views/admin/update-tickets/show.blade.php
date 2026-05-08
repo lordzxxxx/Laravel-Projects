@@ -43,9 +43,7 @@
 
     <div class="dashboard-layout">
         <main class="main-content">
-            @if(session('success'))
-                <div class="flash">{{ session('success') }}</div>
-            @endif
+            @include('partials.flash-alerts')
 
             <p style="margin-bottom:12px;"><a href="{{ route('admin.update-tickets.index', [], false) }}" class="btn"><i class="fas fa-arrow-left"></i> All tickets</a></p>
 
@@ -54,9 +52,9 @@
                     <h1 style="font-size:1.2rem;color:#1B5E20;margin-bottom:8px;">{{ $ticket->subject }}</h1>
                     <p style="margin:10px 0;">
                         @if($ticket->status === \App\Models\UpdateTicket::STATUS_RESOLVED)
-                            <span style="background:#DBEAFE;color:#1D4ED8;padding:4px 12px;border-radius:999px;font-weight:600;font-size:0.85rem;">Fixed</span>
+                            <span class="status-badge resolved">Fixed</span>
                         @else
-                            <span style="background:#DCFCE7;color:#166534;padding:4px 12px;border-radius:999px;font-weight:600;font-size:0.85rem;">Pending</span>
+                            <span class="status-badge open">Pending</span>
                         @endif
                     </p>
 
@@ -114,46 +112,42 @@
                 <div class="card-inner">
                     <h2 style="font-size:1rem;color:#374151;margin-bottom:12px;">Update status</h2>
 
-                    @if ($errors->any())
-                        <div class="flash-error">{{ $errors->first() }}</div>
-                    @endif
-
                     @if($ticket->status === \App\Models\UpdateTicket::STATUS_OPEN)
-                        <form method="POST" action="{{ route('admin.update-tickets.update', ['updateTicket' => $ticket->getKey()], false) }}">
+                        <form method="POST" action="{{ route('admin.update-tickets.update', ['updateTicket' => $ticket->getKey()], false) }}" data-loading-form>
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="action" value="resolve">
                             <label for="resolution_notes">Resolution notes (required)</label>
                             <textarea id="resolution_notes" name="resolution_notes" required maxlength="10000">{{ old('resolution_notes') }}</textarea>
                             <div style="margin-top:14px;">
-                                <button type="submit" class="btn primary"><i class="fas fa-check"></i> Mark fixed</button>
+                                <button type="submit" data-loading-button class="btn primary"><i class="fas fa-check"></i> Mark fixed</button>
                             </div>
                         </form>
-                        <form method="POST" action="{{ route('admin.update-tickets.update', ['updateTicket' => $ticket->getKey()], false) }}" style="margin-top:12px;">
+                        <form method="POST" action="{{ route('admin.update-tickets.update', ['updateTicket' => $ticket->getKey()], false) }}" style="margin-top:12px;" data-loading-form>
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="action" value="unresolve">
                             <div style="margin-top:14px;">
-                                <button type="submit" class="btn"><i class="fas fa-rotate-left"></i> Unresolve ticket</button>
+                                <button type="submit" data-loading-button class="btn"><i class="fas fa-rotate-left"></i> Unresolve ticket</button>
                             </div>
                         </form>
                     @else
-                        <form method="POST" action="{{ route('admin.update-tickets.update', ['updateTicket' => $ticket->getKey()], false) }}">
+                        <form method="POST" action="{{ route('admin.update-tickets.update', ['updateTicket' => $ticket->getKey()], false) }}" data-loading-form>
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="action" value="reopen">
                             <label for="reopen_note">Reopen note (optional)</label>
                             <textarea id="reopen_note" name="reopen_note" maxlength="5000">{{ old('reopen_note') }}</textarea>
                             <div style="margin-top:14px;">
-                                <button type="submit" class="btn warn"><i class="fas fa-undo"></i> Reopen ticket</button>
+                                <button type="submit" data-loading-button class="btn warn"><i class="fas fa-undo"></i> Reopen ticket</button>
                             </div>
                         </form>
-                        <form method="POST" action="{{ route('admin.update-tickets.update', ['updateTicket' => $ticket->getKey()], false) }}" style="margin-top:12px;">
+                        <form method="POST" action="{{ route('admin.update-tickets.update', ['updateTicket' => $ticket->getKey()], false) }}" style="margin-top:12px;" data-loading-form>
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="action" value="unresolve">
                             <div style="margin-top:14px;">
-                                <button type="submit" class="btn"><i class="fas fa-rotate-left"></i> Unresolve ticket</button>
+                                <button type="submit" data-loading-button class="btn"><i class="fas fa-rotate-left"></i> Unresolve ticket</button>
                             </div>
                         </form>
                     @endif
@@ -161,5 +155,15 @@
             </div>
         </main>
     </div>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                button.textContent = 'Processing...';
+            });
+        });
+    </script>
 </body>
 </html>

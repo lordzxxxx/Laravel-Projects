@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @include('partials.tenant-favicon')
     <title>Landing Page Settings</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @include('partials.ui-foundation-styles')
+
         :root {
             @include('partials.tenant-theme-css-vars', ['themeTenant' => $tenant])
             --paper: #f1f5f9;
@@ -36,10 +40,8 @@
             box-shadow: 0 16px 35px rgba(0, 0, 0, 0.08);
         }
 
-        h1 {
-            margin: 0 0 8px;
-            font-size: 1.6rem;
-        }
+        /* Page title styling comes from ui-foundation-styles (.page-header h1).
+           Local h1 sizing was removed to keep the title identical across the system. */
 
         .muted {
             color: var(--muted);
@@ -127,15 +129,18 @@
 </head>
 <body>
     <div class="wrap">
+        <div class="page-header" style="margin-bottom: 18px;">
+            <h1>
+                <span class="page-title-icon"><i class="fa-solid fa-palette"></i></span>
+                <span>Tenant Landing Customization</span>
+            </h1>
+            <p>Customize how your public subdomain landing page looks.</p>
+        </div>
+
         <div class="card">
-            <h1>Tenant Landing Customization</h1>
-            <p class="muted">Customize how your public subdomain landing page looks.</p>
+            @include('partials.flash-alerts')
 
-            @if(session('success'))
-                <div class="ok">{{ session('success') }}</div>
-            @endif
-
-            <form method="POST" action="{{ route('owner.landing.update') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('owner.landing.update') }}" enctype="multipart/form-data" data-loading-form>
                 @csrf
                 @method('PUT')
 
@@ -239,11 +244,21 @@
                 </div>
 
                 <div class="actions">
-                    <button class="btn btn-primary" type="submit">Save Settings</button>
+                    <button class="btn btn-primary" data-loading-button type="submit">Save Settings</button>
                     <a class="btn-link" target="_blank" href="{{ $tenant->publicUrl() }}">Open Public Landing</a>
                 </div>
             </form>
         </div>
     </div>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                button.textContent = 'Saving...';
+            });
+        });
+    </script>
 </body>
 </html>

@@ -80,6 +80,16 @@
             {{ $errors->first() }}
         </div>
     @endif
+    @if (session('success'))
+        <div class="alert" style="background:#ecfdf5;border:1px solid #86efac;color:#166534;">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if (session('info'))
+        <div class="alert" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;">
+            {{ session('info') }}
+        </div>
+    @endif
 
     <form method="POST" action="{{ route('payments.checkout') }}">
         @csrf

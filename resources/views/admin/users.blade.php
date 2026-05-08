@@ -6,6 +6,7 @@
     @include('admin.partials.favicon')
     <title>Users Management - Admin Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <style>
         * {
             margin: 0;
@@ -160,14 +161,10 @@
         .page-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 30px;
         }
-        
-        .page-header h1 {
-            font-size: 2rem;
-            color: var(--green-dark);
-        }
+        /* Title styling provided by ui-foundation-styles for cross-system consistency. */
         
         .search-filter {
             display: flex;
@@ -391,6 +388,7 @@
             .main-content { padding: 20px; }
         }
 
+        @include('partials.ui-foundation-styles')
         @include('admin.partials.admin-shell-styles')
     </style>
 </head>
@@ -402,8 +400,14 @@
     <div class="dashboard-layout">
         <!-- Main Content -->
         <main class="main-content">
-            <div class="page-header">
-                <h1>User Management</h1>
+            <div class="page-header flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <h1>
+                        <span class="page-title-icon"><i class="fa-solid fa-users-gear"></i></span>
+                        <span>User Management</span>
+                    </h1>
+                    <p>Manage all platform user accounts and their access levels.</p>
+                </div>
                 <button class="btn btn-primary">+ Add New User</button>
             </div>
             

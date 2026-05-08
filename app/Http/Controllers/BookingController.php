@@ -452,11 +452,12 @@ class BookingController extends Controller
 
         if ($booking->gcash_payment_proof_path) {
             Storage::disk('public')->delete($booking->gcash_payment_proof_path);
+            Storage::disk('local')->delete($booking->gcash_payment_proof_path);
         }
 
         $booking->update([
             'payment_channel' => 'gcash',
-            'gcash_payment_proof_path' => $request->file('gcash_payment_proof')->store('booking-payment-proofs', 'public'),
+            'gcash_payment_proof_path' => $request->file('gcash_payment_proof')->store('private/booking-payment-proofs', 'local'),
             'gcash_payment_submitted_at' => now(),
             'gcash_payment_reviewed_at' => null,
         ]);
@@ -484,6 +485,7 @@ class BookingController extends Controller
 
         if ($booking->gcash_payment_proof_path) {
             Storage::disk('public')->delete($booking->gcash_payment_proof_path);
+            Storage::disk('local')->delete($booking->gcash_payment_proof_path);
         }
 
         $booking->update([

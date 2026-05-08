@@ -14,7 +14,7 @@ class ModuleController extends Controller
      */
     public function index()
     {
-        return 'THIS IS MODULE INDEX';
+        abort(404);
     }
 
     /**
@@ -22,7 +22,7 @@ class ModuleController extends Controller
      */
     public function create()
     {
-        return response()->json(['message' => 'Create module form placeholder.']);
+        abort(404);
     }
 
     /**

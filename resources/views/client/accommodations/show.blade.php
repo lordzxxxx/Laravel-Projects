@@ -6,6 +6,7 @@
     @include('partials.tenant-favicon')
     <title>{{ $accommodation->name }} - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @php
             $authUser = auth()->user();
@@ -443,27 +444,11 @@
         <!-- Image Gallery (carousel + lightbox) -->
         <div class="gallery-container animate delay-1">
             @php
-                $images = is_array($accommodation->images) ? $accommodation->images : [];
-                $galleryImages = collect($images)
-                    ->filter(fn ($image) => is_string($image) && trim($image) !== '')
-                    ->values()
-                    ->all();
-
-                if ($accommodation->primary_image) {
-                    array_unshift($galleryImages, $accommodation->primary_image);
+                $galleryImages = $accommodation->galleryImageUrls();
+                if (count($galleryImages) === 0) {
+                    $galleryImages = [asset('COMMUNAL.jpg')];
                 }
-
-                $galleryImages = collect($galleryImages)
-                    ->map(fn ($image) => '/storage/' . ltrim((string) $image, '/'))
-                    ->unique()
-                    ->values()
-                    ->all();
-
                 $galleryCount = count($galleryImages);
-                if ($galleryCount === 0) {
-                    $galleryImages = ['/COMMUNAL.jpg'];
-                    $galleryCount = 1;
-                }
                 $primaryImageUrl = $galleryImages[0];
             @endphp
             <script type="application/json" id="accommodation-gallery-data">@json($galleryImages)</script>
@@ -626,7 +611,7 @@
 
                     @auth
                         @if($canBookAccommodation)
-                        <form class="booking-form" method="POST" action="{{ route('accommodations.book', $accommodation) }}">
+                        <form class="booking-form" method="POST" action="{{ route('accommodations.book', $accommodation) }}" data-loading-form>
                             @csrf
                             <div class="form-row">
                                 <div class="form-group">
@@ -688,7 +673,7 @@
                                 <textarea name="special_requests" rows="3" placeholder="Any special requests..."></textarea>
                             </div>
                             
-                            <button type="submit" class="btn btn-primary btn-book">
+                            <button type="submit" class="btn btn-primary btn-book" data-loading-button>
                                 Continue to Payment
                             </button>
                         </form>
@@ -975,6 +960,15 @@
             locationType.addEventListener('change', syncLocationFields);
             syncLocationFields();
         })();
+
+        document.querySelectorAll('form[data-loading-form]').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                var button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                button.textContent = 'Processing...';
+            });
+        });
     </script>
 </body>
 </html>

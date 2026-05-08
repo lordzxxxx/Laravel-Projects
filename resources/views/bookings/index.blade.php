@@ -6,16 +6,7 @@
     @include('partials.tenant-favicon')
     <title>My Bookings - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind = {
-            config: {
-                corePlugins: {
-                    preflight: false,
-                },
-            },
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @php
             $authUser = auth()->user();
@@ -87,10 +78,8 @@
             min-height: calc(100vh - var(--client-nav-offset, 100px));
         }
         
-        /* Page Header */
+        /* Page Header — title styling provided by ui-foundation-styles for cross-system consistency. */
         .page-header { margin-bottom: 30px; }
-        .page-header h1 { font-size: 2rem; color: var(--green-dark); margin-bottom: 5px; }
-        .page-header p { color: var(--gray-500); }
         
         /* Filter Tabs */
         .filter-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
@@ -331,13 +320,14 @@
             $ownerAccommodationsBase = '/owner/accommodations';
         @endphp
 
-        <div class="{{ $isOwner ? 'page-header rounded-2xl border border-emerald-100 bg-white/70 p-4 shadow-sm' : 'mb-6 rounded-2xl border border-green-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm' }}">
-            <h1 class="{{ $isOwner ? '' : 'mb-2 text-2xl font-bold text-green-900 sm:text-3xl' }}">
-                @if(!$isOwner)<i class="fas fa-calendar-check mr-2 text-green-700"></i>@endif
-                My Bookings
+        <div class="page-header {{ $isOwner ? 'rounded-2xl border border-emerald-100 bg-white/70 p-4 shadow-sm' : 'mb-6 rounded-2xl border border-emerald-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm' }}">
+            <h1>
+                <span class="page-title-icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span>My Bookings</span>
             </h1>
-            <p class="{{ $isOwner ? '' : 'text-sm text-gray-600 sm:text-base' }}">View and manage your accommodation bookings</p>
+            <p>View and manage your accommodation bookings.</p>
         </div>
+        @include('partials.flash-alerts')
 
         @if($isOwner)
             <div class="rounded-2xl border border-emerald-100 bg-white/95 p-4 shadow-sm" style="margin-bottom: 18px;">
@@ -455,17 +445,17 @@
                                 <div class="action-btns owner-actions-panel" id="owner-actions-{{ $booking->id }}">
                                     <a href="{{ $ownerBookingsBase . '/' . $booking->id }}" class="btn btn-primary">View Details</a>
                                     @if($booking->status === 'pending')
-                                        <form action="/owner/bookings/{{ $booking->id }}/status" method="POST" style="display: inline;">
+                                        <form action="/owner/bookings/{{ $booking->id }}/status" method="POST" style="display: inline;" data-loading-form>
                                             @csrf
                                             @method('PUT')
                                             <input type="hidden" name="status" value="confirmed">
-                                            <button type="submit" class="btn btn-primary">Approve</button>
+                                            <button type="submit" data-loading-button class="btn btn-primary">Approve</button>
                                         </form>
-                                        <form action="/owner/bookings/{{ $booking->id }}/status" method="POST" style="display: inline;">
+                                        <form action="/owner/bookings/{{ $booking->id }}/status" method="POST" style="display: inline;" data-loading-form>
                                             @csrf
                                             @method('PUT')
                                             <input type="hidden" name="status" value="cancelled">
-                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Decline this booking request?')">Decline</button>
+                                            <button type="submit" data-loading-button class="btn btn-danger" onclick="return confirm('Decline this booking request?')">Decline</button>
                                         </form>
                                     @endif
                                 </div>
@@ -476,10 +466,10 @@
                                         @if($booking->status === 'confirmed')
                                             <a href="{{ route('bookings.payment', $booking) }}" class="inline-flex items-center rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-800">Pay Now</a>
                                         @endif
-                                        <form action="{{ route('bookings.cancel', $booking) }}" method="POST" style="display: inline;">
+                                        <form action="{{ route('bookings.cancel', $booking) }}" method="POST" style="display: inline;" data-loading-form>
                                             @csrf
                                             @method('PUT')
-                                            <button type="submit" class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-100" onclick="return confirm('Are you sure you want to cancel this booking?')">Cancel</button>
+                                            <button type="submit" data-loading-button class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-100" onclick="return confirm('Are you sure you want to cancel this booking?')">Cancel</button>
                                         </form>
                                     @endif
                                 </div>
@@ -507,6 +497,15 @@
     </main>
 
     <script>
+        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const button = form.querySelector('[data-loading-button]');
+                if (!button) return;
+                button.disabled = true;
+                button.textContent = 'Processing...';
+            });
+        });
+
         document.querySelectorAll('.toggle-actions-btn').forEach(function(button) {
             button.addEventListener('click', function() {
                 var panel = document.getElementById(button.dataset.target);

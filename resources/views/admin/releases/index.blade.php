@@ -9,10 +9,40 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @include('admin.partials.admin-shell-styles')
+        @include('partials.ui-foundation-styles')
         /* Match other CA admin pages: full-width main under fixed navbar */
         .releases-main-content {
             max-width: none;
         }
+        .updates-surface {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .updates-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 10px;
+            padding: 9px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all .18s ease;
+            border: 1px solid transparent;
+        }
+        .updates-btn:hover { transform: translateY(-1px); }
+        .updates-btn-primary { background: #0f766e; color: #fff; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.22); }
+        .updates-btn-primary:hover { background: #115e59; }
+        .updates-btn-secondary { background: #fff; color: #334155; border-color: #cbd5e1; }
+        .updates-btn-secondary:hover { background: #f8fafc; border-color: #94a3b8; }
+        .updates-btn-warning { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+        .updates-btn-warning:hover { background: #ffedd5; }
+        .updates-btn-danger { background: #fff1f2; color: #9f1239; border-color: #fecdd3; }
+        .updates-btn-danger:hover { background: #ffe4e6; }
     </style>
 </head>
 <body>
@@ -22,23 +52,24 @@
         <main class="main-content releases-main-content">
             <div class="w-full">
                     {{-- Page header --}}
-                    <header class="mb-6 flex shrink-0 flex-col gap-4 border-b border-emerald-100/80 pb-6 sm:flex-row sm:items-center sm:justify-between">
-                        <div class="min-w-0 space-y-1">
-                            <h1 class="text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
-                                Global release registry
+                    <header class="page-header mb-6 flex shrink-0 flex-col gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
+                        <div class="min-w-0">
+                            <h1>
+                                <span class="page-title-icon"><i class="fa-solid fa-rocket"></i></span>
+                                <span>Global release registry</span>
                             </h1>
-                            <p class="max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                            <p class="max-w-3xl">
                                 Track GitHub releases and tenant adoption across Tulogans. Sync pulls tags and published releases into this registry.
                             </p>
                         </div>
                         <div class="flex shrink-0 flex-wrap items-center gap-3">
-                            <a
-                                href="{{ route('admin.releases.sync', [], false) }}"
-                                class="inline-flex items-center gap-2 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-emerald-900/15 transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-                            >
-                                <i class="fas fa-rotate" aria-hidden="true"></i>
-                                Sync from GitHub
-                            </a>
+                            <form method="POST" action="{{ route('admin.releases.sync', [], false) }}">
+                                @csrf
+                                <button type="submit" class="updates-btn updates-btn-primary focus:outline-none focus:ring-2 focus:ring-teal-500/35 focus:ring-offset-1">
+                                    <i class="fas fa-rotate" aria-hidden="true"></i>
+                                    Sync from GitHub
+                                </button>
+                            </form>
                         </div>
                     </header>
 
@@ -74,11 +105,11 @@
                                 ];
                             @endphp
                             @foreach ($statTiles as $tile)
-                                <div class="rounded-xl border border-emerald-100/90 bg-white/90 p-4 shadow-sm ring-1 ring-black/5 backdrop-blur-sm">
+                                <div class="updates-surface p-4">
                                     <div class="text-[0.65rem] font-semibold uppercase tracking-wider text-slate-500">
                                         {{ $tile['label'] }}
                                     </div>
-                                    <div class="mt-1 truncate text-lg font-bold text-emerald-900 sm:text-xl" title="{{ is_scalar($tile['value']) ? (string) $tile['value'] : '' }}">
+                                    <div class="mt-1 truncate text-lg font-bold text-slate-900 sm:text-xl" title="{{ is_scalar($tile['value']) ? (string) $tile['value'] : '' }}">
                                         {{ $tile['value'] }}
                                     </div>
                                 </div>
@@ -88,16 +119,16 @@
 
                     {{-- Releases (fills remaining width) --}}
                     <section class="flex min-h-0 flex-1 flex-col gap-4" aria-labelledby="releases-heading">
-                        <h2 id="releases-heading" class="text-lg font-semibold text-emerald-950">
+                        <h2 id="releases-heading" class="text-lg font-semibold text-slate-900">
                             Releases
                         </h2>
 
                         <div class="flex min-h-0 flex-1 flex-col gap-4">
                             @forelse ($releases as $release)
-                                <article class="rounded-2xl border border-emerald-100/90 bg-white p-5 shadow-sm ring-1 ring-black/5 sm:p-6">
+                                <article class="updates-surface p-5 sm:p-6">
                                     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                                         <div class="min-w-0 space-y-1">
-                                            <p class="font-mono text-base font-bold text-emerald-900 sm:text-lg">
+                                            <p class="font-mono text-base font-bold text-slate-900 sm:text-lg">
                                                 {{ $release->tag }}
                                             </p>
                                             <p class="text-sm font-semibold text-slate-700 sm:text-base">
@@ -132,27 +163,21 @@
                                             <label class="sr-only" for="grace-{{ $release->getKey() }}">Grace days</label>
                                             <input
                                                 id="grace-{{ $release->getKey() }}"
-                                                class="w-20 rounded-lg border border-slate-300 px-2 py-2 text-sm text-slate-800 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                                                class="w-20 rounded-lg border border-slate-300 px-2 py-2 text-sm text-slate-800 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/30"
                                                 type="number"
                                                 name="grace_days"
                                                 min="0"
                                                 max="60"
                                                 value="7"
                                             >
-                                            <button
-                                                type="submit"
-                                                class="rounded-lg bg-amber-500 px-3 py-2 text-xs font-bold text-amber-950 shadow-sm hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1 sm:text-sm"
-                                            >
+                                            <button type="submit" class="updates-btn updates-btn-warning focus:outline-none focus:ring-2 focus:ring-amber-500/35 focus:ring-offset-1">
                                                 Mark required
                                             </button>
                                         </form>
 
                                         <form method="POST" action="{{ route('admin.releases.notify-all', ['release' => $release], false) }}">
                                             @csrf
-                                            <button
-                                                type="submit"
-                                                class="w-full rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 sm:w-auto sm:text-sm"
-                                            >
+                                            <button type="submit" class="updates-btn updates-btn-primary w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-teal-500/35 focus:ring-offset-1">
                                                 Notify all
                                             </button>
                                         </form>
@@ -163,10 +188,7 @@
                                             onsubmit="return confirm('Force mark all tenants as updated to this release?');"
                                         >
                                             @csrf
-                                            <button
-                                                type="submit"
-                                                class="w-full rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 sm:w-auto sm:text-sm"
-                                            >
+                                            <button type="submit" class="updates-btn updates-btn-danger w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-rose-400/35 focus:ring-offset-1">
                                                 Force mark all updated
                                             </button>
                                         </form>
@@ -176,7 +198,7 @@
                                                 href="{{ $release->release_url }}"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-800 hover:bg-blue-100 sm:w-auto sm:text-sm"
+                                                class="updates-btn updates-btn-secondary w-full sm:w-auto"
                                             >
                                                 Open GitHub release
                                             </a>

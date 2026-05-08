@@ -112,15 +112,75 @@ class Accommodation extends Model
     public function getPrimaryImageUrlAttribute()
     {
         if ($this->primary_image) {
-            return '/storage/'.ltrim($this->primary_image, '/');
+            $url = $this->publicStorageAssetUrl($this->primary_image);
+            if ($url !== null) {
+                return $url;
+            }
         }
 
         $images = $this->images;
         if (is_array($images) && count($images) > 0) {
-            return '/storage/'.ltrim((string) $images[0], '/');
+            $url = $this->publicStorageAssetUrl((string) $images[0]);
+            if ($url !== null) {
+                return $url;
+            }
         }
 
-        return '/COMMUNAL.jpg';
+        return asset('COMMUNAL.jpg');
+    }
+
+    /**
+     * Absolute URL for a file on the public disk (uploads). Handles full URLs,
+     * legacy leading slashes, and optional "storage/" prefix so images resolve
+     * on tenant hosts, HTTPS, and non-root APP_URL deployments.
+     */
+    public function publicStorageAssetUrl(?string $path): ?string
+    {
+        if ($path === null || trim($path) === '') {
+            return null;
+        }
+
+        $path = str_replace('\\', '/', trim((string) $path));
+
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        $path = ltrim($path, '/');
+        if (str_starts_with($path, 'storage/')) {
+            $path = substr($path, strlen('storage/'));
+        }
+
+        return asset('storage/'.$path);
+    }
+
+    /**
+     * Gallery paths resolved to URLs (for client/owner galleries).
+     *
+     * @return array<int, string>
+     */
+    public function galleryImageUrls(): array
+    {
+        $raw = is_array($this->images) ? $this->images : [];
+        $urls = [];
+        foreach ($raw as $item) {
+            if (! is_string($item) || trim($item) === '') {
+                continue;
+            }
+            $u = $this->publicStorageAssetUrl($item);
+            if ($u !== null) {
+                $urls[] = $u;
+            }
+        }
+
+        if ($this->primary_image) {
+            $primary = $this->publicStorageAssetUrl($this->primary_image);
+            if ($primary !== null) {
+                array_unshift($urls, $primary);
+            }
+        }
+
+        return array_values(array_unique($urls));
     }
 
     public function getTypeLabelAttribute()

@@ -100,6 +100,7 @@
 
         .portal-switch {
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 14px;
         }
@@ -240,23 +241,31 @@
         <div class="card">
             @php
                 $selectedPortal = $portal ?? request('portal');
-                if (!in_array($selectedPortal, ['admin', 'client'], true)) {
+                if (! in_array($selectedPortal, ['admin', 'client', 'owner'], true)) {
                     $selectedPortal = null;
                 }
 
                 $isAdminPortal = $selectedPortal === 'admin';
+                $isOwnerPortal = $selectedPortal === 'owner';
+                $isStaffPortal = $isAdminPortal || $isOwnerPortal;
                 $isClientPortal = $selectedPortal === 'client';
-                $kickerText = $isAdminPortal
-                    ? 'Tenant admin sign in'
-                    : ($isClientPortal ? 'Client sign in' : 'Tenant sign in');
-                $headingText = $isAdminPortal
-                    ? 'Tenant Admin Login'
-                    : ($isClientPortal ? 'Client Login' : 'Tenant Login');
-                $subtitleText = $isAdminPortal
-                    ? 'Sign in with your tenant admin credentials to manage properties, bookings, and tenant operations.'
-                    : ($isClientPortal
-                        ? 'Sign in to browse properties, book accommodations, and manage your reservations.'
-                        : 'Use one login page for both tenant admin and client accounts.');
+                $kickerText = $isOwnerPortal
+                    ? 'Unit owner sign in'
+                    : ($isAdminPortal
+                        ? 'Tenant admin sign in'
+                        : ($isClientPortal ? 'Client sign in' : 'Tenant sign in'));
+                $headingText = $isOwnerPortal
+                    ? 'Unit Owner Login'
+                    : ($isAdminPortal
+                        ? 'Tenant Admin Login'
+                        : ($isClientPortal ? 'Client Login' : 'Tenant Login'));
+                $subtitleText = $isOwnerPortal
+                    ? 'Sign in with your owner account to manage units, listings, bookings, and reports for this business.'
+                    : ($isAdminPortal
+                        ? 'Sign in with your tenant admin credentials to manage properties, bookings, and tenant operations.'
+                        : ($isClientPortal
+                            ? 'Sign in to browse properties, book accommodations, and manage your reservations.'
+                            : 'Choose your role below, then sign in with the matching account type.'));
             @endphp
 
             <span class="kicker">{{ $kickerText }}</span>
@@ -264,7 +273,8 @@
             <p class="subtitle">{{ $subtitleText }}</p>
 
             <div class="portal-switch">
-                <a href="/login?portal=admin" class="portal-pill {{ $isAdminPortal ? 'active' : '' }}">Tenant Admin</a>
+                <a href="/login?portal=owner" class="portal-pill {{ $isOwnerPortal ? 'active' : '' }}">Unit owner</a>
+                <a href="/login?portal=admin" class="portal-pill {{ $isAdminPortal ? 'active' : '' }}">Tenant admin</a>
                 <a href="/login?portal=client" class="portal-pill {{ $isClientPortal ? 'active' : '' }}">Client</a>
             </div>
 
@@ -274,7 +284,7 @@
 
         <form method="POST" action="/login">
             @csrf
-            <input type="hidden" name="portal" value="{{ $selectedPortal ?? '' }}">
+            <input type="hidden" name="portal" value="{{ $selectedPortal === null ? '' : $selectedPortal }}">
 
             <div class="field">
                 <label for="email">Email Address</label>
@@ -298,11 +308,21 @@
             </div>
 
             <button type="submit" class="btn">
-                Sign In{{ $isAdminPortal ? ' to Tenant Admin Portal' : ($isClientPortal ? ' to Client Portal' : '') }}
+                Sign In
+                @if ($isOwnerPortal)
+                    to Unit Owner Portal
+                @elseif ($isAdminPortal)
+                    to Tenant Admin Portal
+                @elseif ($isClientPortal)
+                    to Client Portal
+                @endif
             </button>
 
             <div class="links">
-                @if ($isAdminPortal)
+                @if ($isOwnerPortal)
+                    <div>Use your <strong>unit owner</strong> email and password (the business owner account). Client guest accounts use the <a href="/login?portal=client">Client</a> tab.</div>
+                @elseif ($isAdminPortal)
+                    <div><strong>Tenant admins</strong> and <strong>unit owners</strong> both use a staff portal—owners can pick <a href="/login?portal=owner">Unit owner</a> for clearer labeling.</div>
                     <div>Tenant admins are provisioned by the system owner.</div>
                 @elseif ($isClientPortal)
                     <div>No account yet? <a href="/register">Create client account</a></div>

@@ -1,4 +1,10 @@
 {{-- Shared styles for CA municipal PDF header (logos + government block + report title). --}}
+{{-- Formal serif: DejaVu Serif ships with DomPDF and embeds reliably; Times stacks are fallbacks. --}}
+body {
+    font-family: DejaVu Serif, Times, "Times New Roman", serif;
+    color: #000000;
+}
+
 /* Municipal PDF header */
 .header {
     margin-bottom: 3px;
@@ -33,14 +39,14 @@
 
 .header-topline {
     font-size: 12px;
-    color: #4B5563;
+    color: #000000;
     margin-bottom: 3px;
 }
 
 .header-main {
     font-size: 20px;
     font-weight: 700;
-    color: #1F2937;
+    color: #000000;
     letter-spacing: 0.2px;
     margin-bottom: 2px;
 }
@@ -48,24 +54,24 @@
 .header-office {
     font-size: 14px;
     font-weight: 700;
-    color: #1F2937;
+    color: #000000;
     margin-bottom: 2px;
 }
 
 .header-report-line {
     font-size: 12px;
-    color: #4B5563;
+    color: #000000;
     margin-bottom: 1px;
 }
 
 .header h1 {
-    color: #1B5E20;
+    color: #000000;
     font-size: 16px;
     margin-bottom: 3px;
 }
 
 .header p {
-    color: #666;
+    color: #000000;
     font-size: 12px;
     margin: 2px 0;
 }

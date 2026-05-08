@@ -8,24 +8,15 @@
     <title>Admin Dashboard - IMPASUGONG TOURISM</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <style>
         @include('admin.partials.admin-shell-styles')
+        @include('partials.ui-foundation-styles')
 
         .page-header {
             margin-bottom: 30px;
         }
-
-        .page-header h1 {
-            font-size: 2rem;
-            color: var(--green-dark);
-            margin-bottom: 5px;
-            font-weight: 700;
-        }
-
-        .page-header p {
-            color: var(--gray-500);
-            font-size: 0.95rem;
-        }
+        /* Title styles inherited from admin-shell-styles for consistency */
         
         /* KPI Cards */
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
@@ -305,26 +296,15 @@
     <div class="dashboard-layout">
         <!-- Main Content -->
         <main class="main-content">
-            @if(session('success'))
-                <div style="background: #ECFDF5; border: 1px solid #86EFAC; color: #166534; padding: 10px 12px; border-radius: 10px; margin-bottom: 16px; font-weight: 600;">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if ($errors->any())
-                <div style="background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; padding: 10px 12px; border-radius: 10px; margin-bottom: 16px; font-weight: 600;">
-                    <strong>Could not complete that action.</strong>
-                    <ul style="margin: 8px 0 0 18px; font-weight: 500;">
-                        @foreach ($errors->all() as $message)
-                            <li>{{ $message }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            @include('partials.flash-alerts')
 
             <!-- Page Header -->
             <div class="page-header animate">
-                <h1><i class="fas fa-chart-line" style="color: var(--green-primary); margin-right: 12px;"></i>Admin Dashboard</h1>
-                <p>Platform activity, bookings, and guest demographics</p>
+                <h1>
+                    <span class="page-title-icon"><i class="fa-solid fa-gauge-high"></i></span>
+                    <span>Admin Dashboard</span>
+                </h1>
+                <p>Platform activity, bookings, and guest demographics.</p>
             </div>
 
             <div class="filter-card animate delay-1">
@@ -388,9 +368,14 @@
 
                 @if(empty($demographics['columns_ready']))
                     <div style="background:#FFFBEB; border:1px solid #FCD34D; color:#92400E; padding:10px 12px; border-radius:10px; margin-bottom:12px;">
-                        Demographic columns are not on tenant <code>bookings</code> tables yet. Bookings live in each tenant database; plain <code>php artisan migrate</code> only touches the landlord DB. Run tenant schema migrations:
-                        <code style="display:block; margin-top:8px; padding:8px 10px; background:#fff; border-radius:6px; font-size:0.82rem;">php artisan tenants:migrate</code>
-                        One tenant: <code style="font-size:0.82rem;">php artisan tenants:migrate YOUR_TENANT_ID</code>
+                        @if(\App\Support\SingleDbMigrationMode::enabled() && ! \App\Support\SingleDbMigrationMode::allowTenantSwitching())
+                            Demographic columns are not on the unified <code>bookings</code> table yet. With single-database mode, tenant data lives in the same database as the landlord schema. Apply migrations on the central connection:
+                            <code style="display:block; margin-top:8px; padding:8px 10px; background:#fff; border-radius:6px; font-size:0.82rem;">php artisan migrate</code>
+                        @else
+                            Demographic columns are not on tenant <code>bookings</code> tables yet. Bookings live in each tenant database; plain <code>php artisan migrate</code> only touches the landlord DB. Run tenant schema migrations:
+                            <code style="display:block; margin-top:8px; padding:8px 10px; background:#fff; border-radius:6px; font-size:0.82rem;">php artisan tenants:migrate</code>
+                            One tenant: <code style="font-size:0.82rem;">php artisan tenants:migrate YOUR_TENANT_ID</code>
+                        @endif
                     </div>
                 @endif
 

@@ -29,11 +29,18 @@ use App\Models\CentralLandingPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/checkout', [PaymentController::class, 'showCheckoutForm'])->name('payments.form');
-Route::post('/checkout', [PaymentController::class, 'checkout'])->name('payments.checkout');
-Route::get('/success', [PaymentController::class, 'success'])->name('payments.success');
-Route::get('/cancel', [PaymentController::class, 'cancel'])->name('payments.cancel');
-Route::post('/stripe/webhook', [PaymentController::class, 'webhook'])->name('payments.webhook');
+Route::middleware(['central.port'])->group(function () {
+    Route::middleware(['auth', 'throttle:20,1'])->group(function () {
+        Route::get('/checkout', [PaymentController::class, 'showCheckoutForm'])->name('payments.form');
+        Route::post('/checkout', [PaymentController::class, 'checkout'])->name('payments.checkout');
+        Route::get('/success', [PaymentController::class, 'success'])->name('payments.success');
+        Route::get('/cancel', [PaymentController::class, 'cancel'])->name('payments.cancel');
+    });
+
+    Route::post('/stripe/webhook', [PaymentController::class, 'webhook'])
+        ->middleware('throttle:120,1')
+        ->name('payments.webhook');
+});
 
 $centralDomain = env('CENTRAL_DOMAIN', parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost');
 $registerCentralRoutes = function () {
@@ -109,22 +116,33 @@ $registerCentralRoutes = function () {
             Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
             Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-            // Messages - accessible to all authenticated users
+            // Messages - accessible to all authenticated users (throttled to prevent flooding).
             Route::prefix('messages')->name('messages.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\MessageController::class, 'index'])->name('index');
                 Route::get('/create', [\App\Http\Controllers\MessageController::class, 'create'])->name('create');
                 Route::get('/{message}', [\App\Http\Controllers\MessageController::class, 'show'])->name('show');
-                Route::post('/', [\App\Http\Controllers\MessageController::class, 'store'])->name('store');
-                Route::post('/{message}/reply', [\App\Http\Controllers\MessageController::class, 'reply'])->name('reply');
-                Route::put('/{message}/read', [\App\Http\Controllers\MessageController::class, 'markAsRead'])->name('mark-read');
-                Route::put('/{message}/archive', [\App\Http\Controllers\MessageController::class, 'archive'])->name('archive');
-                Route::delete('/{message}', [\App\Http\Controllers\MessageController::class, 'destroy'])->name('destroy');
+
+                Route::middleware('throttle:30,1')->group(function () {
+                    Route::post('/', [\App\Http\Controllers\MessageController::class, 'store'])->name('store');
+                    Route::post('/{message}/reply', [\App\Http\Controllers\MessageController::class, 'reply'])->name('reply');
+                });
+
+                Route::middleware('throttle:120,1')->group(function () {
+                    Route::put('/{message}/read', [\App\Http\Controllers\MessageController::class, 'markAsRead'])->name('mark-read');
+                    Route::put('/{message}/archive', [\App\Http\Controllers\MessageController::class, 'archive'])->name('archive');
+                    Route::delete('/{message}', [\App\Http\Controllers\MessageController::class, 'destroy'])->name('destroy');
+                });
             });
 
             Route::get('/notifications', [NotificationBellController::class, 'index']);
             Route::post('/notifications/read-all', [NotificationBellController::class, 'markAllRead']);
             Route::post('/notifications/{id}/read', [NotificationBellController::class, 'markRead'])
                 ->where('id', '[0-9a-fA-F-]{36}');
+
+            Route::get('/secure-media/onboarding-proof/{tenant}', [\App\Http\Controllers\SecureMediaController::class, 'onboardingProof'])
+                ->name('secure-media.onboarding-proof');
+            Route::get('/secure-media/booking-proof/{booking}', [\App\Http\Controllers\SecureMediaController::class, 'bookingProof'])
+                ->name('secure-media.booking-proof');
 
             // Central dashboard redirect (no client pages on central app)
             Route::get('/dashboard', function () {
@@ -152,7 +170,7 @@ $registerCentralRoutes = function () {
         });
 
         // ============ OWNER ROUTES ============
-        Route::middleware(['auth', 'tenant.context', 'owner'])->prefix('owner')->group(function () {
+        Route::middleware(['auth', 'tenant.context', 'tenant.permissions_team', 'owner'])->prefix('owner')->group(function () {
             Route::get('/onboarding/payment', [OnboardingPaymentController::class, 'showPayment'])->name('owner.onboarding.payment');
             Route::post('/onboarding/payment', [OnboardingPaymentController::class, 'submitGcashProof'])->name('owner.onboarding.payment.submit');
             Route::post('/onboarding/payment/stripe-checkout', [OnboardingPaymentController::class, 'startStripeCheckout'])->name('owner.onboarding.payment.stripe.checkout');
@@ -160,7 +178,7 @@ $registerCentralRoutes = function () {
             Route::get('/onboarding/status', [OnboardingPaymentController::class, 'status'])->name('owner.onboarding.status');
         });
 
-        Route::middleware(['auth', 'tenant.context', 'owner', 'owner.onboarded'])->prefix('owner')->name('owner.')->group(function () {
+        Route::middleware(['auth', 'tenant.context', 'tenant.permissions_team', 'owner', 'owner.onboarded'])->prefix('owner')->name('owner.')->group(function () {
             // Owner Dashboard
             Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
             Route::get('/reports/monthly', [OwnerDashboardController::class, 'monthlyReport'])->name('reports.monthly');
@@ -209,8 +227,7 @@ $registerCentralRoutes = function () {
             // Admin Dashboard with Sales Monitoring
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
             Route::get('/system-updates', [AdminReleaseController::class, 'index'])->name('updates.index');
-            Route::get('/system-updates/sync', [AdminReleaseController::class, 'sync'])->name('releases.sync');
-            Route::post('/system-updates/sync', [AdminReleaseController::class, 'sync'])->name('releases.sync.post');
+            Route::post('/system-updates/sync', [AdminReleaseController::class, 'sync'])->name('releases.sync');
             Route::post('/system-updates/{release}/required', [AdminReleaseController::class, 'markRequired'])->name('releases.required');
             Route::post('/system-updates/{release}/notify-all', [AdminReleaseController::class, 'notifyAll'])->name('releases.notify-all');
             Route::post('/system-updates/{release}/force-mark-all-updated', [AdminReleaseController::class, 'forceMarkAllUpdated'])->name('releases.force-mark-all-updated');
@@ -310,18 +327,25 @@ Route::middleware(['tenant.port', 'tenant.required', 'tenant.permissions_team', 
 
         Route::middleware(['auth', 'client', 'tenant.client_guest_rbac'])->group(function () {
             Route::post('/accommodations/{accommodation}/book', [\App\Http\Controllers\BookingController::class, 'store'])
+                ->middleware('throttle:20,1')
                 ->name('accommodations.book');
 
             Route::prefix('bookings')->name('bookings.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\BookingController::class, 'index'])->name('index');
                 Route::get('/{booking}', [\App\Http\Controllers\BookingController::class, 'show'])->name('show');
                 Route::put('/{booking}/cancel', [\App\Http\Controllers\BookingController::class, 'cancel'])->name('cancel');
-                Route::post('/{booking}/message', [\App\Http\Controllers\BookingController::class, 'sendMessage'])->name('message');
+                Route::post('/{booking}/message', [\App\Http\Controllers\BookingController::class, 'sendMessage'])
+                    ->middleware('throttle:30,1')
+                    ->name('message');
                 Route::get('/{booking}/payment', [\App\Http\Controllers\BookingController::class, 'payment'])->name('payment');
-                Route::post('/{booking}/payment/confirm', [\App\Http\Controllers\BookingController::class, 'confirmPayment'])->name('payment.confirm');
+                Route::post('/{booking}/payment/confirm', [\App\Http\Controllers\BookingController::class, 'confirmPayment'])
+                    ->middleware('throttle:20,1')
+                    ->name('payment.confirm');
                 Route::get('/{booking}/payment/success', [\App\Http\Controllers\BookingController::class, 'paymentSuccess'])->name('payment.success');
                 Route::get('/{booking}/payment/cancel', [\App\Http\Controllers\BookingController::class, 'paymentCancel'])->name('payment.cancel');
-                Route::post('/{booking}/payment-proof', [\App\Http\Controllers\BookingController::class, 'uploadPaymentProof'])->name('payment-proof.upload');
+                Route::post('/{booking}/payment-proof', [\App\Http\Controllers\BookingController::class, 'uploadPaymentProof'])
+                    ->middleware('throttle:10,1')
+                    ->name('payment-proof.upload');
                 Route::delete('/{booking}/payment-proof', [\App\Http\Controllers\BookingController::class, 'removePaymentProof'])->name('payment-proof.remove');
             });
 
@@ -384,16 +408,27 @@ Route::middleware(['tenant.port', 'tenant.required', 'tenant.permissions_team', 
         });
 
         Route::middleware(['auth'])->group(function () {
-            Route::get('/notifications', [NotificationBellController::class, 'index']);
-            Route::post('/notifications/read-all', [NotificationBellController::class, 'markAllRead']);
-            Route::post('/notifications/{id}/read', [NotificationBellController::class, 'markRead'])
-                ->where('id', '[0-9a-fA-F-]{36}');
+            Route::middleware('throttle:120,1')->group(function () {
+                Route::get('/notifications', [NotificationBellController::class, 'index']);
+                Route::post('/notifications/read-all', [NotificationBellController::class, 'markAllRead']);
+                Route::post('/notifications/{id}/read', [NotificationBellController::class, 'markRead'])
+                    ->where('id', '[0-9a-fA-F-]{36}');
+            });
+
+            Route::middleware('throttle:60,1')->group(function () {
+                Route::get('/secure-media/onboarding-proof/{tenant}', [\App\Http\Controllers\SecureMediaController::class, 'onboardingProof'])
+                    ->name('secure-media.onboarding-proof');
+                Route::get('/secure-media/booking-proof/{booking}', [\App\Http\Controllers\SecureMediaController::class, 'bookingProof'])
+                    ->name('secure-media.booking-proof');
+            });
         });
 
         Route::middleware(['auth', 'tenant.client_guest_rbac'])->group(function () {
             Route::prefix('update-tickets')->name('update-tickets.')->group(function () {
                 Route::get('/', [UpdateTicketController::class, 'clientIndex'])->name('index');
-                Route::post('/', [UpdateTicketController::class, 'clientStore'])->name('store');
+                Route::post('/', [UpdateTicketController::class, 'clientStore'])
+                    ->middleware('throttle:10,1')
+                    ->name('store');
                 Route::get('/{updateTicket}', [UpdateTicketController::class, 'clientShow'])->name('show');
             });
 
@@ -404,25 +439,30 @@ Route::middleware(['tenant.port', 'tenant.required', 'tenant.permissions_team', 
                 ->name('messages.create');
 
             Route::post('/messages/mark-all-read', [\App\Http\Controllers\MessageController::class, 'markAllAsRead'])
+                ->middleware('throttle:30,1')
                 ->name('messages.mark-all-read');
 
             Route::get('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'show'])
                 ->name('messages.show');
 
-            Route::post('/messages', [\App\Http\Controllers\MessageController::class, 'store'])
-                ->name('messages.store');
+            Route::middleware('throttle:30,1')->group(function () {
+                Route::post('/messages', [\App\Http\Controllers\MessageController::class, 'store'])
+                    ->name('messages.store');
 
-            Route::post('/messages/{message}/reply', [\App\Http\Controllers\MessageController::class, 'reply'])
-                ->name('messages.reply');
+                Route::post('/messages/{message}/reply', [\App\Http\Controllers\MessageController::class, 'reply'])
+                    ->name('messages.reply');
+            });
 
-            Route::put('/messages/{message}/read', [\App\Http\Controllers\MessageController::class, 'markAsRead'])
-                ->name('messages.mark-read');
+            Route::middleware('throttle:120,1')->group(function () {
+                Route::put('/messages/{message}/read', [\App\Http\Controllers\MessageController::class, 'markAsRead'])
+                    ->name('messages.mark-read');
 
-            Route::put('/messages/{message}/archive', [\App\Http\Controllers\MessageController::class, 'archive'])
-                ->name('messages.archive');
+                Route::put('/messages/{message}/archive', [\App\Http\Controllers\MessageController::class, 'archive'])
+                    ->name('messages.archive');
 
-            Route::delete('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'destroy'])
-                ->name('messages.destroy');
+                Route::delete('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'destroy'])
+                    ->name('messages.destroy');
+            });
         });
 
         Route::middleware(['auth', 'tenant.client_guest_rbac'])->group(function () {
