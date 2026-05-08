@@ -39,11 +39,8 @@ return [
      *
      * A valid task is any class that implements Spatie\Multitenancy\Tasks\SwitchTenantTask
      */
-    'switch_tenant_tasks' => (bool) env('SINGLE_DB_ALLOW_TENANT_SWITCHING', true) ? [
-        // \Spatie\Multitenancy\Tasks\PrefixCacheTask::class,
-        \App\Multitenancy\Tasks\SwitchTenantDatabaseConnectionTask::class,
-        // \Spatie\Multitenancy\Tasks\SwitchRouteCacheTask::class,
-    ] : [],
+    // Single-DB mode: keep tenant context resolution, but never rewrite DB connection per tenant.
+    'switch_tenant_tasks' => [],
 
     /*
      * This class is the model used for storing configuration on tenants.
@@ -58,7 +55,7 @@ return [
      * will be automatically set on the job. When the job is executed, the set
      * tenant on the job will be made current.
      */
-    'queues_are_tenant_aware_by_default' => true,
+    'queues_are_tenant_aware_by_default' => false,
 
     /*
      * The connection name to reach the tenant database.

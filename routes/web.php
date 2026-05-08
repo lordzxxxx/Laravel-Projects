@@ -268,7 +268,7 @@ $registerCentralRoutes = function () {
                 ->name('messages.support-reply');
 
             // Property Management (Admin can view all properties)
-            Route::prefix('../owner/accommodations')->name('owner.accommodations.')->group(function () {
+            Route::prefix('owner/accommodations')->name('owner.accommodations.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\AccommodationController::class, 'ownerIndex'])->name('index');
                 Route::get('/{accommodation}', [\App\Http\Controllers\AccommodationController::class, 'show'])->name('show');
             });
@@ -333,7 +333,7 @@ Route::middleware(['tenant.port', 'tenant.required', 'tenant.permissions_team', 
         // Tenant admin dashboard alias for views shared with central app.
         Route::middleware(['auth', 'tenant.manager'])->group(function () {
             Route::get('/admin/dashboard', [OwnerDashboardController::class, 'index'])
-                ->name('admin.dashboard');
+                ->name('tenant.admin.dashboard');
         });
 
         // Tenant manager routes (same owner pages/functions, available to owner or tenant admin)

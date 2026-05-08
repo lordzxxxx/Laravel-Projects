@@ -2,38 +2,16 @@
 
 namespace App\Models\Concerns;
 
-use App\Models\Tenant;
-use App\Support\SingleDbMigrationMode;
-
 trait UsesTenantConnectionForTenantData
 {
     public function getConnectionName()
     {
-        $tenantConnection = config('multitenancy.tenant_database_connection_name', 'tenant');
         $defaultConnection = config('database.default');
         $landlordConnection = config('multitenancy.landlord_database_connection_name', $defaultConnection);
 
-        // Keep framework tests on the configured test/default connection.
+        // In single-db mode, always use landlord/default connection.
         if (app()->environment('testing')) {
             return $defaultConnection;
-        }
-
-        if (SingleDbMigrationMode::readsEnabled()) {
-            return $landlordConnection;
-        }
-
-        // If tenant is already resolved, always use tenant DB.
-        if (Tenant::checkCurrent()) {
-            return $tenantConnection;
-        }
-
-        // If an authenticated tenant-scoped user is acting, force tenant DB.
-        if (app()->bound('request')) {
-            $user = request()->user();
-
-            if ($user && ! empty($user->tenant_id)) {
-                return $tenantConnection;
-            }
         }
 
         return $landlordConnection;
