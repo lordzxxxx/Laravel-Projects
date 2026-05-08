@@ -9,9 +9,11 @@ use App\Models\Tenant;
 use App\Policies\AccommodationPolicy;
 use App\Policies\BookingPolicy;
 use App\Services\Messaging\CentralSupportInboxService;
+use App\Support\SingleDbMigrationMode;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +33,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->ensureCaBundleConfigured();
+
+        if (SingleDbMigrationMode::unifiedSchema() && ! SingleDbMigrationMode::tenantDatabaseNameMatchesLandlord()) {
+            $landlordConn = config('multitenancy.landlord_database_connection_name', 'landlord');
+            $tenantConn = config('multitenancy.tenant_database_connection_name', 'tenant');
+            Log::warning('Single-DB unified mode: landlord and tenant connections use different database names; point TENANT_DB_DATABASE at the landlord database or remove overrides.', [
+                'landlord_connection' => $landlordConn,
+                'tenant_connection' => $tenantConn,
+                'landlord_database' => (string) config("database.connections.{$landlordConn}.database"),
+                'tenant_database' => (string) config("database.connections.{$tenantConn}.database"),
+            ]);
+        }
 
         Gate::policy(Accommodation::class, AccommodationPolicy::class);
         Gate::policy(Booking::class, BookingPolicy::class);

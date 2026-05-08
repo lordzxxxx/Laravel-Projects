@@ -41,5 +41,24 @@ class SingleDbMigrationMode
 
         return (bool) config('single_db_migration.allow_tenant_switching', true);
     }
-}
 
+    /**
+     * One physical database: tenant-scoped rows use tenant_id on the landlord connection,
+     * and per-tenant DB switching is disabled.
+     */
+    public static function unifiedSchema(): bool
+    {
+        return self::enabled() && ! self::allowTenantSwitching();
+    }
+
+    /**
+     * True when landlord and tenant connection configs resolve to the same database name.
+     */
+    public static function tenantDatabaseNameMatchesLandlord(): bool
+    {
+        $landlord = (string) config('database.connections.'.config('multitenancy.landlord_database_connection_name', 'landlord').'.database');
+        $tenant = (string) config('database.connections.'.config('multitenancy.tenant_database_connection_name', 'tenant').'.database');
+
+        return $landlord !== '' && $landlord === $tenant;
+    }
+}

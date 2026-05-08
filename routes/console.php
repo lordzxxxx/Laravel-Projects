@@ -611,6 +611,26 @@ Artisan::command('single-db:reconcile {--tenant=} {--tables=users,accommodations
     return 0;
 })->purpose('Show reconciliation counters for imported tenant rows in single-db migration');
 
+Artisan::command('single-db:migrate {--force : Force the operation to run when in production}', function () {
+    $connection = (string) config('multitenancy.landlord_database_connection_name', 'landlord');
+
+    if (! SingleDbMigrationMode::unifiedSchema()) {
+        $this->comment('Note: unified single-DB mode is not active (see SINGLE_DB_*). Migrating the landlord connection anyway.');
+    }
+
+    $this->info("Running migrations on [{$connection}] (canonical path for tenant + landlord tables in one database).");
+
+    $params = ['--database' => $connection];
+    if ($this->option('force')) {
+        $params['--force'] = true;
+    }
+
+    $exit = Artisan::call('migrate', $params);
+    $this->output->write(Artisan::output());
+
+    return $exit;
+})->purpose('Run schema migrations on the landlord/unified database (use instead of tenants:migrate in single-DB mode)');
+
 Artisan::command('single-db:status', function () {
     $this->info('Single-DB migration flags');
     $this->table(
@@ -625,12 +645,18 @@ Artisan::command('single-db:status', function () {
         ]
     );
 
-    $landlordDb = (string) config('database.connections.landlord.database');
-    $tenantDb = (string) config('database.connections.tenant.database');
+    $landlordKey = config('multitenancy.landlord_database_connection_name', 'landlord');
+    $tenantKey = config('multitenancy.tenant_database_connection_name', 'tenant');
+    $landlordDb = (string) config("database.connections.{$landlordKey}.database");
+    $tenantDb = (string) config("database.connections.{$tenantKey}.database");
     $this->newLine();
     $this->line('Connection database names (from config)');
-    $this->line("  landlord: <fg=cyan>{$landlordDb}</>");
-    $this->line("  tenant:   <fg=cyan>{$tenantDb}</>");
+    $this->line("  {$landlordKey}: <fg=cyan>{$landlordDb}</>");
+    $this->line("  {$tenantKey}:   <fg=cyan>{$tenantDb}</>");
+
+    if (SingleDbMigrationMode::unifiedSchema()) {
+        $this->line('  unified_schema: <fg=green>true</>');
+    }
 
     if ($landlordDb !== '' && $landlordDb === $tenantDb) {
         $this->info('Landlord and tenant connections use the same database (standard single-DB deployment).');

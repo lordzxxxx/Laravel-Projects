@@ -368,9 +368,9 @@
 
                 @if(empty($demographics['columns_ready']))
                     <div style="background:#FFFBEB; border:1px solid #FCD34D; color:#92400E; padding:10px 12px; border-radius:10px; margin-bottom:12px;">
-                        @if(\App\Support\SingleDbMigrationMode::enabled() && ! \App\Support\SingleDbMigrationMode::allowTenantSwitching())
-                            Demographic columns are not on the unified <code>bookings</code> table yet. With single-database mode, tenant data lives in the same database as the landlord schema. Apply migrations on the central connection:
-                            <code style="display:block; margin-top:8px; padding:8px 10px; background:#fff; border-radius:6px; font-size:0.82rem;">php artisan migrate</code>
+                        @if(\App\Support\SingleDbMigrationMode::unifiedSchema())
+                            Demographic columns are not on the unified <code>bookings</code> table yet. With single-database mode, tenant data lives in the same database as the landlord schema. Apply migrations:
+                            <code style="display:block; margin-top:8px; padding:8px 10px; background:#fff; border-radius:6px; font-size:0.82rem;">php artisan single-db:migrate</code>
                         @else
                             Demographic columns are not on tenant <code>bookings</code> tables yet. Bookings live in each tenant database; plain <code>php artisan migrate</code> only touches the landlord DB. Run tenant schema migrations:
                             <code style="display:block; margin-top:8px; padding:8px 10px; background:#fff; border-radius:6px; font-size:0.82rem;">php artisan tenants:migrate</code>
