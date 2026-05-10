@@ -357,7 +357,6 @@ class DashboardController extends Controller
     public function tenants(Request $request)
     {
         $search = trim((string) $request->query('q', ''));
-        $plan = trim((string) $request->query('plan', ''));
         $subscriptionStatus = trim((string) $request->query('subscription_status', ''));
         $onboardingStatus = trim((string) $request->query('onboarding_status', ''));
         $perPage = (int) $request->query('per_page', 15);
@@ -378,7 +377,6 @@ class DashboardController extends Controller
                         });
                 });
             })
-            ->when($plan !== '', fn ($builder) => $builder->where('plan', $plan))
             ->when($subscriptionStatus !== '', fn ($builder) => $builder->where('subscription_status', $subscriptionStatus))
             ->when($onboardingStatus !== '', fn ($builder) => $builder->where('onboarding_status', $onboardingStatus))
             ->orderBy('name');
@@ -417,7 +415,6 @@ class DashboardController extends Controller
 
         $tenantFilters = [
             'q' => $search,
-            'plan' => $plan,
             'subscription_status' => $subscriptionStatus,
             'onboarding_status' => $onboardingStatus,
             'per_page' => $perPage,

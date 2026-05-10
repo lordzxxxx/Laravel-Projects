@@ -56,7 +56,7 @@
 
         .tenant-filters-grid {
             display: grid;
-            grid-template-columns: 1.5fr repeat(4, minmax(120px, 1fr));
+            grid-template-columns: 1.5fr repeat(3, minmax(120px, 1fr));
             gap: 10px;
             align-items: end;
         }
@@ -182,7 +182,7 @@
                         <span class="page-title-icon"><i class="fa-solid fa-building"></i></span>
                         <span>Tenant Management</span>
                     </h1>
-                    <p>Plans, domains, subscriptions, and bandwidth across every tenant in the central app.</p>
+                    <p>Domains, subscriptions, and bandwidth across every tenant in the central app.</p>
                 </div>
                 <a href="{{ route('admin.tenants.lifecycle-logs', [], false) }}"
                    class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-[12px] font-semibold text-emerald-700 border border-emerald-200 shadow-sm transition hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300">
@@ -271,7 +271,7 @@
                         All tenants
                     </h3>
                     <p class="max-w-2xl text-xs leading-relaxed text-gray-500">
-                        Bandwidth shows estimated HTTP transfer per tenant host (static assets skipped). Use <strong class="font-semibold text-gray-700">Manage</strong> on a row to edit profile, plan, domain, billing, and bandwidth.
+                        Bandwidth shows estimated HTTP transfer per tenant host (static assets skipped). Use <strong class="font-semibold text-gray-700">Manage</strong> on a row to edit profile, domain, billing, and bandwidth.
                     </p>
                 </div>
 
@@ -288,16 +288,6 @@
                                     value="{{ $tenantFilters['q'] ?? '' }}"
                                     placeholder="Tenant, owner, email, domain, or slug"
                                 >
-                            </div>
-                            <div>
-                                <label class="tenant-filter-label" for="tenant-plan">Plan</label>
-                                <select id="tenant-plan" class="tenant-filter-input" name="plan">
-                                    <option value="">All plans</option>
-                                    <option value="basic" @selected(($tenantFilters['plan'] ?? '') === 'basic')>Basic</option>
-                                    <option value="plus" @selected(($tenantFilters['plan'] ?? '') === 'plus')>Standard</option>
-                                    <option value="pro" @selected(($tenantFilters['plan'] ?? '') === 'pro')>Premium</option>
-                                    <option value="promo" @selected(($tenantFilters['plan'] ?? '') === 'promo')>Promo</option>
-                                </select>
                             </div>
                             <div>
                                 <label class="tenant-filter-label" for="tenant-subscription">Billing status</label>
@@ -345,15 +335,14 @@
 
                 @php
                     $tenantRowScroll = 'overflow-x-auto overscroll-x-contain';
-                    // Fixed column widths + gap-3 gaps ≈ 1280px — keeps one horizontal table row
-                    $tenantRowFlex = 'flex min-w-[1280px] shrink-0 items-center gap-3 px-4';
+                    // Fixed column widths + gap-3 gaps — keeps one horizontal table row
+                    $tenantRowFlex = 'flex min-w-[1172px] shrink-0 items-center gap-3 px-4';
                 @endphp
                 {{-- Column guide: same flex row as data (scroll horizontally on narrow viewports) --}}
                 <div class="{{ $tenantRowScroll }} tenants-table-head border-b border-gray-200">
                     <div class="{{ $tenantRowFlex }} py-3 text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         <div class="w-40 shrink-0">Tenant</div>
                         <div class="w-44 shrink-0">Owner</div>
-                        <div class="w-24 shrink-0">Plan</div>
                         <div class="w-52 shrink-0">Domain</div>
                             <div class="w-32 shrink-0">Billing</div>
                             <div class="w-36 shrink-0">Onboarding</div>
@@ -424,9 +413,6 @@
                                     <div class="w-44 shrink-0">
                                         <p class="truncate text-sm font-semibold text-gray-900">{{ $tenant->owner?->name ?? 'Unassigned' }}</p>
                                         <p class="tenant-sub truncate" title="{{ $tenant->owner?->email }}">{{ $tenant->owner?->email ?? '—' }}</p>
-                                    </div>
-                                    <div class="flex w-24 shrink-0 items-center">
-                                        <span class="{{ $badgeBase }} bg-gray-100 text-gray-800 ring-1 ring-gray-200">{{ \App\Models\Tenant::planLabel($tenant->plan) }}</span>
                                     </div>
                                     <div class="w-52 min-w-0 shrink-0">
                                         @if($domainEnabled)
