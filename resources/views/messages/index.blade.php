@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>Messages - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -110,7 +110,7 @@
 
     <main
         class="messages-index-main {{ $useOwnerNavbar ? 'main-content with-owner-nav flex w-full min-h-screen flex-col' : 'mx-auto flex min-h-screen w-full max-w-none flex-col px-3 pb-6 sm:px-4 lg:px-6' }}"
-        @if(! $useOwnerNavbar) style="padding-top: calc(var(--client-nav-offset, 108px) + 12px);" @endif
+        @if(! $useOwnerNavbar) style="padding-top: calc(var(--client-nav-offset) + 12px);" @endif
     >
         <header class="page-header mb-4 flex flex-shrink-0 flex-col gap-3 sm:mb-5 sm:flex-row sm:items-start sm:justify-between">
             <div class="min-w-0 flex-1">

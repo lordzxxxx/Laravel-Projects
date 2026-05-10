@@ -7,6 +7,8 @@ use App\Models\Accommodation;
 use App\Models\Booking;
 use App\Models\Message;
 use App\Models\Tenant;
+use App\Support\AccommodationAvailability;
+use App\Support\PortalDetector;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -19,7 +21,9 @@ class DashboardController extends Controller
         $currentTenant = Tenant::current();
 
         if (! $user) {
-            return redirect()->route('accommodations.index');
+            return Tenant::checkCurrent()
+                ? redirect()->route('accommodations.index')
+                : redirect()->route('portal.accommodations.index');
         }
 
         if ($user->isOwner() || ($user->isAdmin() && $currentTenant && (int) $user->tenant_id === (int) $currentTenant->id)) {
@@ -27,8 +31,12 @@ class DashboardController extends Controller
         }
 
         if (! $user->isClient()) {
-            return redirect()->route('accommodations.index');
+            return Tenant::checkCurrent()
+                ? redirect()->route('accommodations.index')
+                : redirect()->route('portal.accommodations.index');
         }
+
+        $portalDirectory = PortalDetector::isPublicPortal($request) || ! Tenant::checkCurrent();
 
         $canManageOwnStays = $user->tenantClientMayManageOwnStays();
 
@@ -82,7 +90,7 @@ class DashboardController extends Controller
 
         $featuredAccommodations = Accommodation::query()
             ->available()
-            ->when($currentTenant, fn ($query) => $query->forTenant($currentTenant->id))
+            ->when($currentTenant, fn ($query) => $query->forTenant($currentTenant->id), fn ($query) => $query->forCentralMunicipalityDirectory())
             ->with('owner')
             ->latest()
             ->limit(6)
@@ -90,7 +98,7 @@ class DashboardController extends Controller
 
         $typeCounts = Accommodation::query()
             ->available()
-            ->when($currentTenant, fn ($query) => $query->forTenant($currentTenant->id))
+            ->when($currentTenant, fn ($query) => $query->forTenant($currentTenant->id), fn ($query) => $query->forCentralMunicipalityDirectory())
             ->selectRaw('type, COUNT(*) as total')
             ->groupBy('type')
             ->pluck('total', 'type');
@@ -103,7 +111,7 @@ class DashboardController extends Controller
 
         $availabilityAccommodations = Accommodation::query()
             ->available()
-            ->when($currentTenant, fn ($query) => $query->forTenant($currentTenant->id))
+            ->when($currentTenant, fn ($query) => $query->forTenant($currentTenant->id), fn ($query) => $query->forCentralMunicipalityDirectory())
             ->orderBy('name')
             ->get(['id', 'name', 'type']);
 
@@ -111,29 +119,11 @@ class DashboardController extends Controller
         $availabilityAccommodationIds = $availabilityAccommodations->pluck('id')->values()->all();
 
         if ($availabilityAccommodationIds !== []) {
-            $availabilityBookings = Booking::query()
-                ->when($currentTenant, fn ($query) => $query->forTenant($currentTenant->id))
-                ->whereIn('accommodation_id', $availabilityAccommodationIds)
-                ->whereIn('status', [
-                    Booking::STATUS_PENDING,
-                    Booking::STATUS_CONFIRMED,
-                    Booking::STATUS_PAID,
-                ])
-                ->whereDate('check_out_date', '>=', Carbon::today()->subMonths(1)->toDateString())
-                ->get(['accommodation_id', 'check_in_date', 'check_out_date', 'status']);
-
-            $availabilityEventsByAccommodation = $availabilityBookings
-                ->groupBy('accommodation_id')
-                ->map(function ($rows) {
-                    return $rows->map(function ($row) {
-                        return [
-                            'start' => Carbon::parse($row->check_in_date)->toDateString(),
-                            'end' => Carbon::parse($row->check_out_date)->toDateString(),
-                            'status' => (string) $row->status,
-                        ];
-                    })->values()->all();
-                })
-                ->all();
+            $availabilityEventsByAccommodation = AccommodationAvailability::eventsForAccommodationIds(
+                $availabilityAccommodationIds,
+                $currentTenant?->id,
+                null
+            );
         }
 
         return view('client.dashboard', compact(
@@ -147,7 +137,8 @@ class DashboardController extends Controller
             'categoryCounts',
             'canManageOwnStays',
             'availabilityAccommodations',
-            'availabilityEventsByAccommodation'
+            'availabilityEventsByAccommodation',
+            'portalDirectory'
         ));
     }
 }

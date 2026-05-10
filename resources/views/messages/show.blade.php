@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>Message Detail - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -52,7 +52,7 @@
         .main-content {
             max-width: min(920px, 100%);
             margin: 0 auto;
-            padding-top: var(--client-nav-offset, 100px);
+            padding-top: var(--client-nav-offset);
             padding-left: clamp(16px, 3vw, 24px);
             padding-right: clamp(16px, 3vw, 24px);
             padding-bottom: 48px;
@@ -72,7 +72,7 @@
             .nav-links { display: none; }
             @endif
             .main-content {
-                padding-top: calc(var(--client-nav-offset, 100px) - 14px);
+                padding-top: calc(var(--client-nav-offset) - 14px);
                 padding-bottom: 32px;
             }
         }

@@ -231,7 +231,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>📊 Monthly Booking Report</h1>
+            <h1>Monthly Booking Report</h1>
             <p>{{ $monthName }} - Tenant Guest Analytics</p>
         </div>
         

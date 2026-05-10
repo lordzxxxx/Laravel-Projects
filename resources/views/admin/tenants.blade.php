@@ -56,7 +56,7 @@
 
         .tenant-filters-grid {
             display: grid;
-            grid-template-columns: 1.5fr repeat(3, minmax(120px, 1fr));
+            grid-template-columns: 1.5fr repeat(2, minmax(120px, 1fr));
             gap: 10px;
             align-items: end;
         }
@@ -150,7 +150,7 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body>
+<body class="admin-central-portal">
     @include('admin.partials.top-navbar', ['active' => 'tenants'])
 
     <div class="dashboard-layout">
@@ -290,16 +290,6 @@
                                 >
                             </div>
                             <div>
-                                <label class="tenant-filter-label" for="tenant-subscription">Billing status</label>
-                                <select id="tenant-subscription" class="tenant-filter-input" name="subscription_status">
-                                    <option value="">All billing</option>
-                                    <option value="trialing" @selected(($tenantFilters['subscription_status'] ?? '') === 'trialing')>Trialing</option>
-                                    <option value="active" @selected(($tenantFilters['subscription_status'] ?? '') === 'active')>Active</option>
-                                    <option value="past_due" @selected(($tenantFilters['subscription_status'] ?? '') === 'past_due')>Past Due</option>
-                                    <option value="cancelled" @selected(($tenantFilters['subscription_status'] ?? '') === 'cancelled')>Cancelled</option>
-                                </select>
-                            </div>
-                            <div>
                                 <label class="tenant-filter-label" for="tenant-onboarding">Onboarding</label>
                                 <select id="tenant-onboarding" class="tenant-filter-input" name="onboarding_status">
                                     <option value="">All onboarding</option>
@@ -336,7 +326,7 @@
                 @php
                     $tenantRowScroll = 'overflow-x-auto overscroll-x-contain';
                     // Fixed column widths + gap-3 gaps — keeps one horizontal table row
-                    $tenantRowFlex = 'flex min-w-[1172px] shrink-0 items-center gap-3 px-4';
+                    $tenantRowFlex = 'flex min-w-[1032px] shrink-0 items-center gap-3 px-4';
                 @endphp
                 {{-- Column guide: same flex row as data (scroll horizontally on narrow viewports) --}}
                 <div class="{{ $tenantRowScroll }} tenants-table-head border-b border-gray-200">
@@ -344,7 +334,6 @@
                         <div class="w-40 shrink-0">Tenant</div>
                         <div class="w-44 shrink-0">Owner</div>
                         <div class="w-52 shrink-0">Domain</div>
-                            <div class="w-32 shrink-0">Billing</div>
                             <div class="w-36 shrink-0">Onboarding</div>
                         <div class="w-16 shrink-0 text-right">DB</div>
                         <div class="w-36 shrink-0">Bandwidth</div>
@@ -360,13 +349,6 @@
                             $statusValue = (string) ($tenant->subscription_status ?? 'unknown');
                             $latestLifecycle = $latestLifecycleByTenant[$tenant->id] ?? null;
                             $centralPort = (int) env('CENTRAL_PORT', 8000);
-                            $statusBadgeClass = match ($statusValue) {
-                                'active' => 'bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-600/15',
-                                'trialing' => 'bg-amber-100 text-amber-900 ring-1 ring-inset ring-amber-600/15',
-                                'past_due' => 'bg-red-100 text-red-800 ring-1 ring-inset ring-red-600/15',
-                                'cancelled' => 'bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-500/12',
-                                default => 'bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-500/12',
-                            };
 
                             $onboardingStatus = (string) ($tenant->onboarding_status ?? 'approved');
                             $onboardingBadgeClass = match ($onboardingStatus) {
@@ -375,11 +357,6 @@
                                 'approved' => 'bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-600/15',
                                 'rejected' => 'bg-red-100 text-red-800 ring-1 ring-inset ring-red-600/15',
                                 default => 'bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-500/12',
-                            };
-                            $subscriptionStatusLabel = match ($statusValue) {
-                                'trialing' => 'Trialing',
-                                'past_due' => 'Past due',
-                                default => ucfirst(str_replace('_', ' ', $statusValue)),
                             };
                             $onboardingStatusLabel = match ($onboardingStatus) {
                                 'pending_approval' => 'Pending',
@@ -421,9 +398,6 @@
                                             <span class="block truncate text-sm font-semibold text-red-700">{{ $domainLabel }}</span>
                                         @endif
                                         <span class="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-gray-400">{{ $domainEnabled ? 'Enabled' : 'Disabled' }}</span>
-                                    </div>
-                                    <div class="flex w-32 shrink-0 items-center">
-                                        <span class="{{ $badgeBase }} {{ $statusBadgeClass }}">{{ $subscriptionStatusLabel }}</span>
                                     </div>
                                     <div class="flex w-36 shrink-0 items-center">
                                         <span class="{{ $badgeBase }} {{ $onboardingBadgeClass }}">{{ $onboardingStatusLabel }}</span>

@@ -38,7 +38,7 @@ function ensureRoutingTenantFixture(): Tenant
         'domain' => $slug.'.localhost',
         'owner_user_id' => null,
         'plan' => Tenant::PLAN_BASIC,
-        'subscription_status' => 'trialing',
+        'subscription_status' => 'active',
         'trial_ends_at' => now()->addDays(14),
         'current_period_starts_at' => now(),
         'current_period_ends_at' => now()->addMonth(),

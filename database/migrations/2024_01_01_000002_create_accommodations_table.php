@@ -38,7 +38,7 @@ return new class extends Migration
             $table->boolean('is_featured')->default(false);
             $table->timestamp('available_from')->nullable();
             $table->timestamps();
-            
+
             $table->index(['owner_id', 'type']);
             $table->index(['is_available', 'is_verified']);
             $table->index(['price_per_night', 'type']);
@@ -53,4 +53,3 @@ return new class extends Migration
         Schema::dropIfExists('accommodations');
     }
 };
-

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>Booking Details - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -16,6 +16,7 @@
                 || ($authUser->isAdmin() && $currentTenant && (int) $authUser->tenant_id === (int) $currentTenant->id)
             );
             $useLegacyBookingsNav = ! $isTenantManager && ! $authUser?->isClient();
+            $bookingRouteGroup = $currentTenant ? 'bookings' : 'portal.bookings';
         @endphp
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -71,7 +72,7 @@
     @if($isTenantManager)
         @include('owner.partials.top-navbar')
     @elseif(auth()->user()?->isClient())
-        @include('client.partials.top-navbar', ['active' => 'bookings'])
+        @include('client.partials.top-navbar', ['active' => 'bookings', 'portalDirectory' => $portalDirectory ?? false])
     @else
     <nav class="navbar">
         <a href="{{ route('dashboard') }}" class="nav-logo">
@@ -93,7 +94,7 @@
                 @endif
             @endauth
             <li><a href="{{ route(Auth::check() && $isTenantManager && \Illuminate\Support\Facades\Route::has('owner.accommodations.index') ? 'owner.accommodations.index' : (\Illuminate\Support\Facades\Route::has('accommodations.index') ? 'accommodations.index' : 'dashboard')) }}" class="{{ request()->routeIs('accommodations.*') || request()->routeIs('owner.accommodations.*') ? 'active' : '' }}">Browse</a></li>
-            <li><a href="{{ Auth::check() && $isTenantManager ? route('owner.bookings.index') : route('bookings.index') }}" class="{{ request()->routeIs('bookings.*') || request()->routeIs('owner.bookings.*') ? 'active' : '' }}">My Bookings</a></li>
+            <li><a href="{{ Auth::check() && $isTenantManager ? route('owner.bookings.index') : route($bookingRouteGroup.'.index') }}" class="{{ request()->routeIs('bookings.*', 'portal.bookings.*') || request()->routeIs('owner.bookings.*') ? 'active' : '' }}">My Bookings</a></li>
             <li><a href="{{ route('messages.index', [], false) }}" class="{{ request()->routeIs('messages.*') ? 'active' : '' }}">Messages</a></li>
             <li><a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.edit') ? 'active' : '' }}">Settings</a></li>
         </ul>
@@ -101,7 +102,7 @@
         <div class="nav-actions">
             <form action="{{ route('profile.edit') }}" method="GET">
                 @csrf
-                <button type="submit" class="nav-btn secondary">⚙️ Settings</button>
+                <button type="submit" class="nav-btn secondary"><i class="fa-solid fa-gear" aria-hidden="true"></i> Settings</button>
             </form>
             <form action="/logout" method="POST">
                 @csrf
@@ -112,18 +113,20 @@
     @endif
 
     @php
-        $bookingsIndexRoute = Auth::check() && $isTenantManager ? 'owner.bookings.index' : 'bookings.index';
+        $bookingsIndexRouteName = Auth::check() && $isTenantManager
+            ? 'owner.bookings.index'
+            : "{$bookingRouteGroup}.index";
     @endphp
 
     <main
         class="flex w-full flex-1 flex-col {{ $isTenantManager ? 'main-content with-owner-nav' : '' }} min-h-0 min-h-[calc(100dvh-5rem)] px-4 pb-10 pt-6 sm:px-6 lg:min-h-[calc(100dvh-6rem)] lg:px-8"
-        @if(! $isTenantManager) style="padding-top: calc(var(--client-nav-offset, 108px) + 16px);" @endif
+        @if(! $isTenantManager) style="padding-top: calc(var(--client-nav-offset) + 16px);" @endif
     >
         <div class="mx-auto flex w-full max-w-[1920px] flex-1 flex-col gap-4">
             @include('partials.flash-alerts')
 
             <a
-                href="{{ route($bookingsIndexRoute, [], false) }}"
+                href="{{ route($bookingsIndexRouteName, [], false) }}"
                 class="inline-flex w-max items-center gap-2 text-sm font-semibold text-emerald-800 transition hover:text-emerald-950"
             >
                 <i class="fas fa-arrow-left text-xs"></i>
@@ -368,7 +371,7 @@
                                     </p>
                                     @if(! $isPaymentRecorded)
                                         <a
-                                            href="{{ route('bookings.payment', $booking, false) }}"
+                                            href="{{ route($bookingRouteGroup.'.payment', $booking, false) }}"
                                             class="inline-flex items-center justify-center rounded-xl bg-emerald-700 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-emerald-800"
                                         >
                                             Pay / Upload proof
@@ -377,13 +380,13 @@
                                 @endif
                                 @if($booking->status === 'confirmed' && ! $isPaymentRecorded)
                                     <a
-                                        href="{{ route('bookings.payment', $booking, false) }}"
+                                        href="{{ route($bookingRouteGroup.'.payment', $booking, false) }}"
                                         class="inline-flex items-center justify-center rounded-xl bg-emerald-700 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-emerald-800"
                                     >
                                         Pay via Stripe
                                     </a>
                                 @endif
-                                <form action="{{ route('bookings.cancel', $booking, false) }}" method="POST" class="inline" data-loading-form>
+                                <form action="{{ route($bookingRouteGroup.'.cancel', $booking, false) }}" method="POST" class="inline" data-loading-form>
                                     @csrf
                                     @method('PUT')
                                     <button
@@ -410,7 +413,7 @@
                     <h2 class="text-xl font-bold text-slate-800">Booking not found</h2>
                     <p class="mt-2 max-w-md text-sm text-slate-600">The booking you are looking for does not exist or has been removed.</p>
                     <a
-                        href="{{ route($bookingsIndexRoute, [], false) }}"
+                        href="{{ route($bookingsIndexRouteName, [], false) }}"
                         class="mt-6 inline-flex rounded-xl bg-emerald-700 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-emerald-800"
                     >
                         Back to My Bookings

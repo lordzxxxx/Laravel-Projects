@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Tenant;
-use App\Models\TenantLifecycleLog;
 use App\Models\User;
 use App\Services\TenantOnboardingService;
 use Illuminate\Database\QueryException;
@@ -13,20 +12,25 @@ use Illuminate\Support\Facades\Storage;
  * Default and landlord connections use the same database so `users` (default) and
  * `tenants` (landlord) satisfy FK constraints during owner registration.
  */
-it('creates tenant in awaiting_payment without provisioning on owner registration', function () {
+it('creates tenant pending municipality review when owner registers on public portal path', function () {
     try {
         Tenant::query()->count();
     } catch (QueryException) {
         $this->markTestSkipped('Landlord test database is not available in this environment.');
     }
 
+    Storage::fake('public');
+
     try {
-        $response = $this->post('/register', [
+        $response = $this->post('/register/owner', [
             'name' => 'Onboarding Flow Owner',
             'email' => 'onboarding-flow-owner@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'role' => 'owner',
+            'business_permit' => UploadedFile::fake()->create('business.pdf', 50, 'application/pdf'),
+            'mayors_permit' => UploadedFile::fake()->create('mayor.pdf', 50, 'application/pdf'),
+            'barangay_clearance' => UploadedFile::fake()->create('brgy.pdf', 50, 'application/pdf'),
+            'valid_id' => UploadedFile::fake()->create('id.pdf', 50, 'application/pdf'),
         ]);
     } catch (QueryException $exception) {
         if (str_contains($exception->getMessage(), 'Lock wait timeout exceeded')) {
@@ -40,7 +44,7 @@ it('creates tenant in awaiting_payment without provisioning on owner registratio
         $this->markTestSkipped('Landlord test database lock timeout during onboarding registration flow.');
     }
 
-    $response->assertRedirect(route('owner.onboarding.payment'));
+    $response->assertRedirect(route('owner.onboarding.status'));
     $this->assertAuthenticated();
 
     $user = User::query()->where('email', 'onboarding-flow-owner@example.com')->first();
@@ -48,73 +52,16 @@ it('creates tenant in awaiting_payment without provisioning on owner registratio
 
     $tenant = Tenant::query()->where('owner_user_id', $user->id)->first();
     expect($tenant)->not->toBeNull();
-    expect($tenant->onboarding_status)->toBe(Tenant::ONBOARDING_AWAITING_PAYMENT);
+    expect($tenant->onboarding_status)->toBe(Tenant::ONBOARDING_PENDING_APPROVAL);
+    expect($tenant->municipality_requirements_submitted_at)->not->toBeNull();
+    expect($tenant->municipality_business_permit_path)->not->toBeNull();
+    Storage::disk('public')->assertExists((string) $tenant->municipality_business_permit_path);
     expect((bool) $tenant->domain_enabled)->toBeFalse();
     expect((bool) $tenant->database_provisioned)->toBeFalse();
 });
 
 it('submits gcash onboarding proof and moves tenant to pending approval', function () {
-    try {
-        Tenant::query()->count();
-    } catch (QueryException) {
-        $this->markTestSkipped('Landlord test database is not available in this environment.');
-    }
-
-    Storage::fake('public');
-
-    $owner = User::factory()->create([
-        'role' => User::ROLE_OWNER,
-        'email' => 'pay-submit@example.com',
-    ]);
-
-    try {
-        $tenant = Tenant::create([
-            'name' => 'Pay Submit Tenant',
-            'slug' => 'pay-submit-tenant',
-            'owner_user_id' => $owner->id,
-            'plan' => Tenant::PLAN_BASIC,
-            'subscription_status' => 'trialing',
-            'trial_ends_at' => now()->addDays(14),
-            'current_period_starts_at' => now(),
-            'current_period_ends_at' => now()->addMonth(),
-            'onboarding_status' => Tenant::ONBOARDING_AWAITING_PAYMENT,
-            'domain_enabled' => false,
-            'domain' => 'pay-submit.example.test',
-            'database' => 'pay_submit_db',
-            'db_host' => '127.0.0.1',
-            'db_port' => 3306,
-            'db_username' => 'root',
-            'db_password' => '',
-        ]);
-    } catch (QueryException $exception) {
-        if (str_contains($exception->getMessage(), 'Lock wait timeout exceeded')) {
-            $this->markTestSkipped('Landlord test database lock timeout during onboarding GCash submission setup.');
-        }
-
-        throw $exception;
-    }
-
-    $owner->update(['tenant_id' => $tenant->id]);
-
-    $response = $this->actingAs($owner)->post(route('owner.onboarding.payment.submit'), [
-        'gcash_payment_proof' => UploadedFile::fake()->image('onboarding-proof.png'),
-    ]);
-
-    $response->assertRedirect(route('owner.onboarding.status'));
-
-    $tenant->refresh();
-    expect($tenant->onboarding_status)->toBe(Tenant::ONBOARDING_PENDING_APPROVAL);
-    expect($tenant->payment_submitted_at)->not->toBeNull();
-    expect($tenant->onboarding_payment_channel)->toBe('gcash');
-    expect($tenant->onboarding_gcash_proof_path)->not->toBeNull();
-    Storage::disk('public')->assertExists($tenant->onboarding_gcash_proof_path);
-
-    $log = TenantLifecycleLog::query()
-        ->where('tenant_id', $tenant->id)
-        ->where('action', 'tenant.payment.submitted')
-        ->first();
-
-    expect($log)->not->toBeNull();
+    $this->markTestSkipped('GCash onboarding payment path was replaced by municipality document review.');
 });
 
 it('delegates admin approval to tenant onboarding service', function () {
@@ -152,7 +99,7 @@ it('delegates admin approval to tenant onboarding service', function () {
             'slug' => 'approve-me-tenant',
             'owner_user_id' => $owner->id,
             'plan' => Tenant::PLAN_BASIC,
-            'subscription_status' => 'trialing',
+            'subscription_status' => 'active',
             'trial_ends_at' => now()->addDays(14),
             'current_period_starts_at' => now(),
             'current_period_ends_at' => now()->addMonth(),

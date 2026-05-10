@@ -21,8 +21,7 @@ class TenantSubscriptionChangedMail extends Mailable
         public mixed $periodEndsAt,
         public ?string $reason,
         public string $changedBy
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {

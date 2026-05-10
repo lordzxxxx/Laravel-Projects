@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('partials.tenant-favicon')
     <title>Profile Settings - Impasugong Accommodations</title>
@@ -83,11 +83,11 @@
         .main-container {
             width: min(1200px, 100%);
             margin: 0 auto;
-            padding-top: var(--client-nav-offset, 90px);
+            padding-top: var(--client-nav-offset);
             padding-left: clamp(14px, 2vw, 28px);
             padding-right: clamp(14px, 2vw, 28px);
             padding-bottom: 40px;
-            min-height: calc(100vh - var(--client-nav-offset, 90px));
+            min-height: calc(100vh - var(--client-nav-offset));
         }
 
         /* Breadcrumb */
@@ -546,7 +546,7 @@
             .nav-links { display: none; }
             @endif
             .main-container {
-                padding-top: calc(var(--client-nav-offset, 90px) - 8px);
+                padding-top: calc(var(--client-nav-offset) - 8px);
                 padding-left: 12px;
                 padding-right: 12px;
                 padding-bottom: 28px;
@@ -668,7 +668,7 @@
         {{-- Identity hero --}}
         @php
             $u = Auth::user();
-            $roleLabels = ['admin' => 'Administrator', 'owner' => 'Property Owner', 'client' => 'Client'];
+            $roleLabels = ['admin' => 'Administrator', 'owner' => 'Property Owner', 'client' => 'Guest'];
             $roleIcons = ['admin' => 'fa-user-shield', 'owner' => 'fa-user-tie', 'client' => 'fa-user'];
         @endphp
         <div class="surface identity-card">

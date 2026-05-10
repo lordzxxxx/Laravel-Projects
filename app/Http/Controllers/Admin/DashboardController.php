@@ -357,7 +357,6 @@ class DashboardController extends Controller
     public function tenants(Request $request)
     {
         $search = trim((string) $request->query('q', ''));
-        $subscriptionStatus = trim((string) $request->query('subscription_status', ''));
         $onboardingStatus = trim((string) $request->query('onboarding_status', ''));
         $perPage = (int) $request->query('per_page', 15);
         if (! in_array($perPage, [10, 15, 25, 50], true)) {
@@ -377,7 +376,6 @@ class DashboardController extends Controller
                         });
                 });
             })
-            ->when($subscriptionStatus !== '', fn ($builder) => $builder->where('subscription_status', $subscriptionStatus))
             ->when($onboardingStatus !== '', fn ($builder) => $builder->where('onboarding_status', $onboardingStatus))
             ->orderBy('name');
 
@@ -415,7 +413,6 @@ class DashboardController extends Controller
 
         $tenantFilters = [
             'q' => $search,
-            'subscription_status' => $subscriptionStatus,
             'onboarding_status' => $onboardingStatus,
             'per_page' => $perPage,
         ];

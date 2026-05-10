@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('admin.partials.favicon')
     <title>Messaging — Central Admin</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -15,7 +15,7 @@
             min-height: 100vh;
             color: #0f172a;
         }
-        .dashboard-layout { padding-top: 82px; }
+        .dashboard-layout { padding-top: var(--app-main-top-offset, 108px); }
         .page-header { margin-bottom: 1.25rem; }
         .page-header p { max-width: 62ch; color: #64748b; font-size: 0.9375rem; line-height: 1.55; }
         .flash {
@@ -40,7 +40,7 @@
         @include('admin.partials.admin-shell-styles')
     </style>
 </head>
-<body>
+<body class="admin-central-portal">
     @include('admin.partials.top-navbar', ['active' => 'messages'])
 
     <div class="dashboard-layout">

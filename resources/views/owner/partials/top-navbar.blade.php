@@ -8,7 +8,7 @@
         $reportsHref = '/owner/reports/monthly';
         $unitsHref = '/owner/accommodations';
         $bookingsHref = '/owner/bookings';
-        $updatesHref = '/settings/updates';
+        $updatesHref = route('settings.updates.index', [], false);
         $usersHref = '/owner/users';
         $messagesHref = '/messages';
         $profileHref = '/profile';
@@ -30,7 +30,9 @@
             \App\Models\User::PERM_ACCOMMODATIONS_DELETE,
         ]);
         $canSeeBookings = $isOwnerRole || $authUser?->hasPermission(\App\Models\User::PERM_BOOKINGS_MANAGE);
-        $canSeeUsers = $isOwnerRole || $authUser?->hasPermission(\App\Models\User::PERM_USERS_VIEW);
+        $canSeeUsers = $authUser?->isAdmin()
+            && $currentTenant
+            && ($authUser->tenant_id === null || (int) $authUser->tenant_id === (int) $currentTenant->id);
         $canSeeUpdates = $isOwnerRole || $authUser?->hasPermission(\App\Models\User::PERM_REPORTS_VIEW);
         $canSeeMessages = $isOwnerRole || $authUser?->hasPermission(\App\Models\User::PERM_MESSAGES_MANAGE);
     @endphp
@@ -67,10 +69,11 @@
             <li><a href="{{ $usersHref }}" class="{{ $current === 'users' || request()->routeIs('owner.users.*') ? 'active' : '' }}"><i class="fas fa-users-cog"></i> Users</a></li>
         @endif
         @if($canSeeUpdates)
-            <li><a href="{{ $updatesHref }}" class="{{ $current === 'updates' || request()->routeIs('owner.settings.updates.*') || request()->routeIs('admin.updates.*') ? 'active' : '' }}"><i class="fas fa-cloud-download-alt"></i> Updates</a></li>
+            <li><a href="{{ $updatesHref }}" class="{{ $current === 'updates' || request()->routeIs('owner.settings.updates.*', 'settings.updates.*', 'admin.updates.*') ? 'active' : '' }}"><i class="fas fa-cloud-download-alt"></i> Updates</a></li>
         @endif
         @if($canSeeMessages)
-            <li><a href="{{ $messagesHref }}" class="{{ $current === 'messages' || request()->routeIs('messages.*') ? 'active' : '' }}"><i class="fas fa-envelope"></i> Messages @if(($unreadMessagesCount ?? 0) > 0)<span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:999px;padding:0 5px;background:#EF4444;color:#fff;font-size:0.68rem;font-weight:700;margin-left:6px;">{{ $unreadMessagesCount > 99 ? '99+' : $unreadMessagesCount }}</span>@endif</a></li>
+            @php $msgUnread = (int) ($unreadMessagesCount ?? 0); @endphp
+            <li><a href="{{ $messagesHref }}" class="{{ $current === 'messages' || request()->routeIs('messages.*') ? 'active' : '' }}"><i class="fas fa-envelope"></i> Messages <span class="nav-msg-count-badge {{ $msgUnread === 0 ? 'is-empty' : '' }}" @if($msgUnread > 0) aria-label="{{ $msgUnread }} unread messages" @else aria-hidden="true" @endif>@if($msgUnread > 0){{ $msgUnread > 99 ? '99+' : $msgUnread }}@else{!! '&nbsp;' !!}@endif</span></a></li>
         @endif
         <li><a href="{{ $profileHref }}" class="{{ $current === 'settings' || request()->routeIs('profile.edit') ? 'active' : '' }}"><i class="fas fa-cog"></i> Settings</a></li>
     </ul>

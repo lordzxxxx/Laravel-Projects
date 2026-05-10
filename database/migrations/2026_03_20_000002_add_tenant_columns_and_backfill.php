@@ -76,8 +76,8 @@ return new class extends Migration
 
             if (! $tenantId) {
                 $tenantId = DB::table('tenants')->insertGetId([
-                    'name' => $owner->name . "'s Space",
-                    'slug' => Str::slug($owner->name . '-' . $owner->id . '-' . Str::random(6)),
+                    'name' => $owner->name."'s Space",
+                    'slug' => Str::slug($owner->name.'-'.$owner->id.'-'.Str::random(6)),
                     'owner_user_id' => $owner->id,
                     'plan' => 'basic',
                     'subscription_status' => 'trialing',

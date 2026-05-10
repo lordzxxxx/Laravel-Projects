@@ -22,7 +22,7 @@ return new class extends Migration
             $table->enum('status', ['sent', 'read', 'archived'])->default('sent');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['sender_id', 'receiver_id']);
             $table->index(['receiver_id', 'status']);
         });
@@ -36,4 +36,3 @@ return new class extends Migration
         Schema::dropIfExists('messages');
     }
 };
-

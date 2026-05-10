@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Notifications\Tenant\ClientImportantNotification;
 use App\Notifications\Tenant\StaffImportantNotification;
 use App\Services\StripeRefundService;
+use App\Support\PortalDetector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -38,6 +39,8 @@ class BookingController extends Controller
         ];
         $statusFilter = in_array($status, $allowedStatuses, true) ? $status : null;
 
+        $portalDirectory = PortalDetector::isPublicPortal($request) || ! Tenant::checkCurrent();
+
         if ($user->isOwner()) {
             $bookings = Booking::forOwner($user->id)
                 ->when($tenantId, fn ($query) => $query->forTenant($tenantId))
@@ -60,7 +63,7 @@ class BookingController extends Controller
                 ->paginate(10);
         }
 
-        return view('bookings.index', compact('bookings'));
+        return view('bookings.index', compact('bookings', 'portalDirectory'));
     }
 
     /**
@@ -179,22 +182,24 @@ class BookingController extends Controller
             ->when($owner, fn ($query) => $query->whereKeyNot($owner->id))
             ->each(fn (User $tenantAdmin) => $notifyStaff($tenantAdmin));
 
-        return redirect()->route('bookings.show', $booking)
+        return redirect()->route($this->bookingsRoute('show'), $booking)
             ->with('success', 'Booking request submitted. The host will review and approve or decline it. You can complete payment after approval.');
     }
 
     /**
      * Display booking details.
      */
-    public function show(Booking $booking)
+    public function show(Request $request, Booking $booking)
     {
+        $portalDirectory = PortalDetector::isPublicPortal($request) || ! Tenant::checkCurrent();
+
         $this->authorize('view', $booking);
 
         $booking->load(['accommodation', 'accommodation.owner', 'client', 'messages' => function ($query) {
             $query->orderBy('created_at', 'desc');
         }]);
 
-        return view('bookings.show', compact('booking'));
+        return view('bookings.show', compact('booking', 'portalDirectory'));
     }
 
     /**
@@ -203,6 +208,8 @@ class BookingController extends Controller
     public function payment(Request $request, Booking $booking)
     {
         $this->authorize('view', $booking);
+
+        $portalDirectory = PortalDetector::isPublicPortal($request) || ! Tenant::checkCurrent();
 
         $currentTenant = Tenant::current();
         if ($currentTenant && (int) $booking->tenant_id !== (int) $currentTenant->id) {
@@ -214,13 +221,13 @@ class BookingController extends Controller
         }
 
         if (! in_array($booking->status, [Booking::STATUS_PENDING, Booking::STATUS_CONFIRMED], true)) {
-            return redirect()->route('bookings.show', $booking)
+            return redirect()->route($this->bookingsRoute('show'), $booking)
                 ->with('error', 'Payment page is only available for pending or confirmed bookings.');
         }
 
         $booking->load(['accommodation', 'accommodation.owner']);
 
-        return view('bookings.payment', compact('booking'));
+        return view('bookings.payment', compact('booking', 'portalDirectory'));
     }
 
     /**
@@ -240,18 +247,18 @@ class BookingController extends Controller
         }
 
         if ($booking->status === Booking::STATUS_PAID || $booking->status === Booking::STATUS_COMPLETED) {
-            return redirect()->route('bookings.show', $booking)
+            return redirect()->route($this->bookingsRoute('show'), $booking)
                 ->with('success', 'Booking is already paid.');
         }
 
         if ($booking->status === Booking::STATUS_CANCELLED) {
-            return redirect()->route('bookings.show', $booking)
+            return redirect()->route($this->bookingsRoute('show'), $booking)
                 ->with('error', 'Cancelled bookings cannot be paid.');
         }
 
         $amountInCentavos = (int) round(((float) $booking->total_price) * 100);
         if ($amountInCentavos < 100) {
-            return redirect()->route('bookings.show', $booking)
+            return redirect()->route($this->bookingsRoute('show'), $booking)
                 ->with('error', 'Booking amount is too low for Stripe checkout.');
         }
 
@@ -273,8 +280,8 @@ class BookingController extends Controller
 
             $session = $stripe->checkout->sessions->create([
                 'mode' => 'payment',
-                'success_url' => route('bookings.payment.success', $booking).'?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('bookings.payment.cancel', $booking),
+                'success_url' => route($this->bookingsRoute('payment.success'), $booking).'?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route($this->bookingsRoute('payment.cancel'), $booking),
                 'line_items' => [[
                     'price_data' => [
                         'currency' => 'php',
@@ -319,7 +326,7 @@ class BookingController extends Controller
 
         $stripeSecret = (string) config('services.stripe.secret');
         if ($stripeSecret === '') {
-            return redirect()->route('bookings.show', $booking)
+            return redirect()->route($this->bookingsRoute('show'), $booking)
                 ->with('error', 'Stripe is not configured. Webhook confirmation could not be checked.');
         }
 
@@ -335,7 +342,7 @@ class BookingController extends Controller
                     'session_booking_id' => $sessionBookingId,
                 ]);
 
-                return redirect()->route('bookings.show', $booking)
+                return redirect()->route($this->bookingsRoute('show'), $booking)
                     ->with('error', 'Payment session does not match this booking.');
             }
 
@@ -361,11 +368,11 @@ class BookingController extends Controller
                 'error' => $exception->getMessage(),
             ]);
 
-            return redirect()->route('bookings.show', $booking)
+            return redirect()->route($this->bookingsRoute('show'), $booking)
                 ->with('error', 'Payment completed but verification failed. Please check again shortly.');
         }
 
-        return redirect()->route('bookings.show', $booking)->with(
+        return redirect()->route($this->bookingsRoute('show'), $booking)->with(
             'success',
             'Stripe checkout completed. Payment has been recorded and now waits for tenant admin approval.'
         );
@@ -375,7 +382,7 @@ class BookingController extends Controller
     {
         $this->authorize('view', $booking);
 
-        return redirect()->route('bookings.show', $booking)
+        return redirect()->route($this->bookingsRoute('show'), $booking)
             ->with('error', 'Stripe checkout was canceled.');
     }
 
@@ -696,5 +703,12 @@ class BookingController extends Controller
         ]);
 
         return back()->with('success', 'Message sent successfully.');
+    }
+
+    private function bookingsRoute(string $suffix = 'show'): string
+    {
+        $prefix = Tenant::checkCurrent() ? 'bookings' : 'portal.bookings';
+
+        return "{$prefix}.{$suffix}";
     }
 }

@@ -8,7 +8,7 @@ use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Mail;
 
-it('allows owner to create users within their tenant', function () {
+it('allows tenant admin to create users within their tenant', function () {
     try {
         Tenant::query()->count();
     } catch (QueryException $exception) {
@@ -17,16 +17,22 @@ it('allows owner to create users within their tenant', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
-    Mail::fake();
-
     $owner = User::factory()->create([
         'role' => User::ROLE_OWNER,
     ]);
 
     $tenant = $owner->ensureTenant();
 
+    $tenantAdmin = User::factory()->create([
+        'role' => User::ROLE_ADMIN,
+        'tenant_id' => $tenant->id,
+    ]);
+    $tenantAdmin->syncRbacFromLegacyRole();
+
+    Mail::fake();
+
     $response = $this
-        ->actingAs($owner)
+        ->actingAs($tenantAdmin)
         ->post('/owner/users', [
             'name' => 'Tenant Staff',
             'email' => 'tenant.staff@example.test',
@@ -45,6 +51,21 @@ it('allows owner to create users within their tenant', function () {
     Mail::assertSent(TenantUserWelcomeMail::class, function (TenantUserWelcomeMail $mail): bool {
         return $mail->hasTo('tenant.staff@example.test');
     });
+});
+
+it('forbids unit owner from the tenant users management routes', function () {
+    try {
+        Tenant::query()->count();
+    } catch (QueryException $exception) {
+        $this->markTestSkipped('Landlord test database is not available in this environment.');
+    }
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $owner = User::factory()->create(['role' => User::ROLE_OWNER]);
+    $owner->ensureTenant();
+
+    $this->actingAs($owner)->get('/owner/users')->assertForbidden();
 });
 
 it('blocks owner from editing users from another tenant', function () {
@@ -71,8 +92,14 @@ it('blocks owner from editing users from another tenant', function () {
         'tenant_id' => $tenantB->id,
     ]);
 
+    $adminA = User::factory()->create([
+        'role' => User::ROLE_ADMIN,
+        'tenant_id' => $tenantA->id,
+    ]);
+    $adminA->syncRbacFromLegacyRole();
+
     $response = $this
-        ->actingAs($ownerA)
+        ->actingAs($adminA)
         ->put('/owner/users/'.$foreignUser->id, [
             'name' => 'Updated Name',
             'email' => $foreignUser->email,
@@ -117,7 +144,7 @@ it('maps legacy role column into spatie roles via seeder', function () {
     expect($tenantAdmin->hasPermission(User::PERM_USERS_ASSIGN_PERMISSIONS))->toBeTrue();
 });
 
-it('allows owner to create tenant custom role templates with permissions', function () {
+it('allows tenant admin to create tenant custom role templates with permissions', function () {
     try {
         Tenant::query()->count();
     } catch (QueryException $exception) {
@@ -131,8 +158,14 @@ it('allows owner to create tenant custom role templates with permissions', funct
     ]);
     $tenant = $owner->ensureTenant();
 
+    $tenantAdmin = User::factory()->create([
+        'role' => User::ROLE_ADMIN,
+        'tenant_id' => $tenant->id,
+    ]);
+    $tenantAdmin->syncRbacFromLegacyRole();
+
     $response = $this
-        ->actingAs($owner)
+        ->actingAs($tenantAdmin)
         ->post('/owner/users/custom-roles', [
             'name' => 'Front Desk',
             'description' => 'Handles bookings and guests',
@@ -274,7 +307,13 @@ it('prevents assigning custom role from another tenant', function () {
         'tenant_id' => $tenantA->id,
     ]);
 
-    $this->actingAs($ownerA)->put('/owner/users/'.$managedUser->id, [
+    $adminA = User::factory()->create([
+        'role' => User::ROLE_ADMIN,
+        'tenant_id' => $tenantA->id,
+    ]);
+    $adminA->syncRbacFromLegacyRole();
+
+    $this->actingAs($adminA)->put('/owner/users/'.$managedUser->id, [
         'name' => $managedUser->name,
         'email' => $managedUser->email,
         (User::tenantCustomRbacSchemaReady() ? 'role_selection' : 'role') => User::tenantCustomRbacSchemaReady() ? 'custom:'.$foreignRole->id : User::ROLE_ADMIN,

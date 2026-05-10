@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('admin.partials.favicon')
     <title>Users Management - Admin Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -150,7 +150,7 @@
         
         .dashboard-layout {
             display: flex;
-            padding-top: 80px;
+            padding-top: var(--app-main-top-offset, 108px);
         }
         
         .main-content {
@@ -392,7 +392,7 @@
         @include('admin.partials.admin-shell-styles')
     </style>
 </head>
-<body>
+<body class="admin-central-portal">
     <!-- Navigation -->
     @include('admin.partials.top-navbar', ['active' => 'users'])
     
@@ -415,7 +415,7 @@
                 <input type="text" class="search-input" placeholder="Search users by name or email...">
                 <select class="filter-select">
                     <option value="">All Roles</option>
-                    <option value="client">Clients</option>
+                    <option value="client">Guests</option>
                     <option value="owner">Owners</option>
                     <option value="admin">Admins</option>
                 </select>
@@ -527,7 +527,7 @@
                                         <td>{{ $lastLogin }}</td>
                                         <td>
                                             <div class="action-btns">
-                                                <a href="mailto:{{ $user->email }}" class="action-btn message" title="Email">✉️</a>
+                                                <a href="mailto:{{ $user->email }}" class="action-btn message" title="Email"><i class="fa-solid fa-envelope" aria-hidden="true"></i></a>
                                             </div>
                                         </td>
                                     </tr>

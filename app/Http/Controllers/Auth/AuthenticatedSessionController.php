@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\Tenant;
+use App\Support\PortalDetector;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,14 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(Request $request): View
     {
+        $intendedParam = $request->query('intended');
+        if (is_string($intendedParam) && $intendedParam !== '') {
+            $decoded = rawurldecode($intendedParam);
+            if ($decoded !== '' && $this->isSafeTenantIntendedUrl($request, $decoded)) {
+                $request->session()->put('url.intended', $decoded);
+            }
+        }
+
         if (Tenant::checkCurrent()) {
             $portal = $request->query('portal');
             // Unit owners use the same staff portal rules as tenant admins; `owner` is a UI alias.
@@ -32,7 +41,19 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        return view('auth.login');
+        if (! PortalDetector::isCentralHost($request)) {
+            return view('auth.login-public');
+        }
+
+        if (PortalDetector::isAdminPortal($request)) {
+            return view('auth.login-admin');
+        }
+
+        if (PortalDetector::isPublicPortal($request)) {
+            return view('auth.login-public');
+        }
+
+        return view('auth.login-public');
     }
 
     /**
@@ -59,18 +80,55 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerateToken();
 
             return back()->withErrors([
-                'email' => 'Your account is currently inactive. Please contact your business administrator.',
+                'email' => 'Your account is inactive and cannot access the workspace. Ask your supervisor or delegated administrator to review your eligibility.',
             ])->onlyInput('email');
         }
 
         if (! $currentTenant && $user?->isClient()) {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            if (! PortalDetector::isPublicPortal($request)) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
 
-            return back()->withErrors([
-                'email' => 'Client accounts can only log in from tenant subdomain apps.',
-            ])->onlyInput('email');
+                return back()->withErrors([
+                    'email' => 'Lodging-linked guest profiles must sign in through that operator\'s dedicated website or mobile experience. Municipality-wide traveller accounts should use their hospitality gateway entry.',
+                ])->onlyInput('email');
+            }
+        }
+
+        if (PortalDetector::isCentralHost($request) && PortalDetector::isKnownCentralPortal($request)) {
+            $adminPortal = PortalDetector::isAdminPortal($request);
+            $publicPortal = PortalDetector::isPublicPortal($request);
+
+            if ($adminPortal && $user && ! ($user->isAdmin() && $user->tenant_id === null)) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'This console is exclusively for accredited municipality administrators and supervisory roles. Travellers and lodging operators must use their designated hospitality entry.',
+                ])->onlyInput('email');
+            }
+
+            if ($publicPortal && $user?->isAdmin() && $user->tenant_id === null) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Administrator credentials must be used on the secure administration sign-in pathway provided to municipal staff—not on traveller or lodging-operator pages.',
+                ])->onlyInput('email');
+            }
+
+            if ($publicPortal && $user?->isClient() && $user->tenant_id !== null) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Your profile is associated with a lodging operator. Continue through that operator\'s branded sign-in page to access services linked to them.',
+                ])->onlyInput('email');
+            }
         }
 
         // In tenant context, enforce tenant membership for all role types.
@@ -81,7 +139,7 @@ class AuthenticatedSessionController extends Controller
                 $request->session()->regenerateToken();
 
                 return back()->withErrors([
-                    'email' => 'This is the client portal. Please use the tenant admin login.',
+                    'email' => 'You selected a guest or traveller path. Property owners and tenant administrators should choose the management sign-in option for this property.',
                 ])->onlyInput('email');
             }
 
@@ -91,7 +149,7 @@ class AuthenticatedSessionController extends Controller
                 $request->session()->regenerateToken();
 
                 return back()->withErrors([
-                    'email' => 'This is the tenant admin portal. Please use the client login.',
+                    'email' => 'You selected a property management path. Traveller and guest accounts should select the guest sign-in option for this property.',
                 ])->onlyInput('email');
             }
 
@@ -110,7 +168,7 @@ class AuthenticatedSessionController extends Controller
                 $request->session()->regenerateToken();
 
                 return back()->withErrors([
-                    'email' => 'This account does not belong to this tenant.',
+                    'email' => 'This account is not provisioned for this property. Verify you are using the correct organization link, or request an invitation from the property administrator.',
                 ])->onlyInput('email');
             }
         }
@@ -122,7 +180,7 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerateToken();
 
             return back()->withErrors([
-                'email' => 'This admin account does not belong to this tenant.',
+                'email' => 'This administrative profile is not linked to this property. Use the national or municipal administration console, or the correct property domain.',
             ])->onlyInput('email');
         }
 

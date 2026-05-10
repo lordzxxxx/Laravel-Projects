@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -33,15 +33,15 @@ return new class extends Migration
             ->orderBy('id')
             ->chunkById(100, function ($tenants) use ($baseDomain) {
                 foreach ($tenants as $tenant) {
-                    $slug = $tenant->slug ?: Str::slug($tenant->name ?: 'tenant-' . $tenant->id);
-                    $safeSlug = Str::slug($slug ?: ('tenant-' . $tenant->id));
+                    $slug = $tenant->slug ?: Str::slug($tenant->name ?: 'tenant-'.$tenant->id);
+                    $safeSlug = Str::slug($slug ?: ('tenant-'.$tenant->id));
 
                     $dbName = str_replace('-', '_', $safeSlug);
-                    
+
                     DB::table('tenants')
                         ->where('id', $tenant->id)
                         ->update([
-                            'domain' => $safeSlug . '.' . $baseDomain,
+                            'domain' => $safeSlug.'.'.$baseDomain,
                             'database' => $dbName,
                             'db_host' => config('database.connections.tenant.host', config('database.connections.mysql.host', '127.0.0.1')),
                             'db_port' => (int) config('database.connections.tenant.port', config('database.connections.mysql.port', 3306)),

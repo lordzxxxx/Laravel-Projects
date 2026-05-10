@@ -33,13 +33,15 @@ class ReprovisionTenantDatabase extends Command
         /** @var Tenant|null $tenant */
         $tenant = Tenant::find($tenantId);
 
-        if (!$tenant) {
+        if (! $tenant) {
             $this->error("Tenant not found with ID: {$tenantId}");
+
             return self::FAILURE;
         }
 
-        if (!$tenant->database) {
+        if (! $tenant->database) {
             $this->error('Tenant has no database name assigned.');
+
             return self::FAILURE;
         }
 
@@ -58,7 +60,7 @@ class ReprovisionTenantDatabase extends Command
 
             if ($exitCode === 0) {
                 $this->info('✓ Database provisioned successfully!');
-                
+
                 // Update tenant status
                 $tenant->update([
                     'database_provisioned' => true,
@@ -67,10 +69,11 @@ class ReprovisionTenantDatabase extends Command
                 ]);
 
                 $this->info('✓ Provisioning status updated in database');
+
                 return self::SUCCESS;
             } else {
                 $this->error("✗ Provisioning failed with exit code: {$exitCode}");
-                
+
                 $tenant->update([
                     'database_provisioned' => false,
                     'provisioning_error' => "Command returned exit code: {$exitCode}",

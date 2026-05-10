@@ -91,7 +91,7 @@ class BookingPolicy
             return false;
         }
 
-        return $user->hasPermission(User::PERM_BOOKINGS_SELF);
+        return $user->tenantClientMayManageOwnStays();
     }
 
     private function hasPermissionOrLegacy(User $user, string $permission): bool

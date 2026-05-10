@@ -3,7 +3,7 @@
     --client-nav-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --app-topbar-height: 76px;
     --app-topbar-height-mobile: 64px;
-    --client-nav-offset: 108px;
+    --client-nav-offset: var(--app-main-top-offset, 108px);
 }
 
 @include('partials.top-navbar-core-styles')
@@ -19,6 +19,3 @@
 .navbar button {
     font-family: inherit;
 }
-
-/* Shared responsive helpers */
-@include('partials.global-responsive-helpers')

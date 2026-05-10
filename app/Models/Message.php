@@ -21,23 +21,29 @@ class Message extends Model
         'content',
         'type',
         'status',
-        'read_at'
+        'read_at',
     ];
 
     protected $casts = [
-        'read_at' => 'datetime'
+        'read_at' => 'datetime',
     ];
 
     // Type constants
     const TYPE_GENERAL = 'general';
+
     const TYPE_BOOKING_INQUIRY = 'booking_inquiry';
+
     const TYPE_BOOKING_RESPONSE = 'booking_response';
+
     const TYPE_COMPLAINT = 'complaint';
+
     const TYPE_FEEDBACK = 'feedback';
 
     // Status constants
     const STATUS_SENT = 'sent';
+
     const STATUS_READ = 'read';
+
     const STATUS_ARCHIVED = 'archived';
 
     // Relationships
@@ -93,9 +99,9 @@ class Message extends Model
         $labels = [
             self::STATUS_SENT => 'Unread',
             self::STATUS_READ => 'Read',
-            self::STATUS_ARCHIVED => 'Archived'
+            self::STATUS_ARCHIVED => 'Archived',
         ];
-        
+
         return $labels[$this->status] ?? $this->status;
     }
 
@@ -106,9 +112,9 @@ class Message extends Model
             self::TYPE_BOOKING_INQUIRY => 'Booking Inquiry',
             self::TYPE_BOOKING_RESPONSE => 'Booking Response',
             self::TYPE_COMPLAINT => 'Complaint',
-            self::TYPE_FEEDBACK => 'Feedback'
+            self::TYPE_FEEDBACK => 'Feedback',
         ];
-        
+
         return $labels[$this->type] ?? $this->type;
     }
 
@@ -122,7 +128,7 @@ class Message extends Model
     {
         $this->update([
             'status' => self::STATUS_READ,
-            'read_at' => now()
+            'read_at' => now(),
         ]);
     }
 
@@ -142,10 +148,9 @@ class Message extends Model
             'receiver_id' => $receiverId,
             'booking_id' => $this->booking_id,
             'tenant_id' => $this->tenant_id,
-            'subject' => 'Re: ' . ($this->subject ?? ''),
+            'subject' => 'Re: '.($this->subject ?? ''),
             'content' => $content,
-            'type' => $this->type === self::TYPE_BOOKING_INQUIRY ? self::TYPE_BOOKING_RESPONSE : self::TYPE_GENERAL
+            'type' => $this->type === self::TYPE_BOOKING_INQUIRY ? self::TYPE_BOOKING_RESPONSE : self::TYPE_GENERAL,
         ]);
     }
 }
-

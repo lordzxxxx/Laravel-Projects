@@ -14,9 +14,24 @@ use Illuminate\View\View;
 
 class SettingsController extends Controller
 {
-    public function index(TenantUpdateService $tenantUpdateService): View
+    public function index(Request $request, TenantUpdateService $tenantUpdateService): View
     {
         $tenant = Tenant::current();
+
+        if (! $tenant && $request->user()?->isOwner()) {
+            $tenant = $request->user()->ensureTenant();
+            if ($tenant && ! Tenant::checkCurrent()) {
+                $tenant->makeCurrent();
+            }
+        }
+
+        if (! $tenant && $request->user()?->isAdmin() && $request->user()->tenant_id) {
+            $tenant = Tenant::query()->find($request->user()->tenant_id);
+            if ($tenant && ! Tenant::checkCurrent()) {
+                $tenant->makeCurrent();
+            }
+        }
+
         abort_unless($tenant, 404);
 
         $current = $tenantUpdateService->getCurrentRelease((int) $tenant->id);
@@ -47,9 +62,24 @@ class SettingsController extends Controller
     public function applyUpdate(
         Request $request,
         TenantSelfUpdateService $tenantSelfUpdateService,
-        TenantUpdateService $tenantUpdateService
+        TenantUpdateService $tenantUpdateService,
     ): RedirectResponse {
         $tenant = Tenant::current();
+
+        if (! $tenant && $request->user()?->isOwner()) {
+            $tenant = $request->user()->ensureTenant();
+            if ($tenant && ! Tenant::checkCurrent()) {
+                $tenant->makeCurrent();
+            }
+        }
+
+        if (! $tenant && $request->user()?->isAdmin() && $request->user()->tenant_id) {
+            $tenant = Tenant::query()->find($request->user()->tenant_id);
+            if ($tenant && ! Tenant::checkCurrent()) {
+                $tenant->makeCurrent();
+            }
+        }
+
         abort_unless($tenant, 404);
 
         $validated = $request->validate([

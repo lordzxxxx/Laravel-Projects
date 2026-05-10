@@ -8,8 +8,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Spatie\Multitenancy\Actions\MakeTenantCurrentAction;
 use Spatie\Multitenancy\Actions\ForgetCurrentTenantAction;
+use Spatie\Multitenancy\Actions\MakeTenantCurrentAction;
 
 class CreateTenantAdminAccount extends Command
 {
@@ -37,8 +37,9 @@ class CreateTenantAdminAccount extends Command
         /** @var Tenant|null $tenant */
         $tenant = Tenant::find($tenantId);
 
-        if (!$tenant) {
+        if (! $tenant) {
             $this->error("Tenant not found with ID: {$tenantId}");
+
             return self::FAILURE;
         }
 
@@ -52,8 +53,9 @@ class CreateTenantAdminAccount extends Command
                 // Check if admin already exists
                 $existingAdmin = User::where('role', User::ROLE_ADMIN)->first();
                 if ($existingAdmin) {
-                    $this->warn("Admin account already exists!");
+                    $this->warn('Admin account already exists!');
                     $this->line("Email: {$existingAdmin->email}");
+
                     return self::FAILURE;
                 }
 
@@ -63,7 +65,7 @@ class CreateTenantAdminAccount extends Command
 
                 // Create admin user in tenant database
                 $tenantAdmin = User::create([
-                    'name' => $tenant->name . ' Admin',
+                    'name' => $tenant->name.' Admin',
                     'email' => $adminEmail,
                     'password' => Hash::make($plainPassword),
                     'role' => User::ROLE_ADMIN,
@@ -92,24 +94,25 @@ class CreateTenantAdminAccount extends Command
                 'tenant_id' => $tenant->id,
                 'error' => $exception->getMessage(),
             ]);
+
             return self::FAILURE;
         }
     }
 
     private function buildUniqueTenantAdminEmail(Tenant $tenant): string
     {
-        $base = 'admin@' . ($tenant->domain ?: ($tenant->slug . '.localhost'));
+        $base = 'admin@'.($tenant->domain ?: ($tenant->slug.'.localhost'));
 
-        if (!User::query()->where('email', $base)->exists()) {
+        if (! User::query()->where('email', $base)->exists()) {
             return $base;
         }
 
-        $prefix = 'admin+' . ($tenant->slug ?: 'tenant');
-        $domain = $tenant->domain ? explode('.', $tenant->domain)[0] . '.local' : 'impastay.local';
+        $prefix = 'admin+'.($tenant->slug ?: 'tenant');
+        $domain = $tenant->domain ? explode('.', $tenant->domain)[0].'.local' : 'impastay.local';
         $counter = 1;
 
         do {
-            $candidate = $prefix . $counter . '@' . $domain;
+            $candidate = $prefix.$counter.'@'.$domain;
             $counter++;
         } while (User::query()->where('email', $candidate)->exists());
 

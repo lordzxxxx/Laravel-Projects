@@ -1,8 +1,3 @@
-html {
-    /* Prevent horizontal navbar jumps when vertical scrollbar appears/disappears */
-    scrollbar-gutter: stable;
-}
-
 .navbar {
     background: rgba(255, 255, 255, 0.86);
     padding: 0 18px;
@@ -21,6 +16,7 @@ html {
     left: 0;
     right: 0;
     z-index: 1000;
+    backface-visibility: hidden;
 }
 
 .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; flex-shrink: 0; min-width: 0; }
@@ -55,23 +51,43 @@ html {
 }
 
 .nav-links { display: flex; gap: 4px; list-style: none; flex: 1; min-width: 0; justify-content: center; }
+.nav-links li { display: flex; align-items: center; }
 .nav-links a {
     text-decoration: none;
     color: var(--gray-600, #4B5563);
     font-weight: 600;
     font-size: 0.75rem;
-    padding: 8px 10px;
-    border-radius: 8px;
-    transition: all 0.3s;
-    display: flex;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    background: rgba(255, 255, 255, 0.55);
+    min-height: 42px;
+    box-sizing: border-box;
+    transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+        color 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
     align-items: center;
     gap: 6px;
     white-space: nowrap;
 }
 .nav-links a:hover, .nav-links a.active {
-    background: linear-gradient(135deg, var(--green-primary), var(--green-medium));
+    background: var(--green-primary);
     color: var(--white);
-    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+    border-color: rgba(27, 94, 32, 0.45);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+.nav-links a:focus-visible {
+    outline: 2px solid var(--green-primary);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-links a,
+    .nav-btn {
+        transition-duration: 0.01ms !important;
+    }
 }
 
 .nav-actions { display: flex; gap: 8px; align-items: center; justify-self: end; flex-shrink: 0; }
@@ -85,9 +101,9 @@ html {
     align-items: center;
     gap: 8px;
     padding: 6px 10px;
-    background: linear-gradient(135deg, var(--green-soft), var(--green-white));
+    background: #f0fdf4;
     border-radius: 10px;
-    border: 1px solid var(--green-soft);
+    border: 1px solid #d1fae5;
     max-width: 280px;
     min-width: 0;
 }
@@ -95,7 +111,7 @@ html {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--green-dark), var(--green-primary));
+    background: var(--green-primary);
     color: var(--white);
     display: flex;
     align-items: center;
@@ -127,7 +143,7 @@ html {
     font-weight: 700;
     font-size: 0.72rem;
     text-decoration: none;
-    transition: all 0.3s;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
     border: none;
     display: flex;
@@ -136,12 +152,13 @@ html {
     white-space: nowrap;
 }
 .nav-btn.primary {
-    background: linear-gradient(135deg, var(--green-dark), var(--green-primary));
+    background: var(--green-dark);
     color: var(--white);
+    border: 1px solid rgba(27, 94, 32, 0.4);
 }
 .nav-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+    background: var(--green-primary);
+    box-shadow: 0 4px 14px rgba(46, 125, 50, 0.25);
 }
 
 .nav-toggle {

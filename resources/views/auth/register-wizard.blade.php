@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Register - Impasugong Accommodations</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -116,7 +117,9 @@
         }
         
         .benefits-list li::before {
-            content: '✓';
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
             background: rgba(255, 255, 255, 0.2);
             min-width: 25px;
             height: 25px;
@@ -124,7 +127,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            font-size: 0.65rem;
             margin-top: 2px;
         }
         
@@ -280,6 +283,13 @@
         .role-card .icon {
             font-size: 2.5rem;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--green-primary);
+        }
+        .role-card .icon i {
+            font-size: 2.5rem;
         }
         
         .role-card .title {
@@ -450,6 +460,13 @@
             font-weight: 600;
             color: var(--green-dark);
             margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-details .feature-name i {
+            color: var(--green-primary);
+            flex-shrink: 0;
         }
         
         .feature-details .feature-description {
@@ -695,7 +712,7 @@
                             <div class="role-option">
                                 <input type="radio" id="role_owner" name="role" value="owner" checked onchange="updateStepTwo()">
                                 <label for="role_owner" class="role-card">
-                                    <span class="icon">🏨</span>
+                                    <span class="icon"><i class="fa-solid fa-hotel" aria-hidden="true"></i></span>
                                     <span class="title">List My Property</span>
                                     <span class="description">Manage accommodations</span>
                                 </label>
@@ -790,7 +807,7 @@
                         <div class="logo-upload-wrapper">
                             <input type="file" id="logo_path" name="logo_path" accept="image/*" onchange="previewLogo(this)">
                             <div class="logo-upload-btn" onclick="document.getElementById('logo_path').click()">
-                                📤 Click to upload or drag and drop your logo
+                                <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i> Click to upload or drag and drop your logo
                             </div>
                             <div class="logo-preview" id="logo-preview" style="display: none;">
                                 <img id="logo-preview-img" src="" alt="Logo preview">
@@ -817,7 +834,7 @@
                             <label class="feature-checkbox">
                                 <input type="checkbox" name="feature_bookings" value="1" {{ old('feature_bookings') ? 'checked' : 'checked' }}>
                                 <div class="feature-details">
-                                    <div class="feature-name">📅 Booking System</div>
+                                    <div class="feature-name"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i> Booking System</div>
                                     <div class="feature-description">Allow guests to book accommodations</div>
                                 </div>
                             </label>
@@ -825,7 +842,7 @@
                             <label class="feature-checkbox">
                                 <input type="checkbox" name="feature_messaging" value="1" {{ old('feature_messaging') ? 'checked' : 'checked' }}>
                                 <div class="feature-details">
-                                    <div class="feature-name">💬 Messaging</div>
+                                    <div class="feature-name"><i class="fa-solid fa-comments" aria-hidden="true"></i> Messaging</div>
                                     <div class="feature-description">Enable direct communication with guests</div>
                                 </div>
                             </label>
@@ -833,7 +850,7 @@
                             <label class="feature-checkbox">
                                 <input type="checkbox" name="feature_reviews" value="1" {{ old('feature_reviews') ? 'checked' : 'checked' }}>
                                 <div class="feature-details">
-                                    <div class="feature-name">⭐ Reviews</div>
+                                    <div class="feature-name"><i class="fa-solid fa-star" aria-hidden="true"></i> Reviews</div>
                                     <div class="feature-description">Allow guests to leave reviews</div>
                                 </div>
                             </label>
@@ -841,7 +858,7 @@
                             <label class="feature-checkbox">
                                 <input type="checkbox" name="feature_payments" value="1" {{ old('feature_payments') ? 'checked' : 'checked' }}>
                                 <div class="feature-details">
-                                    <div class="feature-name">💳 Online Payments</div>
+                                    <div class="feature-name"><i class="fa-solid fa-credit-card" aria-hidden="true"></i> Online Payments</div>
                                     <div class="feature-description">Accept online payments for bookings</div>
                                 </div>
                             </label>
@@ -1100,10 +1117,10 @@
             document.getElementById('summary-locale').textContent = localeMap[document.getElementById('locale').value];
             
             const features = [];
-            if (document.querySelector('input[name="feature_bookings"]').checked) features.push('📅 Bookings');
-            if (document.querySelector('input[name="feature_messaging"]').checked) features.push('💬 Messaging');
-            if (document.querySelector('input[name="feature_reviews"]').checked) features.push('⭐ Reviews');
-            if (document.querySelector('input[name="feature_payments"]').checked) features.push('💳 Payments');
+            if (document.querySelector('input[name="feature_bookings"]').checked) features.push('Bookings');
+            if (document.querySelector('input[name="feature_messaging"]').checked) features.push('Messaging');
+            if (document.querySelector('input[name="feature_reviews"]').checked) features.push('Reviews');
+            if (document.querySelector('input[name="feature_payments"]').checked) features.push('Payments');
             document.getElementById('summary-features').textContent = features.join(', ') || 'None';
         }
         

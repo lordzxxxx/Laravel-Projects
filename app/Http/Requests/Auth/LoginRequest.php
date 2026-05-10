@@ -33,6 +33,29 @@ class LoginRequest extends FormRequest
     }
 
     /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Enter the email address associated with your account.',
+            'email.email' => 'Enter a complete, valid email address (for example, name@organization.tld).',
+            'password.required' => 'Enter your password.',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'email' => 'email address',
+            'password' => 'password',
+        ];
+    }
+
+    /**
      * Attempt to authenticate the request's credentials.
      *
      * @throws \Illuminate\Validation\ValidationException

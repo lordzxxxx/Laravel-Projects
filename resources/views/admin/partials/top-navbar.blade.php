@@ -16,7 +16,6 @@
     $reportsHref = '/owner/reports/monthly';
     $updatesHref = $isTenantContext ? '/settings/updates' : '/admin/system-updates';
     $updateTicketsHref = ! $isTenantContext ? '/admin/system-updates/tickets' : null;
-    $landingPlansHref = '/admin/landing-plans';
     $messagesHref = $isTenantContext ? '/messages' : '/admin/messages';
     $settingsHref = '/profile';
     $landingHref = '/';
@@ -42,7 +41,6 @@
         <ul class="nav-links">
             <li><a href="{{ $dashboardHref }}" class="{{ $current === 'dashboard' ? 'active' : '' }}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
             <li><a href="{{ $unitsHref }}" class="{{ $current === 'tenants' ? 'active' : '' }}"><i class="fas fa-building-user"></i> Tulogans</a></li>
-            <li><a href="{{ $landingPlansHref }}" class="{{ $current === 'landing-plans' ? 'active' : '' }}"><i class="fas fa-tags"></i> Plans</a></li>
             <li><a href="{{ $updatesHref }}" class="{{ $current === 'updates' ? 'active' : '' }}"><i class="fas fa-cloud-download-alt"></i> Updates</a></li>
             @if($updateTicketsHref)
                 <li><a href="{{ $updateTicketsHref }}" class="{{ $current === 'update-tickets' ? 'active' : '' }}"><i class="fas fa-life-ring"></i> Support</a></li>
@@ -61,7 +59,7 @@
                 @endif
                 <div class="user-info">
                     <div class="user-name">{{ Auth::user()->name }}</div>
-                    <div class="user-role">{{ ucfirst(Auth::user()->role) }}</div>
+                    <div class="user-role">{{ Auth::user()->role === 'client' ? 'Guest' : ucfirst(Auth::user()->role) }}</div>
                 </div>
             </div>
             <form action="/logout" method="POST">

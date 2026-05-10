@@ -16,6 +16,8 @@ class SetCurrentTenant
     public function handle(Request $request, Closure $next): Response
     {
         if (SingleDbMigrationMode::readsEnabled()) {
+            $this->bindTenantWhenMissing($request);
+
             return $next($request);
         }
 
@@ -27,22 +29,41 @@ class SetCurrentTenant
             }
         }
 
+        $this->bindTenantWhenMissing($request);
+
+        return $next($request);
+    }
+
+    /**
+     * Ensure Spatie current tenant is set for code that calls Tenant::current(),
+     * including single-database unified mode (connection switching may still be a no-op).
+     */
+    private function bindTenantWhenMissing(Request $request): void
+    {
         if (Tenant::checkCurrent()) {
-            return $next($request);
+            return;
         }
 
         $user = $request->user();
 
-        if (! $user || ! $user->isOwner()) {
-            return $next($request);
+        if (! $user) {
+            return;
         }
 
-        $tenant = $user->ensureTenant();
+        if ($user->isOwner()) {
+            $tenant = $user->ensureTenant();
+            if ($tenant) {
+                $tenant->makeCurrent();
+            }
 
-        if ($tenant) {
-            $tenant->makeCurrent();
+            return;
         }
 
-        return $next($request);
+        if ($user->isAdmin() && $user->tenant_id) {
+            $tenant = Tenant::query()->find($user->tenant_id);
+            if ($tenant) {
+                $tenant->makeCurrent();
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('accent_color')->default('#43A047')->after('primary_color')->comment('Accent theme color (hex)');
             $table->string('logo_path')->nullable()->after('accent_color')->comment('Path to uploaded logo');
             $table->string('locale')->default('en')->after('logo_path')->comment('Language/locale preference');
-            
+
             // Features flags
             $table->boolean('feature_bookings')->default(true)->after('locale')->comment('Enable/disable booking system');
             $table->boolean('feature_messaging')->default(true)->after('feature_bookings')->comment('Enable/disable messaging');

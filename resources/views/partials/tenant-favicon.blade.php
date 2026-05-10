@@ -1,7 +1,12 @@
+@include('partials.navigation-stability-meta')
 @php
     $tenantFaviconTenant = $tenant ?? \App\Models\Tenant::current();
     $tenantFaviconHref = ($tenantFaviconTenant && $tenantFaviconTenant->getLogoUrl())
         ? $tenantFaviconTenant->getLogoUrl()
-        : asset('SYSTEMLOGO.png');
+        : null;
 @endphp
-<link rel="icon" href="{{ $tenantFaviconHref }}">
+@if ($tenantFaviconHref)
+    @include('partials.favicon-links', ['href' => $tenantFaviconHref])
+@else
+    @include('partials.favicon-links', ['faviconStem' => 'love'])
+@endif

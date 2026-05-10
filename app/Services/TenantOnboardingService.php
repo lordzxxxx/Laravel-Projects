@@ -113,6 +113,7 @@ class TenantOnboardingService
 
         $tenant->update([
             'onboarding_status' => Tenant::ONBOARDING_REJECTED,
+            'municipality_admin_review_notes' => $reason,
         ]);
 
         TenantLifecycleLog::create([

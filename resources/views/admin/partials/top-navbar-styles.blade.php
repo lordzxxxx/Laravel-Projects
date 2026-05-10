@@ -6,5 +6,3 @@
 @include('partials.top-navbar-core-styles')
 @include('partials.ui-foundation-styles')
 
-/* Shared responsive helpers */
-@include('partials.global-responsive-helpers')

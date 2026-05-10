@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('admin.partials.favicon')
     <title>Bookings Management - Admin Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -32,7 +32,7 @@
         .nav-btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; }
         .nav-btn.primary { background: linear-gradient(135deg, var(--green-dark), var(--green-primary)); color: var(--white); }
         .nav-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4); }
-        .dashboard-layout { display: flex; padding-top: 80px; }
+        .dashboard-layout { display: flex; padding-top: var(--app-main-top-offset, 108px); }
         .main-content { flex: 1; padding: 30px 40px; }
         .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
         /* Title styling provided by ui-foundation-styles for cross-system consistency. */
@@ -70,7 +70,7 @@
         @include('admin.partials.admin-shell-styles')
     </style>
 </head>
-<body>
+<body class="admin-central-portal">
     @include('admin.partials.top-navbar', ['active' => 'bookings'])
     
     <div class="dashboard-layout">

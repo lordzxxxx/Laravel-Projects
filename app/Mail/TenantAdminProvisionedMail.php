@@ -19,8 +19,7 @@ class TenantAdminProvisionedMail extends Mailable
         public string $businessUrl,
         public string $adminEmail,
         public string $adminPassword
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {

@@ -1,8 +1,4 @@
 @php
-    use App\Helpers\FeatureHelper;
-    $currentPlan = FeatureHelper::currentPlan();
-    $remainingListings = FeatureHelper::remainingListings();
-    $hasReachedLimit = FeatureHelper::hasReachedListingLimit();
     $cannotCreate = ! ($canCreate ?? false);
 @endphp
 
@@ -10,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>Create Accommodation - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -81,22 +77,18 @@
             </div>
 
             <div class="mt-4 flex items-start gap-3 rounded-xl border border-green-100 bg-green-50 p-4">
-                <i class="fas fa-crown mt-0.5 text-green-700"></i>
+                <i class="fas fa-clipboard-check mt-0.5 text-green-700"></i>
                 <div class="text-sm text-gray-700">
-                    <h3 class="mb-1 text-base font-semibold text-green-900">You're on the {{ $currentPlan['name'] ?? 'Basic Plan' }}</h3>
-                    <p>
-                        You can create up to
-                        @if($currentPlan['max_listings'] === null)
-                            <strong>unlimited</strong> properties
-                        @else
-                            <strong>{{ $currentPlan['max_listings'] }} properties</strong>
-                            (@if($remainingListings === 0)
-                                <strong class="text-amber-700">limit reached</strong>
-                            @else
-                                {{ $remainingListings }} remaining
-                            @endif)
-                        @endif
-                    </p>
+                    <h3 class="mb-1 text-base font-semibold text-green-900">Business status</h3>
+                    @if(!empty($businessStatus))
+                        <p>
+                            <strong>Registration:</strong> {{ $businessStatus['registration'] }}
+                            <span class="text-gray-500">&middot;</span>
+                            <strong>Billing:</strong> {{ $businessStatus['billing'] }}
+                        </p>
+                    @else
+                        <p>Business status is not available for this account.</p>
+                    @endif
                 </div>
             </div>
 
@@ -104,15 +96,17 @@
                 <div class="mt-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
                     <i class="fas fa-exclamation-triangle mt-0.5 text-amber-700"></i>
                     <div class="text-sm text-amber-900">
-                        @if($hasReachedLimit && ($currentPlan['max_listings'] ?? null) !== null)
-                            <h3 class="mb-1 text-base font-semibold">You've Reached Your Listing Limit</h3>
-                            <p class="mb-3">Your current plan allows {{ $currentPlan['max_listings'] }} property listings (Basic: 3, Standard: 10, Premium: unlimited). Upgrade to add more.</p>
+                        <h3 class="mb-1 text-base font-semibold">Cannot add listings right now</h3>
+                        @if(!empty($businessStatus))
+                            <p class="mb-3">
+                                Your space shows <strong>registration: {{ $businessStatus['registration'] }}</strong> and <strong>billing: {{ $businessStatus['billing'] }}</strong>.
+                                New units need an active billable period and compliance in good standing. Contact support if this looks wrong.
+                            </p>
                         @else
-                            <h3 class="mb-1 text-base font-semibold">Cannot Add Listings</h3>
-                            <p class="mb-3">Your subscription may be inactive or your plan does not allow new listings. Contact support or upgrade your plan.</p>
+                            <p class="mb-3">We could not verify your business status. Please try again from the dashboard or contact support.</p>
                         @endif
-                        <a href="{{ route('owner.settings.updates.index', [], false) }}" class="inline-flex items-center gap-2 rounded-lg bg-green-700 px-4 py-2 font-semibold text-white transition hover:bg-green-800">
-                            <i class="fas fa-arrow-up"></i> View plan &amp; updates
+                        <a href="{{ route('settings.updates.index', [], false) }}" class="inline-flex items-center gap-2 rounded-lg bg-green-700 px-4 py-2 font-semibold text-white transition hover:bg-green-800">
+                            <i class="fas fa-cloud-download-alt"></i> System updates
                         </a>
                     </div>
                 </div>

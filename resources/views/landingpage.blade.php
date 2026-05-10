@@ -4,11 +4,12 @@
     @include('partials.central-public-head', ['pageTitle' => 'IMPASUGONG TOURISM | Impasugong Accommodations'])
 </head>
 <body
-    class="min-h-screen font-sans text-brand-dark antialiased bg-cover bg-center bg-fixed"
+    class="flex min-h-screen flex-col font-sans text-brand-dark antialiased bg-cover bg-center bg-fixed"
     style="background-image: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, rgba(27, 94, 32, 0.1) 100%), url('/COMMUNAL.jpg');"
 >
     @include('partials.central-public-nav', ['active' => 'landing'])
 
+    <main class="flex flex-1 flex-col">
     <!-- Hero Section -->
     <section class="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[rgba(27,94,32,0.08)] to-[rgba(46,125,50,0.05)] px-5 pb-20 pt-24 text-center md:px-10 md:pt-28">
         <div class="mb-5 flex flex-wrap items-center justify-center gap-3.5 opacity-0 animate-fade-in-up-d1">
@@ -123,6 +124,8 @@
             </script>
         @endif
     </section>
+
+    </main>
 
     @include('partials.central-public-footer')
 </body>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('admin.partials.favicon')
     <title>Demographics Report - IMPASUGONG TOURISM</title>
@@ -23,17 +23,28 @@
         .report-page .pill .value { font-size: 1.1rem; font-weight: 700; color: #166534; line-height: 1.2; }
         .report-page .pill .label { font-size: 0.72rem; text-transform: uppercase; color: #4B5563; letter-spacing: 0.2px; }
         .report-page .filters-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: end; }
-        .report-page .actions-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        .report-page .actions-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; align-items: stretch; }
+        .report-page .actions-row form { display: inline; margin: 0; }
         .report-page .field label { display: block; font-size: 0.75rem; text-transform: uppercase; color: #6B7280; margin-bottom: 5px; font-weight: 600; }
         .report-page .field input, .report-page .field select { width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid #D1D5DB; background: #fff; }
         .report-page .field input:focus, .report-page .field select:focus { outline: none; border-color: #16A34A; box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.15); }
-        .report-page .btn { border: 1px solid transparent; border-radius: 8px; padding: 10px 12px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; font-size: 0.86rem; min-height: 40px; }
+        .report-page .btn { border: 1px solid transparent; border-radius: 10px; padding: 10px 16px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; font-size: 0.86rem; min-height: 42px; gap: 8px; transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05); }
         .report-page .btn.primary { background: #16A34A; color: white; }
         .report-page .btn.primary:hover { background: #15803D; }
         .report-page .btn.secondary { background: #F9FAFB; color: #1F2937; border-color: #D1D5DB; }
         .report-page .btn.secondary:hover { background: #F3F4F6; }
-        .report-page .btn.export { background: #ECFDF5; color: #166534; border-color: #BBF7D0; }
-        .report-page .btn.export:hover { background: #DCFCE7; }
+        .report-page .btn.export-pdf {
+            background: linear-gradient(180deg, #ffffff 0%, #fff1f2 100%);
+            color: #9f1239;
+            border-color: #fecdd3;
+        }
+        .report-page .btn.export-pdf:hover { background: #ffe4e6; border-color: #fb7185; }
+        .report-page .btn.export-csv {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+        .report-page .btn.export-csv:hover { background: #e2e8f0; border-color: #94a3b8; }
         .report-page table { width: 100%; border-collapse: collapse; margin-top: 6px; }
         .report-page th, .report-page td { border-bottom: 1px solid #E5E7EB; padding: 8px 10px; text-align: left; font-size: 0.88rem; }
         .report-page th { background: #F9FAFB; color: #374151; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.2px; position: sticky; top: 0; }
@@ -44,10 +55,10 @@
         }
     </style>
 </head>
-<body>
+<body class="admin-central-portal">
     @include('admin.partials.top-navbar', ['active' => 'dashboard'])
     <div class="report-page">
-    <div class="report-container" style="padding-top: 90px;">
+    <div class="report-container" style="padding-top: var(--app-main-top-offset, 108px);">
         <div class="card">
             <h1 class="title">Demographics Report</h1>
             <p class="muted">{{ $demographics['scope_label'] }} | {{ $demographics['start_date']->toFormattedDateString() }} - {{ $demographics['end_date']->toFormattedDateString() }}</p>
@@ -83,7 +94,10 @@
                     @endif
                     <input type="hidden" name="start_date" value="{{ optional($demographicsStartDate)->toDateString() }}">
                     <input type="hidden" name="end_date" value="{{ optional($demographicsEndDate)->toDateString() }}">
-                    <button class="btn export" data-loading-button type="submit">Export PDF</button>
+                    <button class="btn export-pdf" data-loading-button data-loading-label="Preparing PDF…" type="submit">
+                        <i class="fas fa-file-pdf" aria-hidden="true"></i>
+                        <span>Export PDF</span>
+                    </button>
                 </form>
                 <form method="POST" action="{{ route('admin.reports.demographics.export', [], false) }}" data-loading-form>
                     @csrf
@@ -93,7 +107,10 @@
                     @endif
                     <input type="hidden" name="start_date" value="{{ optional($demographicsStartDate)->toDateString() }}">
                     <input type="hidden" name="end_date" value="{{ optional($demographicsEndDate)->toDateString() }}">
-                    <button class="btn export" data-loading-button type="submit">Export CSV</button>
+                    <button class="btn export-csv" data-loading-button data-loading-label="Preparing CSV…" type="submit">
+                        <i class="fas fa-file-csv" aria-hidden="true"></i>
+                        <span>Export CSV</span>
+                    </button>
                 </form>
             </div>
 
@@ -175,9 +192,17 @@
         document.querySelectorAll('form[data-loading-form]').forEach((form) => {
             form.addEventListener('submit', () => {
                 const button = form.querySelector('[data-loading-button]');
-                if (!button) return;
+                if (! button || button.disabled) {
+                    return;
+                }
+                const label = button.getAttribute('data-loading-label') || 'Working…';
+                if (! button.dataset.originalHtml) {
+                    button.dataset.originalHtml = button.innerHTML;
+                }
                 button.disabled = true;
-                button.textContent = 'Processing...';
+                button.setAttribute('aria-busy', 'true');
+                button.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span></span>';
+                button.querySelector('span').textContent = label;
             });
         });
     </script>

@@ -19,7 +19,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('about') }}" class="{{ $linkBase }} {{ $active === 'about' ? $linkActive : $linkDefault }}">
+            <a href="{{ route('portal.about') }}" class="{{ $linkBase }} {{ $active === 'about' ? $linkActive : $linkDefault }}">
                 <i class="fas fa-circle-info text-sm opacity-90"></i> About Us
             </a>
         </li>

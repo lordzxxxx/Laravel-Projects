@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Notification;
 class CentralAdminNotifier
 {
     /**
-     * Notify Tulogans admins when a new owner registers on the central app and a tenant is provisioned (plan / onboarding flow).
+     * Notify Tulogans admins when a new owner registers on the central app and submits municipality onboarding documents.
      */
     public function notifyNewOwnerRegistered(Tenant $tenant, User $owner): void
     {
@@ -31,14 +31,15 @@ class CentralAdminNotifier
             $ownerName = (string) $owner->name;
             $ownerEmail = (string) $owner->email;
             $tenantName = (string) $tenant->name;
+            $onboarding = (string) ($tenant->onboarding_status ?? '');
 
             Notification::send(
                 $admins,
                 new AdminImportantNotification(
-                    title: 'New owner registered',
-                    body: "{$ownerName} ({$ownerEmail}) registered for {$tenantName} on the {$planLabel} plan. They are on onboarding (awaiting payment).",
-                    actionUrl: '/admin/tenants',
-                    actionLabel: 'Open Tulogans',
+                    title: 'New host application',
+                    body: "{$ownerName} ({$ownerEmail}) submitted documents for {$tenantName} ({$planLabel} catalog tier). Current onboarding status: {$onboarding}. Review municipality uploads and approve or reject from Host management.",
+                    actionUrl: '/admin/tenants?onboarding_status='.Tenant::ONBOARDING_PENDING_APPROVAL,
+                    actionLabel: 'Review pending hosts',
                 )
             );
         } catch (\Throwable $exception) {
@@ -66,8 +67,8 @@ class CentralAdminNotifier
             Notification::send(
                 $admins,
                 new AdminImportantNotification(
-                    title: 'Onboarding payment submitted',
-                    body: "{$tenant->name} submitted payment and is pending Tulogans approval.",
+                    title: 'Onboarding payment snapshot (legacy)',
+                    body: "{$tenant->name} has legacy onboarding payment artifacts on record. Municipality document review remains the primary approval path.",
                     actionUrl: '/admin/tenants',
                     actionLabel: 'Open Tulogans',
                 )

@@ -9,6 +9,7 @@ class SingleDbQueryBridge
 {
     /**
      * @template T
+     *
      * @param  callable():T  $singleDbRead
      * @param  null|callable():T  $legacyRead
      * @return T
@@ -101,4 +102,3 @@ class SingleDbQueryBridge
         return null;
     }
 }
-

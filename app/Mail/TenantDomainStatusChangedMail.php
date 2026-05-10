@@ -20,8 +20,7 @@ class TenantDomainStatusChangedMail extends Mailable
         public bool $enabled,
         public ?string $reason,
         public string $changedBy
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {

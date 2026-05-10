@@ -38,7 +38,7 @@ function ensureTestTenant(): Tenant
         'name' => 'Test Tenant',
         'slug' => 'test-tenant-'.Str::random(8),
         'plan' => Tenant::PLAN_BASIC,
-        'subscription_status' => 'trialing',
+        'subscription_status' => 'active',
         'domain_enabled' => false,
         'database_provisioned' => false,
         'feature_bookings' => true,

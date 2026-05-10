@@ -15,11 +15,11 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (!$request->user()) {
+        if (! $request->user()) {
             return redirect('/login');
         }
 
-        if (!$request->user()->hasRole($role)) {
+        if (! $request->user()->hasRole($role)) {
             // Redirect to appropriate dashboard based on user's role
             return redirect($request->user()->getDashboardRoute())
                 ->with('error', 'You do not have permission to access that section.');
@@ -28,4 +28,3 @@ class RoleMiddleware
         return $next($request);
     }
 }
-

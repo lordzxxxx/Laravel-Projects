@@ -17,13 +17,13 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
+    background: #f4f8f5;
     min-height: 100vh;
     color: var(--gray-800);
 }
 
 .dashboard-layout {
-    padding-top: 82px;
+    padding-top: var(--app-main-top-offset, 108px);
 }
 
 .main-content {
@@ -136,17 +136,17 @@ body {
     font-weight: 600;
     font-size: 0.9rem;
     text-decoration: none;
-    border: none;
+    border: 1px solid rgba(27, 94, 32, 0.35);
     cursor: pointer;
-    background: linear-gradient(135deg, var(--green-dark), var(--green-primary));
+    background: var(--green-primary);
     color: var(--white);
-    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.25);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-admin-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(46, 125, 50, 0.35);
+    background: var(--green-dark);
+    box-shadow: 0 4px 14px rgba(46, 125, 50, 0.22);
 }
 
 .btn-admin-secondary {
@@ -216,3 +216,27 @@ body {
 }
 
 @include('admin.partials.top-navbar-styles')
+
+/* Central admin portal pages: use <body class="admin-central-portal"> (owner pages omit this class). */
+body.admin-central-portal {
+    background: transparent;
+    min-height: 100vh;
+}
+body.admin-central-portal::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: url("{{ asset('adminbg.jpg') }}") center / cover no-repeat;
+    transform: scale(1.045);
+    filter: blur(5px);
+    pointer-events: none;
+}
+body.admin-central-portal::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+}

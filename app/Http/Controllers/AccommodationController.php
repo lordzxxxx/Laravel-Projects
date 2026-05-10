@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Accommodation;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Support\AccommodationAvailability;
+use App\Support\PortalDetector;
 use Database\Seeders\RbacCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,6 +25,8 @@ class AccommodationController extends Controller
 
         if ($currentTenant) {
             $query->forTenant($currentTenant->id);
+        } else {
+            $query->forCentralMunicipalityDirectory();
         }
 
         // Apply filters
@@ -57,18 +61,24 @@ class AccommodationController extends Controller
         // All accommodations with pagination
         $accommodations = (clone $query)->latest()->paginate(12);
 
-        return view('client.accommodations.index', compact('accommodations', 'featured'));
+        $portalDirectory = PortalDetector::isPublicPortal($request) || ! Tenant::checkCurrent();
+
+        return view('client.accommodations.index', compact('accommodations', 'featured', 'portalDirectory'));
     }
 
     /**
      * Display accommodation details.
      */
-    public function show(Accommodation $accommodation)
+    public function show(Request $request, Accommodation $accommodation)
     {
         $currentTenant = Tenant::current();
 
         if ($currentTenant && (int) $accommodation->tenant_id !== (int) $currentTenant->id) {
             abort(404);
+        }
+
+        if (! $currentTenant) {
+            abort_unless($this->isApprovedMunicipalityListing($accommodation), 404);
         }
 
         $accommodation->load(['owner', 'bookings' => function ($query) {
@@ -78,24 +88,52 @@ class AccommodationController extends Controller
 
         $amenities = is_array($accommodation->amenities) ? $accommodation->amenities : [];
         $images = is_array($accommodation->images) ? $accommodation->images : [];
+        $portalDirectory = PortalDetector::isPublicPortal($request) || ! Tenant::checkCurrent();
 
-        return view('client.accommodations.show', compact('accommodation', 'amenities', 'images'));
+        $availabilityAccommodations = collect([$accommodation]);
+        $availabilityEventsByAccommodation = AccommodationAvailability::eventsForAccommodationIds(
+            [(int) $accommodation->id],
+            (int) $accommodation->tenant_id,
+            null
+        );
+
+        return view('client.accommodations.show', compact(
+            'accommodation',
+            'amenities',
+            'images',
+            'portalDirectory',
+            'availabilityAccommodations',
+            'availabilityEventsByAccommodation'
+        ));
     }
 
     /**
      * Show the form for creating a new accommodation (Owner only).
      */
-    public function create()
+    public function create(Request $request)
     {
         $this->authorize('create', Accommodation::class);
 
-        $tenant = Tenant::current();
+        [$tenant, $_ownerId] = $this->resolveManagedTenantAndOwner($request);
+
+        if (! $tenant && $request->user()?->isOwner()) {
+            $tenant = $request->user()->ensureTenant();
+        }
+
+        if (! $tenant) {
+            return redirect()
+                ->route('owner.dashboard')
+                ->with('error', 'We could not determine your business (tenant). Open the dashboard and try again, or contact support.');
+        }
+
         $currentCount = Accommodation::query()->where('tenant_id', $tenant->id)->count();
         $maxListings = $tenant->maxListings();
         $canCreate = $tenant->canCreateAccommodation($currentCount);
         $availableFeatures = $tenant->getAvailableFeatures();
 
-        return view('owner.accommodations.create', compact('canCreate', 'currentCount', 'maxListings', 'availableFeatures'));
+        $businessStatus = $tenant->businessStatusParts();
+
+        return view('owner.accommodations.create', compact('canCreate', 'currentCount', 'maxListings', 'availableFeatures', 'businessStatus'));
     }
 
     /**
@@ -323,27 +361,53 @@ class AccommodationController extends Controller
             $tenantForLimits = $user->tenant ?? $user->ownedTenant;
         }
 
-        $listingUsage = null;
+        $businessStatus = null;
         $canCreateListing = false;
 
         if ($tenantForLimits) {
             $totalForTenant = Accommodation::query()->where('tenant_id', $tenantForLimits->id)->count();
-            $listingUsage = [
-                'plan_label' => match ($tenantForLimits->plan) {
-                    Tenant::PLAN_BASIC => 'Basic',
-                    Tenant::PLAN_PLUS => 'Standard',
-                    Tenant::PLAN_PRO => 'Premium',
-                    Tenant::PLAN_PROMO => 'Promo (custom)',
-                    default => ucfirst((string) $tenantForLimits->plan),
-                },
-                'used' => $totalForTenant,
-                'max' => $tenantForLimits->maxListings(),
-                'remaining' => $tenantForLimits->maxListings() === null ? null : max(0, $tenantForLimits->maxListings() - $totalForTenant),
-            ];
+            $businessStatus = $tenantForLimits->businessStatusParts();
             $canCreateListing = $tenantForLimits->canCreateAccommodation($totalForTenant);
         }
 
-        return view('owner.accommodations.index', compact('accommodations', 'listingUsage', 'canCreateListing'));
+        $availabilityAccommodations = collect();
+        $availabilityEventsByAccommodation = [];
+
+        if ($tenantForLimits) {
+            if ($user->isAdmin() && $currentTenant && (int) $user->tenant_id === (int) $currentTenant->id) {
+                $availabilityAccommodations = Accommodation::query()
+                    ->where('tenant_id', $currentTenant->id)
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'type']);
+                $ids = $availabilityAccommodations->pluck('id')->all();
+                $availabilityEventsByAccommodation = AccommodationAvailability::eventsForAccommodationIds(
+                    $ids,
+                    (int) $currentTenant->id,
+                    null
+                );
+            } else {
+                $tenantId = $user->tenant_id;
+                $availabilityAccommodations = $user
+                    ->accommodations()
+                    ->when($tenantId, fn ($query) => $query->where('tenant_id', $tenantId))
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'type']);
+                $ids = $availabilityAccommodations->pluck('id')->all();
+                $availabilityEventsByAccommodation = AccommodationAvailability::eventsForAccommodationIds(
+                    $ids,
+                    null,
+                    (int) $user->id
+                );
+            }
+        }
+
+        return view('owner.accommodations.index', compact(
+            'accommodations',
+            'businessStatus',
+            'canCreateListing',
+            'availabilityAccommodations',
+            'availabilityEventsByAccommodation'
+        ));
     }
 
     /**
@@ -438,5 +502,37 @@ class AccommodationController extends Controller
         }
 
         abort_unless($allowed, 403);
+    }
+
+    private function isApprovedMunicipalityListing(Accommodation $accommodation): bool
+    {
+        if (! $accommodation->is_available || ! $accommodation->is_verified) {
+            return false;
+        }
+
+        $tenant = $accommodation->tenant;
+
+        if (! $tenant instanceof Tenant) {
+            return false;
+        }
+
+        return (string) $tenant->onboarding_status === Tenant::ONBOARDING_APPROVED
+            && (bool) $tenant->database_provisioned
+            && $this->matchesCentralMunicipalityDirectory($accommodation);
+    }
+
+    private function matchesCentralMunicipalityDirectory(Accommodation $accommodation): bool
+    {
+        $municipality = (string) config('portals.municipality_name', 'Impasug-ong');
+        $term = strtolower(str_replace('-', '', $municipality));
+
+        foreach (['address', 'barangay', 'description'] as $col) {
+            $hay = strtolower((string) ($accommodation->{$col} ?? ''));
+            if ($hay !== '' && (str_contains($hay, strtolower($municipality)) || str_contains($hay, $term))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Register - Impasugong Accommodations</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -95,7 +96,9 @@
             font-size: 0.95rem;
         }
         .benefits li::before {
-            content: "✓";
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
             width: 22px;
             height: 22px;
             border-radius: 999px;
@@ -103,7 +106,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             flex-shrink: 0;
             margin-top: 1px;
         }

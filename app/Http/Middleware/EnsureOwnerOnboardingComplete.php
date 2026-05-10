@@ -44,10 +44,6 @@ class EnsureOwnerOnboardingComplete
             return $next($request);
         }
 
-        if ($tenant->onboarding_status === Tenant::ONBOARDING_AWAITING_PAYMENT) {
-            return redirect(route('owner.onboarding.payment', [], false));
-        }
-
         return redirect(route('owner.onboarding.status', [], false));
     }
 }

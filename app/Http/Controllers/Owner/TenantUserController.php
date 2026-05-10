@@ -400,17 +400,15 @@ class TenantUserController extends Controller
     }
 
     /**
-     * Owner has full access; tenant admin access is permission-gated by role template.
+     * Staff user management is for tenant admins only; unit owners delegate to their admin staff.
      */
     private function ownerOrTenantAdminWithPermission(User $actor, string $permission): bool
     {
         if ($actor->isOwner()) {
-            return true;
+            return false;
         }
 
-        return $actor->isAdmin()
-            && $this->isTenantScopedActor($actor)
-            && $actor->hasPermission($permission);
+        return $this->tenantAdminCan($actor, $permission);
     }
 
     private function tenantAdminCan(User $actor, string $permission): bool

@@ -121,7 +121,7 @@
                         @if(! $isClientComposer)
                             <option value="central" {{ old('recipient_key') === 'central' ? 'selected' : '' }}>ImpaStay (Central Admin)</option>
                             @if($clients->isNotEmpty())
-                                <optgroup label="Clients">
+                                <optgroup label="Guests">
                                     @foreach($clients as $client)
                                         <option value="user:{{ $client->id }}" {{ old('recipient_key') === 'user:'.$client->id ? 'selected' : '' }}>
                                             {{ $client->name }} — {{ $client->email }}

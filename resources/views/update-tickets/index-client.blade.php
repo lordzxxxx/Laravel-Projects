@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>Support - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -22,7 +22,7 @@
 <body class="min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-white text-gray-800">
     @include('client.partials.top-navbar', ['active' => 'update-tickets'])
 
-    <main class="mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10" style="padding-top: calc(var(--client-nav-offset, 108px) + 24px);">
+    <main class="mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10" style="padding-top: calc(var(--client-nav-offset) + 24px);">
         @include('partials.flash-alerts')
 
         <div class="mb-6 rounded-2xl border border-green-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm">

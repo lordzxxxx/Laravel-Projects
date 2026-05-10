@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>{{ $accommodation->name }} - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -15,6 +15,10 @@
                 $authUser->isOwner()
                 || ($authUser->isAdmin() && $currentTenant && ((int) $authUser->tenant_id === (int) $currentTenant->id || $authUser->tenant_id === null))
             );
+            $portalDirectory = $portalDirectory ?? false;
+            $showClientNav = $authUser?->isClient() === true;
+            $showPortalPublicNav = $portalDirectory && ! auth()->check();
+            $showLegacyNav = ! $isTenantManager && ! $showClientNav && ! $showPortalPublicNav;
         @endphp
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -27,7 +31,7 @@
             --orange-500: #F97316;
         }
         
-        @unless($isTenantManager || $authUser?->isClient())
+        @if($showLegacyNav)
         /* Legacy fixed nav (guest / non–client) */
         .navbar {
             background: var(--white);
@@ -51,11 +55,11 @@
         .nav-links a { text-decoration: none; color: var(--gray-600); font-weight: 500; padding: 8px 12px; border-radius: 8px; transition: all 0.3s; }
         .nav-links a:hover, .nav-links a.active { background: var(--green-soft); color: var(--green-dark); }
         .nav-actions { display: flex; gap: 15px; align-items: center; }
-        @endunless
+        @endif
 
         @if($isTenantManager)
             @include('owner.partials.top-navbar-styles')
-        @elseif($authUser?->isClient())
+        @elseif($showClientNav)
             @include('client.partials.top-navbar-styles')
         @endif
 
@@ -75,7 +79,7 @@
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding-top: var(--client-nav-offset, 90px);
+            padding-top: var(--client-nav-offset);
             padding-left: 20px;
             padding-right: 20px;
             padding-bottom: 40px;
@@ -285,14 +289,15 @@
         /* Features Grid */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 25px; }
         .feature-item { display: flex; align-items: center; gap: 12px; padding: 15px; background: var(--cream); border-radius: 12px; }
-        .feature-icon { font-size: 1.5rem; }
+        .feature-icon { font-size: 1.5rem; display: inline-flex; align-items: center; justify-content: center; }
+        .feature-icon i { font-size: 1.4rem; color: var(--green-primary); }
         .feature-text h4 { font-size: 0.85rem; color: var(--gray-500); margin-bottom: 3px; }
         .feature-text p { font-weight: 600; color: var(--gray-800); }
         
         /* Amenities */
         .amenities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .amenity-item { display: flex; align-items: center; gap: 10px; padding: 12px 15px; background: var(--green-white); border-radius: 10px; }
-        .amenity-item span { color: var(--green-primary); font-size: 1.2rem; }
+        .amenity-item span.check-icon { color: var(--green-primary); font-size: 1rem; display: inline-flex; align-items: center; }
         
         /* Map Section */
         
@@ -354,11 +359,11 @@
         }
         
         @media (max-width: 768px) {
-            @unless($isTenantManager || $authUser?->isClient())
+            @if($showLegacyNav)
             .navbar { padding: 0 20px; height: 60px; }
             .nav-links { display: none; }
-            @endunless
-            .main-container { padding-top: calc(var(--client-nav-offset, 90px) - 10px); }
+            @endif
+            .main-container { padding-top: calc(var(--client-nav-offset) - 10px); }
             .main-image { height: 300px; }
             .carousel-btn { width: 40px; height: 40px; font-size: 1rem; }
             .carousel-btn.prev { left: 8px; }
@@ -382,18 +387,20 @@
     <!-- Navigation -->
     @if($isTenantManager)
     @include('owner.partials.top-navbar', ['active' => 'accommodations'])
-    @elseif(auth()->user()?->isClient())
-    @include('client.partials.top-navbar', ['active' => 'accommodations'])
+    @elseif($showClientNav)
+        @include('client.partials.top-navbar', ['active' => 'accommodations', 'portalDirectory' => $portalDirectory ?? false])
+    @elseif($showPortalPublicNav)
+        @include('partials.portal-public-nav', ['active' => 'browse', 'municipalityName' => config('portals.municipality_name', 'Impasug-ong')])
     @else
     <nav class="navbar">
-        <a href="{{ route('dashboard') }}" class="nav-logo">
+        <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('dashboard') }}" class="nav-logo">
             <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
             <span>Impasugong</span>
         </a>
         
         <ul class="nav-links">
             <li><a href="{{ route('dashboard') }}">Browse</a></li>
-            <li><a href="{{ route('accommodations.index') }}" class="active">Accommodations</a></li>
+            <li><a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index') }}" class="active">Accommodations</a></li>
             @auth
                 @if(Auth::user()->role === 'owner')
                     <li><a href="{{ route('owner.dashboard') }}">Dashboard</a></li>
@@ -403,7 +410,7 @@
                     <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
                 @endif
                 @if(Auth::user()->tenantClientMayManageOwnStays())
-                <li><a href="{{ route('bookings.index') }}">My Bookings</a></li>
+                <li><a href="{{ ($portalDirectory ?? false) ? route('portal.bookings.index') : route('bookings.index')) }}">My Bookings</a></li>
                 @endif
                 @if(Auth::user()->tenantClientMayUseMessaging())
                     <li><a href="{{ route('messages.index', [], false) }}">Messages</a></li>
@@ -434,9 +441,9 @@
     <div class="main-container {{ $isTenantManager ? 'with-owner-nav' : '' }}">
         <!-- Breadcrumb -->
         <div class="breadcrumb animate">
-            <a href="{{ route('landing') }}">Home</a>
+            <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('landing') }}">Home</a>
             <span>›</span>
-            <a href="{{ route('accommodations.index') }}">Accommodations</a>
+            <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index')) }}">Accommodations</a>
             <span>›</span>
             <span>{{ $accommodation->name }}</span>
         </div>
@@ -510,16 +517,16 @@
                         <div>
                             <span class="type-badge {{ $accommodation->type }}">{{ str_replace('-', ' ', ucfirst($accommodation->type)) }}</span>
                             <h1>{{ $accommodation->name }}</h1>
-                            <div class="property-location">📍 {{ $accommodation->address }}</div>
+                            <div class="property-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> {{ $accommodation->address }}</div>
                             <div class="rating">
-                                <span class="rating-stars">
+                                <span class="rating-stars" aria-hidden="true">
                                     @for($i = 1; $i <= 5; $i++)
                                         @if($i <= floor($accommodation->rating))
-                                            ★
+                                            <i class="fa-solid fa-star"></i>
                                         @elseif($i - 0.5 <= $accommodation->rating)
-                                            ★
+                                            <i class="fa-solid fa-star-half-stroke"></i>
                                         @else
-                                            ☆
+                                            <i class="fa-regular fa-star"></i>
                                         @endif
                                     @endfor
                                 </span>
@@ -535,21 +542,21 @@
                     <h3 class="section-title">Property Details</h3>
                     <div class="features-grid">
                         <div class="feature-item">
-                            <span class="feature-icon">🛏️</span>
+                            <span class="feature-icon"><i class="fa-solid fa-bed" aria-hidden="true"></i></span>
                             <div class="feature-text">
                                 <h4>Bedrooms</h4>
                                 <p>{{ $accommodation->bedrooms }}</p>
                             </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">🚿</span>
+                            <span class="feature-icon"><i class="fa-solid fa-bath" aria-hidden="true"></i></span>
                             <div class="feature-text">
                                 <h4>Bathrooms</h4>
                                 <p>{{ $accommodation->bathrooms }}</p>
                             </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">👥</span>
+                            <span class="feature-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
                             <div class="feature-text">
                                 <h4>Max Guests</h4>
                                 <p>{{ $accommodation->max_guests }}</p>
@@ -565,7 +572,7 @@
                         @if(is_array($accommodation->amenities))
                             @foreach($accommodation->amenities as $amenity)
                                 <div class="amenity-item">
-                                    <span>✓</span>
+                                    <span class="check-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
                                     <span>{{ $amenity }}</span>
                                 </div>
                             @endforeach
@@ -596,6 +603,16 @@
             <!-- Right Column - Booking Card -->
             <div>
                 <div class="booking-card animate delay-3">
+                    @auth
+                        @if(($portalDirectory ?? false) && auth()->user()->isClient() && auth()->user()->tenantClientMayManageOwnStays() && (int) $accommodation->owner_id !== (int) auth()->id())
+                            <form method="POST" action="{{ route('portal.wishlist.toggle', $accommodation) }}" class="mb-4">
+                                @csrf
+                                <button type="submit" class="w-full rounded-xl border-2 border-rose-200 bg-rose-50 py-2.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-100">
+                                    <i class="fas fa-heart mr-2"></i> Toggle wishlist
+                                </button>
+                            </form>
+                        @endif
+                    @endauth
                     <div class="price-display">
                         <span class="amount">₱{{ number_format($accommodation->price_per_night, 0, '.', ',') }}</span>
                         <span class="period">/ night</span>
@@ -611,7 +628,7 @@
 
                     @auth
                         @if($canBookAccommodation)
-                        <form class="booking-form" method="POST" action="{{ route('accommodations.book', $accommodation) }}" data-loading-form>
+                                <form class="booking-form" method="POST" action="{{ ($portalDirectory ?? false) ? route('portal.bookings.store', $accommodation) : route('accommodations.book', $accommodation) }}" data-loading-form>
                             @csrf
                             <div class="form-row">
                                 <div class="form-group">
@@ -687,8 +704,8 @@
                             </div>
                         @endif
 
-                        <button class="btn btn-wishlist">
-                            ❤️ Add to Wishlist
+                        <button type="button" class="btn btn-wishlist">
+                            <i class="fa-regular fa-heart" aria-hidden="true"></i> Add to Wishlist
                         </button>
 
                         <div class="host-info">
@@ -700,14 +717,28 @@
                         </div>
                     @else
                         <div style="text-align: center; padding: 30px 0;">
-                            <p style="color: var(--gray-500); margin-bottom: 20px;">Please login to book this property</p>
-                            <a href="{{ route('login') }}" class="btn btn-primary btn-book">Login to Book</a>
-                            <a href="{{ route('register') }}" class="btn btn-wishlist">Create Account</a>
+                            <p style="color: var(--gray-500); margin-bottom: 20px;">Sign in to book, save to wishlist, or message the host.</p>
+                            <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="btn btn-primary btn-book">Login</a>
+                            <a href="{{ ($portalDirectory ?? false) ? route('register.guest') : route('register') }}" class="btn btn-wishlist">Create account</a>
                         </div>
                     @endauth
                 </div>
             </div>
         </div>
+
+        @if(isset($availabilityAccommodations) && $availabilityAccommodations->isNotEmpty())
+            <div class="info-card animate delay-2" style="margin-top: 28px;">
+                <h3 class="section-title"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Availability calendar</h3>
+                <p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 16px;">
+                    Open dates appear in green. Shaded dates already have a booking hold (pending or confirmed). Pick check-in and check-out around open nights before you book.
+                </p>
+                @include('partials.availability-calendar', [
+                    'calendarId' => 'guestListingCal',
+                    'availabilityAccommodations' => $availabilityAccommodations,
+                    'availabilityEventsByAccommodation' => $availabilityEventsByAccommodation ?? [],
+                ])
+            </div>
+        @endif
     </div>
     
     <script>

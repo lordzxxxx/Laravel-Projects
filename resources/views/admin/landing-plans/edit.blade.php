@@ -23,7 +23,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('admin.partials.favicon')
     <title>{{ $isCreate ? 'Add plan' : 'Edit plan' }} · Plan management</title>
     @vite(['resources/css/app.css'])
@@ -269,7 +269,7 @@
         }
     </style>
 </head>
-<body>
+<body class="admin-central-portal">
     @include('admin.partials.top-navbar', ['active' => 'landing-plans'])
 
     <div class="dashboard-layout">

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>User Management - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -225,7 +225,7 @@
                                         <option value="core:admin">Admin</option>
                                     @endif
                                     @if(in_array(\App\Models\User::ROLE_CLIENT, $assignableRoles, true))
-                                        <option value="core:client">Client</option>
+                                        <option value="core:client">Guest</option>
                                     @endif
                                     @foreach($tenantCustomRoles as $tenantRole)
                                         <option value="custom:{{ $tenantRole->id }}">{{ $tenantRole->name }}</option>
@@ -422,7 +422,7 @@
                                                             <option value="core:admin" {{ $selectedRoleSelection === 'core:admin' ? 'selected' : '' }}>Admin</option>
                                                         @endif
                                                         @if(in_array(\App\Models\User::ROLE_CLIENT, $assignableRoles, true))
-                                                            <option value="core:client" {{ $selectedRoleSelection === 'core:client' ? 'selected' : '' }}>Client</option>
+                                                            <option value="core:client" {{ $selectedRoleSelection === 'core:client' ? 'selected' : '' }}>Guest</option>
                                                         @endif
                                                         @foreach($tenantCustomRoles as $tenantRole)
                                                             <option

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>{{ $tenant->name }} | Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -26,7 +26,16 @@
                         url('/COMMUNAL.jpg') no-repeat center center/cover;
             background-attachment: fixed;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             color: var(--green-dark);
+        }
+
+        .tenant-landing-main {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
         }
 
         .navbar {
@@ -283,12 +292,17 @@
         }
 
         .footer {
-            background: var(--white);
-            padding: 40px;
+            margin-top: auto;
+            width: 100%;
+            box-sizing: border-box;
+            background: var(--green-dark);
+            padding: 8px 14px 10px;
             text-align: center;
-            border-top: 2px solid var(--green-soft);
+            border-top: 1px solid color-mix(in srgb, var(--green-primary) 35%, transparent);
         }
-        .footer p { color: var(--green-medium); font-size: 0.9rem; }
+        .footer p { color: #E8F5E9; font-size: 0.72rem; line-height: 1.45; margin: 0.2em 0; }
+        .footer p strong { color: #FFFFFF; }
+        .footer .footer-impastay { font-size: 0.68rem; color: #DCEDC8; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .animate { animation: fadeInUp 0.6s ease forwards; }
@@ -373,6 +387,7 @@
         </div>
     </nav>
 
+    <main class="tenant-landing-main">
     <section class="hero">
         <div class="hero-badge animate">
             <i class="fas fa-store"></i>
@@ -453,8 +468,10 @@
         </div>
     </section>
 
+    </main>
+
     <footer class="footer">
-        <p><strong>{{ $tenant->name }}</strong> | Hosted on {{ $tenant->domain }}:{{ env('CENTRAL_PORT', 8000) }}</p>
+        <p><strong>{{ $tenant->name }}</strong> · Hosted on {{ $tenant->domain }}:{{ env('CENTRAL_PORT', 8000) }}</p>
     </footer>
 
     <script>

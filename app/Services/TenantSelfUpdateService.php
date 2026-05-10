@@ -42,10 +42,12 @@ class TenantSelfUpdateService
             if ($exit !== 0) {
                 $message = 'Tenant migration failed while applying update.';
                 $this->tenantUpdateService->markAsFailed($tenantId, $releaseId, $message);
+
                 return ['ok' => false, 'message' => $message];
             }
 
             $this->tenantUpdateService->markAsUpdated($tenantId, $releaseId);
+
             return ['ok' => true, 'message' => "Update {$release->tag} downloaded, installed, and applied successfully."];
         } catch (\Throwable $exception) {
             Log::error('Tenant self-update failed.', [
@@ -138,6 +140,7 @@ class TenantSelfUpdateService
 
             if ($item->isDir()) {
                 File::ensureDirectoryExists($destination);
+
                 continue;
             }
 

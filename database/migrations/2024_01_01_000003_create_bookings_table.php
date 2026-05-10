@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('payment_reference')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['client_id', 'status']);
             $table->index(['accommodation_id', 'status']);
             $table->index(['check_in_date', 'check_out_date']);
@@ -44,4 +44,3 @@ return new class extends Migration
         Schema::dropIfExists('bookings');
     }
 };
-

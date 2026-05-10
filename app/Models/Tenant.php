@@ -72,6 +72,14 @@ class Tenant extends BaseTenant
         'onboarding_status',
         'payment_reference',
         'onboarding_payment_channel',
+        'municipality_business_permit_path',
+        'municipality_mayors_permit_path',
+        'municipality_barangay_clearance_path',
+        'municipality_valid_id_path',
+        'municipality_requirements_submitted_at',
+        'municipality_admin_review_notes',
+        'municipality_compliance_verified_at',
+        'municipality_compliance_notes',
         'onboarding_gcash_proof_path',
         'onboarding_gcash_submitted_at',
         'onboarding_stripe_session_id',
@@ -101,6 +109,8 @@ class Tenant extends BaseTenant
             'payment_submitted_at' => 'datetime',
             'onboarding_gcash_submitted_at' => 'datetime',
             'onboarding_approved_at' => 'datetime',
+            'municipality_requirements_submitted_at' => 'datetime',
+            'municipality_compliance_verified_at' => 'datetime',
             'metadata' => 'array',
             'feature_bookings' => 'boolean',
             'feature_messaging' => 'boolean',
@@ -251,11 +261,20 @@ class Tenant extends BaseTenant
 
     public function hasActiveSubscription(): bool
     {
-        return in_array($this->subscription_status, ['trialing', 'active'], true);
+        return (string) ($this->subscription_status ?? '') === 'active';
     }
 
     public function maxListings(): ?int
     {
+        if ($this->isRegistrationFullyApproved()) {
+            return null;
+        }
+
+        // Active subscribers may create as many accommodations as needed; plan tiers gate features elsewhere.
+        if ($this->hasActiveSubscription()) {
+            return null;
+        }
+
         return match ($this->normalizedPlan()) {
             self::PLAN_BASIC => 3,
             self::PLAN_PLUS => 10,
@@ -270,6 +289,10 @@ class Tenant extends BaseTenant
      */
     public function hasFeature(string $feature): bool
     {
+        if ($this->isRegistrationFullyApproved()) {
+            return true;
+        }
+
         if (! $this->hasActiveSubscription()) {
             return false;
         }
@@ -420,6 +443,52 @@ class Tenant extends BaseTenant
             self::PLAN_PROMO => 'Promo (custom)',
             default => ucfirst($plan),
         };
+    }
+
+    /**
+     * Registration + billing labels for owner UI (replaces plan / listing-cap messaging).
+     *
+     * @return array{registration: string, billing: string, tone: string}
+     */
+    public function businessStatusParts(): array
+    {
+        $onboarding = (string) ($this->onboarding_status ?? self::ONBOARDING_APPROVED);
+        $registration = match ($onboarding) {
+            self::ONBOARDING_AWAITING_PAYMENT => 'Awaiting payment',
+            self::ONBOARDING_PENDING_APPROVAL => 'Pending approval',
+            self::ONBOARDING_APPROVED => 'Approved',
+            self::ONBOARDING_REJECTED => 'Not approved',
+            default => ucfirst(str_replace('_', ' ', $onboarding)),
+        };
+
+        $subscription = (string) ($this->subscription_status ?? '');
+        $billing = match ($subscription) {
+            'trialing' => 'Active',
+            'active' => 'Active',
+            'past_due' => 'Past due',
+            'canceled', 'cancelled' => 'Canceled',
+            'inactive' => 'Inactive',
+            default => $subscription !== ''
+                ? ucfirst(str_replace('_', ' ', $subscription))
+                : 'Unknown',
+        };
+
+        $tone = 'neutral';
+        if ($onboarding === self::ONBOARDING_REJECTED) {
+            $tone = 'danger';
+        } elseif (in_array($onboarding, [self::ONBOARDING_PENDING_APPROVAL, self::ONBOARDING_AWAITING_PAYMENT], true)) {
+            $tone = 'warning';
+        } elseif (in_array($subscription, ['past_due', 'canceled', 'cancelled', 'inactive'], true)) {
+            $tone = 'warning';
+        } elseif ($onboarding === self::ONBOARDING_APPROVED && $subscription === 'active') {
+            $tone = 'success';
+        }
+
+        return [
+            'registration' => $registration,
+            'billing' => $billing,
+            'tone' => $tone,
+        ];
     }
 
     public function canCreateAccommodation(int $currentCount): bool

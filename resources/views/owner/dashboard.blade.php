@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>Owner Dashboard - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -20,7 +20,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
+            background: #f4f8f5;
             min-height: 100vh;
             color: var(--gray-800);
         }
@@ -63,11 +63,12 @@
             justify-content: center; 
             font-size: 1.1rem;
             margin: 0 auto 10px;
+            box-sizing: border-box;
         }
-        .stat-icon.green { background: linear-gradient(135deg, var(--green-soft), var(--green-pale)); color: var(--green-dark); }
-        .stat-icon.blue { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); color: var(--blue-500); }
-        .stat-icon.orange { background: linear-gradient(135deg, #FEF3C7, #FDE68A); color: var(--orange-500); }
-        .stat-icon.purple { background: linear-gradient(135deg, #EDE9FE, #DDD6FE); color: var(--purple-500); }
+        .stat-icon.green { background: #e8f5e9; border: 1px solid #c8e6c9; color: var(--green-dark); }
+        .stat-icon.blue { background: #ecfdf5; border: 1px solid #d1fae5; color: #047857; }
+        .stat-icon.orange { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; }
+        .stat-icon.purple { background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; }
         
         .stat-card .value { font-size: 1.35rem; font-weight: bold; color: var(--green-dark); margin-bottom: 3px; }
         .stat-card .label { color: var(--gray-500); font-size: 0.78rem; }
@@ -120,63 +121,6 @@
         .quick-action-card h4 { color: var(--green-dark); margin-bottom: 5px; font-size: 0.9rem; }
         .quick-action-card p { color: var(--gray-500); font-size: 0.78rem; }
 
-        /* Pro Plan Section */
-        .pro-section {
-            background: linear-gradient(135deg, #0f3d2e, #14532d);
-            border-radius: 12px;
-            padding: 16px;
-            color: var(--white);
-            margin-bottom: 16px;
-            box-shadow: 0 10px 30px rgba(20, 83, 45, 0.3);
-        }
-        .pro-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 18px;
-        }
-        .pro-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1rem;
-            font-weight: 700;
-        }
-        .pro-badge {
-            background: #facc15;
-            color: #1f2937;
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 6px 10px;
-            border-radius: 999px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-        .pro-feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-        }
-        .pro-feature-card {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 12px;
-            padding: 10px;
-        }
-        .pro-feature-card .name {
-            font-size: 0.72rem;
-            opacity: 0.88;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-        .pro-feature-card .value {
-            font-size: 1rem;
-            font-weight: 700;
-        }
-        
-        /* Table */
         .property-table { width: 100%; border-collapse: collapse; }
         .property-table th, .property-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--gray-200); }
         .property-table th { font-weight: 600; color: var(--gray-600); font-size: 0.8rem; text-transform: uppercase; background: var(--cream); }
@@ -184,109 +128,23 @@
         
         /* Status Badges */
         .status-badge { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; }
-        .status-badge.active { background: linear-gradient(135deg, var(--green-soft), var(--green-pale)); color: var(--green-dark); }
+        .status-badge.active { background: #dcfce7; color: var(--green-dark); border: 1px solid #bbf7d0; }
         .status-badge.inactive { background: var(--gray-200); color: var(--gray-600); }
-        .status-badge.pending { background: linear-gradient(135deg, #FEF3C7, #FDE68A); color: #B45309; }
-        .status-badge.confirmed { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); color: #1D4ED8; }
-        .status-badge.cancelled { background: linear-gradient(135deg, #FEE2E2, #FECACA); color: #DC2626; }
+        .status-badge.pending { background: #fffbeb; color: #B45309; border: 1px solid #fde68a; }
+        .status-badge.confirmed { background: #eff6ff; color: #1D4ED8; border: 1px solid #bfdbfe; }
+        .status-badge.cancelled { background: #fee2e2; color: #DC2626; border: 1px solid #fecaca; }
+
+        .pbi-visual-body .availability-board {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+            margin: 0;
+        }
+        .pbi-visual-body .availability-board > h3 { display: none; }
 
         .chart-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px; }
         .chart-container { position: relative; height: 220px; }
-
-        .availability-board {
-            background: var(--white);
-            border: 1px solid var(--green-soft);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(27, 94, 32, 0.08);
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-        .availability-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 14px;
-        }
-        .availability-select {
-            min-width: 260px;
-            padding: 9px 12px;
-            border: 1px solid var(--gray-300);
-            border-radius: 10px;
-            background: #fff;
-            color: var(--gray-800);
-        }
-        .month-nav-btn {
-            border: 1px solid var(--green-soft);
-            background: var(--green-white);
-            color: var(--green-dark);
-            border-radius: 8px;
-            width: 34px;
-            height: 34px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-        .availability-month-label {
-            min-width: 150px;
-            text-align: center;
-            color: var(--green-dark);
-            font-weight: 700;
-        }
-        .availability-grid {
-            display: grid;
-            grid-template-columns: repeat(7, minmax(0, 1fr));
-            gap: 6px;
-        }
-        .availability-dow,
-        .availability-day {
-            border-radius: 8px;
-            text-align: center;
-            padding: 9px 4px;
-            font-size: 0.8rem;
-        }
-        .availability-dow {
-            background: var(--green-white);
-            color: var(--green-dark);
-            font-weight: 700;
-        }
-        .availability-day {
-            background: #fff;
-            border: 1px solid var(--gray-200);
-            color: var(--gray-700);
-        }
-        .availability-day.empty {
-            background: transparent;
-            border-color: transparent;
-        }
-        .availability-day.blocked {
-            background: #fee2e2;
-            border-color: #fecaca;
-            color: #991b1b;
-            font-weight: 700;
-        }
-        .availability-day.today {
-            border-color: var(--green-primary);
-            box-shadow: inset 0 0 0 1px var(--green-primary);
-            font-weight: 700;
-        }
-        .availability-legend {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-top: 12px;
-            color: var(--gray-600);
-            font-size: 0.8rem;
-        }
-        .availability-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 999px;
-            display: inline-block;
-            margin-right: 5px;
-        }
-        .availability-dot.available { background: #bbf7d0; }
-        .availability-dot.blocked { background: #fecaca; }
 
         .pagination-clean .pagination {
             display: flex;
@@ -341,21 +199,49 @@
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: linear-gradient(135deg, var(--green-soft), var(--green-pale));
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--green-dark);
             font-size: 1.2rem;
-            transition: all 0.3s;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
             cursor: pointer;
         }
         .settings-icon:hover {
-            background: linear-gradient(135deg, var(--green-primary), var(--green-medium));
+            background: var(--green-primary);
+            border-color: var(--green-primary);
             color: white;
             transform: rotate(90deg);
         }
         
+        /* Business status (owner) */
+        .business-status-pill {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px 8px;
+            margin-top: 12px;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--gray-800);
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .business-status-pill i { color: var(--green-primary); }
+        .business-status-pill .biz-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-500); font-weight: 700; }
+        .business-status-pill .biz-main { color: var(--gray-800); }
+        .business-status-pill.tone-success { border-color: rgba(16, 185, 129, 0.35); background: #ecfdf5; }
+        .business-status-pill.tone-warning { border-color: rgba(245, 158, 11, 0.45); background: #fffbeb; color: #92400e; }
+        .business-status-pill.tone-warning .biz-main { color: #92400e; }
+        .business-status-pill.tone-danger { border-color: rgba(248, 113, 113, 0.5); background: #fef2f2; color: #b91c1c; }
+        .business-status-pill.tone-danger .biz-main { color: #b91c1c; }
+
         /* Responsive */
         @media (max-width: 768px) {
             body.owner-nav-page .main-content.with-owner-nav.owner-dashboard-main {
@@ -374,6 +260,8 @@
         .delay-3 { animation-delay: 0.3s; }
         .delay-4 { animation-delay: 0.4s; }
 
+        @include('partials.pbi-visual-surface-styles')
+
         @include('admin.partials.admin-shell-styles')
         @include('owner.partials.top-navbar-styles')
     </style>
@@ -389,29 +277,49 @@
                     <span>Unit Management Dashboard</span>
                 </h1>
                 <p>Monitor your properties and booking performance.</p>
+                @if(!empty($businessStatus))
+                    <span class="business-status-pill tone-{{ $businessStatus['tone'] }}">
+                        <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                        <span class="biz-label">Business status</span>
+                        <span class="biz-main">Registration: {{ $businessStatus['registration'] }}</span>
+                    </span>
+                @endif
             </div>
 
-            <!-- Quick Stats -->
-            <div class="stats-grid animate delay-1">
-                <div class="stat-card">
-                    <div class="stat-icon green"><i class="fas fa-building"></i></div>
-                    <div class="value">{{ $stats['total_properties'] ?? 0 }}</div>
-                    <div class="label">Total Units</div>
+            <div class="dashboard-card pbi-visual animate delay-1">
+                <div class="pbi-visual-header">
+                    <div class="pbi-visual-title">
+                        <i class="fas fa-gauge-high" aria-hidden="true"></i>
+                        <span>Key metrics</span>
+                    </div>
+                    <div class="pbi-visual-meta">
+                        Live snapshot<br>
+                        <span class="pbi-meta-subtle">Totals across your units</span>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon blue"><i class="fas fa-check-circle"></i></div>
-                    <div class="value">{{ $stats['active_properties'] ?? 0 }}</div>
-                    <div class="label">Active Units</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon orange"><i class="fas fa-calendar-check"></i></div>
-                    <div class="value">{{ $stats['total_bookings'] ?? 0 }}</div>
-                    <div class="label">Total Bookings</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon purple"><i class="fas fa-clock"></i></div>
-                    <div class="value">{{ $stats['pending_bookings'] ?? 0 }}</div>
-                    <div class="label">Pending Requests</div>
+                <div class="pbi-visual-body">
+                    <div class="stats-grid owner-pbi-stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-building"></i></div>
+                            <div class="value">{{ $stats['total_properties'] ?? 0 }}</div>
+                            <div class="label">Total Units</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-check-circle"></i></div>
+                            <div class="value">{{ $stats['active_properties'] ?? 0 }}</div>
+                            <div class="label">Active Units</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-calendar-check"></i></div>
+                            <div class="value">{{ $stats['total_bookings'] ?? 0 }}</div>
+                            <div class="label">Total Bookings</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon purple"><i class="fas fa-clock"></i></div>
+                            <div class="value">{{ $stats['pending_bookings'] ?? 0 }}</div>
+                            <div class="label">Pending Requests</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -432,11 +340,13 @@
                     <h4>Booking Requests</h4>
                     <p>Review pending bookings</p>
                 </a>
+                @if(Auth::user()?->isAdmin())
                 <a href="/owner/users" class="quick-action-card">
                     <div class="icon"><i class="fas fa-users-cog"></i></div>
-                    <h4>User Management</h4>
-                    <p>Manage tenant users and access</p>
+                    <h4>User management</h4>
+                    <p>Manage tenant staff &amp; access</p>
                 </a>
+                @endif
                 <a href="{{ route('messages.index', [], false) }}" class="quick-action-card">
                     <div class="icon"><i class="fas fa-reply"></i></div>
                     <h4>Messages</h4>
@@ -444,101 +354,69 @@
                 </a>
             </div>
 
-            <div class="availability-board animate delay-2">
-                <h3><i class="fas fa-calendar-days icon"></i>Room Availability Calendar</h3>
-                @if(($availabilityAccommodations ?? collect())->isNotEmpty())
-                    <div class="availability-controls">
-                        <select id="ownerAvailabilityAccommodation" class="availability-select" aria-label="Select unit for availability calendar">
-                            @foreach($availabilityAccommodations as $accommodation)
-                                <option value="{{ $accommodation->id }}">{{ $accommodation->name }} ({{ str_replace('-', ' ', $accommodation->type) }})</option>
-                            @endforeach
-                        </select>
-                        <button type="button" class="month-nav-btn" id="ownerAvailabilityPrev" aria-label="Previous month">&lt;</button>
-                        <div class="availability-month-label" id="ownerAvailabilityMonthLabel">Month</div>
-                        <button type="button" class="month-nav-btn" id="ownerAvailabilityNext" aria-label="Next month">&gt;</button>
+            <div class="dashboard-card pbi-visual animate delay-2">
+                <div class="pbi-visual-header">
+                    <div class="pbi-visual-title">
+                        <i class="fas fa-calendar-days" aria-hidden="true"></i>
+                        <span>Room availability</span>
                     </div>
-                    <div class="availability-grid" id="ownerAvailabilityGrid"></div>
-                    <div class="availability-legend">
-                        <span><span class="availability-dot available"></span>Available</span>
-                        <span><span class="availability-dot blocked"></span>Booked / Pending</span>
+                    <div class="pbi-visual-meta">
+                        Per unit · Monthly grid<br>
+                        <span class="pbi-meta-subtle">Blocked dates include pending &amp; confirmed holds</span>
                     </div>
-                @else
-                    <p style="color: var(--gray-500);">No units yet. Add your first accommodation to start tracking availability.</p>
-                @endif
+                </div>
+                <div class="pbi-visual-body">
+                    <div class="availability-board">
+                        @if(($availabilityAccommodations ?? collect())->isNotEmpty())
+                            @include('partials.availability-calendar', [
+                                'calendarId' => 'ownerDashCal',
+                                'availabilityAccommodations' => $availabilityAccommodations,
+                                'availabilityEventsByAccommodation' => $availabilityEventsByAccommodation ?? [],
+                            ])
+                        @else
+                            <p style="color: var(--gray-500);">No units yet. Add your first accommodation to start tracking availability.</p>
+                        @endif
+                    </div>
+                </div>
             </div>
 
             <div class="chart-grid animate delay-3">
-                <div class="dashboard-card">
-                    <h3><i class="fas fa-chart-line icon"></i>1-Month Revenue & Booking Trend</h3>
-                    <div class="chart-container">
-                        <canvas id="ownerTrendChart"></canvas>
+                <div class="dashboard-card pbi-visual">
+                    <div class="pbi-visual-header">
+                        <div class="pbi-visual-title">
+                            <i class="fas fa-chart-line" aria-hidden="true"></i>
+                            <span>Revenue &amp; bookings trend</span>
+                        </div>
+                        <div class="pbi-visual-meta">
+                            Last 30 days<br>
+                            <span class="pbi-meta-subtle">Revenue vs booking count</span>
+                        </div>
+                    </div>
+                    <div class="pbi-visual-body">
+                        <div class="chart-container">
+                            <canvas id="ownerTrendChart"></canvas>
+                        </div>
                     </div>
                 </div>
-                <div class="dashboard-card">
-                    <h3><i class="fas fa-chart-pie icon"></i>Booking Status Mix</h3>
-                    <div class="chart-container">
-                        <canvas id="ownerStatusChart"></canvas>
+                <div class="dashboard-card pbi-visual">
+                    <div class="pbi-visual-header">
+                        <div class="pbi-visual-title">
+                            <i class="fas fa-chart-pie" aria-hidden="true"></i>
+                            <span>Booking status mix</span>
+                        </div>
+                        <div class="pbi-visual-meta">
+                            All-time share<br>
+                            <span class="pbi-meta-subtle">By pipeline stage</span>
+                        </div>
+                    </div>
+                    <div class="pbi-visual-body">
+                        <div class="chart-container">
+                            <canvas id="ownerStatusChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            @if(($proFeatures['is_pro'] ?? false) === true)
-                <div class="pro-section animate delay-3">
-                    <div class="pro-header">
-                        <div class="pro-title">
-                            <i class="fas fa-crown"></i>
-                            Premium Plan Features
-                        </div>
-                        <span class="pro-badge">Pro Active</span>
-                    </div>
-                    <div class="pro-feature-grid">
-                        <div class="pro-feature-card">
-                            <div class="name">Unlimited Listings</div>
-                            <div class="value">
-                                @if(($proFeatures['unlimited_listings'] ?? false) === true)
-                                    Enabled ({{ $proFeatures['total_listings'] ?? 0 }} active)
-                                @else
-                                    Disabled
-                                @endif
-                            </div>
-                        </div>
-                        <div class="pro-feature-card">
-                            <div class="name">Priority Support</div>
-                            <div class="value">
-                                @if(($proFeatures['priority_support'] ?? false) === true)
-                                    Enabled
-                                @else
-                                    Disabled
-                                @endif
-                            </div>
-                        </div>
-                        <div class="pro-feature-card">
-                            <div class="name">Featured Listing Promotion</div>
-                            <div class="value">
-                                @if(($proFeatures['featured_listing_promotion'] ?? false) === true)
-                                    {{ $proFeatures['featured_listings'] ?? 0 }} Featured Listings
-                                @else
-                                    Disabled
-                                @endif
-                            </div>
-                        </div>
-                        <div class="pro-feature-card">
-                            <div class="name">Advanced Analytics</div>
-                            <div class="value">
-                                @if(($proFeatures['advanced_analytics'] ?? false) === true)
-                                    Enabled
-                                @else
-                                    Disabled
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            @endif
-
-            
-            
             <!-- My Units Table -->
             <div class="dashboard-card animate delay-3">
                 <h3><i class="fas fa-list icon"></i>My Units</h3>
@@ -645,106 +523,6 @@
         </main>
 
     <script>
-        (function () {
-            const selectEl = document.getElementById('ownerAvailabilityAccommodation');
-            const gridEl = document.getElementById('ownerAvailabilityGrid');
-            const monthLabelEl = document.getElementById('ownerAvailabilityMonthLabel');
-            const prevBtn = document.getElementById('ownerAvailabilityPrev');
-            const nextBtn = document.getElementById('ownerAvailabilityNext');
-
-            if (!selectEl || !gridEl || !monthLabelEl || !prevBtn || !nextBtn) {
-                return;
-            }
-
-            const eventsByAccommodation = @json($availabilityEventsByAccommodation ?? []);
-            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            let currentMonth = new Date();
-            currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
-
-            const toDateKey = (date) => {
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-
-                return `${year}-${month}-${day}`;
-            };
-
-            const blockedSetForAccommodation = (accommodationId) => {
-                const rows = eventsByAccommodation[String(accommodationId)] || eventsByAccommodation[accommodationId] || [];
-                const blocked = new Set();
-
-                rows.forEach((row) => {
-                    if (!row.start || !row.end) {
-                        return;
-                    }
-
-                    const start = new Date(`${row.start}T00:00:00`);
-                    const end = new Date(`${row.end}T00:00:00`);
-
-                    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-                        return;
-                    }
-
-                    for (let cursor = new Date(start); cursor <= end; cursor.setDate(cursor.getDate() + 1)) {
-                        blocked.add(toDateKey(cursor));
-                    }
-                });
-
-                return blocked;
-            };
-
-            const renderCalendar = () => {
-                const selectedAccommodationId = selectEl.value;
-                const blockedSet = blockedSetForAccommodation(selectedAccommodationId);
-                const year = currentMonth.getFullYear();
-                const month = currentMonth.getMonth();
-                const monthStart = new Date(year, month, 1);
-                const monthEnd = new Date(year, month + 1, 0);
-                const today = toDateKey(new Date());
-
-                monthLabelEl.textContent = monthStart.toLocaleDateString(undefined, {
-                    month: 'long',
-                    year: 'numeric',
-                });
-
-                const cells = [];
-                dayNames.forEach((name) => {
-                    cells.push(`<div class="availability-dow">${name}</div>`);
-                });
-
-                for (let i = 0; i < monthStart.getDay(); i++) {
-                    cells.push('<div class="availability-day empty"></div>');
-                }
-
-                for (let day = 1; day <= monthEnd.getDate(); day++) {
-                    const date = new Date(year, month, day);
-                    const key = toDateKey(date);
-                    const isBlocked = blockedSet.has(key);
-                    const isToday = key === today;
-
-                    const classes = ['availability-day'];
-                    if (isBlocked) classes.push('blocked');
-                    if (isToday) classes.push('today');
-
-                    cells.push(`<div class="${classes.join(' ')}" title="${isBlocked ? 'Not available' : 'Available'}">${day}</div>`);
-                }
-
-                gridEl.innerHTML = cells.join('');
-            };
-
-            selectEl.addEventListener('change', renderCalendar);
-            prevBtn.addEventListener('click', () => {
-                currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
-                renderCalendar();
-            });
-            nextBtn.addEventListener('click', () => {
-                currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
-                renderCalendar();
-            });
-
-            renderCalendar();
-        })();
-
         const trendCtx = document.getElementById('ownerTrendChart');
         if (trendCtx) {
             new Chart(trendCtx, {
@@ -764,8 +542,8 @@
                         {
                             label: 'Bookings',
                             data: @json($bookingsTrend ?? []),
-                            borderColor: '#3B82F6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                            borderColor: '#047857',
+                            backgroundColor: 'rgba(4, 120, 87, 0.12)',
                             tension: 0.35,
                             fill: false,
                             yAxisID: 'yBookings'
@@ -776,6 +554,16 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', labels: { color: '#334155', font: { size: 11, weight: '600' } } },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 61, 36, 0.94)',
+                            titleColor: '#ecfdf5',
+                            bodyColor: '#d1fae5',
+                            padding: 12,
+                            cornerRadius: 8
+                        }
+                    },
                     scales: {
                         yRevenue: {
                             type: 'linear',
@@ -811,7 +599,7 @@
                             {{ $bookingStatusBreakdown['completed'] ?? 0 }},
                             {{ $bookingStatusBreakdown['cancelled'] ?? 0 }}
                         ],
-                        backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#2E7D32', '#EF4444'],
+                        backgroundColor: ['#d97706', '#86efac', '#22c55e', '#166534', '#f87171'],
                         borderWidth: 1
                     }]
                 },
@@ -819,8 +607,13 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom'
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 61, 36, 0.94)',
+                            titleColor: '#ecfdf5',
+                            bodyColor: '#d1fae5',
+                            padding: 12,
+                            cornerRadius: 8
                         }
                     }
                 }

@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\Message;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Support\AccommodationAvailability;
 use Database\Seeders\RbacCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -68,63 +69,6 @@ class DashboardController extends Controller
             $dashboardTenant = $user->tenant;
         }
 
-        $proFeatures = [
-            'is_pro' => false,
-            'has_advanced_reporting' => false,
-            'has_analytics_dashboard' => false,
-            'unlimited_listings' => false,
-            'priority_support' => false,
-            'featured_listing_promotion' => false,
-            'advanced_analytics' => false,
-            'total_listings' => (int) ($stats['total_properties'] ?? 0),
-            'max_listings' => null,
-            'featured_listings' => 0,
-            'monthly_revenue' => 0,
-            'monthly_bookings' => 0,
-            'avg_booking_value' => 0,
-            'booking_conversion_rate' => 0,
-        ];
-
-        if ($dashboardTenant) {
-            $tenantId = (int) $dashboardTenant->id;
-            $tenantPropertiesQuery = Accommodation::query()->where('tenant_id', $tenantId);
-            $tenantBookingsQuery = Booking::query()->forTenant($tenantId);
-            $startOfMonth = Carbon::now()->startOfMonth();
-            $endOfMonth = Carbon::now()->endOfMonth();
-
-            $totalBookings = (int) (clone $tenantBookingsQuery)->count();
-            $successfulBookings = (int) (clone $tenantBookingsQuery)
-                ->whereIn('status', ['confirmed', 'paid', 'completed'])
-                ->count();
-            $monthlyBookings = (int) (clone $tenantBookingsQuery)
-                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-                ->count();
-            $monthlyRevenue = (float) (clone $tenantBookingsQuery)
-                ->whereIn('status', ['confirmed', 'paid', 'completed'])
-                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-                ->sum('total_price');
-            $totalRevenue = (float) (clone $tenantBookingsQuery)
-                ->whereIn('status', ['confirmed', 'paid', 'completed'])
-                ->sum('total_price');
-
-            $proFeatures = [
-                'is_pro' => in_array((string) $dashboardTenant->plan, [Tenant::PLAN_PRO, Tenant::PLAN_PROMO], true) && $dashboardTenant->hasActiveSubscription(),
-                'has_advanced_reporting' => $dashboardTenant->hasFeature('advanced_reporting'),
-                'has_analytics_dashboard' => $dashboardTenant->hasFeature('analytics_dashboard'),
-                'unlimited_listings' => is_null($dashboardTenant->maxListings()),
-                'priority_support' => $dashboardTenant->hasFeature('priority_support'),
-                'featured_listing_promotion' => $dashboardTenant->hasFeature('featured_listings'),
-                'advanced_analytics' => $dashboardTenant->hasFeature('analytics_dashboard'),
-                'total_listings' => (int) (clone $tenantPropertiesQuery)->count(),
-                'max_listings' => $dashboardTenant->maxListings(),
-                'featured_listings' => (int) (clone $tenantPropertiesQuery)->where('is_featured', true)->count(),
-                'monthly_revenue' => (int) round($monthlyRevenue),
-                'monthly_bookings' => $monthlyBookings,
-                'avg_booking_value' => $successfulBookings > 0 ? (int) round($totalRevenue / $successfulBookings) : 0,
-                'booking_conversion_rate' => $totalBookings > 0 ? round(($successfulBookings / $totalBookings) * 100, 1) : 0,
-            ];
-        }
-
         $ownerId = $isTenantAdmin ? null : $user->id;
         [$trendLabels, $revenueTrend, $bookingsTrend] = $this->buildMonthlyTrendData($dashboardTenant?->id, $ownerId);
         $bookingStatusBreakdown = $this->buildBookingStatusBreakdown($dashboardTenant?->id, $ownerId);
@@ -144,48 +88,35 @@ class DashboardController extends Controller
         $availabilityAccommodationIds = $availabilityAccommodations->pluck('id')->values()->all();
 
         if ($availabilityAccommodationIds !== []) {
-            $availabilityBookingsQuery = Booking::query()
-                ->whereIn('accommodation_id', $availabilityAccommodationIds)
-                ->whereIn('status', [
-                    Booking::STATUS_PENDING,
-                    Booking::STATUS_CONFIRMED,
-                    Booking::STATUS_PAID,
-                ])
-                ->whereDate('check_out_date', '>=', Carbon::today()->subMonths(1)->toDateString());
-
             if ($isTenantAdmin && $currentTenant) {
-                $availabilityBookingsQuery->forTenant((int) $currentTenant->id);
+                $availabilityEventsByAccommodation = AccommodationAvailability::eventsForAccommodationIds(
+                    $availabilityAccommodationIds,
+                    (int) $currentTenant->id,
+                    null
+                );
             } else {
-                $availabilityBookingsQuery->forOwner($user->id);
+                $availabilityEventsByAccommodation = AccommodationAvailability::eventsForAccommodationIds(
+                    $availabilityAccommodationIds,
+                    null,
+                    (int) $user->id
+                );
             }
-
-            $availabilityEventsByAccommodation = $availabilityBookingsQuery
-                ->get(['accommodation_id', 'check_in_date', 'check_out_date', 'status'])
-                ->groupBy('accommodation_id')
-                ->map(function ($rows) {
-                    return $rows->map(function ($row) {
-                        return [
-                            'start' => Carbon::parse($row->check_in_date)->toDateString(),
-                            'end' => Carbon::parse($row->check_out_date)->toDateString(),
-                            'status' => (string) $row->status,
-                        ];
-                    })->values()->all();
-                })
-                ->all();
         }
+
+        $businessStatus = $dashboardTenant?->businessStatusParts();
 
         return view('owner.dashboard', compact(
             'stats',
             'properties',
             'recent_bookings',
             'unread_messages',
-            'proFeatures',
             'trendLabels',
             'revenueTrend',
             'bookingsTrend',
             'bookingStatusBreakdown',
             'availabilityAccommodations',
-            'availabilityEventsByAccommodation'
+            'availabilityEventsByAccommodation',
+            'businessStatus'
         ));
     }
 

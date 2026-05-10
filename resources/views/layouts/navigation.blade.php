@@ -71,7 +71,7 @@
                                 @if(Auth::user()->role === 'admin') bg-red-100 text-red-800
                                 @elseif(Auth::user()->role === 'owner') bg-orange-100 text-orange-800
                                 @else bg-green-100 text-green-800 @endif">
-                                {{ ucfirst(Auth::user()->role) }}
+                                {{ Auth::user()->role === 'client' ? 'Guest' : ucfirst(Auth::user()->role) }}
                             </span>
                         </div>
 
@@ -149,7 +149,7 @@
                         @if(Auth::user()->role === 'admin') bg-red-100 text-red-800
                         @elseif(Auth::user()->role === 'owner') bg-orange-100 text-orange-800
                         @else bg-green-100 text-green-800 @endif">
-                        {{ ucfirst(Auth::user()->role) }}
+                        {{ Auth::user()->role === 'client' ? 'Guest' : ucfirst(Auth::user()->role) }}
                     </span>
                 </div>
             </div>

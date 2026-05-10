@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    @php
+        $portalDirectory = $portalDirectory ?? false;
+        $showClientNav = auth()->user()?->isClient() === true;
+        $showPortalPublicNav = $portalDirectory && ! auth()->check();
+        $showLegacyNav = ! $showClientNav && ! $showPortalPublicNav;
+    @endphp
     @include('partials.tenant-favicon')
     <title>Properties - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -13,7 +19,7 @@
             --gray-200: #E5E7EB; --gray-500: #6B7280; --gray-600: #4B5563; --gray-700: #374151; --gray-800: #1F2937;
         }
         
-        @unless(auth()->user()?->isClient())
+        @if($showLegacyNav)
         /* Legacy fixed nav (non–client users on this page) */
         .navbar {
             background: var(--white);
@@ -60,44 +66,51 @@
         .nav-btn.primary:hover { background: var(--green-dark); transform: translateY(-1px); }
         .nav-btn.secondary { background: var(--green-soft); color: var(--green-dark); }
         .nav-btn.secondary:hover { background: var(--green-white); }
-        @endunless
+        @endif
 
-        @if(auth()->user()?->isClient())
+        @if($showClientNav)
             @include('client.partials.top-navbar-styles')
         @endif
         
         /* Responsive */
         @media (max-width: 768px) {
-            @unless(auth()->user()?->isClient())
+            @if($showLegacyNav)
             .navbar { padding: 0 20px; height: 60px; }
             .nav-logo img { width: 38px; height: 38px; }
             .nav-logo span { font-size: 1.1rem; }
             .nav-links { display: none; }
-            @endunless
+            @endif
         }
 
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-white text-gray-800">
     <!-- Navigation -->
-    @if(auth()->user()?->isClient())
-    @include('client.partials.top-navbar', ['active' => 'accommodations'])
+    @if($showClientNav)
+    @include('client.partials.top-navbar', ['active' => 'accommodations', 'portalDirectory' => $portalDirectory])
+    @elseif($showPortalPublicNav)
+    @include('partials.portal-public-nav', ['active' => 'browse', 'municipalityName' => config('portals.municipality_name', 'Impasug-ong')])
     @else
     <nav class="navbar">
-        <a href="{{ route('dashboard') }}" class="nav-logo">
+        <a href="{{ $portalDirectory ? route('portal.landing') : route('dashboard') }}" class="nav-logo">
             <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
             <span>Impasugong</span>
         </a>
         
         <ul class="nav-links">
-            <li><a href="{{ route('dashboard') }}">Browse</a></li>
-            <li><a href="{{ route('accommodations.index') }}" class="active">Accommodations</a></li>
-            <li><a href="{{ route('bookings.index') }}">My Bookings</a></li>
-            <li><a href="{{ route('messages.index', [], false) }}">Messages</a></li>
-            <li><a href="{{ route('profile.edit') }}">Settings</a></li>
+            @auth
+                <li><a href="{{ route('dashboard') }}">Browse</a></li>
+                <li><a href="{{ $portalDirectory ? route('portal.accommodations.index') : route('accommodations.index') }}" class="active">Accommodations</a></li>
+                <li><a href="{{ $portalDirectory ? route('portal.bookings.index') : route('bookings.index') }}">My Bookings</a></li>
+                <li><a href="{{ route('messages.index', [], false) }}">Messages</a></li>
+                <li><a href="{{ route('profile.edit') }}">Settings</a></li>
+            @else
+                <li><a href="{{ $portalDirectory ? route('portal.accommodations.index') : route('accommodations.index') }}" class="active">Accommodations</a></li>
+            @endauth
         </ul>
         
         <div class="nav-actions">
+            @auth
             <a href="{{ route('profile.edit') }}" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: var(--green-soft); color: var(--green-dark); text-decoration: none; transition: all 0.3s;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="3"></circle>
@@ -108,12 +121,16 @@
                 @csrf
                 <button type="submit" class="nav-btn primary">Logout</button>
             </form>
+            @else
+            <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="nav-btn secondary">Login</a>
+            <a href="{{ $portalDirectory ? route('register.guest') : route('register') }}" class="nav-btn primary">Register</a>
+            @endauth
         </div>
     </nav>
     @endif
     
     <!-- Main Content -->
-    <main class="mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10" style="padding-top: calc(var(--client-nav-offset, 108px) + 24px);">
+    <main class="mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10" style="padding-top: calc(var(--client-nav-offset) + 24px);">
         <!-- Page Header -->
         <div class="mb-6 rounded-2xl border border-green-100 bg-white/85 p-6 text-center shadow-sm backdrop-blur-sm">
             <div class="mb-3 flex items-center justify-center gap-3">
@@ -125,7 +142,7 @@
         </div>
         
         <!-- Filter Bar -->
-        <form action="{{ route('accommodations.index') }}" method="GET" class="mb-6 grid gap-3 rounded-2xl border border-green-100 bg-white p-4 shadow-sm lg:grid-cols-12 lg:items-end">
+        <form action="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index') }}" method="GET" class="mb-6 grid gap-3 rounded-2xl border border-green-100 bg-white p-4 shadow-sm lg:grid-cols-12 lg:items-end">
             <div class="lg:col-span-2">
                 <label class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-600">Type</label>
                 <select name="type" class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100">
@@ -180,7 +197,11 @@
                                 <img src="/COMMUNAL.jpg" alt="{{ $accommodation->name }}" class="h-full w-full object-cover transition duration-300 hover:scale-105">
                             @endif
                             <span class="absolute left-3 top-3 rounded-full bg-green-700 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">{{ str_replace('-', ' ', $accommodation->type) }}</span>
-                            <button class="property-favorite absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-base shadow-sm transition hover:scale-110 hover:bg-green-50" title="Add to favorites">♡</button>
+                            @guest
+                            <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="property-favorite absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-base shadow-sm transition hover:scale-110 hover:bg-green-50 text-red-500" title="Sign in to save to wishlist" aria-label="Sign in to save to wishlist"><i class="fa-regular fa-heart" aria-hidden="true"></i></a>
+                            @else
+                            <button type="button" class="property-favorite absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-base shadow-sm transition hover:scale-110 hover:bg-green-50 text-gray-600" title="Add to favorites" aria-label="Add to favorites"><i class="fa-regular fa-heart" aria-hidden="true"></i></button>
+                            @endguest
                         </div>
                         
                         <div class="p-4">
@@ -218,11 +239,13 @@
                             </div>
                             
                             <div class="mb-3 flex items-center gap-2">
-                                <span class="text-sm tracking-wide text-amber-500">★★★★★</span>
+                                <span class="text-amber-500" aria-hidden="true">
+                                    <i class="fa-solid fa-star text-sm"></i><i class="fa-solid fa-star text-sm"></i><i class="fa-solid fa-star text-sm"></i><i class="fa-solid fa-star text-sm"></i><i class="fa-solid fa-star text-sm"></i>
+                                </span>
                                 <span class="text-xs text-gray-500">({{ $accommodation->total_reviews ?? 0 }} reviews)</span>
                             </div>
                             
-                            <a href="{{ route('accommodations.show', $accommodation) }}" class="inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-green-700 to-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:from-green-800 hover:to-green-700">View Details</a>
+                            <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.show', $accommodation) : route('accommodations.show', $accommodation) }}" class="inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-green-700 to-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:from-green-800 hover:to-green-700">View Details</a>
                         </div>
                     </div>
                 @endforeach
@@ -246,15 +269,21 @@
     </main>
     
     <script>
-        // Favorite toggle
-        document.querySelectorAll('.property-favorite').forEach(btn => {
+        // Favorite toggle (authenticated listing only)
+        document.querySelectorAll('button.property-favorite').forEach(btn => {
             btn.addEventListener('click', function() {
-                if (this.textContent === '♡') {
-                    this.textContent = '♥';
-                    this.style.color = '#dc3545';
+                const icon = this.querySelector('i');
+                if (!icon) return;
+                if (icon.classList.contains('fa-regular')) {
+                    icon.classList.remove('fa-regular');
+                    icon.classList.add('fa-solid');
+                    this.classList.remove('text-gray-600');
+                    this.classList.add('text-red-500');
                 } else {
-                    this.textContent = '♡';
-                    this.style.color = '';
+                    icon.classList.remove('fa-solid');
+                    icon.classList.add('fa-regular');
+                    this.classList.add('text-gray-600');
+                    this.classList.remove('text-red-500');
                 }
             });
         });

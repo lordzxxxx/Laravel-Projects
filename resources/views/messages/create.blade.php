@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>New message - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -49,7 +49,7 @@
 
     <main
         class="messages-create-main {{ $useOwnerNavbar ? 'main-content with-owner-nav flex w-full min-h-screen flex-col' : 'mx-auto flex min-h-screen w-full max-w-none flex-col px-3 pb-6 sm:px-4 lg:px-6' }}"
-        @if(! $useOwnerNavbar) style="padding-top: calc(var(--client-nav-offset, 108px) + 12px);" @endif
+        @if(! $useOwnerNavbar) style="padding-top: calc(var(--client-nav-offset) + 12px);" @endif
     >
         @include('partials.flash-alerts')
         <a href="{{ route('messages.index', [], false) }}" class="msg-back-link">
@@ -115,7 +115,7 @@
                                     @if(! $isClientComposer)
                                         <option value="central" {{ old('recipient_key') === 'central' ? 'selected' : '' }}>ImpaStay (Central Admin)</option>
                                         @if($clients->isNotEmpty())
-                                            <optgroup label="Clients">
+                                            <optgroup label="Guests">
                                                 @foreach($clients as $client)
                                                     <option value="user:{{ $client->id }}" {{ old('recipient_key') === 'user:'.$client->id ? 'selected' : '' }}>
                                                         {{ $client->name }} — {{ $client->email }}

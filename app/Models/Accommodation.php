@@ -103,6 +103,30 @@ class Accommodation extends Model
         return $query->where('tenant_id', $tenantId);
     }
 
+    /**
+     * Central public directory: approved, provisioned hosts + geographic text match for the configured municipality.
+     */
+    public function scopeForCentralMunicipalityDirectory($query)
+    {
+        $approvedTenantIds = Tenant::query()
+            ->where('onboarding_status', Tenant::ONBOARDING_APPROVED)
+            ->where('database_provisioned', true)
+            ->pluck('id');
+
+        $municipality = (string) config('portals.municipality_name', 'Impasug-ong');
+        $term = strtolower(str_replace('-', '', $municipality));
+
+        return $query->whereIn('tenant_id', $approvedTenantIds)
+            ->where(function ($q) use ($municipality, $term) {
+                $q->where('address', 'like', '%'.$municipality.'%')
+                    ->orWhere('address', 'like', '%'.$term.'%')
+                    ->orWhere('barangay', 'like', '%'.$municipality.'%')
+                    ->orWhere('barangay', 'like', '%'.$term.'%')
+                    ->orWhere('description', 'like', '%'.$municipality.'%')
+                    ->orWhere('description', 'like', '%'.$term.'%');
+            });
+    }
+
     // Accessors
     public function getFormattedPriceAttribute()
     {

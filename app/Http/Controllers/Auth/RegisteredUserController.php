@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use App\Models\TenantLifecycleLog;
 use App\Models\User;
 use App\Services\CentralAdminNotifier;
+use App\Support\PortalDetector;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,12 +22,16 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if (Tenant::checkCurrent() && ! Tenant::isRequestHostForCentralLandlordApp(request())) {
             return view('tenant.auth.register', [
                 'tenant' => Tenant::current(),
             ]);
+        }
+
+        if (Tenant::isRequestHostForCentralLandlordApp(request())) {
+            return redirect()->route('register.guest');
         }
 
         return view('auth.register-wizard');
@@ -142,7 +147,7 @@ class RegisteredUserController extends Controller
                         'tenant_id' => $provisionedTenant->id,
                         'actor_user_id' => $user->id,
                         'action' => 'tenant.onboarding.started',
-                        'reason' => 'Owner registered; awaiting onboarding payment and admin approval.',
+                        'reason' => 'Owner registered; municipality requirement documents submitted for review.',
                         'before_state' => [
                             'owner_email' => $user->email,
                         ],
@@ -181,13 +186,201 @@ class RegisteredUserController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
-            return redirect('/owner/onboarding/payment')
-                ->with('success', 'Account created. Complete payment to submit your space for approval.');
+            return redirect()->route('owner.onboarding.status')
+                ->with('success', 'Account created. Your documents have been submitted for municipality review.');
         }
 
         Auth::login($user);
 
         return redirect($user->getDashboardRoute())
             ->with('success', 'Welcome to Impasugong Accommodations! Your account has been created.');
+    }
+
+    public function createGuest(): View|RedirectResponse
+    {
+        abort_unless(PortalDetector::isKnownCentralPortal(request()) || app()->runningUnitTests(), 404);
+
+        if (! PortalDetector::isPublicPortal(request()) && ! app()->runningUnitTests()) {
+            return redirect()->away(PortalDetector::publicPortalOrigin(request()).'/register/guest');
+        }
+
+        return view('auth.register-guest');
+    }
+
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function storeGuest(Request $request): RedirectResponse
+    {
+        abort_unless(PortalDetector::isPublicPortal($request) || app()->runningUnitTests(), 404);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'phone' => ['nullable', 'string', 'max:20'],
+        ], [
+            'name.required' => 'Provide your complete legal name.',
+            'email.required' => 'An email address is required for secure account recovery and booking notices.',
+            'email.email' => 'Enter a correctly formatted organizational or personal email address.',
+            'email.unique' => 'This email address already has access. Choose sign-in if that profile belongs to you.',
+            'password.required' => 'Choose a secure password.',
+            'phone.max' => 'Shorten your phone entry to fewer than twenty characters.',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => User::ROLE_CLIENT,
+            'tenant_id' => null,
+            'phone' => $request->phone,
+        ]);
+
+        $user->syncRbacFromLegacyRole();
+
+        try {
+            $user->syncPermissions(User::defaultClientSpatiePermissions());
+        } catch (\Throwable) {
+            // Municipality guests may operate without tightly-scoped tenant teams when tenant_id is null.
+        }
+
+        event(new Registered($user));
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route('portal.guest.dashboard')
+            ->with('success', 'Welcome! Explore verified stays across '.$this->portalMunicipalityLabel().'.');
+    }
+
+    public function createOwner(): View|RedirectResponse
+    {
+        abort_unless(PortalDetector::isKnownCentralPortal(request()) || app()->runningUnitTests(), 404);
+
+        if (! PortalDetector::isPublicPortal(request()) && ! app()->runningUnitTests()) {
+            return redirect()->away(PortalDetector::publicPortalOrigin(request()).'/register/owner');
+        }
+
+        return view('auth.register-owner');
+    }
+
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function storeOwner(Request $request): RedirectResponse
+    {
+        abort_unless(PortalDetector::isPublicPortal($request) || app()->runningUnitTests(), 404);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'app_title' => ['nullable', 'string', 'max:255'],
+            'business_permit' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
+            'mayors_permit' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
+            'barangay_clearance' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
+            'valid_id' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
+        ], [
+            'name.required' => 'Provide your full legal name as the authorised operator.',
+            'email.required' => 'Official correspondence requires a reachable business email address.',
+            'email.unique' => 'This email already exists. Recover access instead of creating a duplicate record.',
+            'password.required' => 'Create an administrator-caliber password.',
+            'app_title.max' => 'Shorten your business name to fewer than two hundred fifty characters.',
+            'business_permit.required' => 'Attach your municipality business permit or equivalent credential.',
+            'business_permit.mimes' => 'Business permits must upload as PDF, JPEG, or PNG.',
+            'business_permit.max' => 'Compress or split uploads so each attachment stays below ten megabytes.',
+            'mayors_permit.required' => 'Attach your mayor\'s permit (or analogous executive authorization).',
+            'mayors_permit.mimes' => 'Mayor\'s permit uploads accept PDF, JPEG, or PNG only.',
+            'mayors_permit.max' => 'Mayor\'s permit uploads must remain under ten megabytes.',
+            'barangay_clearance.required' => 'Attach the barangay clearance currently in force.',
+            'barangay_clearance.mimes' => 'Clearance uploads accept PDF, JPEG, or PNG only.',
+            'barangay_clearance.max' => 'Clearance files must remain under ten megabytes.',
+            'valid_id.required' => 'Attach a readable government identification document.',
+            'valid_id.mimes' => 'Identification uploads accept PDF, JPEG, or PNG.',
+            'valid_id.max' => 'Identification uploads must remain under ten megabytes.',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => User::ROLE_OWNER,
+            'tenant_id' => null,
+            'phone' => $request->phone,
+        ]);
+
+        $user->syncRbacFromLegacyRole();
+
+        $customizationData = [
+            'subscription_plan' => null,
+            'app_title' => $request->input('app_title'),
+            'primary_color' => '#2E7D32',
+            'accent_color' => '#43A047',
+            'locale' => 'en',
+            'feature_bookings' => true,
+            'feature_messaging' => true,
+            'feature_reviews' => true,
+            'feature_payments' => true,
+            'logo_path' => null,
+        ];
+
+        $provisionedTenant = $user->ensureTenant($customizationData);
+
+        if (! $provisionedTenant instanceof Tenant) {
+            return redirect()->route('portal.landing')
+                ->with('error', 'Registration could not be finalized. Contact the municipality tourism coordination desk so they can reconcile your workspace.');
+        }
+
+        $provisionedTenant->forceFill([
+            'municipality_business_permit_path' => $request->file('business_permit')->store('owner-municipality-docs', 'public'),
+            'municipality_mayors_permit_path' => $request->file('mayors_permit')->store('owner-municipality-docs', 'public'),
+            'municipality_barangay_clearance_path' => $request->file('barangay_clearance')->store('owner-municipality-docs', 'public'),
+            'municipality_valid_id_path' => $request->file('valid_id')->store('owner-municipality-docs', 'public'),
+            'municipality_requirements_submitted_at' => now(),
+            'onboarding_status' => Tenant::ONBOARDING_PENDING_APPROVAL,
+        ])->save();
+
+        try {
+            TenantLifecycleLog::create([
+                'tenant_id' => $provisionedTenant->id,
+                'actor_user_id' => $user->id,
+                'action' => 'tenant.onboarding.started',
+                'reason' => 'Owner submitted municipality requirement documents.',
+                'before_state' => [
+                    'owner_email' => $user->email,
+                ],
+                'after_state' => [
+                    'tenant_name' => $provisionedTenant->name,
+                    'onboarding_status' => $provisionedTenant->onboarding_status,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('tenant_lifecycle_log.failed_after_owner_registration', [
+                'tenant_id' => $provisionedTenant->id,
+                'user_id' => $user->id,
+                'message' => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            app(CentralAdminNotifier::class)->notifyNewOwnerRegistered($provisionedTenant, $user);
+        } catch (\Throwable) {
+            //
+        }
+
+        event(new Registered($user));
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route('owner.onboarding.status')
+            ->with('success', 'Application received. Municipality staff will review your documents.');
+    }
+
+    private function portalMunicipalityLabel(): string
+    {
+        return (string) config('portals.municipality_name', 'Impasug-ong');
     }
 }

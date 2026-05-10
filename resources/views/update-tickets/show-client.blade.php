@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>{{ $ticket->subject }} — Ticket</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -19,7 +19,7 @@
             min-height: 100vh;
             color: var(--gray-800);
         }
-        .page-shell { padding: calc(var(--client-nav-offset, 108px) + 24px) 24px 40px; max-width: 960px; margin: 0 auto; }
+        .page-shell { padding: calc(var(--client-nav-offset) + 24px) 24px 40px; max-width: 960px; margin: 0 auto; }
         .card {
             background: var(--white);
             border: 1px solid var(--green-soft);

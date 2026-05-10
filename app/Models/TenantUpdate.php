@@ -10,7 +10,9 @@ class TenantUpdate extends Model
     protected $connection = 'landlord';
 
     public const STATUS_UPDATE_AVAILABLE = 'update_available';
+
     public const STATUS_UPDATED = 'updated';
+
     public const STATUS_FAILED = 'failed';
 
     protected $fillable = [

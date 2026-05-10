@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>Checkout Payment - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @php
+        $bookingRouteGroup = \App\Models\Tenant::current() ? 'bookings' : 'portal.bookings';
+    @endphp
     <style>
         @include('partials.ui-foundation-styles')
 
@@ -222,7 +225,7 @@
             <section class="card">
                 <h2><i class="fas fa-lock"></i> Payment Details</h2>
 
-                <form action="{{ route('bookings.payment.confirm', $booking) }}" method="POST" data-loading-form>
+                <form action="{{ route($bookingRouteGroup.'.payment.confirm', $booking) }}" method="POST" data-loading-form>
                     @csrf
 
                     <div class="actions">
@@ -234,7 +237,7 @@
                         >
                             <i class="fab fa-stripe"></i> Pay with Stripe
                         </button>
-                        <a href="{{ route('bookings.show', $booking) }}" class="btn btn-secondary">
+                        <a href="{{ route($bookingRouteGroup.'.show', $booking) }}" class="btn btn-secondary">
                             Back
                         </a>
                     </div>
@@ -252,7 +255,7 @@
                         <p style="margin-top:8px;">Tenant admin has not uploaded a GCash QR photo yet.</p>
                     @endif
 
-                    <form action="{{ route('bookings.payment-proof.upload', $booking) }}" method="POST" enctype="multipart/form-data" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;" data-loading-form>
+                    <form action="{{ route($bookingRouteGroup.'.payment-proof.upload', $booking) }}" method="POST" enctype="multipart/form-data" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;" data-loading-form>
                         @csrf
                         <input type="file" name="gcash_payment_proof" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
                         <button type="submit" data-loading-button class="btn btn-secondary">Upload Proof Screenshot</button>
@@ -261,7 +264,7 @@
                     @if($booking->gcash_payment_proof_url)
                         <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
                             <a href="{{ $booking->gcash_payment_proof_url }}" target="_blank" class="btn btn-secondary">View Uploaded Proof</a>
-                            <form action="{{ route('bookings.payment-proof.remove', $booking) }}" method="POST" data-loading-form>
+                            <form action="{{ route($bookingRouteGroup.'.payment-proof.remove', $booking) }}" method="POST" data-loading-form>
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" data-loading-button class="btn btn-secondary">Remove Proof</button>

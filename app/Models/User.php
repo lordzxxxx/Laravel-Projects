@@ -396,7 +396,15 @@ class User extends Authenticatable
      */
     public function tenantClientMayManageOwnStays(): bool
     {
-        return $this->isClient() && $this->hasPermission(self::PERM_BOOKINGS_SELF);
+        if (! $this->isClient()) {
+            return false;
+        }
+
+        if ($this->tenant_id === null) {
+            return true;
+        }
+
+        return $this->hasPermission(self::PERM_BOOKINGS_SELF);
     }
 
     /**
@@ -404,7 +412,15 @@ class User extends Authenticatable
      */
     public function tenantClientMayUseMessaging(): bool
     {
-        return $this->isClient() && $this->hasPermission(self::PERM_MESSAGES_USE);
+        if (! $this->isClient()) {
+            return false;
+        }
+
+        if ($this->tenant_id === null) {
+            return true;
+        }
+
+        return $this->hasPermission(self::PERM_MESSAGES_USE);
     }
 
     /**
@@ -412,7 +428,15 @@ class User extends Authenticatable
      */
     public function tenantClientMayEditOwnProfile(): bool
     {
-        return $this->isClient() && $this->hasPermission(self::PERM_PROFILE_SELF);
+        if (! $this->isClient()) {
+            return false;
+        }
+
+        if ($this->tenant_id === null) {
+            return true;
+        }
+
+        return $this->hasPermission(self::PERM_PROFILE_SELF);
     }
 
     /**
@@ -622,11 +646,11 @@ class User extends Authenticatable
             'slug' => Str::slug($this->name.'-'.$this->id.'-'.Str::random(6)),
             'owner_user_id' => $this->id,
             'plan' => Tenant::PLAN_BASIC,
-            'subscription_status' => 'trialing',
-            'trial_ends_at' => now()->addDays(14),
+            'subscription_status' => 'active',
+            'trial_ends_at' => null,
             'current_period_starts_at' => now(),
             'current_period_ends_at' => now()->addMonth(),
-            'onboarding_status' => Tenant::ONBOARDING_AWAITING_PAYMENT,
+            'onboarding_status' => Tenant::ONBOARDING_PENDING_APPROVAL,
             'domain_enabled' => false,
             'domain_disabled_at' => now(),
             ...$this->defaultTenantConnectionAttributes(),
@@ -771,7 +795,7 @@ class User extends Authenticatable
         return match ($this->role) {
             self::ROLE_ADMIN => '/admin/dashboard',
             self::ROLE_OWNER => $this->ownerCentralDashboardPath(),
-            default => '/dashboard',
+            default => '/guest/dashboard',
         };
     }
 
@@ -800,7 +824,6 @@ class User extends Authenticatable
         }
 
         return match ($tenant->onboarding_status) {
-            Tenant::ONBOARDING_AWAITING_PAYMENT => '/owner/onboarding/payment',
             Tenant::ONBOARDING_PENDING_APPROVAL, Tenant::ONBOARDING_REJECTED => '/owner/onboarding/status',
             default => '/owner/onboarding/status',
         };

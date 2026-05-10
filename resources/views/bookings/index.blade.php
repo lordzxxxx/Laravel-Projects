@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>My Bookings - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -16,6 +16,7 @@
                 || ($authUser->isAdmin() && $currentTenant && (int) $authUser->tenant_id === (int) $currentTenant->id)
             );
             $useLegacyBookingsNav = ! $isTenantManager && ! $authUser?->isClient();
+            $bookingRouteGroup = $currentTenant ? 'bookings' : 'portal.bookings';
         @endphp
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -71,11 +72,11 @@
         .main-content {
             width: min(1800px, 100%);
             margin: 0 auto;
-            padding-top: var(--client-nav-offset, 100px);
+            padding-top: var(--client-nav-offset);
             padding-bottom: 28px;
             padding-left: clamp(12px, 2vw, 34px);
             padding-right: clamp(12px, 2vw, 34px);
-            min-height: calc(100vh - var(--client-nav-offset, 100px));
+            min-height: calc(100vh - var(--client-nav-offset));
         }
         
         /* Page Header — title styling provided by ui-foundation-styles for cross-system consistency. */
@@ -241,7 +242,7 @@
         
         /* Empty State */
         .empty-state { text-align: center; padding: 60px 20px; background: var(--white); border-radius: 16px; }
-        .empty-icon { font-size: 4rem; margin-bottom: 20px; }
+        .empty-icon { font-size: 4rem; margin-bottom: 20px; color: var(--gray-400); }
         .empty-state h3 { font-size: 1.5rem; color: var(--gray-700); margin-bottom: 10px; }
         .empty-state p { color: var(--gray-500); margin-bottom: 25px; }
         
@@ -252,7 +253,7 @@
             .nav-links { display: none; }
             @endif
             .main-content {
-                padding-top: calc(var(--client-nav-offset, 100px) - 10px);
+                padding-top: calc(var(--client-nav-offset) - 10px);
                 padding-left: 14px;
                 padding-right: 14px;
                 padding-bottom: 24px;
@@ -272,7 +273,7 @@
         @include('owner.partials.top-navbar')
     @else
     @if(auth()->user()?->isClient())
-        @include('client.partials.top-navbar', ['active' => 'bookings'])
+        @include('client.partials.top-navbar', ['active' => 'bookings', 'portalDirectory' => $portalDirectory ?? false])
     @else
     <nav class="navbar">
         <a href="{{ route('dashboard') }}" class="nav-logo">
@@ -292,7 +293,7 @@
                 @endif
             @endauth
             <li><a href="{{ route(Auth::check() && $isTenantManager && \Illuminate\Support\Facades\Route::has('owner.accommodations.index') ? 'owner.accommodations.index' : (\Illuminate\Support\Facades\Route::has('accommodations.index') ? 'accommodations.index' : 'dashboard')) }}" class="{{ request()->routeIs('accommodations.*') || request()->routeIs('owner.accommodations.*') ? 'active' : '' }}">Browse</a></li>
-            <li><a href="{{ route('bookings.index') }}" class="{{ request()->routeIs('bookings.*') ? 'active' : '' }}">My Bookings</a></li>
+            <li><a href="{{ route($bookingRouteGroup.'.index') }}" class="{{ request()->routeIs('bookings.*', 'portal.bookings.*') ? 'active' : '' }}">My Bookings</a></li>
             <li><a href="{{ route('messages.index', [], false) }}" class="{{ request()->routeIs('messages.*') ? 'active' : '' }}">Messages</a></li>
             <li><a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.edit') ? 'active' : '' }}">Settings</a></li>
         </ul>
@@ -310,7 +311,7 @@
     <!-- Main Content -->
     <main
         class="{{ $isTenantManager ? 'main-content with-owner-nav w-full' : 'mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10' }}"
-        @if(!$isTenantManager) style="padding-top: calc(var(--client-nav-offset, 108px) + 24px);" @endif
+        @if(!$isTenantManager) style="padding-top: calc(var(--client-nav-offset) + 24px);" @endif
     >
         @php
             $isOwner = $isTenantManager;
@@ -464,9 +465,9 @@
                                     <a href="{{ route($bookingsShowRoute, $booking) }}" class="{{ $isOwner ? 'btn btn-primary' : 'inline-flex items-center rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-800' }}">View Details</a>
                                     @if(Auth::check() && Auth::user()->isClient() && ($booking->status == 'pending' || $booking->status == 'confirmed'))
                                         @if($booking->status === 'confirmed')
-                                            <a href="{{ route('bookings.payment', $booking) }}" class="inline-flex items-center rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-800">Pay Now</a>
+                                            <a href="{{ route($bookingRouteGroup.'.payment', $booking) }}" class="inline-flex items-center rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-800">Pay Now</a>
                                         @endif
-                                        <form action="{{ route('bookings.cancel', $booking) }}" method="POST" style="display: inline;" data-loading-form>
+                                        <form action="{{ route($bookingRouteGroup.'.cancel', $booking) }}" method="POST" style="display: inline;" data-loading-form>
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" data-loading-button class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-100" onclick="return confirm('Are you sure you want to cancel this booking?')">Cancel</button>
@@ -488,7 +489,7 @@
         @else
             <!-- Empty State -->
             <div class="{{ $isOwner ? 'empty-state' : 'rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-sm' }}">
-                <div class="{{ $isOwner ? 'empty-icon' : 'mb-4 text-5xl' }}">📅</div>
+                <div class="{{ $isOwner ? 'empty-icon' : 'mb-4 text-5xl text-gray-400' }}"><i class="fa-regular fa-calendar-xmark" aria-hidden="true"></i></div>
                 <h3 class="{{ $isOwner ? '' : 'mb-2 text-2xl font-bold text-gray-800' }}">No Bookings Found</h3>
                 <p class="{{ $isOwner ? '' : 'mb-6 text-gray-500' }}">You haven't made any bookings yet. Start exploring accommodations!</p>
                 <a href="{{ $isOwner ? $ownerAccommodationsBase : route((\Illuminate\Support\Facades\Route::has('accommodations.index') ? 'accommodations.index' : 'dashboard')) }}" class="{{ $isOwner ? 'btn btn-primary' : 'inline-flex items-center rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800' }}">Browse Properties</a>

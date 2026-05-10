@@ -21,8 +21,7 @@ class TenantOnboardingSummaryMail extends Mailable
         public string $resetPasswordUrl,
         public string $reason,
         public string $changedBy
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {

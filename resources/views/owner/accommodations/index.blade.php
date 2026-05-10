@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>My Properties - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -61,27 +61,32 @@
         }
         /* h1 typography comes from ui-foundation-styles for system-wide consistency */
 
-        .plan-usage-pill {
+        .business-status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            flex-wrap: wrap;
+            gap: 6px 8px;
             margin-top: 14px;
             margin-left: 3.65rem;
-            padding: 7px 14px;
+            padding: 8px 14px;
             background: rgba(255, 255, 255, 0.85);
             border: 1px solid var(--gray-200);
-            border-radius: 999px;
+            border-radius: 12px;
             font-size: 0.82rem;
             font-weight: 600;
             color: var(--gray-700);
+            max-width: 100%;
         }
-        .plan-usage-pill .plan-name {
-            color: var(--green-dark);
-            font-weight: 700;
-        }
-        .plan-usage-pill .plan-remaining { color: var(--gray-500); font-weight: 500; }
-        .plan-usage-pill.is-full { border-color: #fde68a; background: #fffbeb; color: #92400e; }
-        .plan-usage-pill.is-full .plan-name { color: #b45309; }
+        .business-status-pill i { color: var(--green-primary); flex-shrink: 0; }
+        .business-status-pill .biz-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-500); font-weight: 700; }
+        .business-status-pill .biz-main { color: var(--gray-800); }
+        .business-status-pill .biz-detail { color: var(--gray-500); font-weight: 500; }
+        .business-status-pill.tone-success { border-color: rgba(16, 185, 129, 0.35); background: #ecfdf5; }
+        .business-status-pill.tone-warning { border-color: rgba(245, 158, 11, 0.45); background: #fffbeb; color: #92400e; }
+        .business-status-pill.tone-warning .biz-main { color: #92400e; }
+        .business-status-pill.tone-danger { border-color: rgba(248, 113, 113, 0.5); background: #fef2f2; color: #b91c1c; }
+        .business-status-pill.tone-danger .biz-main { color: #b91c1c; }
+        .business-status-pill.is-blocked { outline: 1px dashed rgba(245, 158, 11, 0.6); }
 
         .add-btn {
             display: inline-flex;
@@ -487,7 +492,7 @@
             .main-content { padding: calc(var(--owner-content-offset) - 8px) 14px 24px; min-height: auto; }
             .page-header { flex-direction: column; gap: 16px; align-items: stretch; padding: 18px; }
             .page-header .add-btn { width: 100%; }
-            .plan-usage-pill { margin-left: 0; }
+            .business-status-pill { margin-left: 0; }
             .stats-row { grid-template-columns: repeat(2, 1fr); }
             .properties-grid { grid-template-columns: 1fr; padding: 16px; }
             .properties-section-header { padding: 14px 16px; flex-direction: column; align-items: flex-start; }
@@ -508,23 +513,12 @@
                     <span>My Properties</span>
                 </h1>
                 <p>Manage your accommodations and listings.</p>
-                @if(isset($listingUsage))
-                    @php
-                        $usageLimitReached = isset($listingUsage['remaining']) && $listingUsage['remaining'] === 0;
-                    @endphp
-                    <span class="plan-usage-pill {{ $usageLimitReached ? 'is-full' : '' }}">
-                        <i class="fa-solid fa-crown" aria-hidden="true"></i>
-                        <span class="plan-name">{{ $listingUsage['plan_label'] }} plan</span>
-                        @if($listingUsage['max'] === null)
-                            <span class="plan-remaining">&middot; {{ $listingUsage['used'] }} active listing(s) (unlimited on Premium)</span>
-                        @else
-                            <span class="plan-remaining">&middot; {{ $listingUsage['used'] }} / {{ $listingUsage['max'] }} listings</span>
-                            @if(($listingUsage['remaining'] ?? 0) > 0)
-                                <span class="plan-remaining">({{ $listingUsage['remaining'] }} remaining)</span>
-                            @elseif($usageLimitReached)
-                                <span class="plan-remaining">(limit reached)</span>
-                            @endif
-                        @endif
+                @if(!empty($businessStatus))
+                    <span class="business-status-pill tone-{{ $businessStatus['tone'] }} @if(!($canCreateListing ?? false)) is-blocked @endif">
+                        <i class="fa-solid fa-clipboard-check" aria-hidden="true"></i>
+                        <span class="biz-label">Business status</span>
+                        <span class="biz-main">Registration: {{ $businessStatus['registration'] }}</span>
+                        <span class="biz-detail">&middot; Billing: {{ $businessStatus['billing'] }}</span>
                     </span>
                 @endif
             </div>
@@ -534,12 +528,28 @@
                     <span>Add Property</span>
                 </a>
             @else
-                <span class="add-btn add-btn-disabled" title="You've reached your plan limit or your subscription isn't active. Upgrade or remove a listing to add more.">
+                <span class="add-btn add-btn-disabled" title="Adding units isn’t available right now. Check your business status (registration &amp; billing) or contact support.">
                     <i class="fa-solid fa-plus" aria-hidden="true"></i>
                     <span>Add Property</span>
                 </span>
             @endif
         </div>
+
+        @if(isset($availabilityAccommodations) && $availabilityAccommodations->isNotEmpty())
+            <div class="properties-section" style="margin-bottom: 24px;">
+                <div class="properties-section-header">
+                    <h3><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Availability by unit</h3>
+                    <p class="text-sm text-gray-600" style="margin: 6px 0 0; font-weight: 500;">Same calendar as guests see: booked or pending dates are blocked.</p>
+                </div>
+                <div class="properties-grid" style="padding: 20px 22px; display: block;">
+                    @include('partials.availability-calendar', [
+                        'calendarId' => 'ownerUnitsCal',
+                        'availabilityAccommodations' => $availabilityAccommodations,
+                        'availabilityEventsByAccommodation' => $availabilityEventsByAccommodation ?? [],
+                    ])
+                </div>
+            </div>
+        @endif
 
         {{-- Stats overview --}}
         <div class="stats-row">
@@ -684,7 +694,7 @@
                             <span>Add your first property</span>
                         </a>
                     @else
-                        <span class="add-btn add-btn-disabled" title="You've reached your plan limit or your subscription isn't active.">
+                        <span class="add-btn add-btn-disabled" title="Adding units isn’t available right now. Check your business status (registration &amp; billing) or contact support.">
                             <i class="fa-solid fa-plus" aria-hidden="true"></i>
                             <span>Add your first property</span>
                         </span>

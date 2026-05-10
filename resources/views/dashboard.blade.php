@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Municipal Official Website - Impasugong</title>
+    @include('partials.favicon-links', ['faviconStem' => 'love'])
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,18 +16,23 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
             background: linear-gradient(rgba(0, 50, 0, 0.7), rgba(0, 60, 0, 0.8)),
                         url('/COMMUNAL.jpg') no-repeat center center/cover;
             background-attachment: fixed;
         }
         
         .landing-container {
-            min-height: 100vh;
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         /* Municipality Logos Section */
@@ -182,6 +189,10 @@
             font-size: 1.3rem;
             margin-bottom: 15px;
         }
+        .feature-card h3 i {
+            margin-right: 10px;
+            opacity: 0.95;
+        }
         
         .feature-card p {
             color: #E8F5E9;
@@ -191,20 +202,33 @@
         
         /* Footer */
         .footer {
-            margin-top: 50px;
+            margin-top: auto;
+            width: 100%;
+            box-sizing: border-box;
             text-align: center;
-            color: #A5D6A7;
-            padding: 20px;
-            font-size: 0.9rem;
+            background: rgba(13, 60, 18, 0.96);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 14px 10px;
+            font-size: 0.72rem;
+            line-height: 1.45;
+            color: #E8F5E9;
         }
         
         .footer a {
-            color: #81C784;
+            color: #C8E6C9;
             text-decoration: none;
+            font-weight: 600;
         }
         
         .footer a:hover {
             text-decoration: underline;
+            color: #FFFFFF;
+        }
+
+        .footer .footer-impastay {
+            margin-top: 4px;
+            font-size: 0.68rem;
+            color: #DCEDC8;
         }
         
         /* Animations */
@@ -261,30 +285,29 @@
         <!-- Features Section -->
         <div class="features-section animate-in delay-3">
             <div class="feature-card">
-                <h3>📋 Easy Registration</h3>
+                <h3><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>Easy Registration</h3>
                 <p>Quick and simple registration process to access all municipal services online.</p>
             </div>
             
             <div class="feature-card">
-                <h3>💼 Service Requests</h3>
+                <h3><i class="fa-solid fa-briefcase" aria-hidden="true"></i>Service Requests</h3>
                 <p>Submit and track your service requests with ease and transparency.</p>
             </div>
             
             <div class="feature-card">
-                <h3>📰 News & Updates</h3>
+                <h3><i class="fa-solid fa-newspaper" aria-hidden="true"></i>News & Updates</h3>
                 <p>Stay informed with the latest announcements and municipal updates.</p>
             </div>
             
             <div class="feature-card">
-                <h3>📞 Contact Support</h3>
+                <h3><i class="fa-solid fa-phone" aria-hidden="true"></i>Contact Support</h3>
                 <p>Get help anytime with our dedicated support team ready to assist you.</p>
             </div>
         </div>
         
         <!-- Footer -->
         <div class="footer animate-in delay-3">
-            <p>&copy; 2024 Municipality of Impasugong. All Rights Reserved.</p>
-            <p>Official Government Website | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+            <p>&copy; {{ now()->year }} Municipality of Impasugong. All Rights Reserved.</p>
         </div>
     </div>
 </body>
