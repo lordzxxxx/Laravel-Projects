@@ -22,6 +22,39 @@
             object-position: center;
             filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.85)) drop-shadow(0 4px 14px rgba(27, 94, 32, 0.12));
         }
+        /* Equal-width columns so gaps beside dividers read symmetrically */
+        .portal-hero-partners__strip {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: center;
+            justify-items: center;
+            column-gap: clamp(0.75rem, 3vw, 1.5rem);
+            width: 100%;
+        }
+        .portal-hero-partners__strip > [role="listitem"] {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+        }
+        @media (max-width: 639px) {
+            .portal-hero-partners__strip {
+                grid-template-columns: 1fr;
+                row-gap: 2rem;
+            }
+            .portal-hero-partners__strip .portal-hero-partners__divider {
+                display: none;
+            }
+        }
+        .portal-hero-partners__divider {
+            height: var(--partner-logo-h);
+            width: 1px;
+            flex-shrink: 0;
+            align-self: center;
+            background-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 1px 0 0 rgba(27, 94, 32, 0.12);
+        }
         .portal-hero-partners img.portal-hero-partners__wide {
             max-height: 4.75rem;
             max-width: min(100%, 20rem);
@@ -86,10 +119,10 @@
     <main id="browse" tabindex="-1" class="flex flex-1 flex-col outline-none">
         <section class="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[rgba(27,94,32,0.06)] to-[rgba(46,125,50,0.04)] px-5 pb-24 pt-28 text-center md:px-10 md:pt-32">
         {{-- Partner strip: no panel background — logos sit on the hero with caps + drop shadow for readability --}}
-        <div class="portal-hero-partners mb-14 w-full max-w-5xl px-2 py-2 sm:px-4">
-            <p class="mb-8 text-center text-xs font-bold uppercase tracking-[0.22em] text-brand-dark drop-shadow-[0_1px_2px_rgba(255,255,255,0.95)] sm:mb-9 sm:text-[0.75rem]">Official directory partners</p>
-            <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-10 sm:gap-x-8 sm:gap-y-8 md:gap-x-12 lg:gap-x-16" role="list">
-                <div class="flex min-h-[5.5rem] items-center justify-center px-1 sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
+        <div class="portal-hero-partners mb-10 w-full max-w-5xl px-2 py-2 sm:mb-12 sm:px-4">
+            <p class="mb-5 text-center text-xs font-bold uppercase tracking-[0.22em] text-brand-dark drop-shadow-[0_1px_2px_rgba(255,255,255,0.95)] sm:mb-6 sm:text-[0.75rem]">Official directory partners</p>
+            <div class="portal-hero-partners__strip" role="list">
+                <div class="flex min-h-[5.5rem] items-center justify-center sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
                     <img
                         src="{{ asset('SYSTEMLOGO.png') }}"
                         alt="{{ $municipalityName }} — official seal"
@@ -98,8 +131,8 @@
                         decoding="async"
                     >
                 </div>
-                <span class="hidden h-[4.5rem] w-px shrink-0 bg-white/70 shadow-[1px_0_0_rgba(27,94,32,0.12)] sm:block md:h-[5.5rem] lg:h-[6rem]" aria-hidden="true"></span>
-                <div class="flex min-h-[5.5rem] items-center justify-center px-1 sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
+                <span class="portal-hero-partners__divider hidden sm:block" aria-hidden="true"></span>
+                <div class="flex min-h-[5.5rem] items-center justify-center sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
                     <img
                         src="{{ asset('Love Impasugong.png') }}"
                         alt="Love Impasugong"
@@ -107,8 +140,8 @@
                         decoding="async"
                     >
                 </div>
-                <span class="hidden h-[4.5rem] w-px shrink-0 bg-white/70 shadow-[1px_0_0_rgba(27,94,32,0.12)] sm:block md:h-[5.5rem] lg:h-[6rem]" aria-hidden="true"></span>
-                <div class="flex min-h-[4.75rem] items-center justify-center px-1 sm:min-h-[5.5rem] lg:min-h-[6rem] sm:min-w-0" role="listitem">
+                <span class="portal-hero-partners__divider hidden sm:block" aria-hidden="true"></span>
+                <div class="flex min-h-[4.75rem] items-center justify-center sm:min-h-[5.5rem] lg:min-h-[6rem]" role="listitem">
                     <img
                         src="{{ asset('Lgu Socmed Template-02.png') }}"
                         alt="LGU {{ $municipalityName }}"
@@ -120,7 +153,7 @@
             </div>
         </div>
 
-        <h1 class="mb-4 text-3xl font-extrabold tracking-tight text-brand-dark opacity-0 animate-fade-in-up-d1 md:text-5xl lg:text-[3rem]">
+        <h1 class="mb-5 text-3xl font-extrabold tracking-tight text-brand-dark opacity-0 animate-fade-in-up-d1 md:text-5xl lg:text-[3rem]">
             Verified stays in <span class="text-brand-primary">{{ $municipalityName }}</span>
         </h1>
 
