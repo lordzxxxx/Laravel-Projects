@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @include('partials.central-public-head', ['pageTitle' => 'IMPASUGONG TOURISM | '.$municipalityName.' Stays'])
+    @include('partials.central-public-head', ['pageTitle' => 'IMPASUGONG TOURISM'])
     <style>
         .skip-link:focus { position: absolute; left: 1rem; top: 1rem; z-index: 2000; clip: auto; width: auto; height: auto; overflow: visible; padding: 0.75rem 1rem; margin: 0; }
         .skip-link { position: absolute; left: 1rem; top: -999px; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-        .portal-hero-partners { --partner-logo-h: 5.5rem; --partner-logo-w: 13rem; }
+        .portal-hero-partners { --partner-logo-h: 6.25rem; --partner-logo-w: 14.5rem; }
         @media (min-width: 640px) {
-            .portal-hero-partners { --partner-logo-h: 6.5rem; --partner-logo-w: 15rem; }
+            .portal-hero-partners { --partner-logo-h: 7.5rem; --partner-logo-w: 17rem; }
         }
         @media (min-width: 1024px) {
-            .portal-hero-partners { --partner-logo-h: 7.25rem; --partner-logo-w: 16rem; }
+            .portal-hero-partners { --partner-logo-h: 8.5rem; --partner-logo-w: 18.5rem; }
         }
         .portal-hero-partners img {
             display: block;
@@ -24,15 +24,14 @@
         }
         /* Equal-width columns so gaps beside dividers read symmetrically */
         .portal-hero-partners__strip {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+            display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            justify-items: center;
-            column-gap: clamp(0.75rem, 3vw, 1.5rem);
+            justify-content: center;
+            gap: clamp(0.5rem, 1.75vw, 1rem);
             width: 100%;
         }
         .portal-hero-partners__strip > [role="listitem"] {
-            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -56,19 +55,19 @@
             box-shadow: 1px 0 0 rgba(27, 94, 32, 0.12);
         }
         .portal-hero-partners img.portal-hero-partners__wide {
-            max-height: 4.75rem;
-            max-width: min(100%, 20rem);
+            max-height: 5.5rem;
+            max-width: min(100%, 22rem);
         }
         @media (min-width: 640px) {
             .portal-hero-partners img.portal-hero-partners__wide {
-                max-height: 5.5rem;
-                max-width: min(100%, 23rem);
+                max-height: 6.5rem;
+                max-width: min(100%, 25rem);
             }
         }
         @media (min-width: 1024px) {
             .portal-hero-partners img.portal-hero-partners__wide {
-                max-height: 6rem;
-                max-width: min(100%, 26rem);
+                max-height: 7.25rem;
+                max-width: min(100%, 29rem);
             }
         }
         @media (prefers-reduced-motion: reduce) {
@@ -119,10 +118,9 @@
     <main id="browse" tabindex="-1" class="flex flex-1 flex-col outline-none">
         <section class="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[rgba(27,94,32,0.06)] to-[rgba(46,125,50,0.04)] px-5 pb-24 pt-28 text-center md:px-10 md:pt-32">
         {{-- Partner strip: no panel background — logos sit on the hero with caps + drop shadow for readability --}}
-        <div class="portal-hero-partners mb-10 w-full max-w-5xl px-2 py-2 sm:mb-12 sm:px-4">
-            <p class="mb-5 text-center text-xs font-bold uppercase tracking-[0.22em] text-brand-dark drop-shadow-[0_1px_2px_rgba(255,255,255,0.95)] sm:mb-6 sm:text-[0.75rem]">Official directory partners</p>
+        <div class="portal-hero-partners mb-8 w-full max-w-4xl px-2 py-2 sm:mb-10 sm:px-4">
             <div class="portal-hero-partners__strip" role="list">
-                <div class="flex min-h-[5.5rem] items-center justify-center sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
+                <div class="flex min-h-[6.25rem] items-center justify-center sm:min-h-[7.5rem] lg:min-h-[8.5rem]" role="listitem">
                     <img
                         src="{{ asset('SYSTEMLOGO.png') }}"
                         alt="{{ $municipalityName }} — official seal"
@@ -132,7 +130,7 @@
                     >
                 </div>
                 <span class="portal-hero-partners__divider hidden sm:block" aria-hidden="true"></span>
-                <div class="flex min-h-[5.5rem] items-center justify-center sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
+                <div class="flex min-h-[6.25rem] items-center justify-center sm:min-h-[7.5rem] lg:min-h-[8.5rem]" role="listitem">
                     <img
                         src="{{ asset('Love Impasugong.png') }}"
                         alt="Love Impasugong"
@@ -141,7 +139,7 @@
                     >
                 </div>
                 <span class="portal-hero-partners__divider hidden sm:block" aria-hidden="true"></span>
-                <div class="flex min-h-[4.75rem] items-center justify-center sm:min-h-[5.5rem] lg:min-h-[6rem]" role="listitem">
+                <div class="flex min-h-[5.5rem] items-center justify-center sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
                     <img
                         src="{{ asset('Lgu Socmed Template-02.png') }}"
                         alt="LGU {{ $municipalityName }}"
@@ -153,11 +151,11 @@
             </div>
         </div>
 
-        <h1 class="mb-5 text-3xl font-extrabold tracking-tight text-brand-dark opacity-0 animate-fade-in-up-d1 md:text-5xl lg:text-[3rem]">
-            Verified stays in <span class="text-brand-primary">{{ $municipalityName }}</span>
+        <h1 class="mb-5 text-3xl font-extrabold leading-tight text-brand-dark opacity-0 animate-fade-in-up-d1 md:text-5xl lg:text-[3rem]">
+            Certified Accommodation Providers in <span class="text-brand-primary">{{ $municipalityName }}</span>
         </h1>
 
-        <p class="mb-8 max-w-[720px] text-base leading-relaxed text-brand-medium opacity-0 animate-fade-in-up-d2 md:text-lg md:mb-10">
+        <p class="mb-8 max-w-[720px] text-base font-medium leading-relaxed text-brand-dark opacity-0 animate-fade-in-up-d2 drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)] md:text-lg md:mb-10">
             Browse listings from municipality-approved hosts, save favorites, and book with one guest account across every verified tulogan.
         </p>
 
@@ -168,7 +166,7 @@
                     <h2 class="text-xl font-extrabold tracking-tight text-brand-dark md:text-2xl">
                         <i class="fas fa-star mr-2 text-amber-500" aria-hidden="true"></i>Browse available units
                     </h2>
-                    <p class="mt-1 text-sm font-medium text-brand-medium md:text-base">
+                    <p class="mt-1 text-sm font-semibold text-brand-dark drop-shadow-[0_1px_2px_rgba(255,255,255,0.75)] md:text-base">
                         @if($carouselAccommodations->isEmpty())
                             Highlights will appear here as verified listings go live — you can still explore the full directory below.
                         @else

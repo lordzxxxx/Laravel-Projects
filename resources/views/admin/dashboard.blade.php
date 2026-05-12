@@ -39,20 +39,24 @@
             gap: 14px;
             margin-bottom: 0;
             width: 100%;
+            align-items: stretch;
         }
         .kpi-card {
             background: var(--white);
-            padding: 18px 20px;
+            padding: 18px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
             display: flex;
-            align-items: center;
+            align-items: stretch;
             gap: 16px;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid #e8ece9;
+            border: 1px solid rgba(27, 94, 32, 0.34);
+            min-height: 96px;
+            height: 100%;
+            font-family: inherit;
         }
         .kpi-card:hover {
-            border-color: #c8e6c9;
+            border-color: rgba(27, 94, 32, 0.55);
             box-shadow: 0 6px 20px rgba(27, 94, 32, 0.08);
         }
         .kpi-card--link {
@@ -68,15 +72,16 @@
             outline-offset: 2px;
         }
         .kpi-icon {
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             flex-shrink: 0;
             border: 1px solid transparent;
+            align-self: center;
         }
         /* Flat icon tiles — hue variations stay within brand + one neutral */
         .kpi-icon.tone-primary {
@@ -104,20 +109,30 @@
             border-color: #fdba74;
             color: #c2410c;
         }
-        .kpi-info { min-width: 0; flex: 1; }
+        .kpi-info {
+            min-width: 0;
+            flex: 1;
+            display: grid;
+            grid-template-rows: 1.85rem 1.15rem 1rem;
+            align-content: center;
+            row-gap: 2px;
+        }
         .kpi-info h3 {
-            font-size: 1.65rem;
+            font-size: 1.55rem;
             color: var(--green-dark);
-            margin-bottom: 2px;
+            margin: 0;
             font-weight: 700;
             line-height: 1.15;
             letter-spacing: -0.02em;
+            display: flex;
+            align-items: end;
         }
         .kpi-info h3.kpi-value-compact {
-            font-size: 1.15rem;
+            font-size: 1rem;
             font-weight: 700;
-            line-height: 1.25;
+            line-height: 1.18;
             word-break: break-word;
+            align-items: center;
         }
         .kpi-info h3.kpi-value-empty {
             font-size: 1.25rem;
@@ -128,15 +143,25 @@
             color: var(--gray-500);
             font-size: 0.8rem;
             font-weight: 500;
-            line-height: 1.35;
+            line-height: 1.2;
             margin: 0;
+            display: flex;
+            align-items: center;
         }
         .kpi-info .kpi-sub {
             display: block;
             font-size: 0.72rem;
             color: #94a3b8;
-            margin-top: 4px;
+            margin: 0;
             font-weight: 500;
+            line-height: 1.2;
+            min-height: 1rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .kpi-sub--blank {
+            visibility: hidden;
         }
         
         /* Dashboard Card */
@@ -728,6 +753,7 @@
                             <div class="kpi-info">
                                 <h3>{{ number_format($kpis['active_clients'] ?? 0) }}</h3>
                                 <p>Active guests</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
                             </div>
                         </a>
                         <a href="{{ route('admin.tenants', [], false) }}" class="kpi-card kpi-card--link">
@@ -735,6 +761,7 @@
                             <div class="kpi-info">
                                 <h3>{{ number_format($kpis['total_users'] ?? 0) }}</h3>
                                 <p>Total users</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
                             </div>
                         </a>
                         <a href="#admin-tenant-bookings" class="kpi-card kpi-card--link">
@@ -742,6 +769,7 @@
                             <div class="kpi-info">
                                 <h3>{{ number_format($kpis['pending_bookings'] ?? 0) }}</h3>
                                 <p>Pending bookings</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
                             </div>
                         </a>
                     </div>
@@ -754,6 +782,7 @@
                             <div class="kpi-info">
                                 <h3>{{ number_format($kpis['pending_host_applications'] ?? 0) }}</h3>
                                 <p>Pending host applications</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
                             </div>
                         </a>
                         <a href="#admin-activity-overview" class="kpi-card kpi-card--link">
@@ -769,6 +798,7 @@
                             <div class="kpi-info">
                                 <h3>{{ number_format($kpis['verified_properties'] ?? 0) }}</h3>
                                 <p>Verified units</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
                             </div>
                         </a>
                         @if($topTenantByBookings)
@@ -777,6 +807,7 @@
                                 <div class="kpi-info">
                                     <h3 class="kpi-value-compact">{{ $topTenantByBookings->name }}</h3>
                                     <p>Top tenant by bookings</p>
+                                    <span class="kpi-sub">Current period leader</span>
                                 </div>
                             </a>
                         @else

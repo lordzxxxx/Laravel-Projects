@@ -227,7 +227,7 @@ body.admin-central-portal::before {
     position: fixed;
     inset: 0;
     z-index: -2;
-    background: url("{{ asset('adminbg.jpg') }}") center / cover no-repeat;
+    background: url("{{ asset('newbg.png') }}") center / cover no-repeat;
     transform: scale(1.045);
     filter: blur(5px);
     pointer-events: none;

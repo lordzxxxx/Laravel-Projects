@@ -26,8 +26,6 @@
             <span class="block text-base font-extrabold tracking-tight text-brand-dark md:text-lg">IMPASUGONG TOURISM</span>
             @if($navVariant === 'admin')
                 <span class="block text-[0.68rem] font-medium leading-none text-brand-medium md:text-[0.75rem]">| Staff portal · port {{ PortalDetector::adminPort() }}</span>
-            @else
-                <span class="block text-[0.68rem] font-medium leading-none text-brand-medium md:text-[0.75rem]">| {{ $municipalityName ?? 'Impasug-ong' }} stays</span>
             @endif
         </div>
     </a>
