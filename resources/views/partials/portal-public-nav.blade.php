@@ -13,7 +13,7 @@
     $linkDefault = 'text-brand-dark';
     $linkActive = 'border-b-2 border-brand-primary text-brand-primary bg-brand-soft/50';
 @endphp
-<nav class="portal-public-nav fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col items-stretch gap-3 overflow-x-hidden border-b-2 border-brand-soft bg-white/95 px-4 py-3 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md sm:px-5 md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-8 md:px-8 md:py-3.5 lg:px-10">
+<nav class="portal-public-nav fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col items-stretch gap-3 overflow-visible border-b-2 border-brand-soft bg-white/95 px-4 py-3 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md sm:px-5 md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-8 md:px-8 md:py-3.5 lg:px-10">
     <a href="{{ route('portal.landing') }}" class="portal-public-nav__brand flex min-w-0 items-center justify-center gap-2.5 no-underline rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 sm:justify-start md:gap-3.5">
         <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM" class="h-12 w-auto shrink-0 rounded-xl object-contain sm:h-14 md:h-[3.75rem] lg:h-16">
         <div class="portal-public-nav__brand-text min-w-0 leading-tight">
@@ -44,6 +44,7 @@
         @include('partials.register-choice-menu', [
             'guestUrl' => $registerGuestUrl,
             'hostUrl' => $registerOwnerUrl,
+            'menuClass' => 'absolute right-0 z-[1100] mt-2 w-[min(18rem,calc(100vw-2rem))]',
         ])
     </div>
 </nav>

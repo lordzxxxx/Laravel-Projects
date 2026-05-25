@@ -2,7 +2,7 @@
     $guestUrl = $guestUrl ?? route('register.guest');
     $hostUrl = $hostUrl ?? route('register.owner');
     $buttonClass = $buttonClass ?? 'inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_3px_12px_rgba(46,125,50,0.25)] transition-all hover:opacity-95 hover:shadow-[0_4px_14px_rgba(46,125,50,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2';
-    $menuClass = $menuClass ?? 'absolute right-0 z-30 mt-2 w-72';
+    $menuClass = $menuClass ?? 'absolute right-0 z-[1100] mt-2 w-[min(18rem,calc(100vw-2rem))]';
 @endphp
 
 <details class="register-choice relative">
