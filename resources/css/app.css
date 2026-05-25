@@ -15,6 +15,11 @@
         /* Fixed navbar + gap before main content — one token for client/owner/admin shells */
         --app-main-top-offset: 108px;
         --client-nav-offset: var(--app-main-top-offset);
+        --motion-fast: 150ms;
+        --motion-base: 220ms;
+        --motion-slow: 320ms;
+        --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+        --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @media (max-width: 768px) {
@@ -28,6 +33,7 @@
         scrollbar-gutter: stable;
         max-width: 100%;
         overflow-x: hidden;
+        scroll-behavior: smooth;
         -webkit-text-size-adjust: 100%;
         text-size-adjust: 100%;
     }
@@ -38,6 +44,7 @@
         min-height: 100dvh;
         min-height: 100vh;
         overflow-wrap: break-word;
+        animation: appPageEnter var(--motion-slow) var(--ease-emphasized) both;
     }
 
     /* Fluid media — prevents layout blowout on small viewports */
@@ -49,6 +56,35 @@
         max-width: 100%;
         height: auto;
     }
+
+    :where(a, button, summary, [role="button"], input, select, textarea) {
+        transition:
+            background-color var(--motion-base) var(--ease-standard),
+            border-color var(--motion-base) var(--ease-standard),
+            box-shadow var(--motion-base) var(--ease-standard),
+            color var(--motion-base) var(--ease-standard),
+            filter var(--motion-base) var(--ease-standard),
+            opacity var(--motion-base) var(--ease-standard),
+            transform var(--motion-base) var(--ease-emphasized);
+    }
+
+    :where(a, button, summary, [role="button"]):where(:hover, :focus-visible) {
+        text-decoration-thickness: 0.08em;
+        text-underline-offset: 0.22em;
+    }
+
+    :where(button, [type="button"], [type="submit"], [type="reset"], .btn, .nav-btn, .btn-admin-primary, .btn-admin-secondary, a.inline-flex):where(:hover):not(:disabled, [aria-disabled="true"]) {
+        transform: translateY(-1px);
+    }
+
+    :where(button, [type="button"], [type="submit"], [type="reset"], .btn, .nav-btn, .btn-admin-primary, .btn-admin-secondary, a.inline-flex):where(:active):not(:disabled, [aria-disabled="true"]) {
+        transform: translateY(0);
+        filter: saturate(0.98) brightness(0.98);
+    }
+
+    :where(input, select, textarea):focus {
+        transition-duration: var(--motion-fast);
+    }
 }
 
 /**
@@ -56,6 +92,30 @@
  * Scoped where possible so marketing landings and hero typography are not crushed.
  */
 @layer components {
+    .register-choice > summary {
+        list-style: none;
+    }
+
+    .register-choice > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .register-choice[open] > summary .register-choice-chevron {
+        transform: rotate(180deg);
+    }
+
+    :where(.card, .panel, .dashboard-card, .msg-card, article[class*="rounded"], .register-choice > div > div) {
+        transition:
+            border-color var(--motion-base) var(--ease-standard),
+            box-shadow var(--motion-base) var(--ease-standard),
+            filter var(--motion-base) var(--ease-standard),
+            transform var(--motion-base) var(--ease-emphasized);
+    }
+
+    :where(.card, .panel, .dashboard-card, .msg-card, article[class*="rounded"]):where(:hover, :focus-within) {
+        box-shadow: 0 14px 36px -24px rgba(15, 23, 42, 0.42);
+    }
+
     @media (max-width: 768px) {
         .card,
         .panel {
@@ -129,10 +189,113 @@
     }
 }
 
+@layer utilities {
+    @keyframes appPageEnter {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .animate-fade-in-up-d1 {
+        animation: fadeInUp 0.6s ease 0.15s forwards;
+    }
+
+    .animate-fade-in-up-d2 {
+        animation: fadeInUp 0.6s ease 0.3s forwards;
+    }
+
+    .animate-fade-in-up-d3 {
+        animation: fadeInUp 0.6s ease 0.45s forwards;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        body {
+            animation: none !important;
+        }
+
+        *,
+        *::before,
+        *::after {
+            scroll-behavior: auto !important;
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+        }
+
+        .animate-fade-in-up,
+        .animate-fade-in-up-d1,
+        .animate-fade-in-up-d2,
+        .animate-fade-in-up-d3 {
+            opacity: 1 !important;
+            transform: none !important;
+            animation: none !important;
+        }
+    }
+}
+
 /*
  * MPA cross-document view transitions (Chromium). Paired with
  * <meta name="view-transition" content="same-origin"> in layouts. No effect elsewhere.
  */
 @view-transition {
     navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: appViewOut 180ms var(--ease-standard) both;
+}
+
+::view-transition-new(root) {
+    animation: appViewIn 260ms var(--ease-emphasized) both;
+}
+
+@keyframes appViewOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes appViewIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 0.01ms !important;
+    }
 }

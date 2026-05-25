@@ -152,11 +152,11 @@
         </div>
 
         <h1 class="mb-5 text-3xl font-extrabold leading-tight text-brand-dark opacity-0 animate-fade-in-up-d1 md:text-5xl lg:text-[3rem]">
-            Certified Accommodation Providers in <span class="text-brand-primary">{{ $municipalityName }}</span>
+            Accredited Accommodation Providers in <span class="text-brand-primary">{{ $municipalityName }}</span>
         </h1>
 
         <p class="mb-8 max-w-[720px] text-base font-medium leading-relaxed text-brand-dark opacity-0 animate-fade-in-up-d2 drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)] md:text-lg md:mb-10">
-            Browse listings from municipality-approved hosts, save favorites, and book with one guest account across every verified tulogan.
+            Browse accredited tulogan listings from trusted local hosts and enjoy a seamless booking experience.
         </p>
 
         {{-- Featured / browse available units: horizontal highlights carousel --}}
@@ -164,15 +164,13 @@
             <div class="mb-5 flex flex-col gap-2 text-left sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <h2 class="text-xl font-extrabold tracking-tight text-brand-dark md:text-2xl">
-                        <i class="fas fa-star mr-2 text-amber-500" aria-hidden="true"></i>Browse available units
+                        Explore Available Accommodations
                     </h2>
-                    <p class="mt-1 text-sm font-semibold text-brand-dark drop-shadow-[0_1px_2px_rgba(255,255,255,0.75)] md:text-base">
-                        @if($carouselAccommodations->isEmpty())
-                            Highlights will appear here as verified listings go live — you can still explore the full directory below.
-                        @else
+                    @if($carouselAccommodations->isNotEmpty())
+                        <p class="mt-1 text-sm font-semibold text-brand-dark drop-shadow-[0_1px_2px_rgba(255,255,255,0.75)] md:text-base">
                             Highlights from the directory — swipe or use arrows to explore.
-                        @endif
-                    </p>
+                        </p>
+                    @endif
                 </div>
                 @if($carouselAccommodations->isNotEmpty())
                     <a href="{{ route('portal.accommodations.index') }}" class="mt-2 inline-flex items-center gap-2 self-start text-sm font-bold text-brand-primary underline decoration-2 underline-offset-2 hover:text-brand-dark sm:mt-0 sm:self-auto">
@@ -194,17 +192,8 @@
                             Available units will show here soon
                         </h3>
                         <p class="mt-3 max-w-md text-sm leading-relaxed text-brand-medium sm:text-base">
-                            Listings show up after municipality-approved hosts publish verified stays. Check back, or open the directory to see what’s listed today.
+                            Listings show up after municipality-approved hosts publish verified stays. Check back soon, or use the listings button below to browse what is available today.
                         </p>
-                        <div class="mt-10 w-full max-w-sm border-t border-brand-soft/60 pt-10">
-                            <a
-                                href="{{ route('portal.accommodations.index') }}"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-brand-dark to-brand-primary px-6 py-3.5 text-sm font-semibold text-white shadow-md transition hover:brightness-[1.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary sm:text-base"
-                            >
-                                <i class="fas fa-compass" aria-hidden="true"></i>
-                                Open full directory
-                            </a>
-                        </div>
                     </div>
                 </article>
             @else
@@ -351,9 +340,10 @@
             <a href="{{ route('portal.accommodations.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-brand-dark to-brand-primary px-8 py-3.5 text-base font-semibold text-white shadow-[0_4px_15px_rgba(46,125,50,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(46,125,50,0.38)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary">
                 <i class="fas fa-compass"></i> Explore all listings
             </a>
-            <a href="{{ route('register.guest') }}" class="inline-flex items-center gap-2 rounded-xl border-2 border-brand-primary bg-white/60 px-8 py-3.5 text-base font-semibold text-brand-dark backdrop-blur-sm transition hover:bg-brand-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-dark">
-                <i class="fas fa-user-plus"></i> Register as guest
-            </a>
+            @include('partials.register-choice-menu', [
+                'buttonClass' => 'inline-flex items-center gap-2 rounded-xl border-2 border-brand-primary bg-white/80 px-8 py-3.5 text-base font-semibold text-brand-dark backdrop-blur-sm transition hover:bg-brand-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-dark',
+                'menuClass' => 'absolute bottom-full left-1/2 z-30 mb-3 w-72 -translate-x-1/2',
+            ])
         </div>
         </section>
     </main>
