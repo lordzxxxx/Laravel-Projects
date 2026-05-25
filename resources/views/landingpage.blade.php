@@ -33,9 +33,10 @@
         </p>
 
         <div class="flex flex-col items-center justify-center gap-4 opacity-0 animate-fade-in-up-d2 sm:flex-row">
-            <a href="/register" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-8 py-3.5 text-base font-semibold text-white shadow-[0_4px_15px_rgba(46,125,50,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(46,125,50,0.4)]">
-                <i class="fas fa-rocket"></i> Get Started
-            </a>
+            @include('partials.register-choice-menu', [
+                'buttonClass' => 'inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-8 py-3.5 text-base font-semibold text-white shadow-[0_4px_15px_rgba(46,125,50,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(46,125,50,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
+                'menuClass' => 'absolute left-1/2 z-30 mt-2 w-72 -translate-x-1/2',
+            ])
             <a href="#pricing" class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-8 py-3.5 text-base font-semibold text-brand-dark transition-all hover:bg-brand-primary hover:text-white">
                 <i class="fas fa-tags"></i> View pricing plans
             </a>

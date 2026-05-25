@@ -123,7 +123,7 @@
             </form>
             @else
             <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="nav-btn secondary">Login</a>
-            <a href="{{ $portalDirectory ? route('register.guest') : route('register') }}" class="nav-btn primary">Register</a>
+            <a href="{{ route('register') }}" class="nav-btn primary">Register</a>
             @endauth
         </div>
     </nav>

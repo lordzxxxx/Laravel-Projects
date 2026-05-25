@@ -222,12 +222,13 @@
                     </form>
 
                     <div class="mt-8 space-y-4 border-t border-emerald-200/80 pb-1 pt-8 text-center text-xs font-medium text-[#1b5e20] sm:mt-9 sm:space-y-5 sm:pt-9 sm:text-[0.8125rem]">
-                        <p>
-                            New here?
-                            <a href="{{ route('register.guest') }}" class="font-bold text-[#14532d] underline decoration-[#1b5e20] decoration-2 underline-offset-2 hover:text-[#0d4710]">Guest registration</a>
-                            <span class="text-emerald-700/55" aria-hidden="true"> · </span>
-                            <a href="{{ route('register.owner') }}" class="font-bold text-[#14532d] underline decoration-[#1b5e20] decoration-2 underline-offset-2 hover:text-[#0d4710]">Host onboarding</a>
-                        </p>
+                        <div class="flex flex-col items-center justify-center gap-3">
+                            <p>New here?</p>
+                            @include('partials.register-choice-menu', [
+                                'buttonClass' => 'inline-flex items-center gap-2 rounded-full border border-brand-soft bg-white/85 px-4 py-2 text-sm font-extrabold text-brand-dark shadow-sm transition hover:border-brand-primary hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
+                                'menuClass' => 'absolute bottom-full left-1/2 z-30 mb-2 w-72 -translate-x-1/2',
+                            ])
+                        </div>
                         <p>
                             <a href="{{ url('/') }}" class="inline-flex items-center justify-center gap-1.5 font-bold text-[#166534] underline decoration-brand-dark/30 underline-offset-2 hover:text-[#14532d]">
                                 <i class="fas fa-chevron-left text-[0.65rem]" aria-hidden="true"></i>

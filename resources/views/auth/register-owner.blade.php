@@ -21,27 +21,6 @@
                 padding-top: calc(env(safe-area-inset-top, 0px) + 8rem);
             }
         }
-        .reg-auth-password-wrap { position: relative; }
-        .reg-auth-password-toggle {
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            display: flex;
-            width: 2.75rem;
-            align-items: center;
-            justify-content: center;
-            color: rgb(27 94 32);
-            border-radius: 0 0.75rem 0.75rem 0;
-            transition: background-color 0.15s ease;
-        }
-        .reg-auth-password-toggle:hover {
-            background-color: rgba(200, 230, 201, 0.5);
-        }
-        .reg-auth-password-toggle:focus-visible {
-            outline: 2px solid rgb(46 125 50);
-            outline-offset: 2px;
-        }
         .reg-owner-dropzone {
             position: relative;
             isolation: isolate;
@@ -193,43 +172,7 @@
                     </div>
                 </section>
 
-                <section class="rounded-xl border border-emerald-100/80 bg-white/80 p-4 shadow-sm sm:p-5" aria-labelledby="reg-owner-password-heading">
-                    <h2 id="reg-owner-password-heading" class="mb-3 flex items-center gap-2 text-sm font-extrabold text-brand-dark">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-brand-primary" aria-hidden="true"><i class="fas fa-lock text-xs"></i></span>
-                        Credentials
-                    </h2>
-                    <p class="mb-4 text-xs leading-snug text-brand-medium">Administrator sign-in for your operator workspace. Use your email with this password to log in.</p>
-                    <div class="grid gap-5 sm:grid-cols-2">
-                        <div class="space-y-1.5">
-                            <label for="password" class="block text-xs font-bold uppercase tracking-wider text-brand-dark">Password <span class="text-red-600" aria-hidden="true">*</span></label>
-                            <div class="reg-auth-password-wrap mt-1">
-                                <input id="password" type="password" name="password" required autocomplete="new-password" aria-required="true" aria-invalid="{{ $errors->has('password') ? 'true' : 'false' }}"
-                                    class="{{ $fieldClass }} min-h-[2.75rem] py-2.5 pl-4 pr-12 sm:min-h-11"
-                                    placeholder="Secure password">
-                                <button type="button" class="reg-auth-password-toggle" id="toggle-password-owner" aria-label="Show password" aria-pressed="false" tabindex="0" data-password-toggle="password">
-                                    <i class="fas fa-eye text-base" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                            @error('password')
-                                <p class="mt-1 text-xs font-semibold text-red-700" role="alert">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="space-y-1.5">
-                            <label for="password_confirmation" class="block text-xs font-bold uppercase tracking-wider text-brand-dark">Confirm password <span class="text-red-600" aria-hidden="true">*</span></label>
-                            <div class="reg-auth-password-wrap mt-1">
-                                <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" aria-required="true" aria-invalid="{{ $errors->has('password_confirmation') ? 'true' : 'false' }}"
-                                    class="{{ $fieldClass }} min-h-[2.75rem] py-2.5 pl-4 pr-12 sm:min-h-11"
-                                    placeholder="Re-enter password">
-                                <button type="button" class="reg-auth-password-toggle" id="toggle-password-confirmation-owner" aria-label="Show confirm password" aria-pressed="false" tabindex="0" data-password-toggle="password_confirmation">
-                                    <i class="fas fa-eye text-base" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                            @error('password_confirmation')
-                                <p class="mt-1 text-xs font-semibold text-red-700" role="alert">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-                </section>
+                @include('partials.auth-registration-password-fields')
 
                 <section class="rounded-xl border border-emerald-100/80 bg-white/80 p-4 shadow-sm sm:p-5" aria-labelledby="reg-owner-compliance-heading">
                     <h2 id="reg-owner-compliance-heading" class="mb-3 flex items-center gap-2 text-sm font-extrabold text-brand-dark">
@@ -308,34 +251,6 @@
 
     @include('partials.auth-registration-scripts', ['fileInputs' => true])
     <script>
-        (function () {
-            document.querySelectorAll('[data-password-toggle]').forEach(function (btn) {
-                var fieldId = btn.getAttribute('data-password-toggle');
-                var input = fieldId ? document.getElementById(fieldId) : null;
-                var icon = btn.querySelector('i');
-                if (!input || !icon) return;
-                var isConfirm = fieldId === 'password_confirmation';
-                function setLabel(visible) {
-                    if (isConfirm) {
-                        btn.setAttribute('aria-label', visible ? 'Hide confirm password' : 'Show confirm password');
-                    } else {
-                        btn.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
-                    }
-                }
-                function sync() {
-                    var visible = input.type === 'text';
-                    btn.setAttribute('aria-pressed', visible ? 'true' : 'false');
-                    setLabel(visible);
-                    icon.className = visible ? 'fas fa-eye-slash text-base' : 'fas fa-eye text-base';
-                }
-                btn.addEventListener('click', function () {
-                    input.type = input.type === 'password' ? 'text' : 'password';
-                    sync();
-                });
-                sync();
-            });
-        })();
-
         (function () {
             var MAX_BYTES = 10485760;
             var ACCEPT_EXT = /\.(pdf|jpe?g|png)$/i;

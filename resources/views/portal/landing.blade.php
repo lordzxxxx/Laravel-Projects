@@ -5,7 +5,7 @@
     <style>
         .skip-link:focus { position: absolute; left: 1rem; top: 1rem; z-index: 2000; clip: auto; width: auto; height: auto; overflow: visible; padding: 0.75rem 1rem; margin: 0; }
         .skip-link { position: absolute; left: 1rem; top: -999px; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-        .portal-hero-partners { --partner-logo-h: 6.25rem; --partner-logo-w: 14.5rem; }
+        .portal-hero-partners { --partner-logo-h: 5.25rem; --partner-logo-w: 11rem; }
         @media (min-width: 640px) {
             .portal-hero-partners { --partner-logo-h: 7.5rem; --partner-logo-w: 17rem; }
         }
@@ -107,6 +107,17 @@
             mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
             -webkit-mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
         }
+        .portal-landing-title,
+        .portal-landing-copy,
+        #featured-units {
+            max-width: min(100%, calc(100vw - 2rem));
+            overflow-wrap: break-word;
+        }
+        @media (max-width: 480px) {
+            .portal-landing-title {
+                font-size: 1.4rem;
+            }
+        }
     </style>
 </head>
 <body
@@ -116,11 +127,11 @@
     @include('partials.portal-public-nav', ['active' => 'landing', 'municipalityName' => $municipalityName])
 
     <main id="browse" tabindex="-1" class="flex flex-1 flex-col outline-none">
-        <section class="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[rgba(27,94,32,0.06)] to-[rgba(46,125,50,0.04)] px-5 pb-24 pt-28 text-center md:px-10 md:pt-32">
+        <section class="flex min-h-screen min-h-[100svh] w-full flex-col items-center justify-center overflow-x-hidden bg-gradient-to-br from-[rgba(27,94,32,0.06)] to-[rgba(46,125,50,0.04)] px-4 pb-20 pt-40 text-center sm:px-5 sm:pt-36 md:px-10 md:pb-24 md:pt-32">
         {{-- Partner strip: no panel background — logos sit on the hero with caps + drop shadow for readability --}}
-        <div class="portal-hero-partners mb-8 w-full max-w-4xl px-2 py-2 sm:mb-10 sm:px-4">
+        <div class="portal-hero-partners mb-6 w-full max-w-4xl px-2 py-2 sm:mb-10 sm:px-4">
             <div class="portal-hero-partners__strip" role="list">
-                <div class="flex min-h-[6.25rem] items-center justify-center sm:min-h-[7.5rem] lg:min-h-[8.5rem]" role="listitem">
+                <div class="flex min-h-[5.25rem] items-center justify-center sm:min-h-[7.5rem] lg:min-h-[8.5rem]" role="listitem">
                     <img
                         src="{{ asset('SYSTEMLOGO.png') }}"
                         alt="{{ $municipalityName }} — official seal"
@@ -130,7 +141,7 @@
                     >
                 </div>
                 <span class="portal-hero-partners__divider hidden sm:block" aria-hidden="true"></span>
-                <div class="flex min-h-[6.25rem] items-center justify-center sm:min-h-[7.5rem] lg:min-h-[8.5rem]" role="listitem">
+                <div class="flex min-h-[5.25rem] items-center justify-center sm:min-h-[7.5rem] lg:min-h-[8.5rem]" role="listitem">
                     <img
                         src="{{ asset('Love Impasugong.png') }}"
                         alt="Love Impasugong"
@@ -139,7 +150,7 @@
                     >
                 </div>
                 <span class="portal-hero-partners__divider hidden sm:block" aria-hidden="true"></span>
-                <div class="flex min-h-[5.5rem] items-center justify-center sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
+                <div class="flex min-h-[4.75rem] items-center justify-center sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
                     <img
                         src="{{ asset('Lgu Socmed Template-02.png') }}"
                         alt="LGU {{ $municipalityName }}"
@@ -151,11 +162,12 @@
             </div>
         </div>
 
-        <h1 class="mb-5 text-3xl font-extrabold leading-tight text-brand-dark opacity-0 animate-fade-in-up-d1 md:text-5xl lg:text-[3rem]">
-            Accredited Accommodation Providers in <span class="text-brand-primary">{{ $municipalityName }}</span>
+        <h1 class="portal-landing-title mb-5 w-full max-w-5xl break-words px-1 text-2xl font-extrabold leading-tight text-brand-dark opacity-0 animate-fade-in-up-d1 sm:text-4xl md:text-5xl lg:text-[3rem]">
+            <span class="block sm:inline">Accredited Accommodation</span>
+            <span class="block sm:inline"> Providers in <span class="text-brand-primary">{{ $municipalityName }}</span></span>
         </h1>
 
-        <p class="mb-8 max-w-[720px] text-base font-medium leading-relaxed text-brand-dark opacity-0 animate-fade-in-up-d2 drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)] md:text-lg md:mb-10">
+        <p class="portal-landing-copy mb-8 w-full max-w-[720px] px-1 text-base font-medium leading-relaxed text-brand-dark opacity-0 animate-fade-in-up-d2 drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)] md:mb-10 md:text-lg">
             Browse accredited tulogan listings from trusted local hosts and enjoy a seamless booking experience.
         </p>
 
@@ -188,7 +200,7 @@
                         <span class="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-soft to-white text-2xl text-brand-primary shadow-inner ring-1 ring-brand-soft/60" aria-hidden="true">
                             <i class="fas fa-building-user"></i>
                         </span>
-                        <h3 id="featured-empty-heading" class="max-w-md text-lg font-bold leading-snug text-brand-dark sm:text-xl">
+                        <h3 id="featured-empty-heading" class="max-w-xs text-base font-bold leading-snug text-brand-dark sm:max-w-md sm:text-xl">
                             Available units will show here soon
                         </h3>
                         <p class="mt-3 max-w-md text-sm leading-relaxed text-brand-medium sm:text-base">
@@ -336,12 +348,12 @@
             @endif
         </div>
 
-        <div class="flex w-full max-w-[1200px] shrink-0 flex-col items-center gap-6 border-t border-brand-soft/30 pt-10 opacity-0 animate-fade-in-up-d3 sm:flex-row sm:justify-center sm:gap-12 md:gap-14 sm:pt-12 mb-10">
-            <a href="{{ route('portal.accommodations.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-brand-dark to-brand-primary px-8 py-3.5 text-base font-semibold text-white shadow-[0_4px_15px_rgba(46,125,50,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(46,125,50,0.38)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary">
+        <div class="mb-10 flex w-full max-w-[1200px] shrink-0 flex-col items-center gap-4 border-t border-brand-soft/30 pt-8 opacity-0 animate-fade-in-up-d3 sm:flex-row sm:justify-center sm:gap-12 sm:pt-12 md:gap-14">
+            <a href="{{ route('portal.accommodations.index') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-brand-dark to-brand-primary px-8 py-3.5 text-base font-semibold text-white shadow-[0_4px_15px_rgba(46,125,50,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(46,125,50,0.38)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary sm:w-auto">
                 <i class="fas fa-compass"></i> Explore all listings
             </a>
             @include('partials.register-choice-menu', [
-                'buttonClass' => 'inline-flex items-center gap-2 rounded-xl border-2 border-brand-primary bg-white/80 px-8 py-3.5 text-base font-semibold text-brand-dark backdrop-blur-sm transition hover:bg-brand-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-dark',
+                'buttonClass' => 'inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-brand-primary bg-white/80 px-8 py-3.5 text-base font-semibold text-brand-dark backdrop-blur-sm transition hover:bg-brand-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-dark sm:w-auto',
                 'menuClass' => 'absolute bottom-full left-1/2 z-30 mb-3 w-72 -translate-x-1/2',
             ])
         </div>

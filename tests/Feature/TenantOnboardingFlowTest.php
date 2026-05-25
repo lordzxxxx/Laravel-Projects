@@ -5,14 +5,24 @@ use App\Models\User;
 use App\Services\TenantOnboardingService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
  * Requires MySQL and database `laravel_testing` (see phpunit.xml).
- * Default and landlord connections use the same database so `users` (default) and
- * `tenants` (landlord) satisfy FK constraints during owner registration.
+ * Owner onboarding mirrors production's unified connection in this test so the user
+ * and tenant foreign-key writes share one transaction.
  */
 it('creates tenant pending municipality review when owner registers on public portal path', function () {
+    DB::setDefaultConnection('landlord');
+    DB::connection('landlord')->beginTransaction();
+    $this->beforeApplicationDestroyed(function (): void {
+        if (DB::connection('landlord')->transactionLevel() > 0) {
+            DB::connection('landlord')->rollBack();
+        }
+    });
+
     try {
         Tenant::query()->count();
     } catch (QueryException) {
@@ -22,7 +32,7 @@ it('creates tenant pending municipality review when owner registers on public po
     Storage::fake('public');
 
     try {
-        $response = $this->post('/register/owner', [
+        $response = $this->post('http://localhost:8005/register/owner', [
             'name' => 'Onboarding Flow Owner',
             'email' => 'onboarding-flow-owner@example.com',
             'password' => 'password',
@@ -58,6 +68,16 @@ it('creates tenant pending municipality review when owner registers on public po
     Storage::disk('public')->assertExists((string) $tenant->municipality_business_permit_path);
     expect((bool) $tenant->domain_enabled)->toBeFalse();
     expect((bool) $tenant->database_provisioned)->toBeFalse();
+
+    Auth::logout();
+    $this->assertGuest();
+
+    $this->post('http://localhost:8005/login', [
+        'email' => 'onboarding-flow-owner@example.com',
+        'password' => 'password',
+    ])->assertRedirect('/owner/onboarding/status');
+
+    $this->assertAuthenticatedAs($user);
 });
 
 it('submits gcash onboarding proof and moves tenant to pending approval', function () {

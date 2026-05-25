@@ -27,6 +27,28 @@
 @endif
 <script>
     (function () {
+        document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+            var fieldId = button.getAttribute('data-password-toggle');
+            var input = fieldId ? document.getElementById(fieldId) : null;
+            var icon = button.querySelector('i');
+            if (!input || !icon) return;
+
+            var confirmation = fieldId === 'password_confirmation';
+            function sync() {
+                var visible = input.type === 'text';
+                var label = confirmation ? 'confirm password' : 'password';
+                button.setAttribute('aria-pressed', visible ? 'true' : 'false');
+                button.setAttribute('aria-label', (visible ? 'Hide ' : 'Show ') + label);
+                icon.className = visible ? 'fas fa-eye-slash text-base' : 'fas fa-eye text-base';
+            }
+
+            button.addEventListener('click', function () {
+                input.type = input.type === 'password' ? 'text' : 'password';
+                sync();
+            });
+            sync();
+        });
+
         document.querySelectorAll('[data-registration-form]').forEach(function (form) {
             form.addEventListener('submit', function () {
                 var s = form.querySelector('[data-reg-submit]');

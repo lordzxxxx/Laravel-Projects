@@ -35,4 +35,25 @@
         .reg-field { border-width: 2px !important; border-color: CanvasText !important; }
         .reg-card { outline: 2px solid CanvasText !important; outline-offset: 2px; }
     }
+    .reg-auth-password-wrap { position: relative; }
+    .reg-auth-password-toggle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        width: 3rem;
+        align-items: center;
+        justify-content: center;
+        color: rgb(27 94 32);
+        border-radius: 0 0.75rem 0.75rem 0;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    .reg-auth-password-toggle:hover {
+        background-color: rgba(200, 230, 201, 0.5);
+    }
+    .reg-auth-password-toggle:focus-visible {
+        outline: 2px solid rgb(46 125 50);
+        outline-offset: -2px;
+    }
 </style>

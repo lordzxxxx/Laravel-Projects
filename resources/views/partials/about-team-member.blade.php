@@ -1,7 +1,7 @@
 @php
     $displayName = isset($name) && $name !== '' && $name !== null ? $name : '—';
 @endphp
-<article class="overflow-hidden rounded-xl border border-brand-soft bg-white/90 shadow-md backdrop-blur-sm">
+<article class="overflow-hidden rounded-xl border border-brand-soft/90 bg-white/95 shadow-md backdrop-blur-sm">
     @if (!empty($imageUrl))
         <div class="flex justify-center px-2 pt-3 sm:px-3">
             <div class="aspect-square w-full max-w-40 overflow-hidden rounded-lg bg-neutral-100 sm:max-w-44">
@@ -30,6 +30,6 @@
     <div class="p-3 sm:p-4">
         <p class="text-base font-bold leading-tight text-brand-dark">{{ $displayName }}</p>
         <p class="mt-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-brand-primary">{{ $role }}</p>
-        <p class="mt-2 text-xs leading-snug text-brand-medium">{{ $bio }}</p>
+        <p class="mt-2 text-xs leading-snug text-slate-700">{{ $bio }}</p>
     </div>
 </article>

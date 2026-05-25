@@ -719,7 +719,7 @@
                         <div style="text-align: center; padding: 30px 0;">
                             <p style="color: var(--gray-500); margin-bottom: 20px;">Sign in to book, save to wishlist, or message the host.</p>
                             <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="btn btn-primary btn-book">Login</a>
-                            <a href="{{ ($portalDirectory ?? false) ? route('register.guest') : route('register') }}" class="btn btn-wishlist">Create account</a>
+                            <a href="{{ route('register') }}" class="btn btn-wishlist">Create account</a>
                         </div>
                     @endauth
                 </div>

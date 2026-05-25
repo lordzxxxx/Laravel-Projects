@@ -26,13 +26,15 @@
 
         html,
         body {
-            height: 100%;
+            min-height: 100%;
             overflow: hidden;
+            overflow-x: hidden;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
+            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             background: linear-gradient(135deg, var(--green-white) 0%, var(--white) 50%, var(--green-soft) 100%);
         }
@@ -584,8 +586,15 @@
         }
         
         @media (max-width: 768px) {
+            html,
+            body {
+                height: auto;
+                overflow-y: auto;
+            }
+
             body {
                 flex-direction: row;
+                min-height: 100dvh;
             }
             
             .branding-section {
@@ -599,12 +608,13 @@
             .form-section {
                 flex: 1;
                 padding: 16px;
-                max-height: 100vh;
+                max-height: none;
+                min-height: 100dvh;
             }
             
             .form-container {
                 padding: 24px;
-                max-height: calc(100vh - 32px);
+                max-height: none;
             }
             
             .progress-steps {

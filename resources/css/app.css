@@ -39,12 +39,19 @@
     }
 
     body {
+        width: 100%;
         max-width: 100%;
         overflow-x: hidden;
         min-height: 100dvh;
         min-height: 100vh;
         overflow-wrap: break-word;
         animation: appPageEnter var(--motion-slow) var(--ease-emphasized) both;
+    }
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
     }
 
     /* Fluid media — prevents layout blowout on small viewports */
@@ -55,6 +62,29 @@
     canvas {
         max-width: 100%;
         height: auto;
+    }
+
+    :where(main, section, header, nav, article, aside, div) {
+        min-width: 0;
+    }
+
+    :where(p, h1, h2, h3, h4, h5, h6, li, td, th, label, span) {
+        overflow-wrap: anywhere;
+    }
+
+    :where(pre, code, kbd, samp) {
+        max-width: 100%;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    :where(textarea) {
+        resize: vertical;
     }
 
     :where(a, button, summary, [role="button"], input, select, textarea) {
@@ -116,9 +146,49 @@
         box-shadow: 0 14px 36px -24px rgba(15, 23, 42, 0.42);
     }
 
+    :where(.main-content, .dashboard-layout, .page-shell, .report-container, .container, .profile-shell, .booking-page, .payment-page, .messages-page) {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    :where(.table-wrap, .table-responsive, .overflow-table, .scroll-table, .data-table-wrap) {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 1024px) {
+        :where(.content-grid, .chart-grid, .ticket-layout, .payment-grid, .booking-grid, .message-layout, .messages-layout, .profile-grid, .settings-grid, .details-grid, .form-grid, .filters-grid, .summary, .cols, .quick-stats-grid, .pbi-breakdown-grid, .pbi-demographics-charts) {
+            grid-template-columns: 1fr !important;
+        }
+
+        :where(.page-header-row, .filters, .actions-row, .action-row, .toolbar, .table-actions, .search-filter, .search-row, .admin-actions, .form-actions) {
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+
+        :where(.page-header-row, .filters, .actions-row, .action-row, .toolbar, .table-actions, .search-filter, .search-row, .admin-actions, .form-actions) > * {
+            min-width: 0;
+        }
+
+        :where(main, .main-content, .dashboard-layout) table {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        :where(main, .main-content, .dashboard-layout) :where(th, td) {
+            white-space: normal;
+        }
+    }
+
     @media (max-width: 768px) {
         .card,
-        .panel {
+        .panel,
+        .dashboard-card,
+        .msg-card {
             overflow-x: auto;
         }
 
@@ -133,7 +203,10 @@
 
         .main-content,
         main.main-content,
-        .dashboard-layout > main {
+        .dashboard-layout > main,
+        .page-shell,
+        .report-container,
+        .container {
             padding-left: 14px !important;
             padding-right: 14px !important;
         }
@@ -156,13 +229,33 @@
         .grid-2,
         .grid-3,
         .grid-4,
-        .accommodations-grid {
+        .accommodations-grid,
+        .properties-grid,
+        .permission-card-grid,
+        .role-grid {
             grid-template-columns: 1fr !important;
             gap: 14px !important;
+        }
+
+        :where(.card-padded, .card-body, .panel-body, .dashboard-card, .msg-card, .form-card) {
+            padding: 16px !important;
+        }
+
+        :where(.field, .form-group, .input-group, .inline-form, .form-row) {
+            min-width: 0;
+        }
+
+        :where(.inline-form, .form-row) {
+            flex-wrap: wrap;
         }
     }
 
     @media (max-width: 480px) {
+        .portal-public-nav__brand,
+        .portal-admin-nav__brand {
+            max-width: calc(100vw - 2rem);
+        }
+
         .main-content {
             padding-left: 10px !important;
             padding-right: 10px !important;
@@ -170,6 +263,18 @@
 
         :where(.page-header) h1 {
             font-size: 1.25rem !important;
+        }
+
+        :where(.page-header, .page-title) h1 {
+            align-items: flex-start;
+            gap: 0.65rem;
+        }
+
+        :where(.page-header, .page-title) h1 .page-title-icon,
+        :where(.page-header, .page-title) h1 > .icon-wrap {
+            width: 36px;
+            height: 36px;
+            font-size: 15px;
         }
 
         /* Stack primary actions in main workspace only — not global nav chrome */
@@ -185,6 +290,21 @@
         .dashboard-layout main .btn-admin-secondary {
             width: 100%;
             justify-content: center;
+        }
+
+        :where(.main-content, .dashboard-layout main) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea, .btn, .btn-admin-primary, .btn-admin-secondary, .nav-btn) {
+            max-width: 100%;
+        }
+
+        :where(.main-content, .dashboard-layout main) :where(.filters, .actions-row, .action-row, .toolbar, .table-actions, .search-filter, .search-row, .admin-actions, .form-actions) > :where(a, button, form, input, select, textarea) {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .portal-public-nav__brand-text,
+        .portal-admin-nav__brand-text {
+            display: none;
         }
     }
 }

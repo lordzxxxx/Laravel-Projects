@@ -52,6 +52,21 @@ test('clients can not authenticate using central app login screen', function () 
     $this->assertGuest();
 });
 
+test('municipality guests can authenticate using the public portal login screen', function () {
+    $user = User::factory()->create([
+        'role' => User::ROLE_CLIENT,
+        'tenant_id' => null,
+    ]);
+
+    $response = $this->post('http://localhost:8005/login', [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticatedAs($user);
+    $response->assertRedirect('/guest/dashboard');
+});
+
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
