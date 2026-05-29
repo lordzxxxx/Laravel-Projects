@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Accommodation;
 use App\Models\Tenant;
+use App\Support\AppearancePreferences;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -53,8 +54,9 @@ class TenantLandingController extends Controller
         abort_unless($tenant, 404);
 
         $settings = $tenant->landingSettings();
+        $appearance = $request->user()->normalizedAppearancePreferences();
 
-        return view('owner.landing-settings', compact('tenant', 'settings'));
+        return view('owner.landing-settings', compact('tenant', 'settings', 'appearance'));
     }
 
     /**
@@ -71,25 +73,39 @@ class TenantLandingController extends Controller
         abort_unless($tenant, 404);
 
         $validated = $request->validate([
-            'hero_title' => ['required', 'string', 'max:120'],
-            'hero_subtitle' => ['required', 'string', 'max:255'],
-            'cta_text' => ['required', 'string', 'max:40'],
-            'cta_url' => ['required', 'string', 'max:255'],
-            'login_section_title' => ['required', 'string', 'max:100'],
-            'login_section_subtitle' => ['required', 'string', 'max:200'],
-            'login_text' => ['required', 'string', 'max:40'],
-            'signup_text' => ['required', 'string', 'max:40'],
-            'about_title' => ['required', 'string', 'max:80'],
-            'about_text' => ['required', 'string', 'max:600'],
             'primary_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'accent_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
-            'hero_image_url' => ['nullable', 'url', 'max:500'],
+            'appearance_theme' => ['required', 'string', 'in:impasugong,green'],
+            'appearance_mode' => ['required', 'string', 'in:light,dark,system'],
             'gcash_qr' => ['nullable', 'image', 'max:5120', 'mimes:jpeg,jpg,png,webp'],
             'remove_gcash_qr' => ['nullable', 'boolean'],
+            'logo' => ['nullable', 'image', 'max:5120', 'mimes:jpeg,jpg,png,webp'],
+            'remove_logo' => ['nullable', 'boolean'],
         ]);
 
+        $appearanceTheme = $validated['appearance_theme'];
+        $appearanceMode = $validated['appearance_mode'];
+        unset($validated['appearance_theme'], $validated['appearance_mode']);
+
+        $landingPayload = array_merge($tenant->landingSettings(), $validated);
+
+        $removeLogo = (bool) ($validated['remove_logo'] ?? false);
+        unset($landingPayload['logo'], $landingPayload['remove_logo'], $landingPayload['gcash_qr'], $landingPayload['remove_gcash_qr']);
+
+        if ($removeLogo && $tenant->logo_path) {
+            Storage::disk('public')->delete($tenant->logo_path);
+            $tenant->logo_path = null;
+        }
+
+        if ($request->hasFile('logo')) {
+            if ($tenant->logo_path) {
+                Storage::disk('public')->delete($tenant->logo_path);
+            }
+
+            $tenant->logo_path = $request->file('logo')->store('tenant-logos', 'public');
+        }
+
         $removeGcashQr = (bool) ($validated['remove_gcash_qr'] ?? false);
-        unset($validated['gcash_qr'], $validated['remove_gcash_qr']);
 
         if ($removeGcashQr && $tenant->gcash_qr_path) {
             Storage::disk('public')->delete($tenant->gcash_qr_path);
@@ -104,8 +120,15 @@ class TenantLandingController extends Controller
             $tenant->gcash_qr_path = $request->file('gcash_qr')->store('tenant-gcash-qr', 'public');
         }
 
-        $tenant->updateLandingSettings($validated);
+        $tenant->updateLandingSettings($landingPayload);
         $tenant->save();
+
+        $user = $request->user();
+        $user->appearance_preferences = AppearancePreferences::normalize([
+            'theme' => $appearanceTheme,
+            'mode' => $appearanceMode,
+        ]);
+        $user->save();
 
         return back()->with('success', 'Landing page settings updated successfully.');
     }

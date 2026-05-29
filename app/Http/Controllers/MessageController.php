@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Services\Messaging\CentralSupportInboxService;
 use App\Services\Messaging\TenantCentralSupportProxyUser;
+use App\Support\MessageAttachments;
 use Database\Seeders\RbacCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -252,13 +253,12 @@ class MessageController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'receiver_id' => 'required|exists:users,id',
             'subject' => 'nullable|string|max:255',
-            'content' => 'required|string',
             'booking_id' => 'nullable|exists:bookings,id',
             'type' => 'nullable|in:general,booking_inquiry,booking_response,complaint,feedback',
-        ]);
+        ], MessageAttachments::rules()));
 
         $validated['sender_id'] = $user->id;
         $validated['type'] = $validated['type'] ?? Message::TYPE_GENERAL;
@@ -295,6 +295,9 @@ class MessageController extends Controller
         }
 
         $validated['tenant_id'] = $tenantId;
+        $validated['attachment_path'] = MessageAttachments::store($request->file('attachment'), $tenantId ? (int) $tenantId : null);
+        unset($validated['attachment']);
+        $validated['content'] = (string) ($validated['content'] ?? '');
 
         $message = Message::create($validated);
 
@@ -304,11 +307,10 @@ class MessageController extends Controller
 
     private function storeTenantManagerOutbound(Request $request, User $user, Tenant $currentTenant): RedirectResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'recipient_key' => ['required', 'string'],
             'subject' => 'nullable|string|max:255',
-            'content' => 'required|string',
-        ]);
+        ], MessageAttachments::rules()));
 
         $key = $validated['recipient_key'];
 
@@ -331,7 +333,8 @@ class MessageController extends Controller
             'receiver_id' => $receiver->id,
             'tenant_id' => $currentTenant->id,
             'subject' => $validated['subject'] ?? null,
-            'content' => $validated['content'],
+            'content' => (string) ($validated['content'] ?? ''),
+            'attachment_path' => MessageAttachments::store($request->file('attachment'), $currentTenant->id),
             'type' => Message::TYPE_GENERAL,
         ]);
 
@@ -359,11 +362,10 @@ class MessageController extends Controller
 
     private function storeClientToTeamOutbound(Request $request, User $user, Tenant $currentTenant): RedirectResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'recipient_key' => ['required', 'string'],
             'subject' => 'nullable|string|max:255',
-            'content' => 'required|string',
-        ]);
+        ], MessageAttachments::rules()));
 
         $key = $validated['recipient_key'];
         if ($key === 'central') {
@@ -386,7 +388,8 @@ class MessageController extends Controller
             'receiver_id' => $receiver->id,
             'tenant_id' => $currentTenant->id,
             'subject' => $validated['subject'] ?? null,
-            'content' => $validated['content'],
+            'content' => (string) ($validated['content'] ?? ''),
+            'attachment_path' => MessageAttachments::store($request->file('attachment'), $currentTenant->id),
             'type' => Message::TYPE_GENERAL,
         ]);
 
@@ -587,7 +590,13 @@ class MessageController extends Controller
             $query->whereNull('tenant_id');
         }
 
-        $query->delete();
+        $messages = $query->get();
+
+        foreach ($messages as $row) {
+            MessageAttachments::delete($row->attachment_path);
+        }
+
+        Message::query()->whereIn('id', $messages->pluck('id'))->delete();
     }
 
     /**
@@ -669,12 +678,13 @@ class MessageController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'content' => 'required|string',
-        ]);
+        $validated = $request->validate(MessageAttachments::rules());
 
-        // Create reply
-        $message->reply($validated['content'], $user);
+        $message->reply(
+            (string) ($validated['content'] ?? ''),
+            $user,
+            MessageAttachments::store($request->file('attachment'), $message->tenant_id ? (int) $message->tenant_id : null)
+        );
 
         return back()->with('success', 'Reply sent successfully!');
     }
@@ -844,9 +854,7 @@ class MessageController extends Controller
         $this->assertLandlordCentralMessagingAdmin($request);
         abort_unless($tenant->database_provisioned, 404);
 
-        $validated = $request->validate([
-            'content' => 'required|string',
-        ]);
+        $validated = $request->validate(MessageAttachments::rules());
 
         app(MakeTenantCurrentAction::class)->execute($tenant);
 
@@ -863,7 +871,11 @@ class MessageController extends Controller
                 404
             );
 
-            $reply = $messageModel->reply($validated['content'], $proxy);
+            $reply = $messageModel->reply(
+                (string) ($validated['content'] ?? ''),
+                $proxy,
+                MessageAttachments::store($request->file('attachment'), $tenant->id)
+            );
 
             return redirect()->route('admin.messages.thread', [
                 'tenant' => $tenant->getKey(),
@@ -913,11 +925,10 @@ class MessageController extends Controller
     {
         $this->assertLandlordCentralMessagingAdmin($request);
 
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'tenant_id' => 'required|integer',
             'subject' => 'nullable|string|max:255',
-            'content' => 'required|string',
-        ]);
+        ], MessageAttachments::rules()));
 
         $resolved = $this->resolveTenantAndRecipientForCentralSupportContact(
             selectedTenantId: (int) $validated['tenant_id']
@@ -944,7 +955,8 @@ class MessageController extends Controller
                 'receiver_id' => $recipient->id,
                 'tenant_id' => $tenant->id,
                 'subject' => $validated['subject'] ?? null,
-                'content' => $validated['content'],
+                'content' => (string) ($validated['content'] ?? ''),
+                'attachment_path' => MessageAttachments::store($request->file('attachment'), $tenant->id),
                 'type' => Message::TYPE_GENERAL,
             ]);
 

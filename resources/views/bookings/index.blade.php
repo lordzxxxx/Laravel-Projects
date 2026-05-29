@@ -27,9 +27,12 @@
             --gray-800: #1F2937;
         }
         
+        @include('partials.appearance-boot')
+        @include('partials.ui-foundation-styles')
+
         @if($useLegacyBookingsNav)
         .navbar {
-            background: var(--white);
+            background: var(--nav-bar-bg, var(--white));
             padding: 0 40px;
             height: 70px;
             display: flex;
@@ -61,11 +64,10 @@
             @include('client.partials.top-navbar-styles')
         @endif
 
-        body {
-            font-family: var(--client-nav-font, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
-            background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
+        body:not(.client-nav-page) {
+            background: var(--app-page-bg, linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%));
             min-height: 100vh;
-            color: var(--gray-800);
+            color: var(--ink-800, var(--gray-800));
         }
         
         /* Main Layout */
@@ -84,17 +86,18 @@
         
         /* Filter Tabs */
         .filter-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
-        .filter-tab { padding: 10px 20px; border-radius: 8px; border: none; background: var(--white); color: var(--gray-600); cursor: pointer; font-weight: 500; transition: all 0.3s; text-decoration: none; }
-        .filter-tab:hover { background: var(--green-soft); }
-        .filter-tab.active { background: var(--green-primary); color: white; }
+        .filter-tab { padding: 10px 20px; border-radius: 8px; border: 1px solid var(--app-surface-border, var(--gray-200)); background: var(--app-surface-bg, var(--white)); color: var(--ink-600, var(--gray-600)); cursor: pointer; font-weight: 500; transition: all 0.3s; text-decoration: none; }
+        .filter-tab:hover { background: var(--chrome-surface-bg, var(--green-soft)); }
+        .filter-tab.active { background: var(--chrome-active-bg, var(--green-primary)); color: white; border-color: var(--chrome-active-border, transparent); }
         
         /* Bookings Grid */
         .bookings-grid { display: grid; gap: 16px; align-items: stretch; }
         
         .booking-card {
-            background: var(--white);
+            background: var(--app-surface-bg, var(--white));
+            border: 1px solid var(--app-surface-border, var(--gray-200));
             border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.08);
+            box-shadow: var(--shadow-sm, 0 4px 20px rgba(27, 94, 32, 0.08));
             overflow: hidden;
             transition: all 0.3s;
             align-self: start;
@@ -103,24 +106,24 @@
         
         .booking-card:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(27, 94, 32, 0.15); }
         
-        .booking-header { padding: 20px 25px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
-        .booking-id { font-size: 0.85rem; color: var(--gray-500); }
-        .booking-date { font-size: 0.9rem; color: var(--gray-600); }
+        .booking-header { padding: 20px 25px; border-bottom: 1px solid var(--app-surface-border, var(--gray-200)); display: flex; justify-content: space-between; align-items: center; }
+        .booking-id { font-size: 0.85rem; color: var(--ink-500, var(--gray-500)); }
+        .booking-date { font-size: 0.9rem; color: var(--ink-600, var(--gray-600)); }
         
         .booking-body { padding: 25px; display: flex; gap: 25px; }
         
         .property-image { width: 180px; height: 130px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
         
         .booking-details { flex: 1; }
-        .property-name { font-size: 1.3rem; color: var(--green-dark); margin-bottom: 8px; font-weight: 600; }
-        .property-location { display: flex; align-items: center; gap: 6px; color: var(--gray-500); font-size: 0.9rem; margin-bottom: 15px; }
+        .property-name { font-size: 1.3rem; color: var(--chrome-icon-color, var(--green-dark)); margin-bottom: 8px; font-weight: 600; }
+        .property-location { display: flex; align-items: center; gap: 6px; color: var(--ink-500, var(--gray-500)); font-size: 0.9rem; margin-bottom: 15px; }
         
         .booking-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px; }
-        .info-item { background: var(--cream); padding: 12px 15px; border-radius: 10px; }
-        .info-label { font-size: 0.75rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-        .info-value { font-weight: 600; color: var(--gray-800); }
+        .info-item { background: var(--app-surface-muted-bg, var(--cream)); padding: 12px 15px; border-radius: 10px; }
+        .info-label { font-size: 0.75rem; color: var(--ink-500, var(--gray-500)); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+        .info-value { font-weight: 600; color: var(--ink-800, var(--gray-800)); }
         
-        .booking-footer { padding: 20px 25px; background: var(--cream); display: flex; justify-content: space-between; align-items: center; }
+        .booking-footer { padding: 20px 25px; background: var(--app-surface-muted-bg, var(--cream)); display: flex; justify-content: space-between; align-items: center; }
         
         /* Status Badges */
         .status-badge { display: inline-block; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; }
@@ -128,7 +131,7 @@
         .status-badge.confirmed { background: var(--green-soft); color: var(--green-dark); }
         .status-badge.cancelled { background: #FFEBEE; color: #C62828; }
         .status-badge.completed { background: #E3F2FD; color: #1565C0; }
-        .status-badge.paid { background: #E8F5E9; color: #2E7D32; }
+        .status-badge.paid { background: #EDF4EA; color: #457359; }
         .payment-badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 12px; font-size: 0.76rem; font-weight: 700; }
         .payment-badge.neutral { background: #F3F4F6; color: #374151; }
         .payment-badge.pending-review { background: #FFF7ED; color: #9A3412; }
@@ -267,7 +270,7 @@
 
     </style>
 </head>
-<body class="{{ $isTenantManager ? 'owner-nav-page' : '' }}">
+<body class="{{ $isTenantManager ? 'owner-nav-page' : ($authUser?->isClient() ? 'client-nav-page font-sans text-gray-800' : '') }}">
     <!-- Navigation -->
     @if($isTenantManager)
         @include('owner.partials.top-navbar')
@@ -309,10 +312,7 @@
     @endif
     
     <!-- Main Content -->
-    <main
-        class="{{ $isTenantManager ? 'main-content with-owner-nav w-full' : 'mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10' }}"
-        @if(!$isTenantManager) style="padding-top: calc(var(--client-nav-offset) + 24px);" @endif
-    >
+    <main class="{{ $isTenantManager ? 'main-content with-owner-nav w-full' : ($authUser?->isClient() ? 'client-guest-main client-guest-main--wide' : 'mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10') }}"@if(! $isTenantManager && ! $authUser?->isClient()) style="padding-top: calc(var(--client-nav-offset) + 24px);"@endif>
         @php
             $isOwner = $isTenantManager;
             $bookingsIndexRoute = Auth::check() && $isTenantManager ? 'owner.bookings.index' : 'bookings.index';

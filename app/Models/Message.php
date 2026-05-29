@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\UsesTenantConnectionForTenantData;
+use App\Support\MessageAttachments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,6 +20,7 @@ class Message extends Model
         'tenant_id',
         'subject',
         'content',
+        'attachment_path',
         'type',
         'status',
         'read_at',
@@ -123,6 +125,21 @@ class Message extends Model
         return $this->status === self::STATUS_SENT;
     }
 
+    public function getAttachmentUrlAttribute(): ?string
+    {
+        return MessageAttachments::url($this->attachment_path);
+    }
+
+    public function getExcerptAttribute(): string
+    {
+        return MessageAttachments::excerpt($this->content, $this->attachment_path);
+    }
+
+    public function hasAttachment(): bool
+    {
+        return filled($this->attachment_path);
+    }
+
     // Methods
     public function markAsRead()
     {
@@ -137,7 +154,7 @@ class Message extends Model
         $this->update(['status' => self::STATUS_ARCHIVED]);
     }
 
-    public function reply($content, $sender)
+    public function reply($content, $sender, ?string $attachmentPath = null)
     {
         $receiverId = (int) $sender->id === (int) $this->sender_id
             ? $this->receiver_id
@@ -149,7 +166,8 @@ class Message extends Model
             'booking_id' => $this->booking_id,
             'tenant_id' => $this->tenant_id,
             'subject' => 'Re: '.($this->subject ?? ''),
-            'content' => $content,
+            'content' => (string) $content,
+            'attachment_path' => $attachmentPath,
             'type' => $this->type === self::TYPE_BOOKING_INQUIRY ? self::TYPE_BOOKING_RESPONSE : self::TYPE_GENERAL,
         ]);
     }

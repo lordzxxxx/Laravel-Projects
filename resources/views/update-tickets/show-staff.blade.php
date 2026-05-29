@@ -7,13 +7,14 @@
     <title>{{ $ticket->subject }} — Ticket</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        @include('partials.app-typography-styles')
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             @include('partials.tenant-theme-css-vars')
             --gray-200: #E5E7EB; --gray-500: #6B7280; --gray-600: #4B5563; --gray-700: #374151; --gray-800: #1F2937;
         }
         @include('owner.partials.top-navbar-styles')
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%); min-height: 100vh; color: var(--gray-800); }
+        body {  background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%); min-height: 100vh; color: var(--gray-800); }
         .page-shell { padding: 96px 24px 40px; max-width: 960px; margin: 0 auto; }
         .card { background: var(--white); border: 1px solid var(--green-soft); border-radius: 14px; padding: 22px; box-shadow: 0 5px 20px rgba(27, 94, 32, 0.08); }
         h1 { font-size: 1.35rem; color: var(--green-dark); margin-bottom: 12px; }

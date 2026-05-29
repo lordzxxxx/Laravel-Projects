@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Support\AppearancePreferences;
 use Database\Seeders\RbacCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -71,6 +72,14 @@ class ProfileController extends Controller
             'messages' => (bool) $request->boolean('notify_messages'),
             'marketing' => (bool) $request->boolean('notify_marketing'),
         ];
+
+        if (! Tenant::current()) {
+            $currentAppearance = $user->normalizedAppearancePreferences();
+            $user->appearance_preferences = AppearancePreferences::normalize([
+                'theme' => $request->input('appearance_theme', $currentAppearance['theme']),
+                'mode' => $request->input('appearance_mode', $currentAppearance['mode']),
+            ]);
+        }
 
         $user->save();
 

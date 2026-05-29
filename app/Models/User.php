@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Concerns\UsesTenantConnectionWithLandlordFallback;
+use App\Support\AppearancePreferences;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -41,6 +42,7 @@ class User extends Authenticatable
         'is_active',
         'last_login',
         'notification_preferences',
+        'appearance_preferences',
         'tenant_permission_grants',
         'tenant_permission_revokes',
     ];
@@ -68,6 +70,7 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'last_login' => 'datetime',
             'notification_preferences' => 'array',
+            'appearance_preferences' => 'array',
             'tenant_permission_grants' => 'array',
             'tenant_permission_revokes' => 'array',
         ];
@@ -445,6 +448,24 @@ class User extends Authenticatable
     public function tenantClientMaySubmitUpdateTickets(): bool
     {
         return $this->isClient() && $this->hasPermission(self::PERM_UPDATES_TICKETS_USE);
+    }
+
+    /**
+     * @return array{theme: string, mode: string}
+     */
+    public function normalizedAppearancePreferences(): array
+    {
+        return AppearancePreferences::normalize($this->appearance_preferences);
+    }
+
+    public function appearanceTheme(): string
+    {
+        return $this->normalizedAppearancePreferences()['theme'];
+    }
+
+    public function appearanceMode(): string
+    {
+        return $this->normalizedAppearancePreferences()['mode'];
     }
 
     /**

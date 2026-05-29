@@ -6,6 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Not yet available</title>
     <style>
+        @include('partials.app-typography-styles')
         :root {
             --bg: #f5f7fb;
             --card: #ffffff;
@@ -17,7 +18,6 @@
         * { box-sizing: border-box; }
         body {
             margin: 0;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             color: var(--text);
             background: radial-gradient(circle at top, #e8f5e9 0%, var(--bg) 45%);
             min-height: 100vh;

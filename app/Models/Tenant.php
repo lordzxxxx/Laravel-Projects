@@ -544,7 +544,7 @@ class Tenant extends BaseTenant
             'hero_title' => $this->name.' Stays',
             'hero_subtitle' => 'Book trusted accommodations managed by '.$ownerName.'.',
             'cta_text' => 'Browse Accommodations',
-            'cta_url' => '/accommodations',
+            'cta_url' => '/dashboard',
             'login_section_title' => 'Access Your Account',
             'login_section_subtitle' => 'Use login if you already have an account, or sign up as a new user.',
             'login_text' => 'Login',
@@ -583,11 +583,27 @@ class Tenant extends BaseTenant
     }
 
     /**
-     * Get the logo path URL
+     * Default brand mark when no custom logo is uploaded.
+     */
+    public static function defaultBrandLogoUrl(): string
+    {
+        return asset('images/love-impasugong-watermark.png');
+    }
+
+    /**
+     * Uploaded logo URL, or null if none.
      */
     public function getLogoUrl(): ?string
     {
         return $this->logo_path ? asset('storage/'.$this->logo_path) : null;
+    }
+
+    /**
+     * Logo URL for tenant-branded surfaces (uploaded logo or Love Impasugong default).
+     */
+    public function brandLogoUrl(): string
+    {
+        return $this->getLogoUrl() ?? self::defaultBrandLogoUrl();
     }
 
     public function getGcashQrUrl(): ?string

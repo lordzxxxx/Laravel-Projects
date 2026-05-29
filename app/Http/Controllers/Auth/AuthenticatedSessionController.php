@@ -98,7 +98,9 @@ class AuthenticatedSessionController extends Controller
 
         if (PortalDetector::isCentralHost($request) && PortalDetector::isKnownCentralPortal($request)) {
             $adminPortal = PortalDetector::isAdminPortal($request);
-            $publicPortal = PortalDetector::isPublicPortal($request);
+            // If admin + public share the same HTTP port in local/dev, treat it as admin-first to avoid
+            // impossible dual classification that blocks legitimate sign-in.
+            $publicPortal = ! $adminPortal && PortalDetector::isPublicPortal($request);
 
             if ($adminPortal && $user && ! ($user->isAdmin() && $user->tenant_id === null)) {
                 Auth::guard('web')->logout();
@@ -158,8 +160,11 @@ class AuthenticatedSessionController extends Controller
             if ($user->isOwner()) {
                 $belongsToCurrentTenant = (int) ($user->tenant_id ?? 0) === (int) $currentTenant->id
                     || (int) optional($user->ownedTenant)->id === (int) $currentTenant->id;
-            } elseif ($user->isAdmin() || $user->isClient()) {
+            } elseif ($user->isAdmin()) {
                 $belongsToCurrentTenant = (int) ($user->tenant_id ?? 0) === (int) $currentTenant->id;
+            } elseif ($user->isClient()) {
+                // Allow client accounts to authenticate across tenant domains.
+                $belongsToCurrentTenant = true;
             }
 
             if (! $belongsToCurrentTenant) {

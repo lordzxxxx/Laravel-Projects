@@ -8,7 +8,7 @@ body {
 /* Municipal PDF header */
 .header {
     margin-bottom: 3px;
-    border-bottom: 2px solid #2E7D32;
+    border-bottom: 2px solid #457359;
     padding-bottom: 0;
 }
 .header-table {

@@ -7,6 +7,7 @@
     @include('partials.favicon-links', ['faviconStem' => 'love'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        @include('partials.app-typography-styles')
         * {
             margin: 0;
             padding: 0;
@@ -14,7 +15,6 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             margin: 0;
             display: flex;
@@ -61,7 +61,7 @@
         .logo-divider {
             width: 3px;
             height: 80px;
-            background: linear-gradient(to bottom, #4CAF50, #2E7D32, #4CAF50);
+            background: linear-gradient(to bottom, #799F76, #457359, #799F76);
             border-radius: 2px;
         }
         
@@ -136,21 +136,21 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            background: linear-gradient(135deg, #457359, #799F76);
             color: white;
-            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+            box-shadow: 0 6px 20px rgba(69, 115, 89, 0.4);
         }
         
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(46, 125, 50, 0.6);
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            box-shadow: 0 10px 30px rgba(69, 115, 89, 0.6);
+            background: linear-gradient(135deg, #56856A, #799F76);
         }
         
         .btn-secondary {
             background: transparent;
-            color: #A5D6A7;
-            border: 3px solid #4CAF50;
+            color: #A8C4A2;
+            border: 3px solid #799F76;
         }
         
         .btn-secondary:hover {

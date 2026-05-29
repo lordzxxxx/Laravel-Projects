@@ -122,3 +122,48 @@ it('saves profile notification preferences', function () {
     expect($user->notification_preferences['messages'] ?? null)->toBeTrue();
     expect($user->notification_preferences['marketing'] ?? null)->toBeFalse();
 });
+
+it('saves profile appearance preferences with defaults when omitted on central', function () {
+    $user = User::factory()->create([
+        'role' => User::ROLE_CLIENT,
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Client Updated',
+            'email' => $user->email,
+            'notify_booking_updates' => '1',
+            'notify_messages' => '1',
+        ]);
+
+    $response->assertRedirect('/profile');
+
+    $user->refresh();
+
+    expect($user->appearanceTheme())->toBe('impasugong');
+    expect($user->appearanceMode())->toBe('light');
+});
+
+it('saves profile appearance theme and mode on central', function () {
+    $user = User::factory()->create([
+        'role' => User::ROLE_ADMIN,
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'appearance_theme' => 'green',
+            'appearance_mode' => 'dark',
+        ]);
+
+    $response->assertRedirect('/profile');
+
+    $user->refresh();
+
+    expect($user->appearance_preferences)->toBeArray();
+    expect($user->appearanceTheme())->toBe('green');
+    expect($user->appearanceMode())->toBe('dark');
+});

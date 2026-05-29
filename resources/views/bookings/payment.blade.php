@@ -11,6 +11,7 @@
         $bookingRouteGroup = \App\Models\Tenant::current() ? 'bookings' : 'portal.bookings';
     @endphp
     <style>
+        @include('partials.app-typography-styles')
         @include('partials.ui-foundation-styles')
 
         * { box-sizing: border-box; }
@@ -22,7 +23,6 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
             min-height: 100vh;
             color: var(--gray-800);

@@ -6,6 +6,7 @@
     <title>Register - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        @include('partials.typography-system')
         * {
             margin: 0;
             padding: 0;
@@ -13,15 +14,15 @@
         }
         
         :root {
-            --green-dark: #1B5E20;
-            --green-primary: #2E7D32;
-            --green-medium: #43A047;
-            --green-light: #66BB6A;
-            --green-pale: #81C784;
-            --green-soft: #C8E6C9;
-            --green-white: #E8F5E9;
+            --green-dark: #3A5C48;
+            --green-primary: #457359;
+            --green-medium: #799F76;
+            --green-light: #8FB389;
+            --green-pale: #A8C4A2;
+            --green-soft: #CBDFC6;
+            --green-white: #EDF4EA;
             --white: #FFFFFF;
-            --cream: #F1F8E9;
+            --cream: #F4F8F1;
         }
 
         html,
@@ -31,7 +32,6 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
             display: flex;
             background: linear-gradient(135deg, var(--green-white) 0%, var(--white) 50%, var(--green-soft) 100%);
@@ -787,15 +787,15 @@
                             <div>
                                 <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Primary Color</label>
                                 <div class="color-input-wrapper">
-                                    <input type="color" id="primary_color" name="primary_color" value="{{ old('primary_color', '#2E7D32') }}">
-                                    <input type="text" id="primary_color_hex" name="primary_color_hex" value="{{ old('primary_color', '#2E7D32') }}" placeholder="#2E7D32">
+                                    <input type="color" id="primary_color" name="primary_color" value="{{ old('primary_color', '#457359') }}">
+                                    <input type="text" id="primary_color_hex" name="primary_color_hex" value="{{ old('primary_color', '#457359') }}" placeholder="#457359">
                                 </div>
                             </div>
                             <div>
                                 <label style="display: block; margin-bottom: 8px; font-size: 0.9rem;">Accent Color</label>
                                 <div class="color-input-wrapper">
-                                    <input type="color" id="accent_color" name="accent_color" value="{{ old('accent_color', '#43A047') }}">
-                                    <input type="text" id="accent_color_hex" name="accent_color_hex" value="{{ old('accent_color', '#43A047') }}" placeholder="#43A047">
+                                    <input type="color" id="accent_color" name="accent_color" value="{{ old('accent_color', '#799F76') }}">
+                                    <input type="text" id="accent_color_hex" name="accent_color_hex" value="{{ old('accent_color', '#799F76') }}" placeholder="#799F76">
                                 </div>
                             </div>
                         </div>

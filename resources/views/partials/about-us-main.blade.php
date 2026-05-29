@@ -1,7 +1,7 @@
-<main class="mx-auto w-full flex-1 max-w-6xl px-5 pb-12 pt-24 md:px-10 md:pt-28">
+<main class="mx-auto w-full flex-1 max-w-6xl px-5 pb-12 pt-[76px] md:px-10 md:pt-[88px]">
     <header class="mx-auto mb-10 max-w-3xl text-center">
-        <div class="mb-8 flex flex-wrap items-center justify-center gap-3.5">
-            <img src="/Love%20Impasugong.png" alt="Love Impasugong" class="h-20 w-20 object-contain md:h-[120px] md:w-[120px]">
+        <div class="mb-6 flex flex-wrap items-center justify-center gap-3.5">
+            <img src="/images/love-impasugong-watermark.png" alt="Love Impasugong" class="h-20 w-20 object-contain md:h-[120px] md:w-[120px]">
             <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM" class="h-20 w-20 object-contain md:h-[120px] md:w-[120px]">
             <img src="/Lgu%20Socmed%20Template-02.png" alt="LGU Impasugong, Bukidnon" class="h-20 w-20 object-contain md:h-[120px] md:w-[120px]">
         </div>

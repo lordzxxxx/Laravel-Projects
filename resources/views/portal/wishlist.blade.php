@@ -21,7 +21,6 @@
         @include('client.partials.top-navbar-styles')
 
         body {
-            font-family: var(--client-nav-font, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
             min-height: 100vh;
             background: linear-gradient(135deg, #E8F5E9 0%, #fff 55%, #C8E6C9 100%);
             color: #1f2937;

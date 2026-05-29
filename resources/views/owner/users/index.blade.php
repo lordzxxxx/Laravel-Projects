@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @include('owner.partials.owner-page-fonts')
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             @include('partials.tenant-theme-css-vars')
@@ -15,24 +16,24 @@
             --gray-300: #D1D5DB; --gray-400: #9CA3AF; --gray-500: #6B7280;
             --gray-600: #4B5563; --gray-700: #374151; --gray-800: #1F2937;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f8e9; color: #1f2937; min-height: 100vh; }
+        body {  background: var(--app-page-bg, #f1f8e9); color: var(--ink-800, #1f2937); min-height: 100vh; }
         .main-content {
             width: min(1800px, 100%);
             margin: 0 auto;
             padding: var(--owner-content-offset) clamp(12px, 2vw, 28px) 24px;
             min-height: calc(100vh - var(--owner-content-offset));
         }
-        .panel { background: #fff; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 18px; }
-        .panel-header { padding: 18px 20px; border-bottom: 1px solid #e5e7eb; }
-        .panel-header h1 { font-size: 1.4rem; color: #14532d; }
-        .panel-header p { margin-top: 4px; color: #4b5563; font-size: 0.92rem; }
+        .panel { background: var(--app-surface-bg, #fff); border: 1px solid var(--app-surface-border, #e5e7eb); border-radius: 14px; box-shadow: var(--shadow-sm, 0 4px 16px rgba(0,0,0,0.08)); margin-bottom: 18px; }
+        .panel-header { padding: 18px 20px; border-bottom: 1px solid var(--app-surface-border, #e5e7eb); }
+        .panel-header h1 { font-size: 1.4rem; color: var(--chrome-icon-color, #14532d); font-family: var(--app-font-display); }
+        .panel-header p { margin-top: 4px; color: var(--ink-500, #4b5563); font-size: 0.92rem; }
         .flash { margin-bottom: 12px; padding: 12px 14px; border-radius: 10px; font-size: 0.92rem; }
         .flash.success { background: #d1fae5; color: #065f46; }
         .flash.error { background: #fee2e2; color: #991b1b; }
         .flash.warning { background: #fef3c7; color: #92400e; }
         .section-body { padding: 16px 20px; }
         .form-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: end; }
-        .field input, .field select { width: 100%; padding: 10px 11px; border: 1px solid #d1d5db; border-radius: 8px; }
+        .field input, .field select { width: 100%; padding: 10px 11px; border: 1px solid var(--app-surface-border, #d1d5db); border-radius: 8px; background: var(--app-surface-bg, #fff); color: var(--ink-800); }
         .btn { border: 0; border-radius: 8px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
         .btn.primary { background: #2e7d32; color: #fff; }
         .btn.muted { background: #e5e7eb; color: #1f2937; }
@@ -40,8 +41,8 @@
         .btn.danger { background: #dc2626; color: #fff; }
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; vertical-align: top; }
-        th { color: #4b5563; background: #f9fafb; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
+        th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--app-surface-border, #e5e7eb); font-size: 0.9rem; vertical-align: top; color: var(--ink-700); }
+        th { color: var(--ink-600, #4b5563); background: var(--app-surface-muted-bg, #f9fafb); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
         .inline-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .inline-form input, .inline-form select { padding: 7px 9px; border: 1px solid #d1d5db; border-radius: 6px; min-width: 110px; }
         .perm-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 4px; }
@@ -50,9 +51,9 @@
             align-items: flex-start;
             gap: 10px;
             padding: 8px 10px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--app-surface-border, #e5e7eb);
             border-radius: 8px;
-            background: #fff;
+            background: var(--app-surface-bg, #fff);
         }
         .perm-option input[type="checkbox"] {
             width: 15px;
@@ -64,11 +65,11 @@
         .perm-option-label {
             font-size: 0.83rem;
             font-weight: 600;
-            color: #1f2937;
+            color: var(--ink-800, #1f2937);
             line-height: 1.25;
         }
         .perm-option-key {
-            color: #6b7280;
+            color: var(--ink-500, #6b7280);
             font-size: 0.74rem;
             font-weight: 500;
             display: block;
@@ -81,16 +82,16 @@
             gap: 10px;
             align-items: start;
         }
-        .perm-category { border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; overflow: hidden; }
+        .perm-category { border: 1px solid var(--app-surface-border, #e5e7eb); border-radius: 10px; background: var(--app-surface-bg, #fff); overflow: hidden; }
         .perm-category summary {
             list-style: none;
             cursor: pointer;
             padding: 10px 12px;
             font-size: 0.84rem;
             font-weight: 700;
-            color: #14532d;
-            background: #f8fafc;
-            border-bottom: 1px solid #e5e7eb;
+            color: var(--chrome-icon-color, #14532d);
+            background: var(--app-surface-muted-bg, #f8fafc);
+            border-bottom: 1px solid var(--app-surface-border, #e5e7eb);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -105,14 +106,13 @@
         .template-create-perms { grid-column: span 2; }
         .template-create-actions { grid-column: span 2; }
         .role-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-        .role-card { border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; overflow: hidden; }
-        .role-card { flex: 1 1 360px; min-width: 320px; }
+        .role-card { border: 1px solid var(--app-surface-border, #e5e7eb); border-radius: 12px; background: var(--app-surface-bg, #fff); overflow: hidden; flex: 1 1 360px; min-width: 320px; }
         .role-summary {
             list-style: none;
             cursor: pointer;
             padding: 10px 12px;
-            background: #f8fafc;
-            border-bottom: 1px solid #e5e7eb;
+            background: var(--app-surface-muted-bg, #f8fafc);
+            border-bottom: 1px solid var(--app-surface-border, #e5e7eb);
             display: flex;
             align-items: center;
             justify-content: space-between;

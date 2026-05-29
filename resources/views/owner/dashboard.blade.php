@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        @include('owner.partials.owner-page-fonts')
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
@@ -19,10 +20,10 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f8f5;
+            background: var(--app-page-bg, #f4f8f5);
             min-height: 100vh;
-            color: var(--gray-800);
+            color: var(--ink-800, var(--gray-800));
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         /* Same top offset + padding as all other owner pages (shared top bar does not “jump”). */
@@ -42,10 +43,11 @@
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 18px; }
         .stat-card {
-            background: var(--white);
+            background: var(--app-surface-bg, var(--white));
+            border: 1px solid var(--app-surface-border, var(--green-soft));
             padding: 16px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(27, 94, 32, 0.08);
+            box-shadow: var(--shadow-sm, 0 4px 15px rgba(27, 94, 32, 0.08));
             text-align: center;
             transition: all 0.3s;
             border: 1px solid var(--green-soft);
@@ -167,9 +169,9 @@
             height: 34px;
             padding: 0 10px;
             border-radius: 8px;
-            border: 1px solid var(--gray-200);
-            background: #fff;
-            color: var(--gray-700);
+            border: 1px solid var(--app-surface-border, var(--gray-200));
+            background: var(--app-surface-bg, #fff);
+            color: var(--ink-700, var(--gray-700));
             text-decoration: none;
             font-size: 0.86rem;
             font-weight: 600;
@@ -261,8 +263,6 @@
         .delay-4 { animation-delay: 0.4s; }
 
         @include('partials.pbi-visual-surface-styles')
-
-        @include('admin.partials.admin-shell-styles')
         @include('owner.partials.top-navbar-styles')
     </style>
 </head>
@@ -533,7 +533,7 @@
                         {
                             label: 'Revenue (PHP)',
                             data: @json($revenueTrend ?? []),
-                            borderColor: '#2E7D32',
+                            borderColor: '#457359',
                             backgroundColor: 'rgba(46, 125, 50, 0.15)',
                             tension: 0.35,
                             fill: true,

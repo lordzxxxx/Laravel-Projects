@@ -8,7 +8,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { min-height: 100vh; background: linear-gradient(135deg, #E8F5E9, #fff); font-family: system-ui, sans-serif; color: #1b5e20; }
+        @include('partials.app-typography-styles')
+        body { min-height: 100vh; background: linear-gradient(135deg, #E8F5E9, #fff); color: #1b5e20; }
         .card { max-width: 640px; margin: 4rem auto; padding: 2rem; background: #fff; border-radius: 1rem; box-shadow: 0 10px 40px rgba(27,94,32,0.12); border: 1px solid #C8E6C9; }
     </style>
 </head>

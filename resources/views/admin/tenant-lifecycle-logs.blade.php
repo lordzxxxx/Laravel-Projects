@@ -14,8 +14,8 @@
         [x-cloak] { display: none !important; }
 
         .log-card {
-            background: #FFFFFF;
-            border: 1px solid #E5E7EB;
+            background: var(--app-surface-bg, #FFFFFF);
+            border: 1px solid var(--app-surface-border, #E5E7EB);
             border-radius: 14px;
             box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
             transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
@@ -90,8 +90,8 @@
             line-height: 1.45;
         }
         .diff-table thead th {
-            background: #F8FAFC;
-            color: #475569;
+            background: var(--app-surface-muted-bg, #F8FAFC);
+            color: var(--ink-600, #475569);
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
@@ -101,14 +101,14 @@
         .diff-table .diff-key {
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: 11px;
-            color: #1F2937;
+            color: var(--ink-800, #1F2937);
             font-weight: 600;
             white-space: nowrap;
         }
         .diff-cell {
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: 11px;
-            color: #1F2937;
+            color: var(--ink-700, #1F2937);
             word-break: break-word;
             white-space: pre-wrap;
         }
@@ -118,12 +118,12 @@
 
         .filter-input {
             width: 100%;
-            border: 1px solid #D1D5DB;
+            border: 1px solid var(--app-surface-border, #D1D5DB);
             border-radius: 10px;
             padding: 9px 12px 9px 34px;
             font-size: 13px;
-            color: #111827;
-            background: #FFFFFF;
+            color: var(--ink-800, #111827);
+            background: var(--app-surface-bg, #FFFFFF);
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
         .filter-input:focus {

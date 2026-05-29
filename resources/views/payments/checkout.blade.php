@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Stripe Checkout (Test Mode)</title>
     <style>
+        @include('partials.app-typography-styles')
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
             background: #f6f7fb;
             color: #1f2937;
         }

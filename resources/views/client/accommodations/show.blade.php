@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @include('partials.typography-system')
         @php
             $authUser = auth()->user();
             $currentTenant = \App\Models\Tenant::current();
@@ -63,8 +64,7 @@
             @include('client.partials.top-navbar-styles')
         @endif
 
-        body {
-            font-family: var(--client-nav-font, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+        body:not(.client-nav-page) {
             background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
             min-height: 100vh;
             color: var(--gray-800);
@@ -383,24 +383,27 @@
         .delay-3 { animation-delay: 0.3s; }
     </style>
 </head>
-<body class="{{ $isTenantManager ? 'owner-nav-page' : '' }}">
+<body class="{{ $isTenantManager ? 'owner-nav-page' : ($showClientNav ? 'client-nav-page font-sans text-gray-800' : '') }}">
     <!-- Navigation -->
     @if($isTenantManager)
     @include('owner.partials.top-navbar', ['active' => 'accommodations'])
     @elseif($showClientNav)
-        @include('client.partials.top-navbar', ['active' => 'accommodations', 'portalDirectory' => $portalDirectory ?? false])
+        @include('client.partials.top-navbar', ['active' => 'dashboard', 'portalDirectory' => $portalDirectory ?? false])
     @elseif($showPortalPublicNav)
         @include('partials.portal-public-nav', ['active' => 'browse', 'municipalityName' => config('portals.municipality_name', 'Impasug-ong')])
     @else
     <nav class="navbar">
         <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('dashboard') }}" class="nav-logo">
-            <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
-            <span>Impasugong</span>
+            <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM">
+            <span class="nav-brand-text">
+                <span class="nav-brand-title">IMPASUGONG TOURISM</span>
+                <span class="nav-brand-subtitle">| Impasug-ong stays</span>
+            </span>
         </a>
         
         <ul class="nav-links">
             <li><a href="{{ route('dashboard') }}">Browse</a></li>
-            <li><a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index') }}" class="active">Accommodations</a></li>
+            <li><a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('dashboard') }}" class="active">Dashboard</a></li>
             @auth
                 @if(Auth::user()->role === 'owner')
                     <li><a href="{{ route('owner.dashboard') }}">Dashboard</a></li>
@@ -438,12 +441,12 @@
     @endif
     
     <!-- Main Container -->
-    <div class="main-container {{ $isTenantManager ? 'with-owner-nav' : '' }}">
+    <div class="{{ $isTenantManager ? 'main-container with-owner-nav' : ($showClientNav ? 'client-guest-main' : 'main-container') }}">
         <!-- Breadcrumb -->
         <div class="breadcrumb animate">
             <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('landing') }}">Home</a>
             <span>›</span>
-            <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index')) }}">Accommodations</a>
+            <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('dashboard') }}">Dashboard</a>
             <span>›</span>
             <span>{{ $accommodation->name }}</span>
         </div>

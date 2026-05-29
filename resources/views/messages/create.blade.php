@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @include('owner.partials.owner-page-fonts')
         @php
             $isClientComposer = $isClientComposer ?? false;
             $authUser = auth()->user();
@@ -29,7 +30,8 @@
         @include('partials.messaging-ui-styles')
 
         /* Create message: full-width shell, minimal gutters (matches messages index) */
-        body.owner-nav-page main.messages-create-main.main-content.with-owner-nav {
+        body.owner-nav-page main.messages-create-main.main-content.with-owner-nav,
+        body.client-nav-page main.messages-create-main.client-guest-main--full {
             max-width: none !important;
             width: 100% !important;
             margin-left: 0 !important;
@@ -40,7 +42,7 @@
         }
     </style>
 </head>
-<body class="{{ $useOwnerNavbar ? 'owner-nav-page bg-gray-50 text-gray-800' : 'min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-white text-gray-800' }}">
+<body class="{{ $useOwnerNavbar ? 'owner-nav-page bg-gray-50 text-gray-800' : 'client-nav-page font-sans text-gray-800' }}">
     @if($useOwnerNavbar)
         @include('owner.partials.top-navbar', ['active' => 'messages'])
     @else
@@ -48,8 +50,7 @@
     @endif
 
     <main
-        class="messages-create-main {{ $useOwnerNavbar ? 'main-content with-owner-nav flex w-full min-h-screen flex-col' : 'mx-auto flex min-h-screen w-full max-w-none flex-col px-3 pb-6 sm:px-4 lg:px-6' }}"
-        @if(! $useOwnerNavbar) style="padding-top: calc(var(--client-nav-offset) + 12px);" @endif
+        class="messages-create-main {{ $useOwnerNavbar ? 'main-content with-owner-nav flex w-full min-h-screen flex-col' : 'client-guest-main client-guest-main--full flex min-h-screen flex-col' }}"
     >
         @include('partials.flash-alerts')
         <a href="{{ route('messages.index', [], false) }}" class="msg-back-link">
@@ -99,7 +100,7 @@
                         </p>
                     </div>
                 @else
-                    <form method="POST" action="{{ route('messages.store', [], false) }}" class="flex min-h-0 flex-1 flex-col p-4 sm:p-5 lg:p-6" data-loading-form>
+                    <form method="POST" action="{{ route('messages.store', [], false) }}" class="flex min-h-0 flex-1 flex-col p-4 sm:p-5 lg:p-6" data-loading-form enctype="multipart/form-data">
                         @csrf
 
                         <div class="grid flex-shrink-0 gap-3 sm:grid-cols-2 sm:gap-4">
@@ -163,13 +164,30 @@
                             <textarea
                                 id="content"
                                 name="content"
-                                required
                                 placeholder="Write your message…"
                                 class="min-h-[160px] w-full flex-1 resize-y rounded-xl border-2 border-[var(--green-soft)] bg-white px-3 py-2.5 text-sm leading-relaxed text-gray-800 transition focus:border-[var(--green-primary)] focus:outline-none sm:min-h-[200px] sm:px-4 sm:py-3"
                             >{{ old('content') }}</textarea>
                             @error('content')
                                 <p class="mt-2 flex-shrink-0 text-sm text-red-700">{{ $message }}</p>
                             @enderror
+                        </div>
+
+                        <div class="mt-3 flex-shrink-0 sm:mt-4">
+                            <label for="attachment" class="mb-1.5 block text-sm font-semibold text-gray-700 sm:mb-2">
+                                Photo <span class="font-normal text-gray-500">(optional, JPG/PNG/WEBP up to 5MB)</span>
+                            </label>
+                            <input
+                                id="attachment"
+                                name="attachment"
+                                type="file"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                class="msg-file-input w-full rounded-xl border-2 border-[var(--green-soft)] bg-white px-3 py-2.5 text-sm"
+                                data-image-preview="compose-preview"
+                            >
+                            @error('attachment')
+                                <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+                            @enderror
+                            <div class="msg-preview-thumb" id="compose-preview" aria-hidden="true"></div>
                         </div>
 
                         <div class="mt-4 flex flex-shrink-0 flex-col gap-2 border-t border-green-100 pt-4 sm:mt-5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:pt-5">
@@ -193,6 +211,7 @@
             </section>
         </div>
     </main>
+    @include('partials.message-attachment-preview-script')
     <script>
         document.querySelectorAll('form[data-loading-form]').forEach((form) => {
             form.addEventListener('submit', () => {

@@ -1,0 +1,73 @@
+{{-- Premium SaaS typography — keep in sync with resources/css/typography.css --}}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap');
+
+:root {
+    --font-sans: var(--app-font-sans);
+    --app-font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, 'Noto Sans', sans-serif;
+    --app-font-display: 'Space Grotesk', var(--app-font-sans);
+    --client-nav-font: var(--app-font-sans);
+
+    --text-xs: 0.75rem;
+    --text-sm: 0.8125rem;
+    --text-base: 0.9375rem;
+    --text-md: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.75rem;
+
+    --leading-tight: 1.25;
+    --leading-normal: 1.55;
+    --leading-relaxed: 1.65;
+
+    --tracking-tight: -0.015em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.04em;
+    --tracking-wider: 0.08em;
+}
+
+html {
+    font-family: var(--app-font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    font-family: inherit;
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    letter-spacing: var(--tracking-normal);
+}
+
+:where(h1, .ui-heading, .nav-brand-title, .nav-logo-title) {
+    font-family: var(--app-font-display);
+    font-weight: 700;
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+}
+
+:where(h2, h3, h4, h5, h6) {
+    font-family: var(--app-font-sans);
+    font-weight: 600;
+    letter-spacing: var(--tracking-normal);
+    line-height: var(--leading-tight);
+}
+
+:where(button, input, textarea, select, optgroup, label) {
+    font-family: inherit;
+}
+
+:where(code, kbd, samp, pre, .font-mono) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+    font-size: 0.9em;
+}
+
+/* Section eyebrows / panel labels (uppercase) — stay on UI sans */
+:where(.profile-panel__head h2, .settings-panel__head h2, .panel-eyebrow, .section-eyebrow) {
+    font-family: var(--app-font-sans);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+}

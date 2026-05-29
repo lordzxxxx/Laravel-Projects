@@ -32,6 +32,8 @@ class ProfileUpdateRequest extends FormRequest
             'notify_booking_updates' => ['nullable', 'boolean'],
             'notify_messages' => ['nullable', 'boolean'],
             'notify_marketing' => ['nullable', 'boolean'],
+            'appearance_theme' => ['nullable', 'string', 'in:impasugong,green'],
+            'appearance_mode' => ['nullable', 'string', 'in:light,dark,system'],
         ];
     }
 }

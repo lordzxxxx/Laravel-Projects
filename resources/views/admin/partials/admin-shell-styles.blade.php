@@ -1,12 +1,15 @@
+</style>
+@include('partials.appearance-boot')
+<style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-    --green-dark: #1B5E20;
-    --green-primary: #2E7D32;
-    --green-medium: #43A047;
-    --green-soft: #C8E6C9;
-    --green-white: #E8F5E9;
-    --cream: #F1F8E9;
+    --green-dark: #3A5C48;
+    --green-primary: #457359;
+    --green-medium: #799F76;
+    --green-soft: #CBDFC6;
+    --green-white: #EDF4EA;
+    --cream: #F4F8F1;
     --white: #FFFFFF;
     --gray-200: #E5E7EB;
     --gray-300: #D1D5DB;
@@ -16,10 +19,10 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f4f8f5;
+    background: var(--app-page-bg, var(--ink-50, #f4f8f5));
     min-height: 100vh;
-    color: var(--gray-800);
+    color: var(--ink-800, #1F2937);
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dashboard-layout {
@@ -51,9 +54,10 @@ body {
     display: flex;
     align-items: center;
     gap: 0.875rem;
+    font-family: var(--app-font-display);
     font-size: 1.75rem;
     font-weight: 800;
-    color: #0F172A;
+    color: var(--ink-900, #0F172A);
     line-height: 1.2;
     letter-spacing: -0.015em;
     margin: 0;
@@ -66,16 +70,16 @@ body {
     justify-content: center;
     width: 44px;
     height: 44px;
-    border-radius: 0.75rem;
-    background: #ECFDF5;
-    color: #047857;
-    border: 1px solid #D1FAE5;
+    border-radius: var(--radius-lg, 0.75rem);
+    background: var(--chrome-icon-bg, #F9DEE5);
+    color: var(--chrome-icon-color, #B0436E);
+    border: 1px solid var(--chrome-icon-border, #F3C9D6);
     font-size: 18px;
     flex-shrink: 0;
 }
 
 .page-header p {
-    color: #64748B;
+    color: var(--ink-500, #64748B);
     font-size: 0.875rem;
     line-height: 1.6;
     margin: 0.5rem 0 0 3.65rem;
@@ -110,11 +114,12 @@ body {
 }
 
 .card {
-    background: var(--white);
+    background: var(--app-surface-bg, var(--white));
     border-radius: 14px;
-    border: 1px solid var(--green-soft);
-    box-shadow: 0 8px 30px rgba(27, 94, 32, 0.1);
+    border: 1px solid var(--app-surface-border, var(--green-soft));
+    box-shadow: var(--shadow-md, 0 8px 30px rgba(27, 94, 32, 0.1));
     overflow: hidden;
+    color: var(--ink-800);
 }
 
 .card-padded {
@@ -136,17 +141,17 @@ body {
     font-weight: 600;
     font-size: 0.9rem;
     text-decoration: none;
-    border: 1px solid rgba(27, 94, 32, 0.35);
+    border: 1px solid var(--chrome-active-border, rgba(27, 94, 32, 0.35));
     cursor: pointer;
-    background: var(--green-primary);
+    background: var(--chrome-active-bg, var(--green-primary));
     color: var(--white);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
-    transition: background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.06));
+    transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-admin-primary:hover {
-    background: var(--green-dark);
-    box-shadow: 0 4px 14px rgba(46, 125, 50, 0.22);
+    background: var(--chrome-focus-ring, var(--green-dark));
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--chrome-active-bg, #457359) 30%, transparent);
 }
 
 .btn-admin-secondary {
@@ -158,15 +163,15 @@ body {
     font-weight: 600;
     font-size: 0.9rem;
     text-decoration: none;
-    border: 2px solid var(--green-soft);
-    background: var(--white);
-    color: var(--green-dark);
+    border: 2px solid var(--app-surface-border, var(--green-soft));
+    background: var(--app-surface-bg, var(--white));
+    color: var(--ink-800, var(--green-dark));
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-admin-secondary:hover {
-    background: var(--green-white);
+    background: var(--app-surface-muted-bg, var(--green-white));
 }
 
 .btn-admin-sm {
@@ -193,9 +198,9 @@ body {
 }
 
 .btn-admin-sm-outline {
-    background: var(--white);
-    color: var(--green-dark);
-    border: 2px solid var(--green-soft);
+    background: var(--app-surface-bg, var(--white));
+    color: var(--ink-800, var(--green-dark));
+    border: 2px solid var(--app-surface-border, var(--green-soft));
 }
 
 .btn-admin-sm-danger {
@@ -217,26 +222,4 @@ body {
 
 @include('admin.partials.top-navbar-styles')
 
-/* Central admin portal pages: use <body class="admin-central-portal"> (owner pages omit this class). */
-body.admin-central-portal {
-    background: transparent;
-    min-height: 100vh;
-}
-body.admin-central-portal::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    background: url("{{ asset('adminbg.jpg') }}") center / cover no-repeat;
-    transform: scale(1.045);
-    filter: blur(5px);
-    pointer-events: none;
-}
-body.admin-central-portal::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background: rgba(255, 255, 255, 0.6);
-    pointer-events: none;
-}
+@include('admin.partials.central-portal-background-styles')

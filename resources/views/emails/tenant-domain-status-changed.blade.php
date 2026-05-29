@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Tenant Domain Status Updated</title>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937; margin: 0; padding: 24px; background: #f8fafc;">
+<body style="@include('partials.email-body-styles') color: #1f2937; margin: 0; padding: 24px; background: #f8fafc;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 640px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden;">
         <tr>
             <td style="background: #166534; color: #ffffff; padding: 18px 24px;">

@@ -10,14 +10,12 @@
 
         @include('partials.tenant-favicon')
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @include('partials.appearance-boot')
+        <style>@include('partials.ui-foundation-styles')</style>
     </head>
-    <body class="min-h-[100dvh] font-sans antialiased overflow-x-hidden">
+    <body class="min-h-[100dvh] font-sans antialiased overflow-x-hidden text-[var(--ink-800)]">
         <div class="min-h-[100dvh] min-h-screen overflow-x-hidden bg-gray-100 dark:bg-gray-900">
             @include('layouts.navigation')
 

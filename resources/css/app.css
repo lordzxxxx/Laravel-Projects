@@ -1,3 +1,5 @@
+@import './typography.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,16 +12,16 @@
 
 @layer base {
     :root {
-        --app-topbar-height: 76px;
-        --app-topbar-height-mobile: 64px;
+        --app-topbar-height: 84px;
+        --app-topbar-height-mobile: 72px;
         /* Fixed navbar + gap before main content — one token for client/owner/admin shells */
-        --app-main-top-offset: 108px;
+        --app-main-top-offset: 100px;
         --client-nav-offset: var(--app-main-top-offset);
     }
 
     @media (max-width: 768px) {
         :root {
-            --app-main-top-offset: 96px;
+            --app-main-top-offset: 88px;
         }
     }
 

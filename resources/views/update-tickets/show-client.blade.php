@@ -13,13 +13,7 @@
             --gray-200: #E5E7EB; --gray-500: #6B7280; --gray-600: #4B5563; --gray-700: #374151; --gray-800: #1F2937;
         }
         @include('client.partials.top-navbar-styles')
-        body {
-            font-family: var(--client-nav-font, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
-            background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
-            min-height: 100vh;
-            color: var(--gray-800);
-        }
-        .page-shell { padding: calc(var(--client-nav-offset) + 24px) 24px 40px; max-width: 960px; margin: 0 auto; }
+        .page-shell { max-width: 960px; margin: 0 auto; }
         .card {
             background: var(--white);
             border: 1px solid var(--green-soft);
@@ -59,10 +53,10 @@
         }
     </style>
 </head>
-<body>
+<body class="client-nav-page font-sans text-gray-800">
     @include('client.partials.top-navbar', ['active' => 'update-tickets'])
 
-    <main class="page-shell">
+    <main class="client-guest-main page-shell">
         <p style="margin-bottom:12px;"><a href="/update-tickets" class="btn"><i class="fas fa-arrow-left"></i> All tickets</a></p>
         <div class="card">
             <h1>{{ $ticket->subject }}</h1>

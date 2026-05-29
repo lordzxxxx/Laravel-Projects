@@ -4,13 +4,13 @@
         .imp-notify-btn {
             position: relative;
             width: 40px; height: 40px;
-            border: 1px solid var(--green-soft, #C8E6C9); border-radius: 10px;
-            background: var(--green-white, #E8F5E9);
-            color: var(--green-dark, #1B5E20);
+            border: 1px solid var(--green-soft, #CBDFC6); border-radius: 10px;
+            background: var(--green-white, #EDF4EA);
+            color: var(--green-dark, #3A5C48);
             cursor: pointer;
             display: inline-flex; align-items: center; justify-content: center;
         }
-        .imp-notify-btn:hover { background: var(--green-soft, #C8E6C9); }
+        .imp-notify-btn:hover { background: var(--green-soft, #CBDFC6); }
         .imp-notify-badge {
             position: absolute; top: 4px; right: 4px;
             min-width: 16px; height: 16px; padding: 0 4px;

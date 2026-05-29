@@ -1,7 +1,7 @@
 @php
     $municipalityName = $municipalityName ?? config('portals.municipality_name', 'Impasug-ong');
 @endphp
-<nav class="fixed left-0 right-0 top-0 z-[1000] flex w-full flex-wrap items-center justify-between gap-4 border-b-2 border-brand-soft bg-white/95 px-5 py-3.5 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md md:px-8 lg:px-10" aria-label="Administration">
+<nav class="fixed left-0 right-0 top-0 z-[1000] flex w-full flex-wrap items-center justify-between gap-4 bg-white/95 px-5 py-3.5 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md md:px-8 lg:px-10" aria-label="Administration">
     <a href="{{ route('portal.landing') }}" class="flex min-w-0 max-w-[min(100%,28rem)] items-center gap-3 no-underline rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 md:gap-4">
         <img src="{{ asset('SYSTEMLOGO.png') }}" alt="" class="h-12 w-auto shrink-0 rounded-xl object-contain md:h-14" width="56" height="56" role="presentation">
         <div class="min-w-0 leading-tight">

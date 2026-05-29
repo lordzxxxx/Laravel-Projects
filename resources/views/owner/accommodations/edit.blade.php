@@ -15,7 +15,6 @@
             --red-light: #fee2e2; --red-dark: #991b1b;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--green-white) 0%, #F1F8E9 100%);
             min-height: 100vh;
             color: #1f2937;
@@ -53,7 +52,6 @@
             border-radius: 8px;
             padding: 10px 12px;
             font-size: 14px;
-            font-family: inherit;
         }
         textarea { min-height: 110px; }
         .error-list { background: var(--red-light); color: var(--red-dark); border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; margin-bottom: 18px; }
@@ -87,7 +85,7 @@
         }
     </style>
 </head>
-<body>
+<body class="font-sans antialiased">
     <div class="container">
         <div class="page-header flex flex-wrap items-start justify-between gap-3">
             <div>

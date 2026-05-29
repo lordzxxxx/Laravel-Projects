@@ -6,6 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Login - Impasugong Accommodations</title>
     <style>
+        @include('partials.typography-system')
         * {
             margin: 0;
             padding: 0;
@@ -13,20 +14,19 @@
         }
         
         :root {
-            --green-dark: #1B5E20;
-            --green-primary: #2E7D32;
-            --green-medium: #43A047;
-            --green-light: #66BB6A;
-            --green-pale: #81C784;
-            --green-soft: #C8E6C9;
-            --green-white: #E8F5E9;
+            --green-dark: #3A5C48;
+            --green-primary: #457359;
+            --green-medium: #799F76;
+            --green-light: #8FB389;
+            --green-pale: #A8C4A2;
+            --green-soft: #CBDFC6;
+            --green-white: #EDF4EA;
             --white: #FFFFFF;
         }
         
         html, body { min-height: 100%; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
             display: flex;
             background: linear-gradient(135deg, var(--green-white) 0%, var(--white) 50%, var(--green-soft) 100%);

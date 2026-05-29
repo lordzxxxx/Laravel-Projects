@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Update package not available</title>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 640px; margin: 48px auto; padding: 0 20px; color: #1f2937; line-height: 1.5; }
+        @include('partials.app-typography-styles')
+        body { max-width: 640px; margin: 48px auto; padding: 0 20px; color: #1f2937; }
         h1 { font-size: 1.25rem; color: #991b1b; }
         code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; word-break: break-all; }
         .box { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 14px 16px; margin: 16px 0; }

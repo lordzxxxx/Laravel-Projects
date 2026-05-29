@@ -1,6 +1,9 @@
+</style>
+@include('partials.appearance-boot')
+<style>
 :root {
-    --app-topbar-height: 76px;
-    --app-topbar-height-mobile: 64px;
+    --app-topbar-height: 84px;
+    --app-topbar-height-mobile: 72px;
     --app-content-offset: var(--app-main-top-offset, 108px);
     --owner-topbar-height: var(--app-topbar-height);
     --owner-content-offset: var(--app-content-offset);
@@ -8,6 +11,12 @@
 
 @include('partials.top-navbar-core-styles')
 @include('partials.ui-foundation-styles')
+
+body.owner-nav-page {
+    font-family: var(--app-font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
 body.owner-nav-page .dashboard-layout {
     padding-top: var(--app-content-offset) !important;
@@ -23,57 +32,10 @@ body.owner-nav-page .navbar {
     box-sizing: border-box;
 }
 
-/* True visual center: equal side tracks so the link cluster sits in the middle of the bar */
-@media (min-width: 961px) {
-    body.owner-nav-page .navbar {
-        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    }
-
-    body.owner-nav-page .nav-logo {
-        justify-self: start;
-    }
-
-    body.owner-nav-page .nav-links {
-        justify-self: center;
-        justify-content: center;
-        width: max-content;
-        max-width: 100%;
-        flex-wrap: nowrap;
-    }
-
-    body.owner-nav-page .nav-actions {
-        justify-self: end;
-    }
-}
-
-/* Many links on mid-width screens: scroll without left-align jump */
-@media (min-width: 961px) and (max-width: 1400px) {
-    body.owner-nav-page .nav-links {
-        overflow-x: auto;
-        overflow-y: hidden;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        justify-content: center;
-    }
-
-    body.owner-nav-page .nav-links::-webkit-scrollbar {
-        display: none;
-    }
-}
-
 body.owner-nav-page .nav-logo {
     min-height: 48px;
     align-items: center;
 }
-body.owner-nav-page .nav-logo span {
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-    min-height: 2.25rem;
-    line-height: 1.1;
-}
-
 body.owner-nav-page .nav-msg-count-badge {
     display: inline-flex;
     align-items: center;

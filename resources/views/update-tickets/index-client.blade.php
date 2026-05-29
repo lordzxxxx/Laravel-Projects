@@ -19,10 +19,10 @@
         @include('client.partials.top-navbar-styles')
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-white text-gray-800">
+<body class="client-nav-page font-sans text-gray-800">
     @include('client.partials.top-navbar', ['active' => 'update-tickets'])
 
-    <main class="mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10" style="padding-top: calc(var(--client-nav-offset) + 24px);">
+    <main class="client-guest-main client-guest-main--wide">
         @include('partials.flash-alerts')
 
         <div class="mb-6 rounded-2xl border border-green-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm">

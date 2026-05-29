@@ -7,28 +7,48 @@
     <title>{{ $tenant->name }} | Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        @include('partials.app-typography-styles')
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --green-dark: {{ $settings['primary_color'] ?? '#1B5E20' }};
-            --green-primary: {{ $settings['accent_color'] ?? '#2E7D32' }};
+            /*
+             * Default tenant palette: match Love Impasugong / system brand greens.
+             * Tenant-specific overrides (from $settings) still take precedence.
+             */
+            --green-dark: {{ $settings['primary_color'] ?? 'var(--brand-800, #34543F)' }};
+            --green-primary: {{ $settings['accent_color'] ?? 'var(--brand-600, #457359)' }};
             --green-medium: color-mix(in srgb, var(--green-primary) 82%, #ffffff);
             --green-light: color-mix(in srgb, var(--green-primary) 70%, #ffffff);
             --green-pale: color-mix(in srgb, var(--green-primary) 45%, #ffffff);
             --green-soft: color-mix(in srgb, var(--green-primary) 20%, #ffffff);
             --green-white: color-mix(in srgb, var(--green-primary) 10%, #ffffff);
             --white: #FFFFFF;
+            --ink-900: var(--ink-900, #0F172A);
+            --ink-800: var(--ink-800, #1E293B);
+            --ink-700: var(--ink-700, #334155);
+            --ink-600: var(--ink-600, #475569);
+            --ink-500: var(--ink-500, #64748B);
+            --ink-300: var(--ink-300, #CBD5E1);
+            --ink-200: var(--ink-200, #E2E8F0);
+            --ink-100: var(--ink-100, #F1F5F9);
+            --ink-50: var(--ink-50, #F7F9F7);
+
+            --radius-lg: var(--radius-lg, 0.75rem);
+            --radius-xl: var(--radius-xl, 1rem);
+            --radius-2xl: var(--radius-2xl, 1.5rem);
+            --shadow-sm: var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.05));
+            --shadow-md: var(--shadow-md, 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 34px -26px rgba(15, 23, 42, 0.22));
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, color-mix(in srgb, var(--green-dark) 10%, transparent) 100%),
-                        url('/COMMUNAL.jpg') no-repeat center center/cover;
-            background-attachment: fixed;
+            background:
+                radial-gradient(1200px 520px at 20% 12%, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.0) 55%),
+                linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.90) 100%),
+                url('/COMMUNAL.jpg') no-repeat center center/cover;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            color: var(--green-dark);
+            color: var(--ink-800);
         }
 
         .tenant-landing-main {
@@ -38,10 +58,19 @@
             width: 100%;
         }
 
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: clamp(18px, 3vw, 40px);
+            padding-right: clamp(18px, 3vw, 40px);
+        }
+
         .navbar {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 15px 40px;
+            padding: 12px clamp(18px, 3vw, 40px);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -51,8 +80,8 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            border-bottom: 2px solid var(--green-soft);
-            box-shadow: 0 4px 20px color-mix(in srgb, var(--green-dark) 16%, transparent);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+            box-shadow: 0 10px 26px -22px rgba(15, 23, 42, 0.35);
         }
 
         .nav-brand {
@@ -81,8 +110,8 @@
             border-radius: 12px;
             object-fit: contain;
             background: var(--white);
-            box-shadow: 0 8px 20px color-mix(in srgb, var(--green-primary) 30%, transparent);
-            border: 1px solid var(--green-soft);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(226, 232, 240, 0.95);
             padding: 4px;
             flex-shrink: 0;
         }
@@ -90,13 +119,13 @@
         .nav-brand .system-name {
             font-size: 1.5rem;
             font-weight: 800;
-            color: var(--green-dark);
+            color: var(--ink-900);
             letter-spacing: -0.5px;
         }
 
         .nav-brand .tagline {
             font-size: 0.72rem;
-            color: var(--green-medium);
+            color: var(--ink-500);
             margin-left: 8px;
             display: inline;
             line-height: 1.2;
@@ -105,22 +134,22 @@
         .nav-links { display: flex; gap: 30px; list-style: none; }
         .nav-links a {
             text-decoration: none;
-            color: var(--green-dark);
+            color: var(--ink-700);
             font-weight: 600;
-            padding: 10px 18px;
+            padding: 10px 14px;
             border-radius: 8px;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
         }
-        .nav-links a:hover { background: var(--green-soft); color: var(--green-dark); }
+        .nav-links a:hover { background: rgba(15, 23, 42, 0.04); color: var(--ink-900); }
 
         .nav-buttons { display: flex; gap: 12px; }
         .btn {
-            padding: 12px 26px;
-            font-size: 0.95rem;
+            padding: 11px 18px;
+            font-size: 0.92rem;
             font-weight: 600;
             border-radius: 8px;
             text-decoration: none;
@@ -130,80 +159,88 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            line-height: 1.1;
         }
 
         .btn-outline {
             background: transparent;
-            color: var(--green-dark);
-            border: 2px solid var(--green-primary);
+            color: var(--ink-800);
+            border: 1px solid rgba(148, 163, 184, 0.75);
         }
-        .btn-outline:hover { background: var(--green-primary); color: var(--white); }
+        .btn-outline:hover { background: rgba(15, 23, 42, 0.04); border-color: rgba(100, 116, 139, 0.65); }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--green-dark), var(--green-primary));
             color: var(--white);
             box-shadow: 0 4px 15px color-mix(in srgb, var(--green-primary) 35%, transparent);
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px color-mix(in srgb, var(--green-primary) 45%, transparent); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px -18px rgba(15, 23, 42, 0.35); }
 
         .hero {
-            min-height: 100vh;
+            min-height: min(820px, 100vh);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 120px 40px 80px;
+            padding: 116px clamp(18px, 3vw, 40px) 72px;
             text-align: center;
-            background: linear-gradient(135deg, color-mix(in srgb, var(--green-dark) 8%, transparent) 0%, color-mix(in srgb, var(--green-primary) 5%, transparent) 100%);
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: var(--white);
-            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.88);
+            padding: 10px 18px;
             border-radius: 50px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 600;
-            margin-bottom: 30px;
-            border: 2px solid var(--green-soft);
-            box-shadow: 0 4px 15px color-mix(in srgb, var(--green-dark) 10%, transparent);
+            margin-bottom: 18px;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         .hero-badge i { color: var(--green-primary); }
 
         .hero h1 {
-            font-size: 3.5rem;
-            color: var(--green-dark);
-            margin-bottom: 20px;
+            font-family: var(--app-font-display);
+            font-size: clamp(2rem, 4.2vw, 3.25rem);
+            color: var(--ink-900);
+            margin-bottom: 14px;
             letter-spacing: -1px;
             font-weight: 800;
         }
         .hero h1 span { color: var(--green-primary); }
 
         .hero p {
-            font-size: 1.2rem;
-            color: var(--green-medium);
+            font-size: clamp(1rem, 1.25vw, 1.125rem);
+            color: var(--ink-600);
             max-width: 760px;
-            margin-bottom: 40px;
+            margin-bottom: 26px;
             line-height: 1.7;
         }
 
         .hero-buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 0; flex-wrap: wrap; }
-        .hero-buttons .btn { padding: 14px 32px; font-size: 1rem; }
+        .hero-buttons .btn { padding: 12px 20px; font-size: 0.95rem; }
 
         .carousel-section {
-            padding: 80px 40px;
-            background: var(--white);
+            padding: 76px 0;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(226, 232, 240, 0.9);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
         }
         .carousel-header { text-align: center; margin-bottom: 50px; }
         .carousel-header h2 {
-            font-size: 2.2rem;
-            color: var(--green-dark);
-            margin-bottom: 12px;
-            font-weight: 700;
+            font-family: var(--app-font-display);
+            font-size: clamp(1.5rem, 2.2vw, 2.05rem);
+            color: var(--ink-900);
+            margin-bottom: 10px;
+            font-weight: 800;
         }
-        .carousel-header p { font-size: 1rem; color: var(--green-medium); }
+        .carousel-header p { font-size: 1rem; color: var(--ink-600); }
 
         .carousel-container { max-width: 1400px; margin: 0 auto; position: relative; overflow: hidden; }
         .carousel-track { display: flex; transition: transform 0.5s ease-in-out; }
@@ -211,15 +248,15 @@
 
         .property-card {
             background: var(--white);
-            border-radius: 20px;
+            border-radius: var(--radius-2xl);
             overflow: hidden;
-            box-shadow: 0 8px 30px color-mix(in srgb, var(--green-dark) 14%, transparent);
+            box-shadow: var(--shadow-md);
             transition: all 0.4s ease;
-            border: 1px solid var(--green-soft);
+            border: 1px solid rgba(226, 232, 240, 0.95);
         }
         .property-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 50px color-mix(in srgb, var(--green-dark) 25%, transparent);
+            transform: translateY(-4px);
+            box-shadow: 0 22px 55px -38px rgba(15, 23, 42, 0.45);
         }
 
         .property-img { width: 100%; height: 200px; object-fit: cover; }
@@ -228,21 +265,21 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: var(--green-soft);
-            color: var(--green-dark);
+            background: rgba(15, 23, 42, 0.04);
+            color: var(--ink-700);
             padding: 6px 14px;
             border-radius: 50px;
             font-size: 0.8rem;
             font-weight: 600;
             margin-bottom: 12px;
         }
-        .property-content h3 { font-size: 1.15rem; color: var(--green-dark); margin-bottom: 8px; font-weight: 700; }
-        .property-location { display: flex; align-items: center; gap: 6px; color: var(--green-medium); font-size: 0.85rem; margin-bottom: 15px; }
-        .property-features { display: flex; gap: 15px; margin-bottom: 18px; padding-bottom: 15px; border-bottom: 1px solid var(--green-soft); }
-        .feature { display: flex; align-items: center; gap: 6px; color: var(--green-dark); font-size: 0.85rem; }
+        .property-content h3 { font-size: 1.15rem; color: var(--ink-900); margin-bottom: 8px; font-weight: 800; letter-spacing: -0.01em; }
+        .property-location { display: flex; align-items: center; gap: 6px; color: var(--ink-600); font-size: 0.85rem; margin-bottom: 15px; }
+        .property-features { display: flex; gap: 15px; margin-bottom: 18px; padding-bottom: 15px; border-bottom: 1px solid rgba(226, 232, 240, 0.9); }
+        .feature { display: flex; align-items: center; gap: 6px; color: var(--ink-700); font-size: 0.85rem; }
         .property-footer { display: flex; justify-content: space-between; align-items: center; }
         .property-price { font-size: 1.4rem; font-weight: 700; color: var(--green-primary); }
-        .property-price span { font-size: 0.85rem; font-weight: 400; color: var(--green-medium); }
+        .property-price span { font-size: 0.85rem; font-weight: 500; color: var(--ink-500); }
         .property-rating { display: flex; align-items: center; gap: 5px; }
         .stars { color: #F59E0B; }
 
@@ -251,9 +288,9 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: var(--green-soft);
-            color: var(--green-dark);
-            border: none;
+            background: rgba(15, 23, 42, 0.04);
+            color: var(--ink-800);
+            border: 1px solid rgba(226, 232, 240, 0.95);
             font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -261,44 +298,49 @@
             align-items: center;
             justify-content: center;
         }
-        .carousel-btn:hover { background: var(--green-primary); color: var(--white); transform: scale(1.1); }
+        .carousel-btn:hover { background: var(--green-primary); color: var(--white); transform: translateY(-1px); border-color: transparent; }
 
         .about {
-            padding: 80px 40px;
+            padding: 76px 0 90px;
             background: transparent;
         }
 
         .about-card {
             max-width: 980px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.14);
-            border-radius: 20px;
-            padding: 36px 30px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(4px);
-            color: var(--green-dark);
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: var(--radius-2xl);
+            padding: 34px 30px;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: var(--shadow-md);
+            color: var(--ink-800);
         }
 
         .about-card h2 {
-            font-size: 2rem;
-            margin-bottom: 12px;
-            font-weight: 700;
+            font-family: var(--app-font-display);
+            font-size: clamp(1.35rem, 2vw, 1.85rem);
+            margin-bottom: 10px;
+            font-weight: 800;
+            letter-spacing: -0.015em;
+            color: var(--ink-900);
         }
 
         .about-card p {
             font-size: 1rem;
             line-height: 1.7;
-            color: var(--green-dark);
+            color: var(--ink-700);
         }
 
         .footer {
             margin-top: auto;
             width: 100%;
             box-sizing: border-box;
-            background: var(--green-dark);
+            background: rgba(15, 23, 42, 0.92);
             padding: 8px 14px 10px;
             text-align: center;
-            border-top: 1px solid color-mix(in srgb, var(--green-primary) 35%, transparent);
+            border-top: 1px solid rgba(148, 163, 184, 0.22);
         }
         .footer p { color: #E8F5E9; font-size: 0.72rem; line-height: 1.45; margin: 0.2em 0; }
         .footer p strong { color: #FFFFFF; }
@@ -328,12 +370,17 @@
             .carousel-slide { min-width: 280px; }
             .carousel-header h2, .about-card h2 { font-size: 1.6rem; }
         }
+
+        @media (max-width: 768px) {
+            body { background-attachment: scroll; }
+        }
     </style>
 </head>
-<body>
+<body class="font-sans antialiased">
     @php
         $currentUser = auth()->user();
-        $tenantNavLogo = $tenant->getLogoUrl();
+        $tenantNavLogo = $tenant->brandLogoUrl();
+        $tenantNavLogoFallback = \App\Models\Tenant::defaultBrandLogoUrl();
         $canUseTenantPortal = false;
 
         if ($currentUser) {
@@ -348,12 +395,8 @@
 
     <nav class="navbar">
         <div class="nav-brand">
-            @if(filled($tenantNavLogo))
-                <img src="{{ $tenantNavLogo }}" alt="{{ $tenant->name }}" class="brand-logo" width="54" height="54"
-                     onerror="this.onerror=null;this.src='{{ asset('SYSTEMLOGO.png') }}';">
-            @else
-                <div class="brand-mark">{{ strtoupper(substr($tenant->name, 0, 1)) }}</div>
-            @endif
+            <img src="{{ $tenantNavLogo }}" alt="{{ $tenant->name }}" class="brand-logo" width="54" height="54"
+                 onerror="this.onerror=null;this.src='{{ $tenantNavLogoFallback }}';">
             <div>
                 <span class="system-name">{{ $tenant->name }}</span>
                 <span class="tagline">| {{ $settings['hero_subtitle'] }}</span>
@@ -361,12 +404,11 @@
         </div>
         <ul class="nav-links">
             <li><a href="#properties"><i class="fas fa-building"></i> Properties</a></li>
-            <li><a href="#about"><i class="fas fa-circle-info"></i> About</a></li>
         </ul>
         <div class="nav-buttons">
             @if($canUseTenantPortal)
                 @if($currentUser->isClient())
-                    <a href="{{ route('accommodations.index') }}" class="btn btn-outline"><i class="fas fa-search"></i> Browse</a>
+                    <a href="{{ route('dashboard') }}" class="btn btn-outline"><i class="fas fa-search"></i> Browse</a>
                 @endif
                 <form method="POST" action="/logout">
                     @csrf
@@ -389,6 +431,7 @@
 
     <main class="tenant-landing-main">
     <section class="hero">
+        <div class="container">
         <div class="hero-badge animate">
             <i class="fas fa-store"></i>
             <span>Welcome to {{ $tenant->name }}</span>
@@ -399,12 +442,14 @@
         <p class="animate delay-2">{{ $settings['hero_subtitle'] }}</p>
 
         <div class="hero-buttons animate delay-2">
-            <a href="{{ auth()->check() ? route('accommodations.index') : route('landing.browse-accommodations') }}" class="btn btn-primary"><i class="fas fa-rocket"></i> {{ $settings['cta_text'] }}</a>
+            <a href="{{ route('dashboard') }}" class="btn btn-primary"><i class="fas fa-rocket"></i> {{ $settings['cta_text'] }}</a>
             <a href="#properties" class="btn btn-outline"><i class="fas fa-search"></i> Browse Properties</a>
+        </div>
         </div>
     </section>
 
     <section class="carousel-section" id="properties">
+        <div class="container">
         <div class="carousel-header animate">
             <h2><i class="fas fa-star" style="color: var(--green-primary); margin-right: 10px;"></i>Featured Accommodations</h2>
             <p>Curated stays from {{ $tenant->name }}</p>
@@ -459,12 +504,6 @@
                 <button class="carousel-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
-    </section>
-
-    <section class="about" id="about">
-        <div class="about-card animate">
-            <h2>{{ $settings['about_title'] }}</h2>
-            <p>{{ $settings['about_text'] }}</p>
         </div>
     </section>
 

@@ -123,7 +123,7 @@ final class CentralSupportInboxService
             'tenant_name' => $tenant->name,
             'message_id' => $message->id,
             'subject' => $message->subject,
-            'preview' => Str::limit(strip_tags((string) $message->content), 140),
+            'preview' => $message->excerpt,
             'created_at' => $message->created_at,
             'is_unread' => $threadHasUnread,
             'counterpart_name' => $other?->name ?? 'User',

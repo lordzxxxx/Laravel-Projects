@@ -122,7 +122,7 @@ test('tenant register page accessible', function () {
     Tenant::forgetCurrent();
 });
 
-test('tenant accommodations page accessible', function () {
+test('tenant accommodations route redirects to dashboard', function () {
     skipIfLandlordMemoryDb();
 
     $tenant = ensureRoutingTenantFixture();
@@ -130,7 +130,20 @@ test('tenant accommodations page accessible', function () {
     Tenant::forgetCurrent();
     $tenant->makeCurrent();
     $response = $this->get(tenantUrl($tenant, '/accommodations'));
+    $response->assertRedirect('/dashboard');
+    Tenant::forgetCurrent();
+});
+
+test('tenant dashboard shows accommodation browse', function () {
+    skipIfLandlordMemoryDb();
+
+    $tenant = ensureRoutingTenantFixture();
+    expect($tenant)->not->toBeNull('No tenant found in database');
+    Tenant::forgetCurrent();
+    $tenant->makeCurrent();
+    $response = $this->get(tenantUrl($tenant, '/dashboard'));
     expect($response->status())->toBe(200);
+    $response->assertSee('Find your perfect stay', false);
     Tenant::forgetCurrent();
 });
 

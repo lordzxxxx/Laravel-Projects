@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ListsClientAccommodations;
 use App\Models\Accommodation;
 use App\Models\Tenant;
 use App\Models\User;
@@ -14,56 +15,26 @@ use Spatie\Permission\PermissionRegistrar;
 
 class AccommodationController extends Controller
 {
+    use ListsClientAccommodations;
+
     /**
      * Display a listing of accommodations for clients.
      */
     public function index(Request $request)
     {
-        $currentTenant = Tenant::current();
+        if (Tenant::checkCurrent()) {
+            $target = '/dashboard';
+            if ($request->getQueryString()) {
+                $target .= '?'.$request->getQueryString();
+            }
 
-        $query = Accommodation::available()->with('owner');
-
-        if ($currentTenant) {
-            $query->forTenant($currentTenant->id);
-        } else {
-            $query->forCentralMunicipalityDirectory();
+            return redirect($target);
         }
 
-        // Apply filters
-        if ($request->has('type') && $request->type) {
-            $query->ofType($request->type);
-        }
-
-        if ($request->has('min_price') && $request->min_price) {
-            $query->where('price_per_night', '>=', $request->min_price);
-        }
-
-        if ($request->has('max_price') && $request->max_price) {
-            $query->where('price_per_night', '<=', $request->max_price);
-        }
-
-        if ($request->has('guests') && $request->guests) {
-            $query->where('max_guests', '>=', $request->guests);
-        }
-
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Featured accommodations should not mutate the base listing query.
-        $featured = (clone $query)->featured()->limit(6)->get();
-
-        // All accommodations with pagination
-        $accommodations = (clone $query)->latest()->paginate(12);
-
+        $accommodations = $this->paginatedClientAccommodations($request);
         $portalDirectory = PortalDetector::isPublicPortal($request) || ! Tenant::checkCurrent();
 
-        return view('client.accommodations.index', compact('accommodations', 'featured', 'portalDirectory'));
+        return view('client.accommodations.index', compact('accommodations', 'portalDirectory'));
     }
 
     /**

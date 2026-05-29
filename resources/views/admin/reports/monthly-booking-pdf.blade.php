@@ -108,7 +108,7 @@
         }
 
         table.report-detail thead th {
-            background: #2E7D32;
+            background: #457359;
             color: white;
             padding: 7px 8px;
             text-align: left;
@@ -116,7 +116,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.4px;
-            border: 1px solid #1B5E20;
+            border: 1px solid #34543F;
         }
 
         table.report-detail thead th.num-col {

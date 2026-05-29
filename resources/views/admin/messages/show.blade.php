@@ -8,41 +8,17 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/js/app.js', 'resources/css/app.css'])
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(145deg, #ecfdf5 0%, #f0fdf4 35%, #f8fafc 100%);
-            min-height: 100vh;
-            color: #0f172a;
-        }
-        .dashboard-layout { padding-top: var(--app-main-top-offset, 108px); }
-        .msg-thread-main {
-            max-width: min(920px, 100%);
-            margin: 0 auto;
-            padding-left: clamp(16px, 3vw, 36px);
-            padding-right: clamp(16px, 3vw, 36px);
-            padding-bottom: 2rem;
-        }
-        .flash {
-            background: #ECFDF5;
-            border: 1px solid #86EFAC;
-            color: #166534;
-            padding: 10px 14px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-weight: 600;
-        }
-        @include('partials.messaging-ui-styles')
         @include('partials.ui-foundation-styles')
         @include('admin.partials.admin-shell-styles')
+        @include('partials.messaging-ui-styles')
     </style>
 </head>
-<body class="admin-central-portal">
+<body class="admin-central-portal msg-thread-page">
     @include('admin.partials.top-navbar', ['active' => 'messages'])
 
     <div class="dashboard-layout">
         <main class="main-content msg-thread-main">
-            <a href="{{ route('admin.messages', [], false) }}" class="msg-back-link"><i class="fas fa-arrow-left"></i> Back to inbox</a>
+            <a href="{{ route('admin.messages', [], false) }}" class="msg-back-link"><i class="fas fa-arrow-left"></i> Inbox</a>
 
             @include('partials.flash-alerts')
 
@@ -50,9 +26,9 @@
                 <div class="msg-chat-head">
                     <h1>{{ $message->subject ?: 'Message' }}</h1>
                     <p>
-                        <strong style="color:#334155;">{{ $tenant->name }}</strong>
-                        <span style="color:#cbd5e1;">·</span>
-                        Replying as <strong style="color:#115e59;">ImpaStay (Central Admin)</strong>
+                        <strong>{{ $tenant->name }}</strong>
+                        <span aria-hidden="true">·</span>
+                        Replying as <strong>ImpaStay (Central Admin)</strong>
                     </p>
                 </div>
                 <div class="msg-chat-scroll msg-scrollbar">
@@ -62,7 +38,7 @@
                         @endphp
                         <div class="msg-bubble-row {{ $fromCentral ? 'msg-bubble-row--out' : 'msg-bubble-row--in' }}">
                             <div>
-                                <div class="msg-bubble {{ $fromCentral ? 'msg-bubble--out' : 'msg-bubble--in' }}">{{ $m->content }}</div>
+                                @include('partials.message-bubble-body', ['message' => $m, 'bubble' => $fromCentral ? 'out' : 'in'])
                                 <div class="msg-bubble-meta">
                                     {{ $fromCentral ? 'ImpaStay (Central Admin)' : ($m->sender->name ?? 'User') }}
                                     · {{ $m->created_at->format('M j, g:i A') }}
@@ -72,9 +48,20 @@
                     @endforeach
                 </div>
                 <div class="msg-composer">
-                    <form method="POST" action="{{ route('admin.messages.support-reply', ['tenant' => $tenant->getKey(), 'message' => $message->getKey()], false) }}" data-loading-form>
+                    <form method="POST" action="{{ route('admin.messages.support-reply', ['tenant' => $tenant->getKey(), 'message' => $message->getKey()], false) }}" data-loading-form enctype="multipart/form-data">
                         @csrf
-                        <textarea name="content" required placeholder="Write a reply…"></textarea>
+                        <textarea name="content" placeholder="Write a reply…">{{ old('content') }}</textarea>
+                        @error('content')
+                            <div class="msg-error">{{ $message }}</div>
+                        @enderror
+                        <div class="msg-file-field" style="margin-bottom:0.75rem;">
+                            <label class="msg-field-label" for="reply_attachment">Photo <span class="msg-label-optional">(optional)</span></label>
+                            <input type="file" name="attachment" id="reply_attachment" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="msg-file-input" data-image-preview="reply-preview">
+                            @error('attachment')
+                                <div class="msg-error">{{ $message }}</div>
+                            @enderror
+                            <div class="msg-preview-thumb" id="reply-preview" aria-hidden="true"></div>
+                        </div>
                         <button type="submit" data-loading-button class="msg-btn-primary">
                             <i class="fas fa-reply"></i> Send reply
                         </button>
@@ -91,6 +78,7 @@
             </div>
         </main>
     </div>
+    @include('partials.message-attachment-preview-script')
     <script>
         document.querySelectorAll('form[data-loading-form]').forEach((form) => {
             form.addEventListener('submit', () => {

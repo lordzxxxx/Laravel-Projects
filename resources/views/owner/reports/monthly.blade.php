@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <style>
+        @include('owner.partials.owner-page-fonts')
         * { box-sizing: border-box; }
 
         :root {
@@ -29,13 +30,12 @@
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background:
-                radial-gradient(circle at top right, rgba(16, 185, 129, 0.06), transparent 55%),
+                radial-gradient(circle at top right, color-mix(in srgb, var(--chrome-focus-ring, #10b981) 6%, transparent), transparent 55%),
                 radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.04), transparent 50%),
-                var(--cream);
+                var(--app-page-bg, var(--cream));
             min-height: 100vh;
-            color: var(--gray-800);
+            color: var(--ink-800, var(--gray-800));
             line-height: 1.55;
         }
 
@@ -54,10 +54,11 @@
 
         /* ── Surface card primitive ────────────────────────────────────────── */
         .surface {
-            background: #ffffff;
-            border: 1px solid var(--gray-200);
+            background: var(--app-surface-bg, #ffffff);
+            border: 1px solid var(--app-surface-border, var(--gray-200));
             border-radius: 16px;
             box-shadow: var(--shadow-xs);
+            color: var(--ink-800);
         }
         .surface + .surface { margin-top: 16px; }
 
@@ -67,8 +68,8 @@
             align-items: center;
             gap: 12px;
             padding: 16px 22px;
-            border-bottom: 1px solid var(--gray-200);
-            background: linear-gradient(180deg, #ffffff, #FAFBFC);
+            border-bottom: 1px solid var(--app-surface-border, var(--gray-200));
+            background: var(--app-surface-muted-bg, linear-gradient(180deg, #ffffff, #FAFBFC));
             border-radius: 16px 16px 0 0;
         }
         .surface-header h3 {
@@ -76,7 +77,7 @@
             align-items: center;
             gap: 10px;
             font-size: 0.98rem;
-            color: var(--gray-900);
+            color: var(--ink-900, var(--gray-900));
             font-weight: 700;
             margin: 0;
         }
@@ -86,15 +87,15 @@
             height: 30px;
             align-items: center;
             justify-content: center;
-            background: #ECFDF5;
-            color: #047857;
-            border: 1px solid #D1FAE5;
+            background: var(--chrome-surface-bg, #ECFDF5);
+            color: var(--chrome-icon-color, #047857);
+            border: 1px solid var(--chrome-surface-border, #D1FAE5);
             border-radius: 9px;
             font-size: 0.82rem;
         }
         .surface-header .meta {
             font-size: 0.78rem;
-            color: var(--gray-500);
+            color: var(--ink-500, var(--gray-500));
             font-weight: 600;
         }
         .surface-body { padding: 18px 22px; }
@@ -128,12 +129,12 @@
         }
         .field label i { color: var(--green-primary); font-size: 0.78rem; }
         .field select {
-            border: 1px solid var(--gray-200);
+            border: 1px solid var(--app-surface-border, var(--gray-200));
             border-radius: 10px;
             padding: 10px 12px;
             font-size: 0.9rem;
-            background: #ffffff;
-            color: var(--gray-800);
+            background: var(--app-surface-bg, #ffffff);
+            color: var(--ink-800, var(--gray-800));
             font-weight: 500;
             transition: border-color 0.15s, box-shadow 0.15s;
             cursor: pointer;
@@ -187,11 +188,11 @@
         .btn.secondary:hover { background: #D1FAE5; border-color: #A7F3D0; }
 
         .btn.outline {
-            background: #ffffff;
-            color: var(--gray-700);
-            border-color: var(--gray-200);
+            background: var(--app-surface-bg, #ffffff);
+            color: var(--ink-700, var(--gray-700));
+            border-color: var(--app-surface-border, var(--gray-200));
         }
-        .btn.outline:hover { background: var(--gray-50); border-color: var(--gray-300); color: var(--gray-900); }
+        .btn.outline:hover { background: var(--app-surface-muted-bg, var(--gray-50)); border-color: var(--ink-300, var(--gray-300)); color: var(--ink-900, var(--gray-900)); }
 
         /* ── KPI grid ──────────────────────────────────────────────────────── */
         .kpi-grid {
@@ -205,8 +206,8 @@
             align-items: center;
             gap: 16px;
             padding: 18px 20px;
-            background: #ffffff;
-            border: 1px solid var(--gray-200);
+            background: var(--app-surface-bg, #ffffff);
+            border: 1px solid var(--app-surface-border, var(--gray-200));
             border-radius: 16px;
             box-shadow: var(--shadow-xs);
             transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
@@ -303,42 +304,42 @@
             min-width: 640px;
         }
         thead th {
-            background: linear-gradient(180deg, #FAFBFC, #F3F4F6);
-            color: var(--gray-600);
+            background: var(--app-surface-muted-bg, linear-gradient(180deg, #FAFBFC, #F3F4F6));
+            color: var(--ink-600, var(--gray-600));
             font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             padding: 13px 22px;
             text-align: left;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--app-surface-border, var(--gray-200));
         }
         thead th.num { text-align: right; }
         tbody td {
             padding: 13px 22px;
-            border-bottom: 1px solid var(--gray-100);
+            border-bottom: 1px solid var(--app-surface-border, var(--gray-100));
             font-size: 0.9rem;
-            color: var(--gray-700);
+            color: var(--ink-700, var(--gray-700));
         }
         tbody td.num {
             text-align: right;
             font-variant-numeric: tabular-nums;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--ink-800, var(--gray-800));
         }
-        tbody td.num.sales { color: #047857; font-weight: 700; }
+        tbody td.num.sales { color: var(--chrome-icon-color, #047857); font-weight: 700; }
         tbody tr { transition: background 0.15s; }
-        tbody tr:nth-child(even) { background: #FCFDFD; }
-        tbody tr:hover { background: #ECFDF5; }
+        tbody tr:nth-child(even) { background: var(--app-surface-muted-bg, #FCFDFD); }
+        tbody tr:hover { background: var(--chrome-surface-bg, #ECFDF5); }
         tbody tr:last-child td { border-bottom: none; }
 
         tfoot td {
             padding: 14px 22px;
-            background: linear-gradient(180deg, #F0FDF4, #ECFDF5);
-            border-top: 2px solid #D1FAE5;
+            background: var(--chrome-surface-bg, linear-gradient(180deg, #F0FDF4, #ECFDF5));
+            border-top: 2px solid var(--chrome-surface-border, #D1FAE5);
             font-size: 0.9rem;
             font-weight: 800;
-            color: var(--gray-900);
+            color: var(--ink-900, var(--gray-900));
         }
         tfoot td.num {
             text-align: right;

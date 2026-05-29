@@ -6,14 +6,15 @@
     <title>Register - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        @include('partials.typography-system')
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --green-dark: #1B5E20;
-            --green-primary: #2E7D32;
-            --green-medium: #43A047;
-            --green-soft: #C8E6C9;
-            --green-white: #E8F5E9;
+            --green-dark: #3A5C48;
+            --green-primary: #457359;
+            --green-medium: #799F76;
+            --green-soft: #CBDFC6;
+            --green-white: #EDF4EA;
             --white: #FFFFFF;
             --gray-50: #F9FAFB;
             --gray-200: #E5E7EB;
@@ -23,7 +24,6 @@
         }
 
         body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             display: flex;
             background: linear-gradient(135deg, var(--green-white) 0%, var(--white) 45%, #EAF7EA 100%);

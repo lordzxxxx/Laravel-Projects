@@ -6,6 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Sign Up - {{ $tenant->name ?? 'Tenant' }}</title>
     <style>
+        @include('partials.typography-system')
         :root {
             --primary: {{ $tenant->primary_color ?? '#14532d' }};
             --accent: {{ $tenant->accent_color ?? '#16a34a' }};
@@ -18,7 +19,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: "Trebuchet MS", Arial, sans-serif;
             background: linear-gradient(145deg, #ffffff 0%, var(--paper) 100%);
             color: var(--ink);
             min-height: 100vh;
@@ -184,13 +184,7 @@
 <body>
     <div class="shell">
         <div class="header">
-            @if($tenant->getLogoUrl())
-                <img src="{{ $tenant->getLogoUrl() }}" alt="{{ $tenant->name }}" class="logo" onerror="this.onerror=null;this.src='{{ asset('SYSTEMLOGO.png') }}';">
-            @else
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.8rem; margin-bottom: 14px;">
-                    {{ substr($tenant->name, 0, 1) }}
-                </div>
-            @endif
+            <img src="{{ $tenant->brandLogoUrl() }}" alt="{{ $tenant->name }}" class="logo" onerror="this.onerror=null;this.src='{{ \App\Models\Tenant::defaultBrandLogoUrl() }}';">
             <h2 class="tenant-name">{{ $tenant->name }}</h2>
             <p class="tagline">Property management portal</p>
         </div>

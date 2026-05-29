@@ -4,259 +4,464 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
-    <title>Landing Page Settings</title>
+    <title>Landing &amp; Logo — {{ $tenant->name }}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        @include('partials.ui-foundation-styles')
+        @include('owner.partials.owner-page-fonts')
+        * { box-sizing: border-box; }
 
         :root {
             @include('partials.tenant-theme-css-vars', ['themeTenant' => $tenant])
-            --paper: #f1f5f9;
-            --ink: #111827;
-            --muted: #6b7280;
         }
 
-        * { box-sizing: border-box; }
-
-        body {
+        body.owner-nav-page {
             margin: 0;
-            font-family: "Trebuchet MS", Arial, sans-serif;
-            background: linear-gradient(140deg, #ffffff 0%, var(--paper) 100%);
-            color: var(--ink);
+            background: var(--app-page-bg, #f4f8f5);
+            color: var(--ink-800, #1f2937);
             min-height: 100vh;
         }
 
-        .wrap {
-            max-width: 860px;
+        .landing-settings-main {
+            width: min(1600px, 100%);
             margin: 0 auto;
-            padding: 28px 18px 40px;
+            padding: var(--owner-content-offset) clamp(16px, 2.5vw, 36px) 32px;
+            min-height: calc(100vh - var(--owner-content-offset));
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
         }
 
-        .card {
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 24px;
-            box-shadow: 0 16px 35px rgba(0, 0, 0, 0.08);
+        .page-header p {
+            margin-top: 0.35rem;
+            max-width: 42rem;
         }
 
-        /* Page title styling comes from ui-foundation-styles (.page-header h1).
-           Local h1 sizing was removed to keep the title identical across the system. */
-
-        .muted {
-            color: var(--muted);
-            margin: 0 0 18px;
+        .landing-settings-form {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            min-height: 0;
         }
 
-        .row {
+        .settings-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        .settings-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            min-height: 0;
+        }
+
+        .settings-panel {
+            background: var(--app-surface-bg, #fff);
+            border: 1px solid var(--app-surface-border, #e5e7eb);
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.05));
+            overflow: hidden;
+        }
+
+        .settings-panel__head {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--app-surface-border, #e5e7eb);
+            background: var(--app-surface-muted-bg, #f8fafc);
+        }
+
+        .settings-panel__head h2 {
+            margin: 0;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-600, #475569);
+        }
+
+        .settings-panel__head p {
+            margin: 0.35rem 0 0;
+            font-size: 0.8125rem;
+            color: var(--ink-500, #64748b);
+            line-height: 1.45;
+        }
+
+        .settings-panel__body {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--ink-700, #334155);
+            margin-bottom: 0.4rem;
+        }
+
+        .field input[type="text"],
+        .field input[type="url"] {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            border: 1px solid var(--app-surface-border, #d1d5db);
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            background: var(--app-surface-bg, #fff);
+            color: var(--ink-900, #0f172a);
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: var(--chrome-focus-ring, var(--green-primary, #457359));
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--chrome-focus-ring, #457359) 18%, transparent);
+        }
+
+        .field-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
+            gap: 1rem;
         }
 
-        .field {
-            margin-bottom: 12px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.88rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        input, textarea {
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 0.94rem;
-        }
-
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
+        .color-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.75rem;
             align-items: center;
-            margin-top: 8px;
         }
 
-        .btn {
-            border: none;
+        .color-row input[type="color"] {
+            width: 3rem;
+            height: 2.5rem;
+            padding: 0.2rem;
+            border: 1px solid var(--app-surface-border, #d1d5db);
             border-radius: 10px;
-            padding: 11px 16px;
-            font-weight: 700;
+            background: var(--app-surface-bg, #fff);
             cursor: pointer;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
+        .color-row input[type="text"] {
+            font-family: ui-monospace, monospace;
+            font-size: 0.875rem;
         }
 
-        .btn-link {
+        .upload-preview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem;
+            border: 1px dashed var(--app-surface-border, #d1d5db);
+            border-radius: 12px;
+            background: var(--app-surface-muted-bg, #f8fafc);
+        }
+
+        .upload-preview img {
+            width: 4.5rem;
+            height: 4.5rem;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid var(--app-surface-border, #e5e7eb);
+            padding: 0.35rem;
+            flex-shrink: 0;
+        }
+
+        .upload-preview__meta {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .upload-preview__meta p {
+            margin: 0;
+            font-size: 0.8125rem;
+            color: var(--ink-500, #64748b);
+            line-height: 1.45;
+        }
+
+        .file-input {
+            width: 100%;
+            font-size: 0.8125rem;
+            color: var(--ink-700, #334155);
+        }
+
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--ink-600, #475569);
+        }
+
+        .check-row input {
+            width: auto;
+            accent-color: var(--chrome-active-bg, #457359);
+        }
+
+        .logo-preview-new {
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .logo-preview-new.is-visible {
+            display: block;
+        }
+
+        .logo-preview-new img {
+            max-width: 5rem;
+            max-height: 5rem;
+            object-fit: contain;
+            border-radius: 10px;
+            border: 1px solid var(--app-surface-border, #e5e7eb);
+            padding: 0.35rem;
+            background: #fff;
+        }
+
+        .settings-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: var(--app-surface-bg, #fff);
+            border: 1px solid var(--app-surface-border, #e5e7eb);
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.05));
+        }
+
+        .btn-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.35rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            background: var(--chrome-active-bg, var(--green-primary, #457359));
+            color: #fff;
+        }
+
+        .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-preview {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.7rem 1.1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
             text-decoration: none;
-            color: var(--primary);
-            font-weight: 700;
+            border: 1px solid var(--app-surface-border, #d1d5db);
+            background: var(--app-surface-bg, #fff);
+            color: var(--ink-700, #334155);
         }
 
-        .ok {
-            background: #ecfdf5;
-            border: 1px solid #86efac;
-            color: #166534;
-            padding: 8px 10px;
-            border-radius: 8px;
-            margin-bottom: 14px;
-            font-size: 0.9rem;
+        .btn-preview:hover {
+            background: var(--app-surface-muted-bg, #f8fafc);
         }
 
-        .error {
+        .field-error {
             color: #b91c1c;
-            font-size: 0.83rem;
-            margin-top: 4px;
+            font-size: 0.8125rem;
+            margin-top: 0.35rem;
         }
 
-        @media (max-width: 760px) {
-            .row {
+        @media (max-width: 1024px) {
+            .settings-grid {
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width: 640px) {
+            .field-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @include('partials.appearance-preferences-styles')
+
+        @include('owner.partials.top-navbar-styles')
     </style>
 </head>
-<body>
-    <div class="wrap">
-        <div class="page-header" style="margin-bottom: 18px;">
+<body class="owner-nav-page">
+    @include('owner.partials.top-navbar', ['active' => ''])
+
+    <main class="landing-settings-main with-owner-nav">
+        <div class="page-header">
             <h1>
                 <span class="page-title-icon"><i class="fa-solid fa-palette"></i></span>
-                <span>Tenant Landing Customization</span>
+                <span>Landing &amp; logo</span>
             </h1>
-            <p>Customize how your public subdomain landing page looks.</p>
+            <p>Brand colors, portal theme, logo, and GCash QR for your subdomain.</p>
         </div>
 
-        <div class="card">
-            @include('partials.flash-alerts')
+        @include('partials.flash-alerts')
 
-            <form method="POST" action="{{ route('owner.landing.update') }}" enctype="multipart/form-data" data-loading-form>
-                @csrf
-                @method('PUT')
+        <form method="POST" action="{{ route('owner.landing.update', [], false) }}" enctype="multipart/form-data" class="landing-settings-form" data-loading-form>
+            @csrf
+            @method('PUT')
 
-                <div class="field">
-                    <label>Hero Title</label>
-                    <input type="text" name="hero_title" value="{{ old('hero_title', $settings['hero_title']) }}">
-                    @error('hero_title') <div class="error">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="field">
-                    <label>Hero Subtitle</label>
-                    <input type="text" name="hero_subtitle" value="{{ old('hero_subtitle', $settings['hero_subtitle']) }}">
-                    @error('hero_subtitle') <div class="error">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="row">
-                    <div class="field">
-                        <label>Call To Action Text</label>
-                        <input type="text" name="cta_text" value="{{ old('cta_text', $settings['cta_text']) }}">
-                        @error('cta_text') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="field">
-                        <label>Call To Action URL</label>
-                        <input type="text" name="cta_url" value="{{ old('cta_url', $settings['cta_url']) }}">
-                        @error('cta_url') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label>Login Section Title</label>
-                    <input type="text" name="login_section_title" value="{{ old('login_section_title', $settings['login_section_title']) }}">
-                    @error('login_section_title') <div class="error">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="field">
-                    <label>Login Section Subtitle</label>
-                    <input type="text" name="login_section_subtitle" value="{{ old('login_section_subtitle', $settings['login_section_subtitle']) }}">
-                    @error('login_section_subtitle') <div class="error">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="row">
-                    <div class="field">
-                        <label>Login Button Text</label>
-                        <input type="text" name="login_text" value="{{ old('login_text', $settings['login_text']) }}">
-                        @error('login_text') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="field">
-                        <label>Sign Up Button Text</label>
-                        <input type="text" name="signup_text" value="{{ old('signup_text', $settings['signup_text']) }}">
-                        @error('signup_text') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="field">
-                        <label>Primary Color</label>
-                        <input type="text" name="primary_color" value="{{ old('primary_color', $settings['primary_color']) }}" placeholder="#14532d">
-                        @error('primary_color') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="field">
-                        <label>Accent Color</label>
-                        <input type="text" name="accent_color" value="{{ old('accent_color', $settings['accent_color']) }}" placeholder="#16a34a">
-                        @error('accent_color') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label>Hero Image URL (optional)</label>
-                    <input type="url" name="hero_image_url" value="{{ old('hero_image_url', $settings['hero_image_url']) }}">
-                    @error('hero_image_url') <div class="error">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="field" style="margin-top:14px; padding-top:14px; border-top:1px solid #e5e7eb;">
-                    <label>GCash QR Code (optional)</label>
-                    @if($tenant->getGcashQrUrl())
-                        <div style="margin-bottom:10px;">
-                            <img src="{{ $tenant->getGcashQrUrl() }}" alt="GCash QR" style="max-width:220px; border:1px solid #d1d5db; border-radius:10px; padding:6px; background:#fff;">
+            <div class="settings-grid">
+                <div class="settings-stack">
+                    <section class="settings-panel">
+                        <div class="settings-panel__head">
+                            <h2>Theme</h2>
+                            <p>Colors applied to your landing page and tenant chrome.</p>
                         </div>
-                    @endif
-                    <input type="file" name="gcash_qr" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">
-                    @error('gcash_qr') <div class="error">{{ $message }}</div> @enderror
+                        <div class="settings-panel__body">
+                            <div class="field">
+                                <label for="primary_color">Primary</label>
+                                <div class="color-row">
+                                    <input type="color" id="primary_color_picker" value="{{ old('primary_color', $settings['primary_color']) }}" aria-label="Pick primary color">
+                                    <input type="text" id="primary_color" name="primary_color" value="{{ old('primary_color', $settings['primary_color']) }}" pattern="^#[0-9A-Fa-f]{6}$" maxlength="7">
+                                </div>
+                                @error('primary_color') <div class="field-error">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="field">
+                                <label for="accent_color">Accent</label>
+                                <div class="color-row">
+                                    <input type="color" id="accent_color_picker" value="{{ old('accent_color', $settings['accent_color']) }}" aria-label="Pick accent color">
+                                    <input type="text" id="accent_color" name="accent_color" value="{{ old('accent_color', $settings['accent_color']) }}" pattern="^#[0-9A-Fa-f]{6}$" maxlength="7">
+                                </div>
+                                @error('accent_color') <div class="field-error">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                    </section>
 
-                    @if($tenant->gcash_qr_path)
-                        <label style="display:flex; align-items:center; gap:8px; margin-top:10px; font-weight:600; font-size:0.85rem;">
-                            <input type="checkbox" name="remove_gcash_qr" value="1" style="width:auto;">
-                            Remove current GCash QR
-                        </label>
-                    @endif
+                    <section class="settings-panel">
+                        <div class="settings-panel__head">
+                            <h2>Portal appearance</h2>
+                            <p>Color theme and light/dark mode for your owner portal.</p>
+                        </div>
+                        <div class="settings-panel__body">
+                            @include('partials.appearance-preferences-fields', ['appearance' => $appearance])
+                        </div>
+                    </section>
                 </div>
 
-                <div class="field">
-                    <label>About Title</label>
-                    <input type="text" name="about_title" value="{{ old('about_title', $settings['about_title']) }}">
-                    @error('about_title') <div class="error">{{ $message }}</div> @enderror
-                </div>
+                <div class="settings-stack">
+                    <section class="settings-panel">
+                        <div class="settings-panel__head">
+                            <h2>Brand logo</h2>
+                            <p>Optional. Love Impasugong is used until you upload your own.</p>
+                        </div>
+                        <div class="settings-panel__body">
+                            <div class="upload-preview">
+                                <img src="{{ $tenant->brandLogoUrl() }}" alt="Current logo">
+                                <div class="upload-preview__meta">
+                                    <p>Shown on your landing page, login, and navigation.</p>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="logo">Upload logo</label>
+                                <input type="file" id="logo" name="logo" class="file-input" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">
+                                @error('logo') <div class="field-error">{{ $message }}</div> @enderror
+                                <div class="logo-preview-new" id="logo-preview" aria-hidden="true">
+                                    <img src="" alt="Selected logo preview">
+                                </div>
+                            </div>
+                            @if($tenant->logo_path)
+                                <label class="check-row">
+                                    <input type="checkbox" name="remove_logo" value="1">
+                                    Remove custom logo
+                                </label>
+                            @endif
+                        </div>
+                    </section>
 
-                <div class="field">
-                    <label>About Description</label>
-                    <textarea name="about_text">{{ old('about_text', $settings['about_text']) }}</textarea>
-                    @error('about_text') <div class="error">{{ $message }}</div> @enderror
+                    <section class="settings-panel">
+                        <div class="settings-panel__head">
+                            <h2>GCash QR</h2>
+                            <p>Optional QR for guest payment instructions.</p>
+                        </div>
+                        <div class="settings-panel__body">
+                            @if($tenant->getGcashQrUrl())
+                                <div class="upload-preview">
+                                    <img src="{{ $tenant->getGcashQrUrl() }}" alt="GCash QR">
+                                    <div class="upload-preview__meta">
+                                        <p>Current QR on file.</p>
+                                    </div>
+                                </div>
+                            @endif
+                            <div class="field">
+                                <label for="gcash_qr">Upload QR image</label>
+                                <input type="file" id="gcash_qr" name="gcash_qr" class="file-input" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">
+                                @error('gcash_qr') <div class="field-error">{{ $message }}</div> @enderror
+                            </div>
+                            @if($tenant->gcash_qr_path)
+                                <label class="check-row">
+                                    <input type="checkbox" name="remove_gcash_qr" value="1">
+                                    Remove GCash QR
+                                </label>
+                            @endif
+                        </div>
+                    </section>
                 </div>
+            </div>
 
-                <div class="actions">
-                    <button class="btn btn-primary" data-loading-button type="submit">Save Settings</button>
-                    <a class="btn-link" target="_blank" href="{{ $tenant->publicUrl() }}">Open Public Landing</a>
-                </div>
-            </form>
-        </div>
-    </div>
+            <div class="settings-actions">
+                <button type="submit" class="btn-save" data-loading-button>
+                    <i class="fas fa-check"></i> Save changes
+                </button>
+                <a href="{{ $tenant->publicUrl() }}" target="_blank" rel="noopener" class="btn-preview">
+                    <i class="fas fa-external-link-alt"></i> Preview landing
+                </a>
+            </div>
+        </form>
+    </main>
+
     <script>
-        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
-            form.addEventListener('submit', () => {
-                const button = form.querySelector('[data-loading-button]');
+        (function () {
+            function bindColorPicker(pickerId, textId) {
+                var picker = document.getElementById(pickerId);
+                var text = document.getElementById(textId);
+                if (!picker || !text) return;
+                picker.addEventListener('input', function () { text.value = picker.value; });
+                text.addEventListener('input', function () {
+                    if (/^#[0-9A-Fa-f]{6}$/.test(text.value)) picker.value = text.value;
+                });
+            }
+            bindColorPicker('primary_color_picker', 'primary_color');
+            bindColorPicker('accent_color_picker', 'accent_color');
+
+            var logoInput = document.getElementById('logo');
+            var logoPreview = document.getElementById('logo-preview');
+            if (logoInput && logoPreview) {
+                var img = logoPreview.querySelector('img');
+                logoInput.addEventListener('change', function () {
+                    var file = logoInput.files && logoInput.files[0];
+                    if (!file || !file.type.startsWith('image/')) {
+                        logoPreview.classList.remove('is-visible');
+                        return;
+                    }
+                    img.src = URL.createObjectURL(file);
+                    logoPreview.classList.add('is-visible');
+                });
+            }
+        })();
+
+        if (window.ImpaAppearance && typeof window.ImpaAppearance.initProfilePreview === 'function') {
+            window.ImpaAppearance.initProfilePreview();
+        }
+    </script>
+    <script>
+        document.querySelectorAll('form[data-loading-form]').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                var button = form.querySelector('[data-loading-button]');
                 if (!button) return;
                 button.disabled = true;
-                button.textContent = 'Saving...';
+                button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Saving…';
             });
         });
     </script>

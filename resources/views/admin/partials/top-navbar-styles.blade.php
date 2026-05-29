@@ -1,6 +1,9 @@
+</style>
+@include('partials.appearance-boot')
+<style>
 :root {
-    --app-topbar-height: 76px;
-    --app-topbar-height-mobile: 64px;
+    --app-topbar-height: 84px;
+    --app-topbar-height-mobile: 72px;
 }
 
 @include('partials.top-navbar-core-styles')

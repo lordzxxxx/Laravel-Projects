@@ -15,15 +15,15 @@
         }
         
         :root {
-            --green-dark: #1B5E20;
-            --green-primary: #2E7D32;
-            --green-medium: #43A047;
-            --green-light: #66BB6A;
-            --green-pale: #81C784;
-            --green-soft: #C8E6C9;
-            --green-white: #E8F5E9;
+            --green-dark: #3A5C48;
+            --green-primary: #457359;
+            --green-medium: #799F76;
+            --green-light: #8FB389;
+            --green-pale: #A8C4A2;
+            --green-soft: #CBDFC6;
+            --green-white: #EDF4EA;
             --white: #FFFFFF;
-            --cream: #F1F8E9;
+            --cream: #F4F8F1;
             --gray-600: #4B5563;
             --danger: #dc3545;
             --warning: #ffc107;
@@ -31,7 +31,6 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
             min-height: 100vh;
         }
@@ -192,19 +191,22 @@
             border-radius: 10px;
             font-size: 1rem;
             outline: none;
-            background: white;
+            background: var(--app-surface-bg, white);
+            color: var(--ink-800);
             cursor: pointer;
         }
         
         .card {
-            background: var(--white);
+            background: var(--app-surface-bg, var(--white));
+            border: 1px solid var(--app-surface-border, var(--green-soft));
             border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(27, 94, 32, 0.1);
+            box-shadow: var(--shadow-md, 0 8px 30px rgba(27, 94, 32, 0.1));
+            color: var(--ink-800);
         }
         
         .card-header {
             padding: 20px 25px;
-            border-bottom: 1px solid var(--green-soft);
+            border-bottom: 1px solid var(--app-surface-border, var(--green-soft));
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -212,7 +214,7 @@
         
         .card-header h3 {
             font-size: 1.15rem;
-            color: var(--green-dark);
+            color: var(--ink-800, var(--green-dark));
             font-weight: 600;
         }
         
@@ -261,16 +263,17 @@
         th, td {
             padding: 15px;
             text-align: left;
-            border-bottom: 1px solid var(--green-soft);
+            border-bottom: 1px solid var(--app-surface-border, var(--green-soft));
+            color: var(--ink-700);
         }
         
         th {
             font-weight: 600;
-            color: var(--green-dark);
+            color: var(--ink-600, var(--green-dark));
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            background: var(--cream);
+            background: var(--app-surface-muted-bg, var(--cream));
         }
         
         td {
@@ -369,8 +372,9 @@
         
         .pagination button {
             padding: 8px 15px;
-            border: 2px solid var(--green-soft);
-            background: white;
+            border: 2px solid var(--app-surface-border, var(--green-soft));
+            background: var(--app-surface-bg, white);
+            color: var(--ink-800);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;

@@ -12,11 +12,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @include('owner.partials.owner-page-fonts')
         :root {
             @include('partials.tenant-theme-css-vars')
         }
         body.owner-accommodation-create {
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            
             background:
                 radial-gradient(circle at top right, rgba(16, 185, 129, 0.06), transparent 55%),
                 radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.04), transparent 50%),

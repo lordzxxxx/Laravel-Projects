@@ -29,7 +29,7 @@
 
         .card-header h3 {
             font-size: 1.1rem;
-            color: var(--green-dark);
+            color: var(--chrome-icon-color, var(--green-dark));
         }
 
         .pagination {
@@ -48,8 +48,8 @@
 
         .tenant-filters {
             padding: 16px 20px;
-            border-bottom: 1px solid #E5E7EB;
-            background: rgba(248, 250, 252, 0.82);
+            border-bottom: 1px solid var(--app-surface-border, #E5E7EB);
+            background: var(--app-surface-muted-bg, rgba(248, 250, 252, 0.82));
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
         }
@@ -80,23 +80,23 @@
             font-weight: 700;
             letter-spacing: .03em;
             text-transform: uppercase;
-            color: #6B7280;
+            color: var(--ink-500, #6B7280);
         }
 
         .tenant-filter-input {
             width: 100%;
-            border: 1px solid #D1D5DB;
+            border: 1px solid var(--app-surface-border, #D1D5DB);
             border-radius: 10px;
             padding: 9px 11px;
             font-size: 13px;
-            color: #111827;
-            background: #fff;
+            color: var(--ink-800, #111827);
+            background: var(--app-surface-bg, #fff);
         }
 
         .tenant-filter-input:focus {
-            border-color: #10B981;
+            border-color: var(--chrome-focus-ring, #10B981);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--chrome-focus-ring, #10b981) 18%, transparent);
         }
 
         .tenant-filter-actions {
@@ -110,7 +110,7 @@
 
         .tenant-filter-meta {
             font-size: 13px;
-            color: #6B7280;
+            color: var(--ink-500, #6B7280);
         }
 
         .tenant-summary-row {
@@ -120,21 +120,21 @@
         .tenant-name {
             font-size: 0.95rem;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--ink-900, #0f172a);
             letter-spacing: -0.01em;
         }
 
         .tenant-sub {
             margin-top: 2px;
             font-size: 11px;
-            color: #6b7280;
+            color: var(--ink-500, #6b7280);
         }
 
         .admin-actions-shell {
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid var(--app-surface-border, #e5e7eb);
             background:
-                radial-gradient(900px 200px at 0% 0%, rgba(16, 185, 129, 0.04), transparent 60%),
-                linear-gradient(180deg, rgba(248, 250, 252, 0.96) 0%, rgba(241, 245, 249, 0.92) 100%);
+                radial-gradient(900px 200px at 0% 0%, color-mix(in srgb, var(--chrome-active-bg, #10b981) 6%, transparent), transparent 60%),
+                var(--app-surface-muted-bg, linear-gradient(180deg, rgba(248, 250, 252, 0.96) 0%, rgba(241, 245, 249, 0.92) 100%));
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
         }
@@ -144,7 +144,39 @@
         }
 
         .tenants-table-head {
-            background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+            background: var(--app-surface-muted-bg, linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%));
+        }
+
+        .tenants-table-head .tenant-row-labels {
+            color: var(--ink-500, #6b7280);
+        }
+
+        .tenant-table-body {
+            background: var(--app-surface-bg, #fff);
+            border-color: var(--app-surface-border, #f3f4f6);
+        }
+
+        .tenant-row-hover:hover {
+            background: var(--app-surface-muted-bg, rgba(249, 250, 251, 0.9));
+        }
+
+        .tenant-gcash-notice {
+            border-color: color-mix(in srgb, var(--chrome-focus-ring, #0ea5e9) 28%, var(--app-surface-border, #e0f2fe));
+            background: color-mix(in srgb, var(--chrome-active-bg, #0ea5e9) 6%, var(--app-surface-bg, #f0f9ff));
+        }
+        .tenant-gcash-notice__icon {
+            background: color-mix(in srgb, var(--chrome-active-bg, #0ea5e9) 14%, var(--app-surface-bg));
+            color: var(--chrome-icon-color, #0369a1);
+            border: 1px solid color-mix(in srgb, var(--chrome-focus-ring, #0ea5e9) 22%, transparent);
+        }
+        .tenant-gcash-notice__title {
+            color: var(--chrome-icon-color, #0c4a6e);
+        }
+        .tenant-gcash-notice__body {
+            color: var(--ink-700, #334155);
+        }
+        .tenant-gcash-notice__body strong {
+            color: var(--ink-800, #1e293b);
         }
 
         [x-cloak] { display: none !important; }
@@ -330,7 +362,7 @@
                 @endphp
                 {{-- Column guide: same flex row as data (scroll horizontally on narrow viewports) --}}
                 <div class="{{ $tenantRowScroll }} tenants-table-head border-b border-gray-200">
-                    <div class="{{ $tenantRowFlex }} py-3 text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                    <div class="{{ $tenantRowFlex }} tenant-row-labels py-3 text-[11px] font-bold uppercase tracking-wider">
                         <div class="w-40 shrink-0">Tenant</div>
                         <div class="w-44 shrink-0">Owner</div>
                         <div class="w-52 shrink-0">Domain</div>
@@ -342,7 +374,7 @@
                     </div>
                 </div>
 
-                <div class="divide-y divide-gray-100 bg-white">
+                <div class="tenant-table-body divide-y divide-gray-100">
                     @forelse($tenants as $tenant)
                         @php
                             $domainEnabled = (bool) ($tenant->domain_enabled ?? true);
@@ -381,7 +413,7 @@
 
                         <div class="group" x-data="{ open: false }">
                             {{-- Summary: single horizontal flex row (scroll if viewport is narrow) --}}
-                            <div class="{{ $tenantRowScroll }} transition-colors hover:bg-gray-50/90">
+                            <div class="{{ $tenantRowScroll }} tenant-row-hover transition-colors">
                                 <div class="{{ $tenantRowFlex }} tenant-summary-row py-4">
                                     <div class="w-40 shrink-0">
                                         <p class="tenant-name leading-tight">{{ $tenant->name }}</p>

@@ -18,6 +18,7 @@
     @include('partials.tenant-favicon')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>@include('partials.typography-system')</style>
     <style>
         .auth-skip:focus { clip: auto; height: auto; width: auto; overflow: visible; outline: none; padding: .75rem 1rem; top: .75rem; left: .75rem; z-index: 100; margin: 0; }
         .auth-skip { position: absolute; left: .75rem; top: -100px; clip: rect(0 0 0 0); height: 1px; width: 1px; overflow: hidden; white-space: nowrap; border: 0; border-radius: .5rem; background: rgb(27 94 32); color: rgb(255 255 255); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); }
@@ -75,7 +76,7 @@
         /* Page background: see partials/auth-public-carousel-bg (rotating photos + 60% white scrim) */
     </style>
 </head>
-<body class="auth-public-carousel-page min-h-[100dvh] overflow-x-hidden overflow-y-auto text-base text-brand-dark antialiased">
+<body class="auth-public-carousel-page min-h-[100dvh] overflow-x-hidden overflow-y-auto font-sans text-base text-brand-dark antialiased">
     @include('partials.auth-public-carousel-bg')
     <a href="#public-signin-main" class="auth-skip text-sm font-semibold">Skip to sign-in form</a>
 

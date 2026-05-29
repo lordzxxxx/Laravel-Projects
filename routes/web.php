@@ -30,12 +30,10 @@ Route::middleware(['tenant.port', 'tenant.context', 'tenant.required', 'tenant.p
 
         Route::get('/browse-accommodations', function (Request $request) {
             if ($request->user()) {
-                return redirect()->route('accommodations.index');
+                return redirect()->route('dashboard', $request->query());
             }
 
-            $request->session()->put('url.intended', route('accommodations.index'));
-
-            return redirect()->route('login', ['portal' => 'client']);
+            return redirect()->route('dashboard', $request->query());
         })->name('landing.browse-accommodations');
 
         Route::get('/dashboard', [ClientDashboardController::class, 'index'])

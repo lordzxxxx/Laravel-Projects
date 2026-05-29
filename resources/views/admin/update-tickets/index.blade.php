@@ -10,14 +10,14 @@
     <style>
         @include('admin.partials.admin-shell-styles')
         .filters { display: grid; grid-template-columns: minmax(180px, 320px) minmax(180px, 320px) auto; gap: 10px; align-items: end; margin-bottom: 16px; }
-        .filters label { font-size: 0.8rem; font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 4px; }
-        .filters select { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--gray-200); min-width: 160px; }
-        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--gray-200); background: var(--white); font-weight: 600; text-decoration: none; color: var(--gray-800); font-size: 0.88rem; }
-        .btn.primary { background: var(--green-primary, #2E7D32); color: #fff; border-color: transparent; }
+        .filters label { font-size: 0.8rem; font-weight: 600; color: var(--ink-600, var(--gray-700)); display: block; margin-bottom: 4px; }
+        .filters select { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--app-surface-border, var(--gray-200)); background: var(--app-surface-bg, #fff); color: var(--ink-800); min-width: 160px; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--app-surface-border, var(--gray-200)); background: var(--app-surface-bg, var(--white)); font-weight: 600; text-decoration: none; color: var(--ink-800, var(--gray-800)); font-size: 0.88rem; }
+        .btn.primary { background: var(--chrome-active-bg, var(--green-primary, #457359)); color: #fff; border-color: transparent; }
         .support-table-wrap { overflow: auto; }
         .support-table { width: 100%; min-width: 980px; border-collapse: collapse; table-layout: fixed; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid var(--gray-200); text-align: left; font-size: 0.9rem; vertical-align: middle; }
-        th { background: var(--green-white, #E8F5E9); font-size: 0.75rem; text-transform: uppercase; color: var(--gray-700); }
+        th, td { padding: 10px 12px; border-bottom: 1px solid var(--app-surface-border, var(--gray-200)); text-align: left; font-size: 0.9rem; vertical-align: middle; color: var(--ink-700); }
+        th { background: var(--app-surface-muted-bg, var(--green-white, #E8F5E9)); font-size: 0.75rem; text-transform: uppercase; color: var(--ink-600, var(--gray-700)); }
         .cell-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
         .col-created { width: 160px; }
         .col-tenant { width: 170px; }

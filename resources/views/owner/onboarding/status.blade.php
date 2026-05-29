@@ -6,6 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Registration status — {{ $tenant->name }}</title>
     <style>
+        @include('partials.app-typography-styles')
         :root {
             @include('partials.tenant-theme-css-vars', ['themeTenant' => $tenant])
             --muted: #6b7280;
@@ -15,7 +16,6 @@
         body {
             margin: 0;
             min-height: 100vh;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             background: #f8fafc;
             padding: 24px;
             display: flex;

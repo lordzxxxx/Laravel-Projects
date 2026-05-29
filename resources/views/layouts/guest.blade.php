@@ -10,12 +10,8 @@
 
         @include('partials.tenant-favicon')
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <style>@include('partials.typography-system')</style>
     </head>
     <body class="min-h-[100dvh] overflow-x-hidden font-sans text-gray-900 antialiased">
         <div class="flex min-h-[100dvh] min-h-screen flex-col items-center overflow-x-hidden bg-gray-100 pt-6 dark:bg-gray-900 sm:justify-center sm:pt-0">

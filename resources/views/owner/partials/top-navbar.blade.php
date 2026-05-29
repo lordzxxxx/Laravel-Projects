@@ -1,4 +1,5 @@
 <nav class="navbar" id="appNavbar">
+    @include('partials.navbar-tribal-accent')
     @php
         $currentTenant = \App\Models\Tenant::current();
         $current = $active ?? '';
@@ -37,15 +38,12 @@
         $canSeeMessages = $isOwnerRole || $authUser?->hasPermission(\App\Models\User::PERM_MESSAGES_MANAGE);
     @endphp
 
-    <a href="{{ $dashboardHref }}" class="nav-logo">
-        <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
-        <span>
-            ImpaStay
-            @if($currentTenant)
-                <small style="display:block; font-size:0.72rem; font-weight:600; color: var(--green-medium); margin-top:2px;">{{ $currentTenant->name }}</small>
-            @endif
-        </span>
-    </a>
+    @include('partials.navbar-brand-block', [
+        'brandHref' => $dashboardHref,
+        'brandSubtitle' => $currentTenant
+            ? '| '.($currentTenant->domain ?: $currentTenant->slug)
+            : '| Owner portal',
+    ])
 
     <button type="button" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"
             onclick="var n=document.getElementById('appNavbar');var o=n.classList.toggle('nav-open');this.setAttribute('aria-expanded',o?'true':'false');">
@@ -75,26 +73,86 @@
             @php $msgUnread = (int) ($unreadMessagesCount ?? 0); @endphp
             <li><a href="{{ $messagesHref }}" class="{{ $current === 'messages' || request()->routeIs('messages.*') ? 'active' : '' }}"><i class="fas fa-envelope"></i> Messages <span class="nav-msg-count-badge {{ $msgUnread === 0 ? 'is-empty' : '' }}" @if($msgUnread > 0) aria-label="{{ $msgUnread }} unread messages" @else aria-hidden="true" @endif>@if($msgUnread > 0){{ $msgUnread > 99 ? '99+' : $msgUnread }}@else{!! '&nbsp;' !!}@endif</span></a></li>
         @endif
-        <li><a href="{{ $profileHref }}" class="{{ $current === 'settings' || request()->routeIs('profile.edit') ? 'active' : '' }}"><i class="fas fa-cog"></i> Settings</a></li>
     </ul>
 
     <div class="nav-actions">
         @include('partials.notification-bell')
-        <div class="user-display">
-            @if($authUser?->avatar)
-                <img src="{{ asset('storage/avatars/' . $authUser->avatar . '?v=' . time()) }}" alt="{{ $authUser->name }}" class="user-avatar" style="object-fit: cover;">
-            @else
-                <div class="user-avatar">{{ substr((string) $authUser?->name, 0, 2) }}</div>
-            @endif
-            <div class="user-info">
-                <div class="user-name">{{ $authUser?->name }}</div>
-                <div class="user-role">{{ $displayRole }}</div>
+        <div class="user-menu" data-user-menu>
+            <button type="button" class="user-display user-menu__button" aria-haspopup="menu" aria-expanded="false">
+                @if($authUser?->avatar)
+                    <img src="{{ asset('storage/avatars/' . $authUser->avatar . '?v=' . time()) }}" alt="{{ $authUser->name }}" class="user-avatar" style="object-fit: cover;">
+                @else
+                    <div class="user-avatar">{{ substr((string) $authUser?->name, 0, 2) }}</div>
+                @endif
+                <div class="user-info">
+                    <div class="user-name">{{ $authUser?->name }}</div>
+                    <div class="user-role">{{ $displayRole }}</div>
+                </div>
+                <i class="fas fa-chevron-down user-menu__chevron" aria-hidden="true"></i>
+            </button>
+
+            <div class="user-menu__panel" role="menu">
+                <a role="menuitem" class="user-menu__item" href="{{ route('owner.landing.edit', [], false) }}"><i class="fas fa-palette"></i> Landing &amp; logo</a>
+                <a role="menuitem" class="user-menu__item" href="{{ $profileHref }}"><i class="fas fa-user"></i> Profile</a>
+                <div class="user-menu__sep" role="separator" aria-hidden="true"></div>
+                <form class="user-menu__form" action="{{ $logoutHref }}" method="POST">
+                    @csrf
+                    <button role="menuitem" type="submit" class="user-menu__item user-menu__item--danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </form>
             </div>
         </div>
-
-        <form action="{{ $logoutHref }}" method="POST">
-            @csrf
-            <button type="submit" class="nav-btn primary"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </form>
     </div>
 </nav>
+
+@once
+    <script>
+        (function () {
+            if (window.__impaUserMenuInit) return;
+            window.__impaUserMenuInit = true;
+
+            function closeAll(exceptRoot) {
+                document.querySelectorAll('[data-user-menu].is-open').forEach(function (root) {
+                    if (exceptRoot && root === exceptRoot) return;
+                    root.classList.remove('is-open');
+                    var btn = root.querySelector('button[aria-expanded]');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                });
+            }
+
+            function toggleFromButton(btn) {
+                var root = btn && btn.closest ? btn.closest('[data-user-menu]') : null;
+                if (!root) return;
+                var willOpen = !root.classList.contains('is-open');
+                closeAll(root);
+                root.classList.toggle('is-open', willOpen);
+                btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            }
+
+            window.__impaUserMenuToggle = toggleFromButton;
+
+            function bindAll() {
+                document.querySelectorAll('button.user-menu__button').forEach(function (btn) {
+                    if (btn.__impaBound) return;
+                    btn.__impaBound = true;
+                    btn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFromButton(btn);
+                    });
+                });
+            }
+
+            bindAll();
+            document.addEventListener('DOMContentLoaded', bindAll);
+
+            document.addEventListener('click', function (e) {
+                var root = e.target && e.target.closest ? e.target.closest('[data-user-menu]') : null;
+                if (!root) closeAll();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeAll();
+            });
+        })();
+    </script>
+@endonce

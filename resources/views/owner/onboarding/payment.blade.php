@@ -6,6 +6,7 @@
     @include('partials.tenant-favicon')
     <title>Payment setup — {{ $tenant->name }}</title>
     <style>
+        @include('partials.app-typography-styles')
         :root {
             @include('partials.tenant-theme-css-vars', ['themeTenant' => $tenant])
             --ink: #111827;
@@ -17,7 +18,6 @@
         body {
             margin: 0;
             min-height: 100vh;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(145deg, #fff 0%, #f8fafc 100%);
             color: var(--ink);
             padding: 24px;

@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @include('owner.partials.owner-page-fonts')
         @php
             $authUser = auth()->user();
             $isTenantAdmin = $authUser?->isAdmin() && \App\Models\Tenant::checkCurrent();
@@ -54,7 +55,8 @@
         @include('partials.messaging-ui-styles')
 
         /* Messages index: full-width shell, minimal side gutters, flex-fill split pane */
-        body.owner-nav-page main.messages-index-main.main-content.with-owner-nav {
+        body.owner-nav-page main.messages-index-main.main-content.with-owner-nav,
+        body.client-nav-page main.messages-index-main.client-guest-main--full {
             max-width: none !important;
             width: 100% !important;
             margin-left: 0 !important;
@@ -65,7 +67,7 @@
         }
     </style>
 </head>
-<body class="{{ $useOwnerNavbar ? 'owner-nav-page bg-gray-50 text-gray-800' : 'min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-white text-gray-800' }}">
+<body class="{{ $useOwnerNavbar ? 'owner-nav-page bg-gray-50 text-gray-800' : ($authUser?->isClient() ? 'client-nav-page font-sans text-gray-800' : 'min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-white text-gray-800') }}">
     @if($useOwnerNavbar)
         @include('owner.partials.top-navbar', ['active' => 'messages'])
     @elseif($authUser?->isClient())
@@ -87,7 +89,7 @@
                     <li><a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Browse</a></li>
                 @endif
             @endauth
-            <li><a href="{{ route('accommodations.index') }}" class="{{ request()->routeIs('accommodations.*') ? 'active' : '' }}">Browse</a></li>
+            <li><a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') || request()->routeIs('accommodations.*') ? 'active' : '' }}">Browse</a></li>
             @if(! Auth::user()->isClient() || Auth::user()->tenantClientMayManageOwnStays())
                 <li><a href="{{ route('bookings.index') }}" class="{{ request()->routeIs('bookings.*') ? 'active' : '' }}">My Bookings</a></li>
             @endif
@@ -109,8 +111,8 @@
     @endif
 
     <main
-        class="messages-index-main {{ $useOwnerNavbar ? 'main-content with-owner-nav flex w-full min-h-screen flex-col' : 'mx-auto flex min-h-screen w-full max-w-none flex-col px-3 pb-6 sm:px-4 lg:px-6' }}"
-        @if(! $useOwnerNavbar) style="padding-top: calc(var(--client-nav-offset) + 12px);" @endif
+        class="messages-index-main {{ $useOwnerNavbar ? 'main-content with-owner-nav flex w-full min-h-screen flex-col' : ($authUser?->isClient() ? 'client-guest-main client-guest-main--full flex min-h-screen flex-col' : 'mx-auto flex min-h-screen w-full max-w-none flex-col px-3 pb-6 sm:px-4 lg:px-6') }}"
+        @if(! $useOwnerNavbar && ! $authUser?->isClient()) style="padding-top: calc(var(--client-nav-offset) + 12px);" @endif
     >
         <header class="page-header mb-4 flex flex-shrink-0 flex-col gap-3 sm:mb-5 sm:flex-row sm:items-start sm:justify-between">
             <div class="min-w-0 flex-1">
@@ -181,7 +183,7 @@
                                         <span class="shrink-0 text-xs font-medium text-slate-500">{{ $message->created_at->diffForHumans() }}</span>
                                     </div>
                                     <div class="truncate text-sm font-medium text-slate-700">{{ $message->subject ?? 'No subject' }}</div>
-                                    <div class="truncate text-xs text-slate-500">{{ Str::limit($message->content, 56) }}</div>
+                                    <div class="truncate text-xs text-slate-500">{{ Str::limit($message->excerpt, 56) }}</div>
                                 </div>
                             </a>
                         @endforeach
@@ -234,11 +236,18 @@
                                     </div>
                                 @endif
                                 <div class="max-w-[85%] sm:max-w-[74%]">
-                                    <div
-                                        class="rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm sm:text-[0.9375rem] {{ $isMine ? 'rounded-tr-md bg-gradient-to-br from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-900/20' : 'rounded-tl-md border border-slate-200/90 bg-white text-slate-900' }}"
-                                    >
-                                        {{ $chatMessage->content }}
-                                    </div>
+                                    @if(filled($chatMessage->content))
+                                        <div
+                                            class="rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm sm:text-[0.9375rem] {{ $isMine ? 'rounded-tr-md bg-gradient-to-br from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-900/20' : 'rounded-tl-md border border-slate-200/90 bg-white text-slate-900' }}"
+                                        >
+                                            {{ $chatMessage->content }}
+                                        </div>
+                                    @endif
+                                    @if($chatMessage->attachment_url)
+                                        <a href="{{ $chatMessage->attachment_url }}" target="_blank" rel="noopener noreferrer" class="msg-bubble-attachment {{ filled($chatMessage->content) ? 'msg-bubble-attachment--stacked' : '' }} {{ $isMine ? 'ml-auto' : '' }}">
+                                            <img src="{{ $chatMessage->attachment_url }}" alt="Attached photo" loading="lazy" decoding="async">
+                                        </a>
+                                    @endif
                                     <p class="mt-1.5 text-[0.7rem] font-medium text-slate-500 {{ $isMine ? 'text-right' : '' }}">
                                         {{ $senderName }} · {{ $chatMessage->created_at->format('M d, h:i A') }}
                                     </p>
@@ -257,14 +266,24 @@
 
                     @if($selectedMessage && $replyAnchorMessage)
                         <div class="flex-shrink-0 border-t border-slate-100 bg-white px-4 py-3.5 sm:px-5 sm:py-4 lg:px-6">
-                            <form method="POST" action="{{ route('messages.reply', $replyAnchorMessage, false) }}" class="flex flex-col gap-3 sm:gap-3" data-loading-form>
+                            <form method="POST" action="{{ route('messages.reply', $replyAnchorMessage, false) }}" class="flex flex-col gap-3 sm:gap-3" data-loading-form enctype="multipart/form-data">
                                 @csrf
                                 <textarea
                                     name="content"
                                     class="msg-scrollbar min-h-[88px] w-full resize-y rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none ring-teal-500/0 transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/25 sm:min-h-[96px] sm:text-[0.9375rem]"
                                     placeholder="Write a reply…"
-                                    required
-                                ></textarea>
+                                >{{ old('content') }}</textarea>
+                                @error('content')
+                                    <p class="text-sm text-red-700">{{ $message }}</p>
+                                @enderror
+                                <div class="msg-file-field">
+                                    <label for="inline_reply_attachment" class="text-xs font-semibold text-slate-600">Photo <span class="font-normal text-slate-400">(optional)</span></label>
+                                    <input type="file" name="attachment" id="inline_reply_attachment" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="msg-file-input" data-image-preview="inline-reply-preview">
+                                    @error('attachment')
+                                        <p class="text-sm text-red-700">{{ $message }}</p>
+                                    @enderror
+                                    <div class="msg-preview-thumb" id="inline-reply-preview" aria-hidden="true"></div>
+                                </div>
                                 <div class="flex justify-end">
                                     <button
                                         type="submit"
@@ -308,6 +327,7 @@
             </div>
         @endif
     </main>
+    @include('partials.message-attachment-preview-script')
     <script>
         document.querySelectorAll('form[data-loading-form]').forEach((form) => {
             form.addEventListener('submit', () => {

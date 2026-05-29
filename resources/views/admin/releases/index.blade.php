@@ -15,10 +15,11 @@
             max-width: none;
         }
         .updates-surface {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #e2e8f0;
+            background: var(--app-surface-bg, rgba(255, 255, 255, 0.9));
+            border: 1px solid var(--app-surface-border, #e2e8f0);
             border-radius: 14px;
-            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+            box-shadow: var(--shadow-sm, 0 6px 20px rgba(15, 23, 42, 0.05));
+            color: var(--ink-800);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
         }

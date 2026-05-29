@@ -30,7 +30,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.07em;
-            color: #64748b;
+            color: var(--ink-500, #64748b);
             margin: 0 0 10px 2px;
         }
         .kpi-grid {
@@ -41,15 +41,15 @@
             width: 100%;
         }
         .kpi-card {
-            background: var(--white);
+            background: var(--app-surface-bg, var(--white));
             padding: 18px 20px;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+            box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
             display: flex;
             align-items: center;
             gap: 16px;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid #e8ece9;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            border: 1px solid var(--app-surface-border, #e8ece9);
         }
         .kpi-card:hover {
             border-color: #c8e6c9;
@@ -107,7 +107,7 @@
         .kpi-info { min-width: 0; flex: 1; }
         .kpi-info h3 {
             font-size: 1.65rem;
-            color: var(--green-dark);
+            color: var(--chrome-icon-color, var(--green-dark));
             margin-bottom: 2px;
             font-weight: 700;
             line-height: 1.15;
@@ -125,7 +125,7 @@
             color: #94a3b8;
         }
         .kpi-info p {
-            color: var(--gray-500);
+            color: var(--ink-500, var(--gray-500));
             font-size: 0.8rem;
             font-weight: 500;
             line-height: 1.35;
@@ -141,7 +141,7 @@
         
         /* Dashboard Card */
         .dashboard-card {
-            background: var(--white);
+            background: var(--app-surface-bg, var(--white));
             border-radius: 16px;
             box-shadow: 0 4px 15px rgba(27, 94, 32, 0.08);
             padding: 18px;
@@ -150,7 +150,7 @@
         }
         .dashboard-card h3 { 
             font-size: 1rem; 
-            color: var(--gray-800); 
+            color: var(--ink-800, var(--gray-800)); 
             margin-bottom: 14px; 
             font-weight: 600;
             display: flex;
@@ -160,7 +160,7 @@
         .dashboard-card h3 .icon { color: var(--green-primary); }
 
         .filter-card {
-            background: var(--white);
+            background: var(--app-surface-bg, var(--white));
             border: 1px solid var(--green-soft);
             border-radius: 16px;
             box-shadow: 0 4px 15px rgba(27, 94, 32, 0.08);
@@ -178,7 +178,7 @@
             font-size: 0.78rem;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            color: var(--gray-500);
+            color: var(--ink-500, var(--gray-500));
             margin-bottom: 6px;
             font-weight: 600;
         }
@@ -189,8 +189,9 @@
             border-radius: 10px;
             padding: 9px 11px;
             font-size: 0.9rem;
-            color: var(--gray-700);
-            background: var(--white);
+            color: var(--ink-800, var(--gray-700));
+            background: var(--app-surface-bg, var(--white));
+            border-color: var(--app-surface-border, var(--gray-300));
         }
         .btn-filter {
             border-radius: 10px;
@@ -309,36 +310,37 @@
             border-spacing: 0;
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid rgba(34, 197, 94, 0.22);
-            box-shadow: 0 2px 14px rgba(22, 101, 52, 0.06);
-            background: #fff;
+            border: 1px solid color-mix(in srgb, var(--chrome-focus-ring, #166534) 28%, transparent);
+            box-shadow: var(--shadow-sm, 0 2px 14px rgba(22, 101, 52, 0.06));
+            background: var(--app-surface-bg, #fff);
         }
         .pbi-kpi-table thead th {
-            background: #ecfdf5;
-            color: #14532d;
+            background: var(--chrome-surface-bg, var(--app-surface-muted-bg, #ecfdf5));
+            color: var(--chrome-icon-color, #14532d);
             font-size: 0.68rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.06em;
             padding: 10px 12px;
             text-align: center;
-            border-bottom: 1px solid rgba(34, 197, 94, 0.25);
-            border-right: 1px solid rgba(34, 197, 94, 0.12);
+            border-bottom: 1px solid var(--app-surface-border, rgba(34, 197, 94, 0.25));
+            border-right: 1px solid var(--app-surface-border, rgba(34, 197, 94, 0.12));
         }
         .pbi-kpi-table thead th:last-child { border-right: none; }
         .pbi-kpi-table tbody td {
             padding: 14px 12px;
             text-align: center;
             vertical-align: middle;
-            border-right: 1px solid var(--gray-200);
-            background: #fff;
+            border-right: 1px solid var(--app-surface-border, var(--ink-200, var(--gray-200)));
+            background: var(--app-surface-bg, #fff);
+            color: var(--ink-800);
         }
         .pbi-kpi-table tbody td:last-child { border-right: none; }
         .pbi-kpi-value {
             display: inline-block;
             font-size: 1.35rem;
             font-weight: 800;
-            color: #166534;
+            color: var(--chrome-icon-color, #166534);
             font-variant-numeric: tabular-nums;
             line-height: 1.2;
         }
@@ -353,9 +355,9 @@
             flex-direction: column;
             min-width: 0;
             border-radius: 12px;
-            border: 1px solid rgba(34, 197, 94, 0.22);
-            background: #fff;
-            box-shadow: 0 4px 18px rgba(22, 101, 52, 0.07);
+            border: 1px solid color-mix(in srgb, var(--chrome-focus-ring, #166534) 28%, transparent);
+            background: var(--app-surface-bg, #fff);
+            box-shadow: var(--shadow-sm, 0 4px 18px rgba(22, 101, 52, 0.07));
             overflow: hidden;
         }
         .pbi-chart-panel-head {
@@ -365,12 +367,12 @@
             padding: 10px 12px;
             font-size: 0.88rem;
             font-weight: 600;
-            color: #14532d;
-            background: #f7fcf8;
-            border-bottom: 1px solid rgba(34, 197, 94, 0.12);
+            color: var(--chrome-icon-color, #14532d);
+            background: var(--app-surface-muted-bg, #f7fcf8);
+            border-bottom: 1px solid var(--app-surface-border, rgba(34, 197, 94, 0.12));
         }
         .pbi-chart-panel-head i {
-            color: var(--green-primary);
+            color: var(--chrome-focus-ring, var(--green-primary));
             font-size: 1rem;
         }
         .pbi-chart-panel-body {
@@ -390,8 +392,8 @@
             gap: 8px;
         }
         .pbi-mini-table-wrap {
-            background: #fafdfb;
-            border: 1px solid rgba(34, 197, 94, 0.15);
+            background: var(--app-surface-muted-bg, #fafdfb);
+            border: 1px solid var(--app-surface-border, rgba(34, 197, 94, 0.15));
             border-radius: 8px;
             padding: 8px 6px 6px;
             min-height: 0;
@@ -401,7 +403,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            color: #166534;
+            color: var(--chrome-icon-color, #166534);
             padding: 0 4px 6px;
             margin: 0;
         }
@@ -414,10 +416,11 @@
         .pbi-mini-table td {
             padding: 5px 6px;
             text-align: left;
-            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+            border-bottom: 1px solid var(--app-surface-border, rgba(226, 232, 240, 0.9));
+            color: var(--ink-700, var(--gray-700));
         }
         .pbi-mini-table thead th {
-            color: var(--gray-600);
+            color: var(--ink-500, var(--gray-600));
             font-weight: 600;
             font-size: 0.68rem;
             text-transform: uppercase;
@@ -432,10 +435,10 @@
             text-align: right;
             font-variant-numeric: tabular-nums;
             font-weight: 700;
-            color: #14532d;
+            color: var(--chrome-icon-color, #14532d);
         }
         .pbi-mini-table td.pbi-muted {
-            color: var(--gray-500);
+            color: var(--ink-500, var(--gray-500));
             font-style: italic;
         }
         
@@ -459,12 +462,12 @@
             padding: 0;
             overflow: hidden;
             border-radius: 14px;
-            border: 1px solid rgba(34, 197, 94, 0.22);
-            box-shadow: 0 8px 28px rgba(22, 101, 52, 0.07);
-            background: #fff;
+            border: 1px solid color-mix(in srgb, var(--chrome-focus-ring, #166534) 28%, transparent);
+            box-shadow: var(--shadow-md, 0 8px 28px rgba(22, 101, 52, 0.07));
+            background: var(--app-surface-bg, #fff);
         }
         .pbi-visual-header {
-            background: #166534;
+            background: var(--chrome-active-bg, #166534);
             color: #ffffff;
             padding: 12px 16px;
             display: flex;
@@ -499,12 +502,13 @@
             margin-top: 2px;
         }
         .pbi-visual-body {
-            background: #fafdfb;
+            background: var(--app-surface-muted-bg, #fafdfb);
             padding: 14px 14px 10px;
+            color: var(--ink-700);
         }
         .pbi-visual-body--demographics {
             padding: 0;
-            background: #fafdfb;
+            background: var(--app-surface-muted-bg, #fafdfb);
         }
         .scroll-target {
             scroll-margin-top: calc(var(--app-main-top-offset, 108px) + 12px);
@@ -539,8 +543,9 @@
         }
         .data-table { width: 100%; border-collapse: collapse; }
         .data-table th, .data-table td { padding: 14px; text-align: left; border-bottom: 1px solid var(--gray-200); }
-        .data-table th { font-weight: 600; color: var(--gray-600); font-size: 0.8rem; text-transform: uppercase; background: var(--cream); }
-        .data-table tr:hover { background: var(--green-white); }
+        .data-table th { font-weight: 600; color: var(--ink-600, var(--gray-600)); font-size: 0.8rem; text-transform: uppercase; background: var(--app-surface-muted-bg, var(--cream)); }
+        .data-table tr:hover { background: var(--app-surface-muted-bg, var(--green-white)); }
+        .data-table td { color: var(--ink-700, var(--gray-700)); }
         
         /* Status Badges */
         .status-badge { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; }
@@ -1063,6 +1068,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             const demographics = @json($demographics ?? []);
 
+            function chartTheme() {
+                var root = document.documentElement;
+                var styles = getComputedStyle(root);
+                var isDark = root.classList.contains('dark');
+                return {
+                    isDark: isDark,
+                    tick: styles.getPropertyValue('--ink-500').trim() || (isDark ? '#94a3b8' : '#64748b'),
+                    legend: styles.getPropertyValue('--ink-600').trim() || (isDark ? '#cbd5e1' : '#334155'),
+                    grid: isDark ? 'rgba(148, 163, 184, 0.18)' : 'rgba(148, 163, 184, 0.2)',
+                    axisTitle: styles.getPropertyValue('--chrome-icon-color').trim() || '#166534',
+                    sliceBorder: isDark ? 'rgba(30, 41, 59, 0.92)' : '#ffffff',
+                    tooltipBg: isDark ? 'rgba(15, 23, 42, 0.94)' : 'rgba(15, 61, 36, 0.94)',
+                };
+            }
+
+            var theme = chartTheme();
+
             const genderChartEl = document.getElementById('genderChart');
             if (genderChartEl) {
                 new Chart(genderChartEl.getContext('2d'), {
@@ -1073,7 +1095,7 @@
                             data: demographics.gender?.counts ?? [0, 0, 0],
                             backgroundColor: ['#14532d', '#22c55e', '#cbd5e1'],
                             borderWidth: 2,
-                            borderColor: '#ffffff',
+                            borderColor: theme.sliceBorder,
                         }]
                     },
                     options: {
@@ -1088,12 +1110,12 @@
                                     usePointStyle: true,
                                     pointStyle: 'circle',
                                     padding: 14,
-                                    color: '#334155',
+                                    color: theme.legend,
                                     font: { size: 11, weight: '500' }
                                 }
                             },
                             tooltip: {
-                                backgroundColor: 'rgba(15, 61, 36, 0.94)',
+                                backgroundColor: theme.tooltipBg,
                                 titleColor: '#ecfdf5',
                                 bodyColor: '#d1fae5',
                                 padding: 12,
@@ -1132,7 +1154,7 @@
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                backgroundColor: 'rgba(15, 61, 36, 0.94)',
+                                backgroundColor: theme.tooltipBg,
                                 titleColor: '#ecfdf5',
                                 bodyColor: '#d1fae5',
                                 padding: 12,
@@ -1146,18 +1168,18 @@
                         },
                         scales: {
                             x: {
-                                grid: { color: 'rgba(34, 197, 94, 0.1)', drawBorder: false },
-                                ticks: { color: '#64748b', font: { size: 11 } }
+                                grid: { color: theme.grid, drawBorder: false },
+                                ticks: { color: theme.tick, font: { size: 11 } }
                             },
                             y: {
                                 beginAtZero: true,
                                 max: locYMax,
-                                ticks: { precision: 0, color: '#64748b' },
-                                grid: { color: 'rgba(148, 163, 184, 0.2)' },
+                                ticks: { precision: 0, color: theme.tick },
+                                grid: { color: theme.grid },
                                 title: {
                                     display: true,
                                     text: 'Bookings',
-                                    color: '#166534',
+                                    color: theme.axisTitle,
                                     font: { size: 11, weight: '600' }
                                 }
                             }
@@ -1199,7 +1221,7 @@
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                backgroundColor: 'rgba(15, 61, 36, 0.94)',
+                                backgroundColor: theme.tooltipBg,
                                 titleColor: '#ecfdf5',
                                 bodyColor: '#d1fae5',
                                 padding: 12,
@@ -1214,17 +1236,17 @@
                         scales: {
                             x: {
                                 grid: { display: false },
-                                ticks: { color: '#64748b', maxRotation: 45, minRotation: 0, font: { size: 10 } }
+                                ticks: { color: theme.tick, maxRotation: 45, minRotation: 0, font: { size: 10 } }
                             },
                             y: {
                                 beginAtZero: true,
                                 max: ageYMax,
-                                ticks: { precision: 0, color: '#64748b' },
-                                grid: { color: 'rgba(148, 163, 184, 0.2)' },
+                                ticks: { precision: 0, color: theme.tick },
+                                grid: { color: theme.grid },
                                 title: {
                                     display: true,
                                     text: 'Bookings',
-                                    color: '#166534',
+                                    color: theme.axisTitle,
                                     font: { size: 11, weight: '600' }
                                 }
                             }

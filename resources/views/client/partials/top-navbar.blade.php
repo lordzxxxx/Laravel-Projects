@@ -5,24 +5,21 @@
 
     if ($usePortalGuestUrls) {
         $guestDashboardHref = route('portal.guest.dashboard');
-        $accommodationsHref = route('portal.accommodations.index');
         $bookingsHref = route('portal.bookings.index');
         $wishlistHref = route('portal.wishlist.index');
     } else {
         $guestDashboardHref = '/dashboard';
-        $accommodationsHref = '/accommodations';
         $bookingsHref = '/bookings';
         $wishlistHref = null;
     }
 @endphp
 
 <nav class="navbar" id="appNavbar">
-    <a href="{{ $guestDashboardHref }}" class="nav-logo">
-        <img src="/SYSTEMLOGO.png" alt="Impasug-ong Accomocations" width="45" height="45">
-        <span class="nav-logo-text">
-            <span class="nav-logo-title">Impasug-ong Accomocations</span>
-        </span>
-    </a>
+    @include('partials.navbar-tribal-accent')
+    @include('partials.navbar-brand-block', [
+        'brandHref' => $guestDashboardHref,
+        'brandSubtitle' => '| Guest stays',
+    ])
 
     <button type="button" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"
             onclick="var n=document.getElementById('appNavbar');var o=n.classList.toggle('nav-open');this.setAttribute('aria-expanded',o?'true':'false');">
@@ -30,8 +27,10 @@
     </button>
 
     <ul class="nav-links">
-        <li><a href="{{ $guestDashboardHref }}" class="{{ $current === 'dashboard' ? 'active' : '' }}"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="{{ $accommodationsHref }}" class="{{ $current === 'accommodations' ? 'active' : '' }}"><i class="fas fa-building"></i> Accommodations</a></li>
+        <li><a href="{{ $guestDashboardHref }}" class="{{ in_array($current, ['dashboard', 'accommodations'], true) ? 'active' : '' }}"><i class="fas fa-home"></i> Dashboard</a></li>
+        @if($usePortalGuestUrls)
+            <li><a href="{{ route('portal.accommodations.index') }}" class="{{ $current === 'accommodations' ? 'active' : '' }}"><i class="fas fa-building"></i> Accommodations</a></li>
+        @endif
         @if($wishlistHref)
             <li><a href="{{ $wishlistHref }}" class="{{ $current === 'wishlist' ? 'active' : '' }}"><i class="fas fa-heart"></i> Wishlist</a></li>
         @endif
@@ -44,28 +43,87 @@
         @if(Auth::user()->tenantClientMaySubmitUpdateTickets())
             <li><a href="/update-tickets" class="{{ $current === 'update-tickets' ? 'active' : '' }}"><i class="fas fa-life-ring"></i> Support</a></li>
         @endif
-        @if(Auth::user()->tenantClientMayEditOwnProfile())
-            <li><a href="/profile" class="{{ $current === 'settings' ? 'active' : '' }}"><i class="fas fa-cog"></i> Settings</a></li>
-        @endif
     </ul>
 
     <div class="nav-actions">
         @include('partials.notification-bell')
-        <div class="user-display">
-            @if(Auth::user()->avatar)
-                <img src="{{ asset('storage/avatars/' . Auth::user()->avatar . '?v=' . time()) }}" alt="{{ Auth::user()->name }}" class="user-avatar" style="object-fit: cover;">
-            @else
-                <div class="user-avatar">{{ substr(Auth::user()->name, 0, 2) }}</div>
-            @endif
-            <div class="user-info">
-                <div class="user-name">{{ Auth::user()->name }}</div>
-                <div class="user-role">Guest</div>
+        <div class="user-menu" data-user-menu>
+            <button type="button" class="user-display user-menu__button" aria-haspopup="menu" aria-expanded="false">
+                @if(Auth::user()->avatar)
+                    <img src="{{ asset('storage/avatars/' . Auth::user()->avatar . '?v=' . time()) }}" alt="{{ Auth::user()->name }}" class="user-avatar" style="object-fit: cover;">
+                @else
+                    <div class="user-avatar">{{ substr(Auth::user()->name, 0, 2) }}</div>
+                @endif
+                <div class="user-info">
+                    <div class="user-name">{{ Auth::user()->name }}</div>
+                    <div class="user-role">Guest</div>
+                </div>
+                <i class="fas fa-chevron-down user-menu__chevron" aria-hidden="true"></i>
+            </button>
+
+            <div class="user-menu__panel" role="menu">
+                @if(Auth::user()->tenantClientMayEditOwnProfile())
+                    <a role="menuitem" class="user-menu__item" href="/profile"><i class="fas fa-user"></i> Profile</a>
+                    <div class="user-menu__sep" role="separator" aria-hidden="true"></div>
+                @endif
+                <form class="user-menu__form" action="/logout" method="POST">
+                    @csrf
+                    <button role="menuitem" type="submit" class="user-menu__item user-menu__item--danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </form>
             </div>
         </div>
-
-        <form action="/logout" method="POST">
-            @csrf
-            <button type="submit" class="nav-btn primary"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </form>
     </div>
 </nav>
+
+@once
+    <script>
+        (function () {
+            if (window.__impaUserMenuInit) return;
+            window.__impaUserMenuInit = true;
+
+            function closeAll(exceptRoot) {
+                document.querySelectorAll('[data-user-menu].is-open').forEach(function (root) {
+                    if (exceptRoot && root === exceptRoot) return;
+                    root.classList.remove('is-open');
+                    var btn = root.querySelector('button[aria-expanded]');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                });
+            }
+
+            function toggleFromButton(btn) {
+                var root = btn && btn.closest ? btn.closest('[data-user-menu]') : null;
+                if (!root) return;
+                var willOpen = !root.classList.contains('is-open');
+                closeAll(root);
+                root.classList.toggle('is-open', willOpen);
+                btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            }
+
+            window.__impaUserMenuToggle = toggleFromButton;
+
+            function bindAll() {
+                document.querySelectorAll('button.user-menu__button').forEach(function (btn) {
+                    if (btn.__impaBound) return;
+                    btn.__impaBound = true;
+                    btn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFromButton(btn);
+                    });
+                });
+            }
+
+            bindAll();
+            document.addEventListener('DOMContentLoaded', bindAll);
+
+            document.addEventListener('click', function (e) {
+                var root = e.target && e.target.closest ? e.target.closest('[data-user-menu]') : null;
+                if (!root) closeAll();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeAll();
+            });
+        })();
+    </script>
+@endonce

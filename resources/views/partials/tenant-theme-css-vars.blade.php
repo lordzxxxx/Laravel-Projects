@@ -5,14 +5,14 @@
         $primary = (string) $themeTenant->getPrimaryColor();
         $accent = (string) $themeTenant->getAccentColor();
         if (! preg_match('/^#[0-9A-Fa-f]{6}$/i', $primary)) {
-            $primary = '#2E7D32';
+            $primary = '#457359';
         }
         if (! preg_match('/^#[0-9A-Fa-f]{6}$/i', $accent)) {
-            $accent = '#43A047';
+            $accent = '#799F76';
         }
     } else {
-        $primary = '#2E7D32';
-        $accent = '#43A047';
+        $primary = '#457359';
+        $accent = '#799F76';
     }
 @endphp
             --green-dark: color-mix(in srgb, {{ $primary }} 72%, #000000);

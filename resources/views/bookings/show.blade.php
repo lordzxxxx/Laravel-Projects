@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @include('partials.typography-system')
         @php
             $authUser = auth()->user();
             $currentTenant = \App\Models\Tenant::current();
@@ -62,13 +63,12 @@
         @endif
 
         body {
-            font-family: var(--client-nav-font, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
             min-height: 100vh;
             color: var(--gray-800);
         }
     </style>
 </head>
-<body class="{{ $isTenantManager ? 'owner-nav-page' : '' }} flex min-h-screen flex-col bg-gradient-to-br from-emerald-50 via-lime-50/90 to-emerald-100 text-slate-900 antialiased">
+<body class="{{ $isTenantManager ? 'owner-nav-page' : ($authUser?->isClient() ? 'client-nav-page font-sans text-gray-800' : '') }} flex min-h-screen flex-col {{ $authUser?->isClient() ? '' : 'bg-gradient-to-br from-emerald-50 via-lime-50/90 to-emerald-100 text-slate-900 antialiased' }}">
     @if($isTenantManager)
         @include('owner.partials.top-navbar')
     @elseif(auth()->user()?->isClient())
@@ -76,8 +76,11 @@
     @else
     <nav class="navbar">
         <a href="{{ route('dashboard') }}" class="nav-logo">
-            <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
-            <span>Impasugong</span>
+            <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM">
+            <span class="nav-brand-text">
+                <span class="nav-brand-title">IMPASUGONG TOURISM</span>
+                <span class="nav-brand-subtitle">| Bookings</span>
+            </span>
         </a>
 
         <ul class="nav-links">
@@ -118,10 +121,7 @@
             : "{$bookingRouteGroup}.index";
     @endphp
 
-    <main
-        class="flex w-full flex-1 flex-col {{ $isTenantManager ? 'main-content with-owner-nav' : '' }} min-h-0 min-h-[calc(100dvh-5rem)] px-4 pb-10 pt-6 sm:px-6 lg:min-h-[calc(100dvh-6rem)] lg:px-8"
-        @if(! $isTenantManager) style="padding-top: calc(var(--client-nav-offset) + 16px);" @endif
-    >
+    <main class="flex w-full flex-1 flex-col min-h-0 {{ $isTenantManager ? 'main-content with-owner-nav min-h-[calc(100dvh-5rem)] px-4 pb-10 pt-6 sm:px-6 lg:min-h-[calc(100dvh-6rem)] lg:px-8' : ($authUser?->isClient() ? 'client-guest-main client-guest-main--wide' : 'min-h-[calc(100dvh-5rem)] px-4 pb-10 pt-6 sm:px-6 lg:min-h-[calc(100dvh-6rem)] lg:px-8') }}"@if(! $isTenantManager && ! $authUser?->isClient()) style="padding-top: calc(var(--client-nav-offset) + 16px);"@endif>
         <div class="mx-auto flex w-full max-w-[1920px] flex-1 flex-col gap-4">
             @include('partials.flash-alerts')
 

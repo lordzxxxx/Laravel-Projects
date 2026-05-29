@@ -10,12 +10,12 @@
             padding: 0;
             overflow: hidden;
             border-radius: 14px;
-            border: 1px solid rgba(34, 197, 94, 0.22);
-            box-shadow: 0 8px 28px rgba(22, 101, 52, 0.07);
-            background: #fff;
+            border: 1px solid color-mix(in srgb, var(--chrome-focus-ring, #166534) 28%, transparent);
+            box-shadow: var(--shadow-md, 0 8px 28px rgba(22, 101, 52, 0.07));
+            background: var(--app-surface-bg, #fff);
         }
         .pbi-visual-header {
-            background: #166534;
+            background: var(--chrome-active-bg, #166534);
             color: #ffffff;
             padding: 12px 16px;
             display: flex;
@@ -47,8 +47,9 @@
             margin-top: 2px;
         }
         .pbi-visual-body {
-            background: #fafdfb;
+            background: var(--app-surface-muted-bg, #fafdfb);
             padding: 14px 14px 10px;
+            color: var(--ink-700);
         }
         .pbi-visual-body.pbi-visual-body--flush { padding: 0; }
         .pbi-visual-body .chart-container { position: relative; height: 240px; }

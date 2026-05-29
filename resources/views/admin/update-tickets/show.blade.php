@@ -9,11 +9,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @include('admin.partials.admin-shell-styles')
-        .card { background: #fff; border: 1px solid var(--green-soft, #C8E6C9); border-radius: 12px; margin-bottom: 16px; }
+        .card { background: var(--app-surface-bg, #fff); border: 1px solid var(--app-surface-border, var(--green-soft, #CBDFC6)); border-radius: 12px; margin-bottom: 16px; color: var(--ink-800); }
         .card-inner { padding: 20px; }
         .body { white-space: pre-wrap; line-height: 1.55; color: #374151; margin: 14px 0; }
-        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 8px; border: 1px solid #E5E7EB; background: #fff; font-weight: 600; cursor: pointer; text-decoration: none; color: #1F2937; }
-        .btn.primary { background: #2E7D32; color: #fff; border-color: transparent; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--app-surface-border, #E5E7EB); background: var(--app-surface-bg, #fff); font-weight: 600; cursor: pointer; text-decoration: none; color: var(--ink-800, #1F2937); }
+        .btn.primary { background: #457359; color: #fff; border-color: transparent; }
         .btn.warn { background: #F59E0B; color: #fff; border-color: transparent; }
         textarea { width: 100%; max-width: 720px; padding: 10px 12px; border-radius: 8px; border: 1px solid #E5E7EB; margin-top: 6px; min-height: 100px; }
         label { font-weight: 600; color: #374151; display: block; margin-top: 12px; }
@@ -27,11 +27,11 @@
             display: block;
             border: 1px solid #E5E7EB;
             border-radius: 8px;
-            background: #fff;
+            background: var(--app-surface-bg, #fff);
         }
         .meta-grid { display:grid; grid-template-columns: 110px 1fr; gap: 8px 10px; font-size: 0.9rem; }
-        .meta-key { color:#6B7280; }
-        .meta-value { color:#111827; font-weight:600; word-break:break-word; }
+        .meta-key { color: var(--ink-500, #6B7280); }
+        .meta-value { color: var(--ink-900, #111827); font-weight:600; word-break:break-word; }
         @media (max-width: 980px) {
             .ticket-layout { grid-template-columns: 1fr; }
             .media-preview { max-height: 260px; }
@@ -49,7 +49,7 @@
 
             <div class="card">
                 <div class="card-inner">
-                    <h1 style="font-size:1.2rem;color:#1B5E20;margin-bottom:8px;">{{ $ticket->subject }}</h1>
+                    <h1 style="font-size:1.2rem;color:#3A5C48;margin-bottom:8px;">{{ $ticket->subject }}</h1>
                     <p style="margin:10px 0;">
                         @if($ticket->status === \App\Models\UpdateTicket::STATUS_RESOLVED)
                             <span class="status-badge resolved">Fixed</span>

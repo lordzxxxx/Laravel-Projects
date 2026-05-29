@@ -10,12 +10,12 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --green-dark: #1B5E20; --green-primary: #2E7D32; --green-medium: #43A047;
-            --green-light: #66BB6A; --green-pale: #81C784; --green-soft: #C8E6C9;
-            --green-white: #E8F5E9; --white: #FFFFFF; --cream: #F1F8E9;
+            --green-dark: #3A5C48; --green-primary: #457359; --green-medium: #799F76;
+            --green-light: #8FB389; --green-pale: #A8C4A2; --green-soft: #CBDFC6;
+            --green-white: #EDF4EA; --white: #FFFFFF; --cream: #F4F8F1;
             --gray-600: #4B5563;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%); min-height: 100vh; }
+        body {  background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%); min-height: 100vh; }
         .navbar { background: var(--white); padding: 0 40px; height: 70px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(27, 94, 32, 0.1); position: fixed; width: 100%; top: 0; left: 0; right: 0; z-index: 1000; }
         .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .nav-logo img { width: 45px; height: 45px; border-radius: 0; border: none; object-fit: contain; }
@@ -39,10 +39,10 @@
         .search-filter { display: flex; gap: 15px; margin-bottom: 25px; }
         .search-input { flex: 1; max-width: 400px; padding: 12px 20px; border: 2px solid var(--green-soft); border-radius: 10px; font-size: 1rem; outline: none; }
         .search-input:focus { border-color: var(--green-primary); }
-        .filter-select { padding: 12px 20px; border: 2px solid var(--green-soft); border-radius: 10px; font-size: 1rem; background: white; cursor: pointer; }
-        .card { background: var(--white); border-radius: 15px; box-shadow: 0 8px 30px rgba(27, 94, 32, 0.1); }
-        .card-header { padding: 20px 25px; border-bottom: 1px solid var(--green-soft); display: flex; justify-content: space-between; align-items: center; }
-        .card-header h3 { font-size: 1.15rem; color: var(--green-dark); font-weight: 600; }
+        .filter-select { padding: 12px 20px; border: 2px solid var(--app-surface-border, var(--green-soft)); border-radius: 10px; font-size: 1rem; background: var(--app-surface-bg, white); color: var(--ink-800); cursor: pointer; }
+        .card { background: var(--app-surface-bg, var(--white)); border-radius: 15px; border: 1px solid var(--app-surface-border, var(--green-soft)); box-shadow: var(--shadow-md, 0 8px 30px rgba(27, 94, 32, 0.1)); color: var(--ink-800); }
+        .card-header { padding: 20px 25px; border-bottom: 1px solid var(--app-surface-border, var(--green-soft)); display: flex; justify-content: space-between; align-items: center; }
+        .card-header h3 { font-size: 1.15rem; color: var(--ink-800, var(--green-dark)); font-weight: 600; }
         .btn { padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background: linear-gradient(135deg, var(--green-primary), var(--green-medium)); color: var(--white); }
         .btn-secondary { background: var(--green-soft); color: var(--green-dark); }
@@ -59,7 +59,7 @@
         .status-badge.confirmed { background: var(--green-soft); color: var(--green-dark); }
         .status-badge.cancelled { background: #FFEBEE; color: #C62828; }
         .status-badge.completed { background: #E3F2FD; color: #1565C0; }
-        .status-badge.paid { background: #E8F5E9; color: #2E7D32; }
+        .status-badge.paid { background: #EDF4EA; color: #457359; }
         @media (max-width: 768px) {
             .navbar { padding: 0 20px; height: 60px; }
             .nav-links { display: none; }

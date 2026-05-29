@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @include('owner.partials.owner-page-fonts')
         * { box-sizing: border-box; }
 
         :root {
@@ -24,7 +25,6 @@
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background:
                 radial-gradient(circle at top right, rgba(16, 185, 129, 0.06), transparent 55%),
                 radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.04), transparent 50%),
@@ -129,8 +129,8 @@
             align-items: center;
             gap: 16px;
             padding: 18px 20px;
-            background: #ffffff;
-            border: 1px solid var(--gray-200);
+            background: var(--app-surface-bg, #ffffff);
+            border: 1px solid var(--app-surface-border, var(--gray-200));
             border-radius: 16px;
             box-shadow: var(--shadow-xs);
             transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
@@ -174,8 +174,8 @@
 
         /* ── Properties section ────────────────────────────────────────────── */
         .properties-section {
-            background: #ffffff;
-            border: 1px solid var(--gray-200);
+            background: var(--app-surface-bg, #ffffff);
+            border: 1px solid var(--app-surface-border, var(--gray-200));
             border-radius: 18px;
             box-shadow: var(--shadow-xs);
             overflow: hidden;
@@ -187,15 +187,15 @@
             align-items: center;
             gap: 12px;
             padding: 18px 22px;
-            border-bottom: 1px solid var(--gray-200);
-            background: linear-gradient(180deg, #ffffff, #FAFBFC);
+            border-bottom: 1px solid var(--app-surface-border, var(--gray-200));
+            background: var(--app-surface-muted-bg, linear-gradient(180deg, #ffffff, #FAFBFC));
         }
         .properties-section-header h3 {
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 1rem;
-            color: var(--gray-900);
+            color: var(--ink-900, var(--gray-900));
             font-weight: 700;
             margin: 0;
         }
@@ -228,8 +228,8 @@
         .property-card {
             display: flex;
             flex-direction: column;
-            background: #ffffff;
-            border: 1px solid var(--gray-200);
+            background: var(--app-surface-bg, #ffffff);
+            border: 1px solid var(--app-surface-border, var(--gray-200));
             border-radius: 14px;
             overflow: hidden;
             transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -460,9 +460,9 @@
             height: 36px;
             padding: 0 12px;
             border-radius: 9px;
-            border: 1px solid var(--gray-200);
-            background: #ffffff;
-            color: var(--gray-700);
+            border: 1px solid var(--app-surface-border, var(--gray-200));
+            background: var(--app-surface-bg, #ffffff);
+            color: var(--ink-700, var(--gray-700));
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 600;

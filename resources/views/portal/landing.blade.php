@@ -3,95 +3,21 @@
 <head>
     @include('partials.central-public-head', ['pageTitle' => 'IMPASUGONG TOURISM | '.$municipalityName.' Stays'])
     <style>
-        .skip-link:focus { position: absolute; left: 1rem; top: 1rem; z-index: 2000; clip: auto; width: auto; height: auto; overflow: visible; padding: 0.75rem 1rem; margin: 0; }
+        /* Accessibility skip-link */
         .skip-link { position: absolute; left: 1rem; top: -999px; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-        .portal-hero-partners { --partner-logo-h: 5.5rem; --partner-logo-w: 13rem; }
-        @media (min-width: 640px) {
-            .portal-hero-partners { --partner-logo-h: 6.5rem; --partner-logo-w: 15rem; }
-        }
-        @media (min-width: 1024px) {
-            .portal-hero-partners { --partner-logo-h: 7.25rem; --partner-logo-w: 16rem; }
-        }
-        .portal-hero-partners img {
-            display: block;
-            height: auto;
-            width: auto;
-            max-height: var(--partner-logo-h);
-            max-width: var(--partner-logo-w);
-            object-fit: contain;
-            object-position: center;
-            filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.85)) drop-shadow(0 4px 14px rgba(27, 94, 32, 0.12));
-        }
-        /* Equal-width columns so gaps beside dividers read symmetrically */
-        .portal-hero-partners__strip {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
-            align-items: center;
-            justify-items: center;
-            column-gap: clamp(0.75rem, 3vw, 1.5rem);
-            width: 100%;
-        }
-        .portal-hero-partners__strip > [role="listitem"] {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 0;
-        }
-        @media (max-width: 639px) {
-            .portal-hero-partners__strip {
-                grid-template-columns: 1fr;
-                row-gap: 2rem;
-            }
-            .portal-hero-partners__strip .portal-hero-partners__divider {
-                display: none;
-            }
-        }
-        .portal-hero-partners__divider {
-            height: var(--partner-logo-h);
-            width: 1px;
-            flex-shrink: 0;
-            align-self: center;
-            background-color: rgba(255, 255, 255, 0.7);
-            box-shadow: 1px 0 0 rgba(27, 94, 32, 0.12);
-        }
-        .portal-hero-partners img.portal-hero-partners__wide {
-            max-height: 4.75rem;
-            max-width: min(100%, 20rem);
-        }
-        @media (min-width: 640px) {
-            .portal-hero-partners img.portal-hero-partners__wide {
-                max-height: 5.5rem;
-                max-width: min(100%, 23rem);
-            }
-        }
-        @media (min-width: 1024px) {
-            .portal-hero-partners img.portal-hero-partners__wide {
-                max-height: 6rem;
-                max-width: min(100%, 26rem);
-            }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
+        .skip-link:focus { position: absolute; left: 1rem; top: 1rem; z-index: 2000; clip: auto; width: auto; height: auto; overflow: visible; padding: 0.75rem 1rem; margin: 0; }
 
-        /* Root landing only: bg22.jpg + blurred photo + 60% white scrim */
-        body.portal-root-landing-bg {
-            background: transparent;
-            min-height: 100vh;
-        }
+        /* Cleaner page surface — soft scrim over hero photo so foreground content stays minimal */
+        body.portal-root-landing-bg { background: #FAFAF8; min-height: 100vh; }
         body.portal-root-landing-bg::before {
             content: '';
             position: fixed;
             inset: 0;
             z-index: -2;
             background: url("{{ asset('bg22.jpg') }}") center / cover no-repeat;
-            transform: scale(1.045);
-            filter: blur(5px);
+            filter: blur(8px);
+            transform: scale(1.05);
+            opacity: 0.55;
             pointer-events: none;
         }
         body.portal-root-landing-bg::after {
@@ -99,145 +25,212 @@
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: rgba(255, 255, 255, 0.6);
+            background: linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.88) 60%, rgba(250,250,248,0.95) 100%);
             pointer-events: none;
         }
 
+        /* Restrained partner strip */
+        .portal-partners {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr) 1px minmax(0, 1fr);
+            align-items: center;
+            justify-items: center;
+            column-gap: clamp(1rem, 3vw, 2.25rem);
+        }
+        .portal-partners > .divider { width: 1px; height: 2.5rem; background: rgba(15, 23, 42, 0.1); }
+        .portal-partners img { display: block; height: auto; max-height: 3.5rem; max-width: 11rem; object-fit: contain; }
+        @media (min-width: 640px) {
+            .portal-partners img { max-height: 4rem; max-width: 13rem; }
+            .portal-partners > .divider { height: 3rem; }
+        }
+        @media (max-width: 639px) {
+            .portal-partners { grid-template-columns: 1fr; row-gap: 1.25rem; }
+            .portal-partners > .divider { display: none; }
+        }
+
+        /* Featured viewport mask for soft edge */
         .portal-featured-viewport {
             position: relative;
             mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
             -webkit-mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
         }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
-<body
-    class="portal-root-landing-bg flex min-h-screen flex-col font-sans text-brand-dark antialiased"
->
+<body class="portal-root-landing-bg flex min-h-screen flex-col font-sans text-slate-900 antialiased">
     <a href="#featured-units" class="skip-link rounded-lg bg-white text-sm font-semibold text-emerald-900 shadow-lg ring-2 ring-emerald-700/20">Skip to featured units</a>
+
     @include('partials.portal-public-nav', ['active' => 'landing', 'municipalityName' => $municipalityName])
 
     <main id="browse" tabindex="-1" class="flex flex-1 flex-col outline-none">
-        <section class="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[rgba(27,94,32,0.06)] to-[rgba(46,125,50,0.04)] px-5 pb-24 pt-28 text-center md:px-10 md:pt-32">
-        {{-- Partner strip: no panel background — logos sit on the hero with caps + drop shadow for readability --}}
-        <div class="portal-hero-partners mb-10 w-full max-w-5xl px-2 py-2 sm:mb-12 sm:px-4">
-            <p class="mb-5 text-center text-xs font-bold uppercase tracking-[0.22em] text-brand-dark drop-shadow-[0_1px_2px_rgba(255,255,255,0.95)] sm:mb-6 sm:text-[0.75rem]">Official directory partners</p>
-            <div class="portal-hero-partners__strip" role="list">
-                <div class="flex min-h-[5.5rem] items-center justify-center sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
-                    <img
-                        src="{{ asset('SYSTEMLOGO.png') }}"
-                        alt="{{ $municipalityName }} — official seal"
-                        loading="eager"
-                        fetchpriority="high"
-                        decoding="async"
-                    >
-                </div>
-                <span class="portal-hero-partners__divider hidden sm:block" aria-hidden="true"></span>
-                <div class="flex min-h-[5.5rem] items-center justify-center sm:min-h-[6.5rem] lg:min-h-[7.25rem]" role="listitem">
-                    <img
-                        src="{{ asset('Love Impasugong.png') }}"
-                        alt="Love Impasugong"
-                        loading="eager"
-                        decoding="async"
-                    >
-                </div>
-                <span class="portal-hero-partners__divider hidden sm:block" aria-hidden="true"></span>
-                <div class="flex min-h-[4.75rem] items-center justify-center sm:min-h-[5.5rem] lg:min-h-[6rem]" role="listitem">
-                    <img
-                        src="{{ asset('Lgu Socmed Template-02.png') }}"
-                        alt="LGU {{ $municipalityName }}"
-                        class="portal-hero-partners__wide"
-                        loading="lazy"
-                        decoding="async"
-                    >
+        {{-- =================== HERO =================== --}}
+        <section class="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-20 pt-36 text-center md:pt-40 lg:pt-44">
+            {{-- Eyebrow --}}
+            <p class="mb-6 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-emerald-800/85">
+                Official tourism portal · {{ $municipalityName }}
+            </p>
+
+            {{-- H1 --}}
+            <h1 class="font-display mb-5 max-w-3xl text-balance text-4xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-5xl lg:text-[3.25rem]">
+                Verified stays across
+                <span class="text-emerald-700">{{ $municipalityName }}</span>
+            </h1>
+
+            {{-- Lede --}}
+            <p class="mb-10 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                Browse municipality-approved tuloganan, save favorites, and book with a single guest account.
+            </p>
+
+            {{-- Primary CTA pair --}}
+            <div class="mb-16 flex w-full max-w-md flex-col items-stretch gap-3 sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:justify-center sm:gap-4">
+                <a
+                    href="{{ route('portal.accommodations.index') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-7 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 sm:text-base"
+                >
+                    <i class="fas fa-compass text-sm" aria-hidden="true"></i>
+                    Browse listings
+                </a>
+                <a
+                    href="{{ route('register.guest') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white/80 px-7 py-3.5 text-sm font-semibold text-slate-800 backdrop-blur-sm transition hover:border-emerald-300 hover:bg-white hover:text-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 sm:text-base"
+                >
+                    <i class="fas fa-user-plus text-sm" aria-hidden="true"></i>
+                    Create guest account
+                </a>
+            </div>
+
+            {{-- Partner strip --}}
+            <div class="w-full max-w-3xl">
+                <p class="mb-5 text-center text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-slate-500">
+                    Official directory partners
+                </p>
+                <div class="portal-partners" role="list">
+                    <div role="listitem" class="flex items-center justify-center">
+                        <img src="{{ asset('SYSTEMLOGO.png') }}" alt="{{ $municipalityName }} — official seal" loading="eager" fetchpriority="high" decoding="async">
+                    </div>
+                    <span class="divider" aria-hidden="true"></span>
+                    <div role="listitem" class="flex items-center justify-center">
+                        <img src="{{ asset('Love Impasugong.png') }}" alt="Love Impasugong" loading="eager" decoding="async">
+                    </div>
+                    <span class="divider" aria-hidden="true"></span>
+                    <div role="listitem" class="flex items-center justify-center">
+                        <img src="{{ asset('Lgu Socmed Template-02.png') }}" alt="LGU {{ $municipalityName }}" loading="lazy" decoding="async">
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <h1 class="mb-5 text-3xl font-extrabold tracking-tight text-brand-dark opacity-0 animate-fade-in-up-d1 md:text-5xl lg:text-[3rem]">
-            Verified stays in <span class="text-brand-primary">{{ $municipalityName }}</span>
-        </h1>
+        {{-- Subtle divider --}}
+        <div class="mx-auto h-px w-full max-w-6xl bg-slate-200/70"></div>
 
-        <p class="mb-8 max-w-[720px] text-base leading-relaxed text-brand-medium opacity-0 animate-fade-in-up-d2 md:text-lg md:mb-10">
-            Browse listings from municipality-approved hosts, save favorites, and book with one guest account across every verified tulogan.
-        </p>
-
-        {{-- Featured / browse available units: horizontal highlights carousel --}}
-        <div id="featured-units" class="mb-0 w-full max-w-[1200px] shrink-0 scroll-mt-28 pb-10 opacity-0 animate-fade-in-up-d2 sm:pb-12">
-            <div class="mb-5 flex flex-col gap-2 text-left sm:flex-row sm:items-end sm:justify-between">
+        {{-- =================== FEATURED UNITS =================== --}}
+        <section id="featured-units" class="mx-auto w-full max-w-6xl scroll-mt-28 px-6 pb-24 pt-16 md:pt-20">
+            <div class="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <h2 class="text-xl font-extrabold tracking-tight text-brand-dark md:text-2xl">
-                        <i class="fas fa-star mr-2 text-amber-500" aria-hidden="true"></i>Browse available units
+                    <h2 class="font-display text-2xl font-bold tracking-tight text-slate-900 md:text-[1.75rem]">
+                        Browse available units
                     </h2>
-                    <p class="mt-1 text-sm font-medium text-brand-medium md:text-base">
+                    <p class="mt-1.5 text-sm text-slate-600 md:text-base">
                         @if($carouselAccommodations->isEmpty())
-                            Highlights will appear here as verified listings go live — you can still explore the full directory below.
+                            Highlights will appear here as verified listings go live.
                         @else
-                            Highlights from the directory — swipe or use arrows to explore.
+                            Highlights from the directory — swipe or use the arrows.
                         @endif
                     </p>
                 </div>
                 @if($carouselAccommodations->isNotEmpty())
-                    <a href="{{ route('portal.accommodations.index') }}" class="mt-2 inline-flex items-center gap-2 self-start text-sm font-bold text-brand-primary underline decoration-2 underline-offset-2 hover:text-brand-dark sm:mt-0 sm:self-auto">
-                        See all listings <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
+                    <a
+                        href="{{ route('portal.accommodations.index') }}"
+                        class="inline-flex items-center gap-2 self-start text-sm font-semibold text-emerald-700 hover:text-emerald-900 sm:self-auto"
+                    >
+                        See all listings
+                        <i class="fas fa-arrow-right text-[0.7rem]" aria-hidden="true"></i>
                     </a>
                 @endif
             </div>
 
             @if($carouselAccommodations->isEmpty())
                 <article
-                    class="overflow-hidden rounded-2xl border border-brand-soft/90 bg-white/90 shadow-[0_8px_30px_-12px_rgba(27,94,32,0.15)] backdrop-blur-md"
+                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white"
                     aria-labelledby="featured-empty-heading"
                 >
-                    <div class="flex flex-col items-center px-6 py-12 text-center sm:px-10 sm:py-14">
-                        <span class="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-soft to-white text-2xl text-brand-primary shadow-inner ring-1 ring-brand-soft/60" aria-hidden="true">
+                    <div class="flex flex-col items-center px-8 py-16 text-center">
+                        <span class="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-xl text-emerald-700 ring-1 ring-inset ring-emerald-100" aria-hidden="true">
                             <i class="fas fa-building-user"></i>
                         </span>
-                        <h3 id="featured-empty-heading" class="max-w-md text-lg font-bold leading-snug text-brand-dark sm:text-xl">
+                        <h3 id="featured-empty-heading" class="max-w-md text-lg font-semibold leading-snug text-slate-900 sm:text-xl">
                             Available units will show here soon
                         </h3>
-                        <p class="mt-3 max-w-md text-sm leading-relaxed text-brand-medium sm:text-base">
-                            Listings show up after municipality-approved hosts publish verified stays. Check back, or open the directory to see what’s listed today.
+                        <p class="mt-3 max-w-md text-sm leading-relaxed text-slate-600 sm:text-base">
+                            Listings publish after municipality-approved hosts verify their stays. Open the directory to see what is already listed.
                         </p>
-                        <div class="mt-10 w-full max-w-sm border-t border-brand-soft/60 pt-10">
-                            <a
-                                href="{{ route('portal.accommodations.index') }}"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-brand-dark to-brand-primary px-6 py-3.5 text-sm font-semibold text-white shadow-md transition hover:brightness-[1.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary sm:text-base"
-                            >
-                                <i class="fas fa-compass" aria-hidden="true"></i>
-                                Open full directory
-                            </a>
-                        </div>
+                        <a
+                            href="{{ route('portal.accommodations.index') }}"
+                            class="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                        >
+                            <i class="fas fa-compass" aria-hidden="true"></i>
+                            Open full directory
+                        </a>
                     </div>
                 </article>
             @else
                 <div
-                    class="portal-featured-viewport rounded-2xl border border-emerald-200/60 bg-white/50 p-2 shadow-[0_12px_40px_-16px_rgba(27,94,32,0.18)] backdrop-blur-sm sm:p-3"
+                    class="portal-featured-viewport rounded-2xl"
                     role="region"
                     aria-roledescription="carousel"
                     aria-label="Available accommodation highlights"
                 >
                     <div
                         id="portalListingTrack"
-                        class="portal-listing-track flex items-stretch gap-4 overflow-x-auto scroll-smooth pb-2 pt-1 [scrollbar-width:thin] snap-x snap-mandatory md:gap-5"
+                        class="portal-listing-track flex items-stretch gap-5 overflow-x-auto scroll-smooth pb-3 pt-1 [scrollbar-width:thin] snap-x snap-mandatory"
                         style="-webkit-overflow-scrolling: touch;"
                         tabindex="0"
                     >
                         @foreach($carouselAccommodations as $acc)
-                            <article class="portal-listing-card flex w-[min(100%,300px)] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-brand-soft/90 bg-white shadow-md sm:w-[min(100%,320px)]">
-                                <a href="{{ route('portal.accommodations.show', $acc) }}" class="relative block aspect-[4/3] overflow-hidden bg-brand-soft/30">
-                                    <img src="{{ $acc->primary_image_url }}" alt="Photo of {{ $acc->name }}" class="h-full w-full object-cover transition duration-300 hover:scale-105" loading="lazy" decoding="async">
+                            <article class="portal-listing-card group flex w-[min(100%,300px)] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)] sm:w-[min(100%,320px)]">
+                                <a href="{{ route('portal.accommodations.show', $acc) }}" class="relative block aspect-[4/3] overflow-hidden bg-slate-100">
+                                    <img
+                                        src="{{ $acc->primary_image_url }}"
+                                        alt="Photo of {{ $acc->name }}"
+                                        class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                                        loading="lazy"
+                                        decoding="async"
+                                    >
                                     @if($acc->is_featured)
-                                        <span class="absolute left-2 top-2 rounded-md bg-amber-500 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white shadow">Featured</span>
+                                        <span class="absolute left-3 top-3 inline-flex items-center rounded-md bg-amber-500/95 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-white shadow-sm">
+                                            Featured
+                                        </span>
                                     @endif
                                 </a>
                                 <div class="flex flex-1 flex-col gap-1.5 p-4 text-left">
-                                    <h3 class="line-clamp-2 min-h-[2.5rem] text-base font-bold text-brand-dark">{{ $acc->name }}</h3>
-                                    <p class="line-clamp-2 text-xs text-brand-medium">{{ $acc->barangay ?? $acc->address }}</p>
+                                    <h3 class="line-clamp-2 min-h-[2.5rem] text-[0.95rem] font-semibold leading-snug text-slate-900">
+                                        {{ $acc->name }}
+                                    </h3>
+                                    <p class="line-clamp-1 text-xs text-slate-500">
+                                        <i class="fas fa-location-dot mr-1 text-slate-400" aria-hidden="true"></i>
+                                        {{ $acc->barangay ?? $acc->address }}
+                                    </p>
                                     @if($acc->max_guests)
-                                        <p class="text-[0.7rem] font-medium text-brand-medium"><i class="fas fa-user-group mr-1 text-brand-primary" aria-hidden="true"></i>Up to {{ (int) $acc->max_guests }} guests</p>
+                                        <p class="text-[0.72rem] text-slate-500">
+                                            <i class="fas fa-user-group mr-1 text-slate-400" aria-hidden="true"></i>
+                                            Up to {{ (int) $acc->max_guests }} guests
+                                        </p>
                                     @endif
-                                    <p class="mt-auto pt-2 text-base font-bold text-brand-primary">{{ $acc->formatted_price }} <span class="text-sm font-normal text-brand-medium">/ night</span></p>
-                                    <a href="{{ route('portal.accommodations.show', $acc) }}" class="mt-1 inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-brand-dark to-brand-primary px-3 py-2.5 text-xs font-bold text-white transition hover:brightness-105">
+                                    <p class="mt-auto pt-3 text-[0.95rem] font-bold text-slate-900">
+                                        {{ $acc->formatted_price }}
+                                        <span class="text-xs font-normal text-slate-500">/ night</span>
+                                    </p>
+                                    <a
+                                        href="{{ route('portal.accommodations.show', $acc) }}"
+                                        class="mt-2 inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800"
+                                    >
                                         View details
                                     </a>
                                 </div>
@@ -245,17 +238,32 @@
                         @endforeach
                     </div>
                 </div>
-                <div class="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+
+                {{-- Carousel controls --}}
+                <div class="mt-6 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                     <div class="flex items-center gap-3">
-                        <button type="button" id="portalListingPrev" class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft text-lg text-brand-dark shadow-sm transition hover:scale-105 hover:bg-brand-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary" aria-controls="portalListingTrack" aria-label="Show previous units">
-                            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                        <button
+                            type="button"
+                            id="portalListingPrev"
+                            class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-emerald-300 hover:text-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                            aria-controls="portalListingTrack"
+                            aria-label="Show previous units"
+                        >
+                            <i class="fas fa-chevron-left text-sm" aria-hidden="true"></i>
                         </button>
                         <div id="portalListingDots" class="flex max-w-[200px] flex-wrap justify-center gap-1.5 sm:max-w-none" role="tablist" aria-label="Carousel position"></div>
-                        <button type="button" id="portalListingNext" class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft text-lg text-brand-dark shadow-sm transition hover:scale-105 hover:bg-brand-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary" aria-controls="portalListingTrack" aria-label="Show next units">
-                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                        <button
+                            type="button"
+                            id="portalListingNext"
+                            class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-emerald-300 hover:text-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                            aria-controls="portalListingTrack"
+                            aria-label="Show next units"
+                        >
+                            <i class="fas fa-chevron-right text-sm" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
+
                 <script>
                     (function () {
                         var track = document.getElementById('portalListingTrack');
@@ -270,8 +278,7 @@
                             var slide = cards[0];
                             if (!slide) return 320;
                             var rect = slide.getBoundingClientRect();
-                            var gap = 16;
-                            if (window.matchMedia('(min-width:768px)').matches) gap = 20;
+                            var gap = 20;
                             return rect.width + gap;
                         }
                         function scrollByDir(dir) {
@@ -284,9 +291,9 @@
                             var buttons = dotsHost.querySelectorAll('button');
                             buttons.forEach(function (b, idx) {
                                 b.setAttribute('aria-selected', idx === i ? 'true' : 'false');
-                                b.classList.toggle('bg-brand-primary', idx === i);
-                                b.classList.toggle('w-6', idx === i);
-                                b.classList.toggle('bg-brand-soft', idx !== i);
+                                b.classList.toggle('bg-emerald-700', idx === i);
+                                b.classList.toggle('w-5', idx === i);
+                                b.classList.toggle('bg-slate-300', idx !== i);
                                 b.classList.toggle('w-2', idx !== i);
                             });
                         }
@@ -296,7 +303,7 @@
                                 (function (index) {
                                     var b = document.createElement('button');
                                     b.type = 'button';
-                                    b.className = 'h-2 w-2 rounded-full bg-brand-soft transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary';
+                                    b.className = 'h-2 w-2 rounded-full bg-slate-300 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700';
                                     b.setAttribute('aria-label', 'Go to unit ' + (index + 1));
                                     b.addEventListener('click', function () {
                                         cards[index].scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', inline: 'start', block: 'nearest' });
@@ -336,31 +343,15 @@
                             startAuto();
                         }
                         track.addEventListener('keydown', function (e) {
-                            if (e.key === 'ArrowLeft') {
-                                e.preventDefault();
-                                scrollByDir(-1);
-                            } else if (e.key === 'ArrowRight') {
-                                e.preventDefault();
-                                scrollByDir(1);
-                            }
+                            if (e.key === 'ArrowLeft') { e.preventDefault(); scrollByDir(-1); }
+                            else if (e.key === 'ArrowRight') { e.preventDefault(); scrollByDir(1); }
                         });
                     })();
                 </script>
             @endif
-        </div>
-
-        <div class="flex w-full max-w-[1200px] shrink-0 flex-col items-center gap-6 border-t border-brand-soft/30 pt-10 opacity-0 animate-fade-in-up-d3 sm:flex-row sm:justify-center sm:gap-12 md:gap-14 sm:pt-12 mb-10">
-            <a href="{{ route('portal.accommodations.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-brand-dark to-brand-primary px-8 py-3.5 text-base font-semibold text-white shadow-[0_4px_15px_rgba(46,125,50,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(46,125,50,0.38)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary">
-                <i class="fas fa-compass"></i> Explore all listings
-            </a>
-            <a href="{{ route('register.guest') }}" class="inline-flex items-center gap-2 rounded-xl border-2 border-brand-primary bg-white/60 px-8 py-3.5 text-base font-semibold text-brand-dark backdrop-blur-sm transition hover:bg-brand-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-dark">
-                <i class="fas fa-user-plus"></i> Register as guest
-            </a>
-        </div>
         </section>
     </main>
 
     @include('partials.portal-public-footer')
-
 </body>
 </html>

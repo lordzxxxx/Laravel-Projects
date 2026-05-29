@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        @include('owner.partials.owner-page-fonts')
         :root {
             @include('partials.tenant-theme-css-vars')
             --gray-500: #6B7280;
@@ -19,7 +20,7 @@
 
         body.owner-nav-page {
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            
             color: var(--gray-800);
             background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 50%, #C8E6C9 100%);
         }
