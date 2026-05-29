@@ -15,7 +15,8 @@
         $profileHref = '/profile';
         $logoutHref = '/logout';
         $isOwnerRole = $authUser?->isOwner() ?? false;
-        $canSeeDashboard = $isOwnerRole || ($authUser?->isAdmin() && \App\Models\Tenant::checkCurrent()) || $authUser?->hasAnyPermission([
+        $isTenantManagerRole = $isOwnerRole || ($authUser?->isAdmin() && \App\Models\Tenant::checkCurrent());
+        $canSeeDashboard = $isTenantManagerRole || $authUser?->hasAnyPermission([
             \App\Models\User::PERM_USERS_VIEW,
             \App\Models\User::PERM_ACCOMMODATIONS_CREATE,
             \App\Models\User::PERM_ACCOMMODATIONS_UPDATE,
@@ -24,18 +25,16 @@
             \App\Models\User::PERM_MESSAGES_MANAGE,
             \App\Models\User::PERM_REPORTS_VIEW,
         ]);
-        $canSeeReports = $isOwnerRole || $authUser?->hasPermission(\App\Models\User::PERM_REPORTS_VIEW);
-        $canSeeUnits = $isOwnerRole || $authUser?->hasAnyPermission([
+        $canSeeReports = $isTenantManagerRole || $authUser?->hasPermission(\App\Models\User::PERM_REPORTS_VIEW);
+        $canSeeUnits = $isTenantManagerRole || $authUser?->hasAnyPermission([
             \App\Models\User::PERM_ACCOMMODATIONS_CREATE,
             \App\Models\User::PERM_ACCOMMODATIONS_UPDATE,
             \App\Models\User::PERM_ACCOMMODATIONS_DELETE,
         ]);
-        $canSeeBookings = $isOwnerRole || $authUser?->hasPermission(\App\Models\User::PERM_BOOKINGS_MANAGE);
-        $canSeeUsers = $authUser?->isAdmin()
-            && $currentTenant
-            && ($authUser->tenant_id === null || (int) $authUser->tenant_id === (int) $currentTenant->id);
-        $canSeeUpdates = $isOwnerRole || $authUser?->hasPermission(\App\Models\User::PERM_REPORTS_VIEW);
-        $canSeeMessages = $isOwnerRole || $authUser?->hasPermission(\App\Models\User::PERM_MESSAGES_MANAGE);
+        $canSeeBookings = $isTenantManagerRole || $authUser?->hasPermission(\App\Models\User::PERM_BOOKINGS_MANAGE);
+        $canSeeUsers = $isTenantManagerRole || $authUser?->hasPermission(\App\Models\User::PERM_USERS_VIEW);
+        $canSeeUpdates = $isTenantManagerRole || $authUser?->hasPermission(\App\Models\User::PERM_REPORTS_VIEW);
+        $canSeeMessages = $isTenantManagerRole || $authUser?->hasPermission(\App\Models\User::PERM_MESSAGES_MANAGE);
     @endphp
 
     @include('partials.navbar-brand-block', [

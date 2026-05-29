@@ -28,7 +28,9 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        if (Tenant::checkCurrent()) {
+        $tenantContext = $this->resolveTenantContextFromRequest($request);
+
+        if ($tenantContext) {
             $portal = $request->query('portal');
             // Unit owners use the same staff portal rules as tenant admins; `owner` is a UI alias.
             if (! in_array($portal, ['admin', 'client', 'owner'], true)) {
@@ -36,7 +38,7 @@ class AuthenticatedSessionController extends Controller
             }
 
             return view('tenant.auth.login', [
-                'tenant' => Tenant::current(),
+                'tenant' => $tenantContext,
                 'portal' => $portal,
             ]);
         }
@@ -71,7 +73,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->authenticate();
 
-        $currentTenant = Tenant::current();
+        $currentTenant = Tenant::current() ?: $this->resolveTenantContextFromRequest($request);
         $user = $request->user();
 
         if ($user && ! $user->is_active) {
@@ -262,5 +264,41 @@ class AuthenticatedSessionController extends Controller
         $targetPort = is_numeric($port) ? (int) $port : $defaultPort;
 
         return $targetPort === $requestPort;
+    }
+
+    private function resolveTenantContextFromRequest(Request $request): ?Tenant
+    {
+        if (Tenant::checkCurrent()) {
+            $current = Tenant::current();
+
+            return $current instanceof Tenant ? $current : null;
+        }
+
+        $host = $this->extractHostWithoutPort((string) $request->getHost());
+        $centralDomain = (string) env(
+            'CENTRAL_DOMAIN',
+            parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost'
+        );
+
+        if (in_array($host, ['localhost', '127.0.0.1', '::1', $centralDomain], true)) {
+            return null;
+        }
+
+        return Tenant::query()->where('domain', $host)->first();
+    }
+
+    private function extractHostWithoutPort(string $host): string
+    {
+        if (str_starts_with($host, '[') && str_contains($host, ']')) {
+            return trim((string) strstr(substr($host, 1), ']', true));
+        }
+
+        if (substr_count($host, ':') === 1) {
+            [$hostname] = explode(':', $host, 2);
+
+            return $hostname;
+        }
+
+        return $host;
     }
 }

@@ -716,84 +716,25 @@
                 </div>
             </div>
 
-            <section class="kpi-surface animate delay-1" aria-label="Key metrics">
-                <div class="kpi-region">
-                    <h2 class="kpi-region-title">Volume &amp; engagement</h2>
-                    <div class="kpi-grid">
-                        <a href="#admin-demographics" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-primary"><i class="fas fa-ticket-alt" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['total_bookings'] ?? 0) }}</h3>
-                                <p>Total bookings</p>
-                                <span class="kpi-sub">Tied to demographics scope below</span>
-                            </div>
-                        </a>
-                        <a href="#admin-demographics" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-mint"><i class="fas fa-users" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['active_clients'] ?? 0) }}</h3>
-                                <p>Active guests</p>
-                            </div>
-                        </a>
-                        <a href="{{ route('admin.tenants', [], false) }}" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-neutral"><i class="fas fa-user-group" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['total_users'] ?? 0) }}</h3>
-                                <p>Total users</p>
-                            </div>
-                        </a>
-                        <a href="#admin-tenant-bookings" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-warm"><i class="fas fa-clock" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['pending_bookings'] ?? 0) }}</h3>
-                                <p>Pending bookings</p>
-                            </div>
-                        </a>
+            <div class="dashboard-card animate delay-1">
+                <h3><i class="fas fa-people-group icon"></i>Booking Demographics</h3>
+                <p class="demographics-meta">
+                    {{ $demographics['scope_label'] ?? 'All tenants' }} |
+                    {{ optional($demographicsStartDate)->toFormattedDateString() }} - {{ optional($demographicsEndDate)->toFormattedDateString() }}
+                </p>
+
+                @if(empty($demographics['columns_ready']))
+                    <div style="background:#FFFBEB; border:1px solid #FCD34D; color:#92400E; padding:10px 12px; border-radius:10px; margin-bottom:12px;">
+                        Demographic columns are not on tenant <code>bookings</code> tables yet. Bookings live in each tenant database; plain <code>php artisan migrate</code> only touches the landlord DB. Run tenant schema migrations:
+                        <code style="display:block; margin-top:8px; padding:8px 10px; background:#fff; border-radius:6px; font-size:0.82rem;">php artisan tenants:migrate</code>
+                        One tenant: <code style="font-size:0.82rem;">php artisan tenants:migrate YOUR_TENANT_ID</code>
                     </div>
-                </div>
-                <div class="kpi-region">
-                    <h2 class="kpi-region-title">Pipeline &amp; portfolio</h2>
-                    <div class="kpi-grid">
-                        <a href="{{ route('admin.tenants', ['onboarding_status' => \App\Models\Tenant::ONBOARDING_PENDING_APPROVAL]) }}" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon {{ ($kpis['pending_host_applications'] ?? 0) > 0 ? 'tone-amber' : 'tone-mint' }}"><i class="fas fa-file-signature" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['pending_host_applications'] ?? 0) }}</h3>
-                                <p>Pending host applications</p>
-                            </div>
-                        </a>
-                        <a href="#admin-activity-overview" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-mint"><i class="fas fa-percent" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['occupancy_rate'] ?? 0, 1) }}%</h3>
-                                <p>Occupancy (this month)</p>
-                                <span class="kpi-sub">Booked nights vs capacity</span>
-                            </div>
-                        </a>
-                        <a href="{{ route('admin.owner.accommodations.index', [], false) }}" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-primary"><i class="fas fa-check-circle" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['verified_properties'] ?? 0) }}</h3>
-                                <p>Verified units</p>
-                            </div>
-                        </a>
-                        @if($topTenantByBookings)
-                            <a href="{{ route('admin.tenants', [], false) }}" class="kpi-card kpi-card--link">
-                                <div class="kpi-icon tone-amber"><i class="fas fa-trophy" aria-hidden="true"></i></div>
-                                <div class="kpi-info">
-                                    <h3 class="kpi-value-compact">{{ $topTenantByBookings->name }}</h3>
-                                    <p>Top tenant by bookings</p>
-                                </div>
-                            </a>
-                        @else
-                            <div class="kpi-card" role="status">
-                                <div class="kpi-icon tone-neutral"><i class="fas fa-trophy" aria-hidden="true"></i></div>
-                                <div class="kpi-info">
-                                    <h3 class="kpi-value-empty">&mdash;</h3>
-                                    <p>Top tenant by bookings</p>
-                                    <span class="kpi-sub">No leader in the current period</span>
-                                </div>
-                            </div>
-                        @endif
+                @endif
+
+                <div class="demographics-summary">
+                    <div class="demographics-pill">
+                        <span class="value">{{ number_format($demographics['total_bookings'] ?? 0) }}</span>
+                        <span class="label">Bookings in Scope</span>
                     </div>
                 </div>
             </section>

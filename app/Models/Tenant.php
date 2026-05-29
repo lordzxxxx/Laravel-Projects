@@ -234,6 +234,16 @@ class Tenant extends BaseTenant
         return $this->hasMany(User::class);
     }
 
+    public function tenantUsers(): HasMany
+    {
+        return $this->hasMany(TenantUser::class);
+    }
+
+    public function clientUsers(): HasMany
+    {
+        return $this->hasMany(ClientUser::class);
+    }
+
     public function accommodations(): HasMany
     {
         return $this->hasMany(Accommodation::class);
