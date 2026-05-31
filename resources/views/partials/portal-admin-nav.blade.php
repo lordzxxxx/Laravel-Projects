@@ -10,9 +10,9 @@
         </div>
     </a>
     <div class="flex items-center justify-center gap-3 md:ml-auto md:justify-end">
-        <a href="{{ route('login') }}" class="inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-xl border-2 border-brand-primary bg-gradient-to-br from-brand-dark to-brand-primary px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark">
+        <a href="{{ route('login') }}" class="ui-btn ui-btn-primary">
             <i class="fas fa-shield-halved text-sm" aria-hidden="true"></i>
-            Admin login
+            <span>Admin login</span>
         </a>
     </div>
 </nav>

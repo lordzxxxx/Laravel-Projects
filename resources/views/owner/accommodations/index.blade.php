@@ -6,7 +6,7 @@
     @include('partials.tenant-favicon')
     <title>My Properties - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.app-vite-head')
     <style>
         * { box-sizing: border-box; }
 
@@ -220,14 +220,22 @@
         /* ── Property cards grid ───────────────────────────────────────────── */
         .properties-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+            gap: 20px;
             padding: 20px;
+            justify-items: stretch;
+        }
+        .properties-grid:has(.property-card:only-child) {
+            grid-template-columns: minmax(0, 380px);
+            justify-content: center;
         }
 
         .property-card {
             display: flex;
             flex-direction: column;
+            width: 100%;
+            max-width: 420px;
+            margin-inline: auto;
             background: #ffffff;
             border: 1px solid var(--gray-200);
             border-radius: 14px;
@@ -352,9 +360,15 @@
         .property-card-meta-item.rating .value i { color: #F59E0B; font-size: 0.78rem; }
 
         .property-card-actions {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 8px;
             margin-top: auto;
+        }
+
+        .action-btn-form {
+            display: flex;
+            min-width: 0;
         }
 
         .action-btn {
@@ -362,18 +376,21 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            flex: 1;
-            padding: 9px 12px;
+            width: 100%;
+            min-width: 0;
+            min-height: 2.5rem;
+            padding: 0.5rem 0.65rem;
             border-radius: 10px;
             border: 1px solid transparent;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 600;
             text-decoration: none;
+            white-space: nowrap;
             transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
             background: transparent;
         }
-        .action-btn i { font-size: 0.82rem; }
+        .action-btn i { font-size: 0.82rem; flex-shrink: 0; }
         .action-btn:active { transform: translateY(1px); }
 
         .action-btn.view {
@@ -397,8 +414,18 @@
         }
         .action-btn.delete:hover { background: #FEE2E2; border-color: #FCA5A5; }
 
-        .action-btn-form { flex: 1; display: flex; }
-        .action-btn-form .action-btn { width: 100%; }
+        @media (max-width: 400px) {
+            .action-btn span {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip: rect(0 0 0 0);
+            }
+            .property-card-actions {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
 
         /* ── Empty state ───────────────────────────────────────────────────── */
         .empty-state {
@@ -603,7 +630,7 @@
                     @foreach($accommodations as $accommodation)
                         <article class="property-card">
                             <div class="property-card-media">
-                                <img src="{{ $accommodation->primary_image_url }}" alt="{{ $accommodation->name }}" loading="lazy">
+                                <x-accommodation-image :accommodation="$accommodation" :alt="$accommodation->name" />
 
                                 @if($accommodation->is_verified)
                                     <span class="property-card-status verified">

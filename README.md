@@ -312,9 +312,12 @@ composer run dev
 Option B (separate terminals):
 
 ~~~bash
-php artisan serve
+php -c scripts/php-upload-limits.ini artisan serve --host=127.0.0.1 --port=8000
+php -c scripts/php-upload-limits.ini artisan serve --host=127.0.0.1 --port=8005
 npm run dev
 ~~~
+
+`composer run dev` and the commands above load `scripts/php-upload-limits.ini` so multi-photo accommodation uploads (up to 20 gallery images) do not hit PHP’s default 8MB `post_max_size` limit.
 
 ### 5) Multi-tenant local ports (optional)
 

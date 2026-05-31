@@ -38,12 +38,14 @@
         @endunless
     </ul>
     <div class="order-2 flex shrink-0 flex-nowrap items-center justify-center gap-2 sm:gap-2.5 md:order-none md:justify-self-end md:justify-end">
-        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-3 py-2 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 sm:px-4">
-            <i class="fas fa-sign-in-alt text-sm"></i> @if($isAdminHeader) Staff login @else Login @endif
+        <a href="{{ route('login') }}" class="ui-btn ui-btn-secondary ui-btn-sm">
+            <i class="fas fa-sign-in-alt text-sm" aria-hidden="true"></i>
+            <span>@if($isAdminHeader) Staff login @else Login @endif</span>
         </a>
         @include('partials.register-choice-menu', [
             'guestUrl' => $registerGuestUrl,
             'hostUrl' => $registerOwnerUrl,
+            'buttonClass' => 'ui-btn ui-btn-primary ui-btn-sm cursor-pointer select-none',
             'menuClass' => 'absolute right-0 z-[1100] mt-2 w-[min(18rem,calc(100vw-2rem))]',
         ])
     </div>

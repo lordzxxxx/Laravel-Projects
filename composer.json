@@ -52,10 +52,13 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#67e8f9,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve --host=127.0.0.1 --port=8000\" \"php artisan serve --host=127.0.0.1 --port=8005\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=admin,public,queue,logs,vite --kill-others"
+            "npx concurrently -c \"#93c5fd,#67e8f9,#c4b5fd,#fb7185,#fdba74\" \"php -c scripts/php-upload-limits.ini artisan serve --host=127.0.0.1 --port=8000\" \"php -c scripts/php-upload-limits.ini artisan serve --host=127.0.0.1 --port=8005\" \"php -c scripts/php-upload-limits.ini artisan queue:listen --tries=1 --timeout=0\" \"php -c scripts/php-upload-limits.ini artisan pail --timeout=0\" \"npm run dev\" --names=admin,public,queue,logs,vite --kill-others"
         ],
         "serve": [
-            "@php artisan serve --host=localhost --port=8000"
+            "php -c scripts/php-upload-limits.ini artisan serve --host=127.0.0.1 --port=8000"
+        ],
+        "serve:public": [
+            "php -c scripts/php-upload-limits.ini artisan serve --host=127.0.0.1 --port=8005"
         ],
         "smoke:portals": [
             "bash scripts/smoke-portal-endpoints.sh"

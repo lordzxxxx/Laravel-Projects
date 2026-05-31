@@ -134,6 +134,32 @@
         transform: rotate(180deg);
     }
 
+    .portal-public-nav .register-choice,
+    .portal-admin-nav .register-choice {
+        position: relative;
+    }
+
+    .portal-public-nav .register-choice > div,
+    .portal-admin-nav .register-choice > div {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        z-index: 1100;
+    }
+
+    .guest-property-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+        gap: 1.25rem;
+        align-items: stretch;
+    }
+
+    @media (min-width: 1280px) {
+        .guest-property-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+    }
+
     :where(.card, .panel, .dashboard-card, .msg-card, article[class*="rounded"], .register-choice > div > div) {
         transition:
             border-color var(--motion-base) var(--ease-standard),

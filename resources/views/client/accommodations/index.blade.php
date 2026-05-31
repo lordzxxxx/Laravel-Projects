@@ -12,7 +12,7 @@
     @include('partials.tenant-favicon')
     <title>Properties - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.app-vite-head')
     <style>
         :root {
             @include('partials.tenant-theme-css-vars')
@@ -187,15 +187,11 @@
         
         <!-- Properties Grid -->
         @if(isset($accommodations) && count($accommodations) > 0)
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <div class="guest-property-grid">
                 @foreach($accommodations as $accommodation)
                     <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
                         <div class="relative h-44 overflow-hidden">
-                            @if($accommodation->primary_image)
-                                <img src="{{ $accommodation->primary_image_url }}" alt="{{ $accommodation->name }}" class="h-full w-full object-cover transition duration-300 hover:scale-105">
-                            @else
-                                <img src="/COMMUNAL.jpg" alt="{{ $accommodation->name }}" class="h-full w-full object-cover transition duration-300 hover:scale-105">
-                            @endif
+                            <x-accommodation-image :accommodation="$accommodation" :alt="$accommodation->name" class="h-full w-full object-cover transition duration-300 hover:scale-105" />
                             <span class="absolute left-3 top-3 rounded-full bg-green-700 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">{{ str_replace('-', ' ', $accommodation->type) }}</span>
                             @guest
                             <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="property-favorite absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-base shadow-sm transition hover:scale-110 hover:bg-green-50 text-red-500" title="Sign in to save to wishlist" aria-label="Sign in to save to wishlist"><i class="fa-regular fa-heart" aria-hidden="true"></i></a>

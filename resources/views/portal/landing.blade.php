@@ -89,8 +89,8 @@
             inset: 0;
             z-index: -2;
             background: url("{{ asset('bg22.jpg') }}") center / cover no-repeat;
-            transform: scale(1.045);
-            filter: blur(5px);
+            transform: scale(1.02);
+            filter: blur(2px);
             pointer-events: none;
         }
         body.portal-root-landing-bg::after {
@@ -98,18 +98,166 @@
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.72);
             pointer-events: none;
+        }
+
+        #featured-units {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(200, 230, 201, 0.85);
+            border-radius: 1.25rem;
+            padding: 1.25rem 1rem 1rem;
+            box-shadow: 0 12px 40px -18px rgba(27, 94, 32, 0.2);
+        }
+        @media (min-width: 640px) {
+            #featured-units {
+                padding: 1.5rem 1.25rem 1.25rem;
+            }
+        }
+        .portal-featured-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        @media (min-width: 768px) {
+            .portal-featured-header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1.5rem;
+            }
+        }
+        .portal-featured-header__text {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .portal-featured-header__title {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--color-brand-dark, #1b5e20);
+            line-height: 1.25;
+        }
+        @media (min-width: 768px) {
+            .portal-featured-header__title {
+                font-size: 1.5rem;
+            }
+        }
+        .portal-featured-header__subtitle {
+            margin: 0.35rem 0 0;
+            max-width: 42rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #3d6b45;
+        }
+        @media (min-width: 768px) {
+            .portal-featured-header__subtitle {
+                font-size: 0.875rem;
+            }
+        }
+        .portal-featured-header__cta {
+            display: inline-flex;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            align-self: flex-start;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(46, 125, 50, 0.35);
+            background: #fff;
+            padding: 0.55rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #1b5e20;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(27, 94, 32, 0.08);
+            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .portal-featured-header__cta:hover {
+            background: #2e7d32;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(46, 125, 50, 0.22);
+            transform: translateY(-1px);
+        }
+        @media (min-width: 768px) {
+            .portal-featured-header__cta {
+                align-self: center;
+            }
         }
 
         .portal-featured-viewport {
             position: relative;
-            mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
-            -webkit-mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
+            overflow: hidden;
+            width: 100%;
+            container-type: inline-size;
+            container-name: portal-carousel;
+            /* Reserve height to avoid layout shift while images load */
+            min-height: 22rem;
+        }
+        @media (min-width: 640px) {
+            .portal-featured-viewport {
+                min-height: 24rem;
+            }
+        }
+
+        .portal-listing-track {
+            display: flex;
+            align-items: stretch;
+            gap: 1rem;
+            width: max-content;
+            will-change: transform;
+            transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .portal-listing-track {
+                transition: none;
+            }
+        }
+
+        /* Exactly 3 / 2 / 1 cards visible (container = viewport) */
+        .portal-listing-card {
+            box-sizing: border-box;
+            flex: 0 0 100cqw;
+            width: 100cqw;
+            max-width: 100cqw;
+            min-width: 0;
+        }
+        @container portal-carousel (min-width: 640px) {
+            .portal-listing-card {
+                flex-basis: calc((100cqw - 1rem) / 2);
+                width: calc((100cqw - 1rem) / 2);
+                max-width: calc((100cqw - 1rem) / 2);
+            }
+        }
+        @container portal-carousel (min-width: 1024px) {
+            .portal-listing-card {
+                flex-basis: calc((100cqw - 2rem) / 3);
+                width: calc((100cqw - 2rem) / 3);
+                max-width: calc((100cqw - 2rem) / 3);
+            }
+        }
+
+        .portal-listing-card .portal-listing-card__media {
+            position: relative;
+            aspect-ratio: 4 / 3;
+            width: 100%;
+            flex-shrink: 0;
+            background: rgba(200, 230, 201, 0.35);
+        }
+
+        .portal-listing-card .portal-listing-card__body {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 0.375rem;
+            padding: 1rem;
+            min-height: 9.5rem;
         }
         .portal-landing-title,
-        .portal-landing-copy,
-        #featured-units {
+        .portal-landing-copy {
             max-width: min(100%, calc(100vw - 2rem));
             overflow-wrap: break-word;
         }
@@ -172,24 +320,23 @@
         </p>
 
         {{-- Featured / browse available units: horizontal highlights carousel --}}
-        <div id="featured-units" class="mb-0 w-full max-w-[1200px] shrink-0 scroll-mt-28 pb-10 opacity-0 animate-fade-in-up-d2 sm:pb-12">
-            <div class="mb-5 flex flex-col gap-2 text-left sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h2 class="text-xl font-extrabold tracking-tight text-brand-dark md:text-2xl">
-                        Explore Available Accommodations
-                    </h2>
+        <div id="featured-units" class="mb-0 w-full max-w-[1200px] shrink-0 scroll-mt-28 pb-6 opacity-0 animate-fade-in-up-d2 sm:pb-8">
+            <header class="portal-featured-header text-left">
+                <div class="portal-featured-header__text">
+                    <h2 class="portal-featured-header__title">Explore Available Accommodations</h2>
                     @if($carouselAccommodations->isNotEmpty())
-                        <p class="mt-1 text-sm font-semibold text-brand-dark drop-shadow-[0_1px_2px_rgba(255,255,255,0.75)] md:text-base">
-                            Highlights from the directory — swipe or use arrows to explore.
+                        <p class="portal-featured-header__subtitle">
+                            Three featured stays at a time. Photos rotate every 5 seconds — use the arrows below to see more units.
                         </p>
                     @endif
                 </div>
                 @if($carouselAccommodations->isNotEmpty())
-                    <a href="{{ route('portal.accommodations.index') }}" class="mt-2 inline-flex items-center gap-2 self-start text-sm font-bold text-brand-primary underline decoration-2 underline-offset-2 hover:text-brand-dark sm:mt-0 sm:self-auto">
-                        See all listings <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
+                    <a href="{{ route('portal.accommodations.index') }}" class="portal-featured-header__cta">
+                        See all listings
+                        <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
                     </a>
                 @endif
-            </div>
+            </header>
 
             @if($carouselAccommodations->isEmpty())
                 <article
@@ -210,6 +357,7 @@
                 </article>
             @else
                 <div
+                    id="portalFeaturedCarousel"
                     class="portal-featured-viewport rounded-2xl border border-emerald-200/60 bg-white/50 p-2 shadow-[0_12px_40px_-16px_rgba(27,94,32,0.18)] backdrop-blur-sm sm:p-3"
                     role="region"
                     aria-roledescription="carousel"
@@ -217,26 +365,29 @@
                 >
                     <div
                         id="portalListingTrack"
-                        class="portal-listing-track flex items-stretch gap-4 overflow-x-auto scroll-smooth pb-2 pt-1 [scrollbar-width:thin] snap-x snap-mandatory md:gap-5"
-                        style="-webkit-overflow-scrolling: touch;"
+                        class="portal-listing-track"
                         tabindex="0"
+                        aria-live="polite"
                     >
                         @foreach($carouselAccommodations as $acc)
-                            <article class="portal-listing-card flex w-[min(100%,300px)] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-brand-soft/90 bg-white shadow-md sm:w-[min(100%,320px)]">
-                                <a href="{{ route('portal.accommodations.show', $acc) }}" class="relative block aspect-[4/3] overflow-hidden bg-brand-soft/30">
-                                    <img src="{{ $acc->primary_image_url }}" alt="Photo of {{ $acc->name }}" class="h-full w-full object-cover transition duration-300 hover:scale-105" loading="lazy" decoding="async">
+                            <article class="portal-listing-card flex flex-col overflow-hidden rounded-xl border border-brand-soft/90 bg-white shadow-md">
+                                <div class="portal-listing-card__media">
+                                    <x-portal-listing-image-carousel
+                                        :accommodation="$acc"
+                                        :property-url="route('portal.accommodations.show', $acc)"
+                                    />
                                     @if($acc->is_featured)
-                                        <span class="absolute left-2 top-2 rounded-md bg-amber-500 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white shadow">Featured</span>
+                                        <span class="pointer-events-none absolute left-2 top-2 z-20 rounded-md bg-amber-500 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white shadow">Featured</span>
                                     @endif
-                                </a>
-                                <div class="flex flex-1 flex-col gap-1.5 p-4 text-left">
+                                </div>
+                                <div class="portal-listing-card__body text-left">
                                     <h3 class="line-clamp-2 min-h-[2.5rem] text-base font-bold text-brand-dark">{{ $acc->name }}</h3>
                                     <p class="line-clamp-2 text-xs text-brand-medium">{{ $acc->barangay ?? $acc->address }}</p>
                                     @if($acc->max_guests)
                                         <p class="text-[0.7rem] font-medium text-brand-medium"><i class="fas fa-user-group mr-1 text-brand-primary" aria-hidden="true"></i>Up to {{ (int) $acc->max_guests }} guests</p>
                                     @endif
                                     <p class="mt-auto pt-2 text-base font-bold text-brand-primary">{{ $acc->formatted_price }} <span class="text-sm font-normal text-brand-medium">/ night</span></p>
-                                    <a href="{{ route('portal.accommodations.show', $acc) }}" class="mt-1 inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-brand-dark to-brand-primary px-3 py-2.5 text-xs font-bold text-white transition hover:brightness-105">
+                                    <a href="{{ route('portal.accommodations.show', $acc) }}" class="ui-btn ui-btn-primary ui-btn-sm ui-btn-block mt-1">
                                         View details
                                     </a>
                                 </div>
@@ -257,92 +408,147 @@
                 </div>
                 <script>
                     (function () {
+                        var viewport = document.getElementById('portalFeaturedCarousel');
                         var track = document.getElementById('portalListingTrack');
                         var prev = document.getElementById('portalListingPrev');
                         var next = document.getElementById('portalListingNext');
                         var dotsHost = document.getElementById('portalListingDots');
-                        if (!track || !prev || !next) return;
-                        var cards = track.querySelectorAll('.portal-listing-card');
+                        if (!viewport || !track || !prev || !next) return;
+
+                        var cards = Array.prototype.slice.call(track.querySelectorAll('.portal-listing-card'));
+                        if (!cards.length) return;
+
                         var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                        var autoTimer = null;
-                        function stepPx() {
-                            var slide = cards[0];
-                            if (!slide) return 320;
-                            var rect = slide.getBoundingClientRect();
-                            var gap = 16;
-                            if (window.matchMedia('(min-width:768px)').matches) gap = 20;
-                            return rect.width + gap;
+                        var currentPage = 0;
+                        var pageCount = 1;
+                        var gapPx = 16;
+
+                        function visiblePerPage() {
+                            if (window.matchMedia('(min-width: 1024px)').matches) return 3;
+                            if (window.matchMedia('(min-width: 640px)').matches) return 2;
+                            return 1;
                         }
-                        function scrollByDir(dir) {
-                            track.scrollBy({ left: dir * stepPx(), behavior: reducedMotion ? 'auto' : 'smooth' });
+
+                        function readGap() {
+                            var styles = window.getComputedStyle(track);
+                            var g = parseFloat(styles.columnGap || styles.gap || '16');
+                            gapPx = Number.isFinite(g) ? g : 16;
                         }
-                        function updateDots() {
-                            if (!dotsHost || !cards.length) return;
-                            var i = Math.round(track.scrollLeft / Math.max(1, stepPx()));
-                            i = Math.min(cards.length - 1, Math.max(0, i));
-                            var buttons = dotsHost.querySelectorAll('button');
-                            buttons.forEach(function (b, idx) {
-                                b.setAttribute('aria-selected', idx === i ? 'true' : 'false');
-                                b.classList.toggle('bg-brand-primary', idx === i);
-                                b.classList.toggle('w-6', idx === i);
-                                b.classList.toggle('bg-brand-soft', idx !== i);
-                                b.classList.toggle('w-2', idx !== i);
+
+                        function cardWidth() {
+                            var perPage = visiblePerPage();
+                            var inner = viewport.clientWidth;
+                            return (inner - gapPx * (perPage - 1)) / perPage;
+                        }
+
+                        function applyCardWidths() {
+                            readGap();
+                            var w = cardWidth();
+                            cards.forEach(function (card) {
+                                card.style.flexBasis = w + 'px';
+                                card.style.width = w + 'px';
+                                card.style.maxWidth = w + 'px';
                             });
                         }
-                        if (dotsHost && cards.length) {
+
+                        function recalcPages() {
+                            applyCardWidths();
+                            var perPage = visiblePerPage();
+                            pageCount = Math.max(1, Math.ceil(cards.length / perPage));
+                            if (currentPage >= pageCount) currentPage = 0;
+                            renderDots();
+                            goToPage(currentPage, true);
+                        }
+
+                        function offsetForPage(page) {
+                            var perPage = visiblePerPage();
+                            var step = cardWidth() + gapPx;
+                            return page * perPage * step;
+                        }
+
+                        function goToPage(page, instant) {
+                            currentPage = ((page % pageCount) + pageCount) % pageCount;
+                            var x = offsetForPage(currentPage);
+                            if (instant || reducedMotion) {
+                                track.style.transition = 'none';
+                                track.style.transform = 'translate3d(' + (-x) + 'px, 0, 0)';
+                                void track.offsetHeight;
+                                track.style.transition = '';
+                            } else {
+                                track.style.transform = 'translate3d(' + (-x) + 'px, 0, 0)';
+                            }
+                            updateDots();
+                            viewport.setAttribute('data-carousel-page', String(currentPage + 1));
+                        }
+
+                        function updateDots() {
+                            if (!dotsHost) return;
+                            var buttons = dotsHost.querySelectorAll('button');
+                            buttons.forEach(function (b, idx) {
+                                var active = idx === currentPage;
+                                b.setAttribute('aria-selected', active ? 'true' : 'false');
+                                b.classList.toggle('bg-brand-primary', active);
+                                b.classList.toggle('w-6', active);
+                                b.classList.toggle('bg-brand-soft', !active);
+                                b.classList.toggle('w-2', !active);
+                            });
+                        }
+
+                        function renderDots() {
+                            if (!dotsHost) return;
                             dotsHost.innerHTML = '';
-                            for (var c = 0; c < cards.length; c++) {
-                                (function (index) {
+                            for (var p = 0; p < pageCount; p++) {
+                                (function (pageIndex) {
                                     var b = document.createElement('button');
                                     b.type = 'button';
                                     b.className = 'h-2 w-2 rounded-full bg-brand-soft transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary';
-                                    b.setAttribute('aria-label', 'Go to unit ' + (index + 1));
+                                    b.setAttribute('role', 'tab');
+                                    b.setAttribute('aria-label', 'Show highlight set ' + (pageIndex + 1) + ' of ' + pageCount);
                                     b.addEventListener('click', function () {
-                                        cards[index].scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', inline: 'start', block: 'nearest' });
+                                        goToPage(pageIndex, false);
                                     });
                                     dotsHost.appendChild(b);
-                                })(c);
+                                })(p);
                             }
-                            window.requestAnimationFrame(updateDots);
+                            updateDots();
                         }
-                        prev.addEventListener('click', function () { scrollByDir(-1); });
-                        next.addEventListener('click', function () { scrollByDir(1); });
-                        track.addEventListener('scroll', function () { window.requestAnimationFrame(updateDots); }, { passive: true });
-                        function startAuto() {
-                            if (reducedMotion || cards.length < 2) return;
-                            stopAuto();
-                            autoTimer = window.setInterval(function () {
-                                var maxScroll = track.scrollWidth - track.clientWidth - 2;
-                                if (track.scrollLeft >= maxScroll) {
-                                    track.scrollTo({ left: 0, behavior: 'smooth' });
-                                } else {
-                                    scrollByDir(1);
-                                }
-                            }, 5500);
+
+                        function nextPage() {
+                            goToPage(currentPage + 1, false);
                         }
-                        function stopAuto() {
-                            if (autoTimer) {
-                                window.clearInterval(autoTimer);
-                                autoTimer = null;
-                            }
+
+                        function prevPage() {
+                            goToPage(currentPage - 1, false);
                         }
-                        var wrap = track.closest('.portal-featured-viewport');
-                        if (wrap && !reducedMotion) {
-                            wrap.addEventListener('mouseenter', stopAuto);
-                            wrap.addEventListener('mouseleave', startAuto);
-                            wrap.addEventListener('focusin', stopAuto);
-                            wrap.addEventListener('focusout', startAuto);
-                            startAuto();
-                        }
+
+                        prev.addEventListener('click', function () {
+                            prevPage();
+                        });
+                        next.addEventListener('click', function () {
+                            nextPage();
+                        });
+
                         track.addEventListener('keydown', function (e) {
                             if (e.key === 'ArrowLeft') {
                                 e.preventDefault();
-                                scrollByDir(-1);
+                                prevPage();
                             } else if (e.key === 'ArrowRight') {
                                 e.preventDefault();
-                                scrollByDir(1);
+                                nextPage();
                             }
                         });
+
+                        var resizeTimer;
+                        window.addEventListener('resize', function () {
+                            window.clearTimeout(resizeTimer);
+                            resizeTimer = window.setTimeout(recalcPages, 120);
+                        });
+
+                        recalcPages();
+
+                        if (window.PortalListingImageCarousel && typeof window.PortalListingImageCarousel.init === 'function') {
+                            window.PortalListingImageCarousel.init(viewport);
+                        }
                     })();
                 </script>
             @endif

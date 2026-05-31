@@ -200,7 +200,7 @@
                 <div>
                     <label for="images">Room Photos (Multiple)</label>
                     <input id="images" name="images[]" type="file" accept="image/*" multiple>
-                    <div class="hint">Upload up to 10 photos. Uploading new photos replaces the current gallery.</div>
+                    <div class="hint">Upload up to {{ \App\Models\Accommodation::MAX_GALLERY_IMAGES }} photos. Uploading new photos replaces the current gallery.</div>
                 </div>
 
                 <div class="full">

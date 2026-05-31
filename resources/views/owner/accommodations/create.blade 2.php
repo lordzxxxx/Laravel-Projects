@@ -463,7 +463,7 @@
                 <div class="field-group">
                     <label for="images">Room Photos (Multiple)</label>
                     <input id="images" name="images[]" type="file" accept="image/*" multiple>
-                    <div class="hint">Upload up to 10 photos (JPG, PNG, or WebP, max 5MB each).</div>
+                    <div class="hint">Upload up to {{ \App\Models\Accommodation::MAX_GALLERY_IMAGES }} photos (JPG, PNG, or WebP, max 5MB each).</div>
                 </div>
             </div>
 
