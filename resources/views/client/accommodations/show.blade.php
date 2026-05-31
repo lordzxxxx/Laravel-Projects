@@ -410,7 +410,7 @@
                     <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
                 @endif
                 @if(Auth::user()->tenantClientMayManageOwnStays())
-                <li><a href="{{ ($portalDirectory ?? false) ? route('portal.bookings.index') : route('bookings.index')) }}">My Bookings</a></li>
+                <li><a href="{{ ($portalDirectory ?? false) ? route('portal.bookings.index') : route('bookings.index') }}">My Bookings</a></li>
                 @endif
                 @if(Auth::user()->tenantClientMayUseMessaging())
                     <li><a href="{{ route('messages.index', [], false) }}">Messages</a></li>
@@ -443,7 +443,7 @@
         <div class="breadcrumb animate">
             <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('landing') }}">Home</a>
             <span>›</span>
-            <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index')) }}">Accommodations</a>
+            <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index') }}">Accommodations</a>
             <span>›</span>
             <span>{{ $accommodation->name }}</span>
         </div>
