@@ -29,8 +29,6 @@
 
         @include('partials.messaging-ui-styles')
 
-        /* Create message: full-width shell, minimal gutters (matches messages index) */
-        body.owner-nav-page main.messages-create-main.main-content.with-owner-nav,
         body.client-nav-page main.messages-create-main.client-guest-main--full {
             max-width: none !important;
             width: 100% !important;
@@ -50,7 +48,7 @@
     @endif
 
     <main
-        class="messages-create-main {{ $useOwnerNavbar ? 'main-content with-owner-nav flex w-full min-h-screen flex-col' : 'client-guest-main client-guest-main--full flex min-h-screen flex-col' }}"
+        class="messages-create-main {{ $useOwnerNavbar ? 'main-content with-owner-nav owner-app-main flex w-full flex-col' : 'client-guest-main client-guest-main--full flex min-h-screen flex-col' }}"
     >
         @include('partials.flash-alerts')
         <a href="{{ route('messages.index', [], false) }}" class="msg-back-link">

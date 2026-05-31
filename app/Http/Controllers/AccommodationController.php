@@ -52,7 +52,7 @@ class AccommodationController extends Controller
             abort_unless($this->isApprovedMunicipalityListing($accommodation), 404);
         }
 
-        $accommodation->load(['owner', 'bookings' => function ($query) {
+        $accommodation->load(['owner', 'tenant', 'bookings' => function ($query) {
             $query->whereIn('status', ['pending', 'confirmed', 'paid'])
                 ->where('check_out_date', '>=', now()->toDateString());
         }]);
@@ -60,6 +60,17 @@ class AccommodationController extends Controller
         $amenities = is_array($accommodation->amenities) ? $accommodation->amenities : [];
         $images = is_array($accommodation->images) ? $accommodation->images : [];
         $portalDirectory = PortalDetector::isPublicPortal($request) || ! Tenant::checkCurrent();
+
+        $tenantGuestLoginUrl = null;
+        $tenantGuestRegisterUrl = null;
+        if ($portalDirectory && ! $currentTenant) {
+            $hostTenant = $accommodation->tenant;
+            if ($hostTenant instanceof Tenant && filled($hostTenant->domain)) {
+                $intendedPath = '/accommodations/'.$accommodation->id;
+                $tenantGuestLoginUrl = $hostTenant->guestLoginUrl($intendedPath);
+                $tenantGuestRegisterUrl = $hostTenant->guestRegisterUrl($intendedPath);
+            }
+        }
 
         $availabilityAccommodations = collect([$accommodation]);
         $availabilityEventsByAccommodation = AccommodationAvailability::eventsForAccommodationIds(
@@ -73,6 +84,8 @@ class AccommodationController extends Controller
             'amenities',
             'images',
             'portalDirectory',
+            'tenantGuestLoginUrl',
+            'tenantGuestRegisterUrl',
             'availabilityAccommodations',
             'availabilityEventsByAccommodation'
         ));
@@ -488,22 +501,6 @@ class AccommodationController extends Controller
         }
 
         return (string) $tenant->onboarding_status === Tenant::ONBOARDING_APPROVED
-            && (bool) $tenant->database_provisioned
-            && $this->matchesCentralMunicipalityDirectory($accommodation);
-    }
-
-    private function matchesCentralMunicipalityDirectory(Accommodation $accommodation): bool
-    {
-        $municipality = (string) config('portals.municipality_name', 'Impasug-ong');
-        $term = strtolower(str_replace('-', '', $municipality));
-
-        foreach (['address', 'barangay', 'description'] as $col) {
-            $hay = strtolower((string) ($accommodation->{$col} ?? ''));
-            if ($hay !== '' && (str_contains($hay, strtolower($municipality)) || str_contains($hay, $term))) {
-                return true;
-            }
-        }
-
-        return false;
+            && (bool) $tenant->database_provisioned;
     }
 }

@@ -13,11 +13,12 @@
     $brandLogoUrl = $useTenantBrand ? $tenant->brandLogoUrl() : asset('SYSTEMLOGO.png');
     $brandLogoFallback = $useTenantBrand ? \App\Models\Tenant::defaultBrandLogoUrl() : asset('SYSTEMLOGO.png');
     $brandAlt = $useTenantBrand ? $tenant->getAppTitle() : 'IMPASUGONG TOURISM';
+    $brandTitle = $brandTitle ?? ($useTenantBrand ? $tenant->getAppTitle() : 'IMPASUGONG TOURISM');
 @endphp
 <a href="{{ $brandHref }}" class="nav-logo">
     <img src="{{ $brandLogoUrl }}" alt="{{ $brandAlt }}" onerror="this.onerror=null;this.src='{{ $brandLogoFallback }}';">
     <div class="nav-brand-text">
-        <span class="nav-brand-title">IMPASUGONG TOURISM</span>
+        <span class="nav-brand-title">{{ $brandTitle }}</span>
         <span class="nav-brand-subtitle">{{ $brandSubtitle }}</span>
     </div>
 </a>

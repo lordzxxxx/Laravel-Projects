@@ -71,9 +71,39 @@
 
         @if($showClientNav)
             @include('client.partials.top-navbar-styles')
+        @elseif($showPortalPublicNav)
+            @include('client.partials.guest-shell-styles')
         @endif
-        
-        /* Responsive */
+
+        body.explore-portal-page {
+            min-height: 100dvh;
+            background-color: #f8fafc;
+            background-image: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.95) 0%,
+                rgba(255, 255, 255, 0.88) 50%,
+                rgba(27, 94, 32, 0.08) 100%
+            ), url('/COMMUNAL.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        @include('client.partials.guest-stays-browse-styles')
+
+        body.explore-portal-page .explore-stays-main.portal-public-main {
+            padding: var(--portal-content-below-nav, calc(var(--app-topbar-height, 4rem) + clamp(1.25rem, 2vw, 1.875rem)))
+                clamp(1rem, 2.5vw, 2rem)
+                clamp(2rem, 4vw, 3rem);
+        }
+
+        body.client-nav-page .explore-stays-main.client-guest-main {
+            padding-left: clamp(1rem, 2.5vw, 2rem);
+            padding-right: clamp(1rem, 2.5vw, 2rem);
+            padding-bottom: clamp(2rem, 4vw, 3rem);
+        }
+
+
         @media (max-width: 768px) {
             @if($showLegacyNav)
             .navbar { padding: 0 20px; height: 60px; }
@@ -85,12 +115,16 @@
 
     </style>
 </head>
-<body class="{{ $showClientNav ? 'client-nav-page font-sans text-gray-800' : 'min-h-screen font-sans text-gray-800 bg-cover bg-center bg-fixed' }}"@if(! $showClientNav) style="background-image: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, rgba(27, 94, 32, 0.1) 100%), url('/COMMUNAL.jpg');"@endif>
+<body class="{{ $showClientNav ? 'client-nav-page font-sans text-gray-800' : ($showPortalPublicNav ? 'explore-portal-page font-sans text-gray-800' : 'min-h-screen font-sans text-gray-800 bg-cover bg-center bg-fixed') }}"@if(! $showClientNav && ! $showPortalPublicNav) style="background-image: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, rgba(27, 94, 32, 0.1) 100%), url('/COMMUNAL.jpg');"@endif>
     <!-- Navigation -->
     @if($showClientNav)
     @include('client.partials.top-navbar', ['active' => 'accommodations', 'portalDirectory' => $portalDirectory])
     @elseif($showPortalPublicNav)
-    @include('partials.portal-public-nav', ['active' => 'browse', 'municipalityName' => config('portals.municipality_name', 'Impasug-ong')])
+    @include('partials.portal-public-nav', [
+        'active' => 'browse',
+        'municipalityName' => config('portals.municipality_name', 'Impasug-ong'),
+        'navLayout' => 'minimal',
+    ])
     @else
     <nav class="navbar">
         <a href="{{ $portalDirectory ? route('portal.landing') : route('dashboard') }}" class="nav-logo">
@@ -131,150 +165,140 @@
     @endif
     
     <!-- Main Content -->
-    <main class="{{ $showClientNav ? 'client-guest-main' : 'mx-auto w-full max-w-[1280px] px-5 pb-20 sm:px-8 lg:px-10' }}"@if(! $showClientNav) style="padding-top: 30px;"@endif>
-        <!-- Page Header -->
-        <header class="mb-8 flex flex-col gap-6 sm:mb-10 sm:flex-row sm:items-start sm:justify-between">
-            <div class="max-w-2xl">
-                <span class="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-green-700">
-                    <span class="h-px w-6 bg-green-700/60"></span>
-                    Stay in Impasug-ong
-                </span>
-                <h1 class="font-display text-3xl font-semibold leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-[2.6rem]">
-                    Find your perfect stay.
-                </h1>
-                <p class="mt-3 text-[15px] leading-relaxed text-gray-700">
+    @php
+        $mainShellClass = $showClientNav
+            ? 'client-guest-main client-guest-main--full explore-stays-main'
+            : ($portalDirectory
+                ? 'portal-public-main explore-stays-main'
+                : 'explore-stays-main mx-auto w-full px-5 pb-20 sm:px-8 lg:px-10');
+    @endphp
+    <main class="{{ $mainShellClass }}"@if(! $showClientNav && ! $showPortalPublicNav) style="padding-top: 30px;"@endif>
+        <header class="explore-stays-hero">
+            <div class="explore-stays-hero__copy">
+                <p class="explore-stays-hero__eyebrow">Stay in Impasug-ong</p>
+                <h1 class="explore-stays-hero__title">Find your perfect stay</h1>
+                <p class="explore-stays-hero__lede">
                     Traveller-inns, Airbnb stays, and daily rentals — curated from local hosts across the municipality.
                 </p>
                 @if(isset($accommodations) && method_exists($accommodations, 'total'))
-                    <div class="mt-4 text-xs font-semibold uppercase tracking-[0.15em] text-gray-700">
+                    <p class="explore-stays-hero__count">
                         {{ $accommodations->total() }} {{ Str::plural('property', $accommodations->total()) }} available
-                    </div>
+                    </p>
                 @endif
             </div>
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-3 sm:justify-end sm:gap-x-4">
-                <img src="{{ asset('images/love-impasugong-watermark.png') }}" alt="Love Impasugong" class="h-28 w-auto object-contain sm:h-32 lg:h-44" decoding="async">
-                <img src="{{ asset('SYSTEMLOGO.png') }}" alt="IMPASUGONG TOURISM" class="h-28 w-auto object-contain sm:h-32 lg:h-44" decoding="async">
-                <img src="{{ asset('Lgu Socmed Template-02 2.png') }}" alt="LGU Impasugong" class="h-28 w-auto object-contain sm:h-32 lg:h-44" decoding="async">
+            <div class="explore-stays-hero__logos" aria-hidden="true">
+                @include('tenant.partials.auth-brand-logos', ['tenant' => \App\Models\Tenant::current()])
             </div>
         </header>
 
-        <!-- Filter Bar -->
-        <form action="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index') }}" method="GET" class="mb-10 rounded-2xl border border-gray-200 bg-white/95 px-4 py-4 shadow-[0_2px_8px_rgba(15,23,42,0.06)] backdrop-blur-sm sm:px-5">
-            <div class="grid gap-x-4 gap-y-4 lg:grid-cols-12 lg:items-end">
-                <div class="lg:col-span-2">
-                    <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-700">Type</label>
-                    <select name="type" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 transition focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100">
+        <form
+            action="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index') }}"
+            method="GET"
+            class="explore-stays-filters"
+        >
+            <div class="explore-stays-filters__grid">
+                <div class="explore-stays-field explore-stays-field--type">
+                    <label for="filter-type">Type</label>
+                    <select id="filter-type" name="type">
                         <option value="">All</option>
                         <option value="traveller-inn" {{ request('type') == 'traveller-inn' ? 'selected' : '' }}>Traveller-Inn</option>
                         <option value="airbnb" {{ request('type') == 'airbnb' ? 'selected' : '' }}>Airbnb</option>
                         <option value="daily-rental" {{ request('type') == 'daily-rental' ? 'selected' : '' }}>Daily Rental</option>
                     </select>
                 </div>
-
-                <div class="lg:col-span-2">
-                    <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-700">Min Price</label>
-                    <input type="number" name="min_price" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 transition placeholder:text-gray-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" placeholder="₱ 0" value="{{ request('min_price') }}">
+                <div class="explore-stays-field explore-stays-field--min">
+                    <label for="filter-min-price">Min price</label>
+                    <input type="number" id="filter-min-price" name="min_price" placeholder="₱ 0" value="{{ request('min_price') }}">
                 </div>
-
-                <div class="lg:col-span-2">
-                    <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-700">Max Price</label>
-                    <input type="number" name="max_price" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 transition placeholder:text-gray-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" placeholder="₱ 10,000" value="{{ request('max_price') }}">
+                <div class="explore-stays-field explore-stays-field--max">
+                    <label for="filter-max-price">Max price</label>
+                    <input type="number" id="filter-max-price" name="max_price" placeholder="₱ 10,000" value="{{ request('max_price') }}">
                 </div>
-
-                <div class="lg:col-span-2">
-                    <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-700">Guests</label>
-                    <select name="guests" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 transition focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100">
+                <div class="explore-stays-field explore-stays-field--guests">
+                    <label for="filter-guests">Guests</label>
+                    <select id="filter-guests" name="guests">
                         <option value="">Any</option>
-                        <option value="1" {{ request('guests') == '1' ? 'selected' : '' }}>1 Guest</option>
-                        <option value="2" {{ request('guests') == '2' ? 'selected' : '' }}>2 Guests</option>
-                        <option value="3" {{ request('guests') == '3' ? 'selected' : '' }}>3 Guests</option>
-                        <option value="4" {{ request('guests') == '4' ? 'selected' : '' }}>4 Guests</option>
-                        <option value="5" {{ request('guests') == '5' ? 'selected' : '' }}>5+ Guests</option>
+                        <option value="1" {{ request('guests') == '1' ? 'selected' : '' }}>1 guest</option>
+                        <option value="2" {{ request('guests') == '2' ? 'selected' : '' }}>2 guests</option>
+                        <option value="3" {{ request('guests') == '3' ? 'selected' : '' }}>3 guests</option>
+                        <option value="4" {{ request('guests') == '4' ? 'selected' : '' }}>4 guests</option>
+                        <option value="5" {{ request('guests') == '5' ? 'selected' : '' }}>5+ guests</option>
                     </select>
                 </div>
-
-                <div class="lg:col-span-3">
-                    <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-700">Search</label>
-                    <input type="text" name="search" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 transition placeholder:text-gray-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" placeholder="Property name, location..." value="{{ request('search') }}" aria-label="Search properties">
+                <div class="explore-stays-field explore-stays-field--search">
+                    <label for="filter-search">Search</label>
+                    <input type="text" id="filter-search" name="search" placeholder="Property name, location…" value="{{ request('search') }}" aria-label="Search properties">
                 </div>
-
-                <div class="lg:col-span-1">
-                    <button type="submit" class="inline-flex w-full items-center justify-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-black focus:outline-none focus:ring-2 focus:ring-green-100">Search</button>
+                <div class="explore-stays-field explore-stays-field--submit">
+                    <label class="sr-only" for="filter-submit">Search</label>
+                    <button type="submit" id="filter-submit" class="explore-stays-search-btn">Search</button>
                 </div>
             </div>
         </form>
 
-        <!-- Properties Grid -->
         @if(isset($accommodations) && count($accommodations) > 0)
-            <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                @foreach($accommodations as $accommodation)
-                    <article class="group flex flex-col">
-                        <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.show', $accommodation) : route('accommodations.show', $accommodation) }}" class="relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100">
-                            @if($accommodation->primary_image)
-                                <img src="{{ $accommodation->primary_image_url }}" alt="{{ $accommodation->name }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]">
-                            @else
-                                <img src="/COMMUNAL.jpg" alt="{{ $accommodation->name }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]">
-                            @endif
-                            <span class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-800 shadow-sm backdrop-blur">{{ str_replace('-', ' ', $accommodation->type) }}</span>
-                        </a>
-
-                        <div class="absolute right-3 top-3"></div>
-
-                        <div class="mt-4 flex flex-col gap-2">
-                            <div class="flex items-start justify-between gap-3">
-                                <h3 class="text-[15px] font-semibold leading-snug text-gray-900 line-clamp-1">{{ $accommodation->name }}</h3>
-                                @guest
-                                <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="property-favorite -mt-0.5 inline-flex h-7 w-7 flex-none items-center justify-center rounded-full text-gray-600 transition hover:text-red-500" title="Sign in to save to wishlist" aria-label="Sign in to save to wishlist"><i class="fa-regular fa-heart text-sm" aria-hidden="true"></i></a>
+            <section class="explore-stays-results" aria-label="Property listings">
+                <div class="explore-stays-grid">
+                    @foreach($accommodations as $accommodation)
+                        <article class="explore-stay-card">
+                            <a
+                                href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.show', $accommodation) : route('accommodations.show', $accommodation) }}"
+                                class="explore-stay-card__media"
+                            >
+                                @if($accommodation->primary_image)
+                                    <img src="{{ $accommodation->primary_image_url }}" alt="{{ $accommodation->name }}" loading="lazy" decoding="async">
                                 @else
-                                <button type="button" class="property-favorite -mt-0.5 inline-flex h-7 w-7 flex-none items-center justify-center rounded-full text-gray-600 transition hover:text-red-500" title="Add to favorites" aria-label="Add to favorites"><i class="fa-regular fa-heart text-sm" aria-hidden="true"></i></button>
-                                @endguest
+                                    <img src="/COMMUNAL.jpg" alt="{{ $accommodation->name }}" loading="lazy" decoding="async">
+                                @endif
+                                <span class="explore-stay-card__type">{{ str_replace('-', ' ', $accommodation->type) }}</span>
+                            </a>
+                            <div class="explore-stay-card__body">
+                                <div class="explore-stay-card__head">
+                                    <h2 class="explore-stay-card__title">
+                                        <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.show', $accommodation) : route('accommodations.show', $accommodation) }}" class="text-inherit no-underline hover:underline">
+                                            {{ $accommodation->name }}
+                                        </a>
+                                    </h2>
+                                    @guest
+                                    <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="explore-stay-card__fav property-favorite" title="Sign in to save to wishlist" aria-label="Sign in to save to wishlist"><i class="fa-regular fa-heart" aria-hidden="true"></i></a>
+                                    @else
+                                    <button type="button" class="explore-stay-card__fav property-favorite" title="Add to favorites" aria-label="Add to favorites"><i class="fa-regular fa-heart" aria-hidden="true"></i></button>
+                                    @endguest
+                                </div>
+                                <p class="explore-stay-card__location">
+                                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                                    <span>{{ $accommodation->address }}, Brgy. {{ $accommodation->barangay }}</span>
+                                </p>
+                                <p class="explore-stay-card__meta">
+                                    {{ $accommodation->bedrooms ?? 1 }} bed · {{ $accommodation->bathrooms ?? 1 }} bath · up to {{ $accommodation->max_guests ?? 2 }} guests
+                                </p>
+                                <p class="explore-stay-card__rating">
+                                    <i class="fa-solid fa-star" aria-hidden="true"></i>
+                                    <strong>5.0</strong> ({{ $accommodation->total_reviews ?? 0 }} reviews)
+                                </p>
+                                <p class="explore-stay-card__price">
+                                    ₱{{ number_format($accommodation->price_per_night, 0, '.', ',') }}
+                                    <span>/ night</span>
+                                </p>
                             </div>
-
-                            <div class="flex items-center gap-1.5 text-[13px] text-gray-700">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span class="line-clamp-1">{{ $accommodation->address }}, Brgy. {{ $accommodation->barangay }}</span>
-                            </div>
-
-                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-gray-700">
-                                <span>{{ $accommodation->bedrooms ?? 1 }} bed</span>
-                                <span class="text-gray-400">·</span>
-                                <span>{{ $accommodation->bathrooms ?? 1 }} bath</span>
-                                <span class="text-gray-400">·</span>
-                                <span>up to {{ $accommodation->max_guests ?? 2 }} guests</span>
-                            </div>
-
-                            <div class="mt-1 flex items-center gap-1.5 text-[12px] text-gray-700">
-                                <i class="fa-solid fa-star text-[11px] text-amber-500" aria-hidden="true"></i>
-                                <span class="font-semibold text-gray-900">5.0</span>
-                                <span class="text-gray-600">({{ $accommodation->total_reviews ?? 0 }} reviews)</span>
-                            </div>
-
-                            <div class="mt-2 flex items-baseline gap-1.5">
-                                <span class="text-[17px] font-semibold text-gray-900">₱{{ number_format($accommodation->price_per_night, 0, '.', ',') }}</span>
-                                <span class="text-[13px] text-gray-700">/ night</span>
-                            </div>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-
-            <!-- Pagination -->
-            @if(isset($accommodations) && method_exists($accommodations, 'links'))
-                <div class="mt-14 flex justify-center">
-                    {{ $accommodations->links() }}
+                        </article>
+                    @endforeach
                 </div>
+            </section>
+
+            @if(isset($accommodations) && method_exists($accommodations, 'links'))
+                <nav class="explore-stays-pagination" aria-label="Property pages">
+                    {{ $accommodations->links() }}
+                </nav>
             @endif
         @else
-            <div class="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white/95 px-6 py-16 text-center shadow-[0_2px_8px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto mb-5 h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <h3 class="mb-1.5 text-lg font-semibold text-gray-900">No properties found</h3>
-                <p class="text-sm text-gray-700">Try adjusting your filters or search criteria.</p>
-            </div>
+            <section class="explore-stays-empty" aria-label="No results">
+                <div class="explore-stays-empty__card">
+                    <i class="fa-solid fa-building" aria-hidden="true"></i>
+                    <h3>No properties found</h3>
+                    <p>Try adjusting your filters or search criteria.</p>
+                </div>
+            </section>
         @endif
     </main>
     

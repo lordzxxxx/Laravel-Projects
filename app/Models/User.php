@@ -5,7 +5,9 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Concerns\UsesTenantConnectionWithLandlordFallback;
 use App\Support\AppearancePreferences;
+use App\Support\PortalDetector;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -466,6 +468,19 @@ class User extends Authenticatable
     public function appearanceMode(): string
     {
         return $this->normalizedAppearancePreferences()['mode'];
+    }
+
+    /**
+     * Whether profile (not landing settings) should offer color theme and display mode.
+     */
+    public function showsProfileAppearancePreferences(?Request $request = null): bool
+    {
+        $request ??= request();
+        $onTenantPortal = $request && ! PortalDetector::isCentralHost($request);
+        $usesOwnerShell = $this->isOwner()
+            || ($this->isAdmin() && Tenant::checkCurrent() && $onTenantPortal);
+
+        return ! $onTenantPortal || ($this->isClient() && ! $usesOwnerShell);
     }
 
     /**

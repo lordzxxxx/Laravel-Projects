@@ -28,7 +28,7 @@
         }
     </style>
 </head>
-<body>
+<body class="client-nav-page font-sans text-gray-800 antialiased">
     @include('client.partials.top-navbar', ['active' => 'wishlist', 'portalDirectory' => true])
 
     <main class="mx-auto max-w-6xl px-4 pb-16">

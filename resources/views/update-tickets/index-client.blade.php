@@ -17,89 +17,116 @@
             --gray-800: #1F2937;
         }
         @include('client.partials.top-navbar-styles')
+        @include('client.partials.guest-support-styles')
     </style>
 </head>
 <body class="client-nav-page font-sans text-gray-800">
     @include('client.partials.top-navbar', ['active' => 'update-tickets'])
 
-    <main class="client-guest-main client-guest-main--wide">
+    <main class="client-guest-main client-guest-main--wide guest-support-main">
+        <header class="guest-support-hero">
+            <p class="guest-support-hero__eyebrow">Help & feedback</p>
+            <h1 class="guest-support-hero__title">Support</h1>
+            <p class="guest-support-hero__lede">Submit issues about system updates or downloads. Central admin will review your ticket.</p>
+        </header>
+
         @include('partials.flash-alerts')
 
-        <div class="mb-6 rounded-2xl border border-green-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm">
-            <h1 class="mb-2 text-2xl font-bold text-green-900 sm:text-3xl">
-                <i class="fas fa-life-ring mr-2 text-green-700"></i> Support
-            </h1>
-            <p class="text-sm text-gray-600 sm:text-base">Submit issues about system updates or downloads. Central admin will review your ticket.</p>
-        </div>
+        <div class="guest-support-workspace">
+            <section class="guest-support-panel" aria-labelledby="guest-support-new-heading">
+                <div class="guest-support-panel__head">
+                    <h2 id="guest-support-new-heading" class="guest-support-panel__title">New ticket</h2>
+                </div>
+                <div class="guest-support-panel__body">
+                    <form method="POST" action="/update-tickets" enctype="multipart/form-data" class="guest-support-form" data-loading-form>
+                        @csrf
 
-        <div class="grid gap-6 xl:grid-cols-5">
-            <section class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm xl:col-span-2">
-                <h2 class="mb-4 text-lg font-bold text-gray-800">New Ticket</h2>
-                <form method="POST" action="/update-tickets" enctype="multipart/form-data" class="space-y-4" data-loading-form>
-                    @csrf
+                        <div class="guest-support-field">
+                            <label for="subject">Subject</label>
+                            <input
+                                id="subject"
+                                name="subject"
+                                type="text"
+                                value="{{ old('subject') }}"
+                                required
+                                maxlength="255"
+                                class="guest-support-input"
+                            >
+                            @error('subject')
+                                <p class="guest-support-field-error">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div>
-                        <label for="subject" class="mb-2 block text-sm font-semibold text-gray-700">Subject</label>
-                        <input id="subject" name="subject" type="text" value="{{ old('subject') }}" required maxlength="255" class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100">
-                    </div>
+                        <div class="guest-support-field">
+                            <label for="body">Details</label>
+                            <textarea id="body" name="body" rows="6" required maxlength="10000" class="guest-support-textarea">{{ old('body') }}</textarea>
+                            @error('body')
+                                <p class="guest-support-field-error">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div>
-                        <label for="body" class="mb-2 block text-sm font-semibold text-gray-700">Details</label>
-                        <textarea id="body" name="body" rows="6" required maxlength="10000" class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100">{{ old('body') }}</textarea>
-                    </div>
+                        <div class="guest-support-field">
+                            <label for="attachment">Photo <span class="optional">(optional, JPG/PNG/WEBP up to 5MB)</span></label>
+                            <input
+                                id="attachment"
+                                name="attachment"
+                                type="file"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                class="guest-support-file"
+                            >
+                            @error('attachment')
+                                <p class="guest-support-field-error">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div>
-                        <label for="attachment" class="mb-2 block text-sm font-semibold text-gray-700">Photo attachment <span class="font-normal text-gray-500">(optional, JPG/PNG/WEBP up to 5MB)</span></label>
-                        <input id="attachment" name="attachment" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm">
-                    </div>
-
-                    <div class="pt-2">
-                        <button type="submit" data-loading-button class="inline-flex items-center gap-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800">
-                            <i class="fas fa-paper-plane"></i> Submit
+                        <button type="submit" data-loading-button class="guest-support-submit">
+                            <i class="fas fa-paper-plane" aria-hidden="true"></i> Submit
                         </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </section>
 
-            <section class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm xl:col-span-3">
-                <h2 class="mb-4 text-lg font-bold text-gray-800">Your Tickets</h2>
-
-                <div class="overflow-x-auto rounded-xl border border-gray-200">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-green-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Date</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Subject</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Status</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
-                            @forelse($tickets as $ticket)
-                        <tr>
-                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ $ticket->created_at?->format('M j, Y') }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-800">{{ \Illuminate\Support\Str::limit($ticket->subject, 50) }}</td>
-                            <td class="px-4 py-3">
-                                @if($ticket->status === \App\Models\UpdateTicket::STATUS_RESOLVED)
-                                    <span class="status-badge resolved"><i class="fas fa-check mr-1"></i> Resolved</span>
-                                @else
-                                    <span class="status-badge open"><i class="fas fa-inbox mr-1"></i> Open</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3">
-                                <a href="/update-tickets/{{ $ticket->id }}" class="inline-flex items-center rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-800">View</a>
-                            </td>
-                        </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="px-4 py-6 text-center text-sm text-gray-500">No tickets yet.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+            <section class="guest-support-panel guest-support-panel--tickets" aria-labelledby="guest-support-tickets-heading">
+                <div class="guest-support-panel__head">
+                    <h2 id="guest-support-tickets-heading" class="guest-support-panel__title">Your tickets</h2>
                 </div>
+                <div class="guest-support-panel__body guest-support-panel__body--scroll">
+                    @if($tickets->count() > 0)
+                        <div class="guest-support-ticket-list">
+                            @foreach($tickets as $ticket)
+                                <a href="/update-tickets/{{ $ticket->id }}" class="guest-support-ticket">
+                                    <h3 class="guest-support-ticket__subject">{{ \Illuminate\Support\Str::limit($ticket->subject, 72) }}</h3>
+                                    <time class="guest-support-ticket__date" datetime="{{ $ticket->created_at?->toIso8601String() }}">
+                                        {{ $ticket->created_at?->format('M j, Y') }}
+                                    </time>
+                                    <div class="guest-support-ticket__footer">
+                                        @if($ticket->status === \App\Models\UpdateTicket::STATUS_RESOLVED)
+                                            <span class="guest-support-badge guest-support-badge--resolved">
+                                                <i class="fas fa-check" aria-hidden="true"></i> Resolved
+                                            </span>
+                                        @else
+                                            <span class="guest-support-badge guest-support-badge--open">
+                                                <i class="fas fa-inbox" aria-hidden="true"></i> Open
+                                            </span>
+                                        @endif
+                                        <span class="guest-support-ticket__link">View details →</span>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
 
-                <div class="mt-4">{{ $tickets->links() }}</div>
+                        @if($tickets->hasPages())
+                            <nav class="guest-support-pagination" aria-label="Ticket pages">
+                                {{ $tickets->links() }}
+                            </nav>
+                        @endif
+                    @else
+                        <div class="guest-support-empty">
+                            <i class="fas fa-life-ring" aria-hidden="true"></i>
+                            <p>No tickets yet. Use the form to submit your first request.</p>
+                        </div>
+                    @endif
+                </div>
             </section>
         </div>
     </main>
@@ -109,7 +136,6 @@
                 const button = form.querySelector('[data-loading-button]');
                 if (!button) return;
                 button.disabled = true;
-                button.dataset.originalText = button.textContent;
                 button.textContent = 'Submitting...';
             });
         });

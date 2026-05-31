@@ -18,36 +18,22 @@
 
         @include('owner.partials.top-navbar-styles')
 
-        body.owner-nav-page {
-            min-height: 100vh;
-            
-            color: var(--gray-800);
-            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 50%, #C8E6C9 100%);
-        }
-        .tenant-updates-shell {
-            width: min(1440px, 100%);
-            margin: 0 auto;
-            padding: var(--owner-content-offset) clamp(12px, 2vw, 28px) 24px;
-            min-height: calc(100vh - var(--owner-content-offset));
-        }
     </style>
 </head>
 <body class="owner-nav-page">
     @include('owner.partials.top-navbar', ['active' => 'updates'])
-    <main class="tenant-updates-shell with-owner-nav">
-        <div class="h-full space-y-4">
-            <div class="page-header flex flex-wrap items-start justify-between gap-3">
-                <div>
-                    <h1>
-                        <span class="page-title-icon"><i class="fa-solid fa-cloud-arrow-down"></i></span>
-                        <span>Updates</span>
-                    </h1>
-                    <p>Track and apply app releases for this tenant.</p>
+    <main class="tenant-updates-shell with-owner-nav owner-app-main">
+        <div class="flex min-h-0 flex-1 flex-col gap-4">
+            <header class="owner-page-top">
+                <div class="owner-page-hero owner-page-hero--flush">
+                    <p class="owner-page-hero__eyebrow">System</p>
+                    <h1 class="owner-page-hero__title">Updates</h1>
+                    <p class="owner-page-hero__lede">Track and apply app releases for this tenant.</p>
                 </div>
-                <div class="rounded-lg border border-emerald-200 bg-white/80 px-3 py-2 text-xs text-slate-600">
+                <div class="rounded-lg border border-slate-200/90 bg-white/90 px-3 py-2 text-xs text-slate-600 shadow-sm">
                     Available releases: <span class="font-semibold text-slate-800">{{ $availableReleases->count() }}</span>
                 </div>
-            </div>
+            </header>
 
             @if(session('success'))
                 <div class="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">

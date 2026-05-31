@@ -19,7 +19,6 @@ use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\MunicipalityOnboardingController;
 use App\Http\Controllers\Owner\TenantUserController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\Portal\AdminLandingController;
 use App\Http\Controllers\Portal\FavoriteAccommodationController;
 use App\Http\Controllers\Portal\PublicLandingController;
 use App\Http\Controllers\ProfileController;
@@ -48,12 +47,6 @@ Route::middleware('portal.port:any')->group(function () {
      | Do not duplicate GET / under portal.port:admin vs :public or the landing route overwrites admin.
      */
     Route::get('/', function (\Illuminate\Http\Request $request) {
-        if (PortalDetector::isAdminPortal($request)) {
-            return app(AdminLandingController::class)($request);
-        }
-
-        abort_unless(PortalDetector::isPublicPortal($request), 404);
-
         return app(PublicLandingController::class)->index($request);
     })->name('portal.landing');
 

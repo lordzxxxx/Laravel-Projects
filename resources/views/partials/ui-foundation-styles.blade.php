@@ -59,6 +59,18 @@
     --radius-xl:  1rem;
     --radius-2xl: 1.5rem;
 
+    /* Primary actions (buttons, submit) — forest green on all themes */
+    --action-primary-bg: var(--brand-700);
+    --action-primary-hover: var(--brand-800);
+    --action-primary-border: rgba(52, 84, 63, 0.4);
+    --action-primary-text: #ffffff;
+
+    /* Decorative accents (eyebrows, nav chrome, highlights) — theme via chrome-* */
+    --ui-accent-color: var(--accent-pink-deep);
+    --ui-accent-strong: var(--accent-pink-strong);
+    --ui-accent-surface: var(--accent-pink-soft);
+    --ui-accent-border: var(--accent-pink-border);
+
     /* Chrome (nav, avatar, page icons) — Impasugong default */
     --chrome-active-bg: var(--accent-pink-strong);
     --chrome-active-border: rgba(176, 67, 110, 0.45);
@@ -75,6 +87,25 @@
     --app-surface-border: rgba(209, 213, 219, 0.7);
     --app-surface-muted-bg: rgba(248, 250, 252, 0.78);
 
+    /* Legacy aliases (admin shell, guest pages, reports) — follow ink + surfaces */
+    --gray-50: var(--ink-50);
+    --gray-100: var(--ink-100);
+    --gray-200: var(--ink-200);
+    --gray-300: var(--ink-300);
+    --gray-400: var(--ink-400);
+    --gray-500: var(--ink-500);
+    --gray-600: var(--ink-600);
+    --gray-700: var(--ink-700);
+    --gray-800: var(--ink-800);
+    --gray-900: var(--ink-900);
+    --cream: var(--brand-50);
+    --green-white: var(--brand-50);
+    --white: #ffffff;
+    --green-primary: var(--brand-700);
+    --green-dark: var(--brand-800);
+    --green-soft: var(--brand-200);
+    --green-medium: var(--brand-500);
+
     /* Top nav — follows appearance chrome */
     --nav-brand-color: var(--chrome-icon-color);
     --nav-brand-muted: var(--accent-pink);
@@ -82,7 +113,7 @@
     /* Premium tourism brand heading — fixed forest-green identity (theme-independent) */
     --nav-heading-font: var(--app-font-display);
     --nav-heading-color: var(--brand-800, #34543F);
-    --nav-heading-accent: var(--brand-500, #799F76);
+    --nav-heading-accent: var(--brand-800, #34543F);
     --nav-bar-bg: rgba(255, 255, 255, 0.9);
     --nav-bar-border: rgba(229, 231, 235, 0.95);
     --nav-bar-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
@@ -105,6 +136,10 @@
 
 :root,
 :root[data-theme="impasugong"] {
+    --ui-accent-color: var(--accent-pink-deep);
+    --ui-accent-strong: var(--accent-pink-strong);
+    --ui-accent-surface: var(--accent-pink-soft);
+    --ui-accent-border: var(--accent-pink-border);
     --chrome-active-bg: var(--accent-pink-strong);
     --chrome-active-border: rgba(176, 67, 110, 0.45);
     --chrome-focus-ring: var(--accent-pink-strong);
@@ -116,9 +151,16 @@
     --chrome-icon-border: #F3C9D6;
     --nav-brand-color: var(--accent-pink-deep);
     --nav-brand-muted: var(--accent-pink);
+    --action-primary-bg: var(--brand-700);
+    --action-primary-hover: var(--brand-800);
+    --action-primary-border: rgba(52, 84, 63, 0.4);
 }
 
 :root[data-theme="green"] {
+    --ui-accent-color: var(--brand-700);
+    --ui-accent-strong: var(--brand-700);
+    --ui-accent-surface: var(--brand-50);
+    --ui-accent-border: var(--brand-200);
     --chrome-active-bg: var(--brand-700);
     --chrome-active-border: rgba(69, 115, 89, 0.45);
     --chrome-focus-ring: var(--brand-700);
@@ -130,19 +172,30 @@
     --chrome-icon-border: var(--brand-100);
     --nav-brand-color: var(--brand-800);
     --nav-brand-muted: var(--brand-600);
+    --action-primary-bg: var(--brand-700);
+    --action-primary-hover: var(--brand-800);
+    --action-primary-border: rgba(52, 84, 63, 0.4);
 }
 
 html.dark {
-    --ink-900: #F1F5F9;
+    color-scheme: dark;
+
+    /* Type on dark surfaces — light grey hierarchy (bright → soft) */
+    --ink-900: #F8FAFC;
     --ink-800: #E2E8F0;
     --ink-700: #CBD5E1;
     --ink-600: #94A3B8;
-    --ink-500: #64748B;
-    --ink-400: #475569;
+    --ink-500: #8B9CB3;
+    --ink-400: #78859A;
     --ink-300: #334155;
     --ink-200: #1E293B;
     --ink-100: #151C28;
     --ink-50:  #0F172A;
+
+    --text-primary: var(--ink-800);
+    --text-secondary: var(--ink-700);
+    --text-muted: var(--ink-600);
+    --text-faint: var(--ink-500);
 
     --app-page-bg: #0F172A;
     --app-surface-bg: rgba(30, 41, 59, 0.92);
@@ -159,13 +212,21 @@ html.dark {
     --nav-bar-overlay: linear-gradient(180deg, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.35) 42%, rgba(15, 23, 42, 0.45) 100%), rgba(0, 0, 0, 0.12);
     --nav-link-idle-bg: rgba(30, 41, 59, 0.65);
     --nav-link-idle-border: rgba(148, 163, 184, 0.22);
-    --nav-link-idle-color: var(--ink-600);
+    --nav-link-idle-color: var(--ink-700);
     --nav-brand-color: var(--chrome-icon-color);
     --nav-brand-muted: var(--chrome-icon-color);
 
     /* Lift forest-green brand heading for dark backgrounds */
     --nav-heading-color: #BCD9C6;
-    --nav-heading-accent: #8FB79C;
+    --nav-heading-accent: var(--nav-heading-color, #BCD9C6);
+
+    --cream: var(--app-surface-muted-bg);
+    --green-white: var(--app-surface-muted-bg);
+    --white: var(--app-surface-bg);
+    --green-primary: var(--brand-600);
+    --green-dark: #BCD9C6;
+    --green-soft: var(--app-surface-border);
+    --green-medium: var(--brand-500);
 }
 
 html.dark[data-theme="green"] {
@@ -174,6 +235,10 @@ html.dark[data-theme="green"] {
 }
 
 html.dark[data-theme="impasugong"] {
+    --ui-accent-color: #F9DEE5;
+    --ui-accent-strong: #E09FB3;
+    --ui-accent-surface: rgba(249, 222, 229, 0.14);
+    --ui-accent-border: rgba(240, 195, 210, 0.45);
     --chrome-active-bg: #D37897;
     --chrome-active-border: rgba(211, 120, 151, 0.5);
     --chrome-focus-ring: #E09FB3;
@@ -183,11 +248,81 @@ html.dark[data-theme="impasugong"] {
     --chrome-icon-bg: rgba(249, 222, 229, 0.15);
     --chrome-icon-color: #F9DEE5;
     --chrome-icon-border: rgba(240, 195, 210, 0.4);
+    --action-primary-bg: var(--brand-600);
+    --action-primary-hover: var(--brand-700);
 }
 
 body {
     background-color: var(--app-page-bg);
     color: var(--ink-800);
+}
+
+/* Dark display mode — default copy to light grey */
+html.dark body {
+    color: var(--text-primary, var(--ink-800));
+}
+
+html.dark :where(
+    .main-content,
+    .client-guest-main,
+    .owner-app-main,
+    .dashboard-layout,
+    .portal-public-main
+) {
+    color: var(--text-primary, var(--ink-800));
+}
+
+html.dark :where(
+    h1, h2, h3, h4, h5, h6,
+    .owner-page-hero__title,
+    .page-header h1,
+    .card-header h3,
+    .panel-header h1,
+    .panel-header h2
+) {
+    color: var(--ink-900);
+}
+
+html.dark :where(
+    p,
+    .owner-page-hero__lede,
+    .page-header p,
+    .panel-header p,
+    .section-desc,
+    .snapshot-meta,
+    li,
+    dd,
+    dt
+) {
+    color: var(--text-secondary, var(--ink-700));
+}
+
+html.dark :where(
+    .muted,
+    .table-note,
+    .owner-page-hero__eyebrow,
+    label,
+    .form-label,
+    .filter-field label
+) {
+    color: var(--text-muted, var(--ink-600));
+}
+
+html.dark :where(input, textarea, select) {
+    color: var(--text-primary, var(--ink-800));
+}
+
+html.dark :where(input::placeholder, textarea::placeholder) {
+    color: var(--ink-400);
+    opacity: 1;
+}
+
+html.dark :where(table th) {
+    color: var(--text-muted, var(--ink-600));
+}
+
+html.dark :where(table td) {
+    color: var(--text-secondary, var(--ink-700));
 }
 
 /* Flash alerts */

@@ -1,7 +1,10 @@
 @php
     $displayName = isset($name) && $name !== '' && $name !== null ? $name : '—';
+    $cardClass = ! empty($cardClass ?? null)
+        ? $cardClass
+        : 'overflow-hidden rounded-xl border border-brand-soft bg-white/90 shadow-md backdrop-blur-sm';
 @endphp
-<article class="overflow-hidden rounded-xl border border-brand-soft bg-white/90 shadow-md backdrop-blur-sm">
+<article class="{{ $cardClass }}">
     @if (!empty($imageUrl))
         <div class="flex justify-center px-2 pt-3 sm:px-3">
             <div class="aspect-square w-full max-w-40 overflow-hidden rounded-lg bg-neutral-100 sm:max-w-44">

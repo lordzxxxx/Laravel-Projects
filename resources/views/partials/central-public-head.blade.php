@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 @include('partials.navigation-stability-meta')
+@include('partials.appearance-boot')
 <title>{{ $pageTitle }}</title>
 @include('partials.favicon-links', ['faviconStem' => $faviconStem])
 @vite(['resources/css/app.css', 'resources/js/app.js'])

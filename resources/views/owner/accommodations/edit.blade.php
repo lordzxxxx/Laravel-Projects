@@ -6,100 +6,78 @@
     @include('partials.tenant-favicon')
     <title>Edit Accommodation - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        @include('partials.ui-foundation-styles')
-
+        @include('owner.partials.owner-page-fonts')
         * { box-sizing: border-box; }
         :root {
             @include('partials.tenant-theme-css-vars')
             --red-light: #fee2e2; --red-dark: #991b1b;
         }
-        body {
-            background: linear-gradient(135deg, var(--green-white) 0%, #F1F8E9 100%);
-            min-height: 100vh;
-            color: #1f2937;
-            padding: 20px;
-        }
-        .container {
-            max-width: 900px;
+        .owner-edit-panel {
+            width: 100%;
+            max-width: min(56rem, 100%);
             margin: 0 auto;
-            background: #fff;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 8px 24px rgba(27, 94, 32, 0.1);
-        }
-        /* Page-header layout overrides; title styling itself comes from
-           ui-foundation-styles (.page-header h1) for cross-system consistency. */
-        .page-header {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--green-soft);
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
         }
         .section-title {
-            font-size: 1.1rem;
+            font-size: 0.8125rem;
             font-weight: 700;
-            color: var(--green-dark);
-            margin: 24px 0 16px 0;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--gray-700, #374151);
+            margin: 1.25rem 0 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(15, 23, 42, 0.06);
         }
-        .grid { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .section-title:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+        .grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .full { grid-column: 1 / -1; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--gray-700, #374151); }
         input, select, textarea {
             width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 10px 12px;
-            font-size: 14px;
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            border-radius: 0.5rem;
+            padding: 0.5625rem 0.75rem;
+            font-size: 0.8125rem;
+            font-family: inherit;
         }
-        textarea { min-height: 110px; }
-        .error-list { background: var(--red-light); color: var(--red-dark); border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; margin-bottom: 18px; }
-        .hint { color: #6b7280; font-size: 13px; margin-top: 4px; }
-        .check-row { display: flex; align-items: center; gap: 8px; }
+        textarea { min-height: 6.5rem; resize: vertical; }
+        .error-list { background: var(--red-light); color: var(--red-dark); border: 1px solid #fecaca; border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.8125rem; }
+        .hint { color: var(--gray-500, #6b7280); font-size: 0.75rem; margin-top: 0.25rem; }
+        .check-row { display: flex; align-items: center; gap: 0.5rem; }
         .check-row input { width: auto; }
-        .amenities-grid { display: grid; gap: 8px 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .amenity-item { display: flex; align-items: center; gap: 8px; font-weight: 500; color: #374151; }
+        .check-row label { margin: 0; }
+        .amenities-grid { display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .amenity-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; font-weight: 500; }
         .amenity-item input { width: auto; }
-        .actions { margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; }
-        .btn {
-            border: 0;
-            border-radius: 8px;
-            padding: 11px 20px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.95rem;
-        }
-        .btn-primary { background: var(--green-primary); color: #fff; }
-        .btn-primary:hover { background: var(--green-dark); }
-        .btn-secondary { background: #e5e7eb; color: #111827; }
-        .btn-secondary:hover { background: #d1d5db; }
+        .actions { margin-top: 1.25rem; display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; }
         @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; }
-            .container { padding: 20px; }
-            .page-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .grid, .amenities-grid { grid-template-columns: 1fr; }
         }
+        @include('owner.partials.top-navbar-styles')
     </style>
 </head>
-<body class="font-sans antialiased">
-    <div class="container">
-        <div class="page-header flex flex-wrap items-start justify-between gap-3">
-            <div>
-                <h1>
-                    <span class="page-title-icon"><i class="fa-solid fa-pen-to-square"></i></span>
-                    <span>Edit Accommodation</span>
-                </h1>
-                <p>Update photos, pricing, availability, and amenities for this listing.</p>
-            </div>
-            <a href="/owner/accommodations" class="inline-flex items-center gap-2 rounded-lg border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-400 hover:bg-emerald-50">
-                <i class="fa-solid fa-arrow-left"></i> Back to Listings
-            </a>
-        </div>
+<body class="owner-nav-page font-sans antialiased text-gray-800">
+    @include('owner.partials.top-navbar', ['active' => 'accommodations'])
 
+    <main class="main-content with-owner-nav owner-app-main">
+        <header class="owner-page-top">
+            <div class="owner-page-hero owner-page-hero--flush">
+                <p class="owner-page-hero__eyebrow">Listings</p>
+                <h1 class="owner-page-hero__title">Edit Accommodation</h1>
+                <p class="owner-page-hero__lede">Update photos, pricing, availability, and amenities for this listing.</p>
+            </div>
+            <a href="/owner/accommodations" class="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to listings
+            </a>
+        </header>
+
+        <div class="owner-page-body owner-edit-panel">
         @if ($errors->any())
             <div class="error-list">
                 <strong>Please fix the following:</strong>
@@ -155,7 +133,6 @@
             </div>
 
             <div class="grid">
-
                 <div>
                     <label for="price_per_night">Price per Night (₱) *</label>
                     <input id="price_per_night" name="price_per_night" type="number" min="0" step="0.01" value="{{ old('price_per_night', $accommodation->price_per_night) }}" required>
@@ -173,7 +150,6 @@
             </div>
 
             <div class="grid">
-
                 <div>
                     <label for="bedrooms">Bedrooms</label>
                     <input id="bedrooms" name="bedrooms" type="number" min="0" value="{{ old('bedrooms', $accommodation->bedrooms) }}">
@@ -252,10 +228,11 @@
             </div>
 
             <div class="actions">
-                <a href="/owner/accommodations" class="btn btn-secondary"><i class="fas fa-xmark"></i> Cancel</a>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Save Changes</button>
+                <a href="/owner/accommodations" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200"><i class="fas fa-xmark"></i> Cancel</a>
+                <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-[var(--brand-primary,#457359)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"><i class="fas fa-check"></i> Save Changes</button>
             </div>
         </form>
-    </div>
+        </div>
+    </main>
 </body>
 </html>

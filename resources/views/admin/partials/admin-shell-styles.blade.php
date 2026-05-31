@@ -4,18 +4,21 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-    --green-dark: #3A5C48;
-    --green-primary: #457359;
-    --green-medium: #799F76;
-    --green-soft: #CBDFC6;
-    --green-white: #EDF4EA;
-    --cream: #F4F8F1;
-    --white: #FFFFFF;
-    --gray-200: #E5E7EB;
-    --gray-300: #D1D5DB;
-    --gray-500: #6B7280;
-    --gray-700: #374151;
-    --gray-800: #1F2937;
+    --green-dark: var(--brand-800, #3A5C48);
+    --green-primary: var(--brand-700, #457359);
+    --green-medium: var(--brand-500, #799F76);
+    --green-soft: var(--brand-200, #CBDFC6);
+    --green-white: var(--brand-50, #EDF4EA);
+    --cream: var(--brand-50, #F4F8F1);
+    --white: var(--app-surface-bg, #FFFFFF);
+    --gray-200: var(--ink-200, #E5E7EB);
+    --gray-300: var(--ink-300, #D1D5DB);
+    --gray-400: var(--ink-400, #94A3B8);
+    --gray-500: var(--ink-500, #6B7280);
+    --gray-600: var(--ink-600, #475569);
+    --gray-700: var(--ink-700, #374151);
+    --gray-800: var(--ink-800, #1F2937);
+    --gray-900: var(--ink-900, #0F172A);
 }
 
 body {
@@ -26,7 +29,7 @@ body {
 }
 
 .dashboard-layout {
-    padding-top: var(--app-main-top-offset, 108px);
+    padding-top: var(--app-content-offset, calc(var(--app-topbar-height, 4rem) + clamp(1rem, 2vw, 1.25rem)));
 }
 
 .main-content {
@@ -141,16 +144,16 @@ body {
     font-weight: 600;
     font-size: 0.9rem;
     text-decoration: none;
-    border: 1px solid var(--chrome-active-border, rgba(27, 94, 32, 0.35));
+    border: 1px solid var(--action-primary-border, rgba(27, 94, 32, 0.35));
     cursor: pointer;
-    background: var(--chrome-active-bg, var(--green-primary));
-    color: var(--white);
+    background: var(--action-primary-bg, var(--green-primary));
+    color: var(--action-primary-text, #fff);
     box-shadow: var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.06));
     transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-admin-primary:hover {
-    background: var(--chrome-focus-ring, var(--green-dark));
+    background: var(--action-primary-hover, var(--green-dark));
     box-shadow: 0 4px 14px color-mix(in srgb, var(--chrome-active-bg, #457359) 30%, transparent);
 }
 

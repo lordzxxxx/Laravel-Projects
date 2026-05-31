@@ -24,7 +24,7 @@
 @if($isTenantContext)
     @include('owner.partials.top-navbar', ['active' => $current])
 @else
-    <nav class="navbar" id="appNavbar">
+    <nav class="navbar portal-nav-minimal public-nav-tribal" id="appNavbar">
         @include('partials.navbar-tribal-accent')
         @include('partials.navbar-brand-block', [
             'brandHref' => $landingHref,

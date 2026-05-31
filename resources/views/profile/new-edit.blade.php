@@ -16,11 +16,12 @@
         $u = $authUser;
         $notify = $u->notification_preferences ?? [];
         $appearance = $u->normalizedAppearancePreferences();
-        $onTenantPortal = (bool) \App\Models\Tenant::current();
+        $onTenantPortal = ! \App\Support\PortalDetector::isCentralHost(request());
         $canEditTenantLanding = $onTenantPortal && ($u->isOwner() || $u->isAdmin());
         $roleLabels = ['admin' => 'Administrator', 'owner' => 'Property Owner', 'client' => 'Guest'];
         $roleIcons = ['admin' => 'fa-user-shield', 'owner' => 'fa-user-tie', 'client' => 'fa-user'];
         $usesOwnerShell = auth()->user()?->isOwner() || $isTenantAdminContext;
+        $isGuestClient = auth()->user()?->isClient() && ! $usesOwnerShell && ! $isCentralAdminPortal;
     @endphp
     <style>
         @include('owner.partials.owner-page-fonts')
@@ -68,7 +69,7 @@
 
         body.owner-nav-page.profile-page { --profile-offset: var(--owner-content-offset, var(--app-content-offset, 108px)); }
         body.profile-page:has(.navbar.client-top-nav),
-        body.profile-page.client-nav-page { --profile-offset: var(--client-nav-offset, var(--app-main-top-offset, 108px)); }
+        body.profile-page.client-nav-page { --profile-offset: var(--client-nav-offset, var(--app-content-offset, calc(var(--app-topbar-height, 4rem) + clamp(1.25rem, 2vw, 1.875rem)))); }
 
         body.profile-page:not(.client-nav-page):not(.owner-nav-page):not(.admin-central-portal) {
             margin: 0;
@@ -498,6 +499,7 @@
             @include('owner.partials.top-navbar-styles')
         @elseif(auth()->user()?->isClient())
             @include('client.partials.top-navbar-styles')
+            @include('client.partials.guest-profile-styles')
         @elseif(auth()->user()?->isAdmin())
             @include('admin.partials.top-navbar-styles')
         @endif
@@ -546,23 +548,44 @@
         </nav>
     @endif
 
-    <main class="profile-main">
-        <div class="page-header">
-            <h1>
-                <span class="page-title-icon"><i class="fa-solid fa-user-gear"></i></span>
-                <span>Profile</span>
-            </h1>
-            <p>
-                @if($canEditTenantLanding)
-                    Your account details and notification preferences. Theme and display mode are on
-                    <a href="{{ route('owner.landing.edit', [], false) }}">Landing &amp; logo</a>.
-                @elseif($onTenantPortal)
-                    Your account details and notification preferences.
-                @else
-                    Your account details, notifications, and how the portal looks.
-                @endif
-            </p>
-        </div>
+    <main class="profile-main {{ $isGuestClient ? 'client-guest-main client-guest-main--wide guest-profile-main' : ($usesOwnerShell ? 'main-content with-owner-nav owner-app-main' : '') }}">
+        @if($isGuestClient)
+            <header class="guest-profile-hero">
+                <p class="guest-profile-hero__eyebrow">Account</p>
+                <h1 class="guest-profile-hero__title">Profile</h1>
+                <p class="guest-profile-hero__lede">Your account details, notifications, and how this portal looks.</p>
+            </header>
+        @elseif($usesOwnerShell)
+            <header class="owner-page-hero">
+                <p class="owner-page-hero__eyebrow">Account</p>
+                <h1 class="owner-page-hero__title">Profile</h1>
+                <p class="owner-page-hero__lede">
+                    @if($canEditTenantLanding)
+                        Your account details and notification preferences. Theme and display mode are on
+                        <a href="{{ route('owner.landing.edit', [], false) }}">Landing &amp; logo</a>.
+                    @else
+                        Your account details and notification preferences.
+                    @endif
+                </p>
+            </header>
+        @else
+            <div class="page-header">
+                <h1>
+                    <span class="page-title-icon"><i class="fa-solid fa-user-gear"></i></span>
+                    <span>Profile</span>
+                </h1>
+                <p>
+                    @if($canEditTenantLanding)
+                        Your account details and notification preferences. Theme and display mode are on
+                        <a href="{{ route('owner.landing.edit', [], false) }}">Landing &amp; logo</a>.
+                    @elseif($onTenantPortal)
+                        Your account details and notification preferences.
+                    @else
+                        Your account details, notifications, and how the portal looks.
+                    @endif
+                </p>
+            </div>
+        @endif
 
         @if(session('status') && str_contains(session('status'), 'profile'))
             <div class="profile-flash success" role="status">
@@ -722,7 +745,7 @@
                         </div>
                     </section>
 
-                    @unless($onTenantPortal)
+                    @if($authUser?->showsProfileAppearancePreferences())
                         <section class="profile-panel">
                             <div class="profile-panel__head">
                                 <h2>Appearance</h2>
@@ -732,7 +755,7 @@
                                 @include('partials.appearance-preferences-fields', ['appearance' => $appearance])
                             </div>
                         </section>
-                    @endunless
+                    @endif
 
                     <div class="profile-actions">
                         <button type="submit" class="btn-save" data-loading-button data-loading-label="Saving…">
@@ -841,7 +864,7 @@
             });
         });
 
-        if (!@json($onTenantPortal) && window.ImpaAppearance && typeof window.ImpaAppearance.initProfilePreview === 'function') {
+        if (@json($authUser?->showsProfileAppearancePreferences()) && window.ImpaAppearance && typeof window.ImpaAppearance.initProfilePreview === 'function') {
             window.ImpaAppearance.initProfilePreview();
         }
     </script>

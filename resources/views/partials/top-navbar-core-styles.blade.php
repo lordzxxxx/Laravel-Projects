@@ -7,24 +7,27 @@
     right: 0;
     z-index: 1000;
     width: 100%;
-    min-height: var(--app-topbar-height, 84px);
-    height: auto;
-    padding: 0.5rem clamp(14px, 2vw, 28px);
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 12px;
     overflow: visible;
+    font-family: var(--app-font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.navbar:not(.portal-nav-minimal) {
+    min-height: var(--app-topbar-height, 84px);
+    height: auto;
+    padding: 0.5rem clamp(14px, 2vw, 28px);
     background: var(--nav-bar-bg, rgba(255, 255, 255, 0.95));
     border-bottom: none;
     box-shadow: var(--nav-brand-shell-shadow, 0 2px 12px rgba(27, 94, 32, 0.08));
     backdrop-filter: blur(14px) saturate(1.15);
     -webkit-backdrop-filter: blur(14px) saturate(1.15);
     backface-visibility: hidden;
-    font-family: var(--app-font-sans);
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 .navbar > *:not(.navbar-tribal-accent) {
@@ -554,6 +557,7 @@ html.dark .navbar .imp-notify-btn {
 }
 
 @media (max-width: 768px) {
-    .navbar { padding: 0 12px; height: var(--app-topbar-height-mobile, 64px); }
+    .navbar:not(.portal-nav-minimal) { padding: 0 12px; height: var(--app-topbar-height-mobile, 64px); }
+    .navbar.portal-nav-minimal { padding-left: 1rem !important; padding-right: 1rem !important; }
     .user-display { max-width: 170px; }
 }

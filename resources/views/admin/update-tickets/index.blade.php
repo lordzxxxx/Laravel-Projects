@@ -13,7 +13,7 @@
         .filters label { font-size: 0.8rem; font-weight: 600; color: var(--ink-600, var(--gray-700)); display: block; margin-bottom: 4px; }
         .filters select { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--app-surface-border, var(--gray-200)); background: var(--app-surface-bg, #fff); color: var(--ink-800); min-width: 160px; }
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--app-surface-border, var(--gray-200)); background: var(--app-surface-bg, var(--white)); font-weight: 600; text-decoration: none; color: var(--ink-800, var(--gray-800)); font-size: 0.88rem; }
-        .btn.primary { background: var(--chrome-active-bg, var(--green-primary, #457359)); color: #fff; border-color: transparent; }
+        .btn.primary { background: var(--action-primary-bg, var(--green-primary, #457359)); color: #fff; border-color: transparent; }
         .support-table-wrap { overflow: auto; }
         .support-table { width: 100%; min-width: 980px; border-collapse: collapse; table-layout: fixed; }
         th, td { padding: 10px 12px; border-bottom: 1px solid var(--app-surface-border, var(--gray-200)); text-align: left; font-size: 0.9rem; vertical-align: middle; color: var(--ink-700); }

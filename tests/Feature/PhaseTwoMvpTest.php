@@ -4,6 +4,8 @@ use App\Models\Accommodation;
 use App\Models\Booking;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Support\PortalDetector;
+use Database\Seeders\RbacCatalog;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
 
@@ -166,4 +168,125 @@ it('saves profile appearance theme and mode on central', function () {
     expect($user->appearance_preferences)->toBeArray();
     expect($user->appearanceTheme())->toBe('green');
     expect($user->appearanceMode())->toBe('dark');
+});
+
+it('shows appearance controls on central admin profile', function () {
+    $user = User::factory()->create([
+        'role' => User::ROLE_ADMIN,
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->get('http://localhost:'.PortalDetector::adminPort().'/profile');
+
+    $response->assertOk();
+    $response->assertSee('Appearance', false);
+    $response->assertSee('Color theme', false);
+    $response->assertSee('Display mode', false);
+});
+
+it('saves profile appearance for central admin even when a tenant is bound', function () {
+    try {
+        Tenant::query()->count();
+    } catch (QueryException $exception) {
+        $this->markTestSkipped('Landlord test database is not available in this environment.');
+    }
+
+    $slug = 'phase-two-admin-'.Str::lower(Str::random(8));
+    $tenant = Tenant::query()->create([
+        'name' => 'Phase Two Admin Tenant',
+        'slug' => $slug,
+        'domain' => $slug.'.localhost',
+        'owner_user_id' => null,
+        'plan' => Tenant::PLAN_BASIC,
+        'subscription_status' => 'active',
+        'trial_ends_at' => now()->addDays(14),
+        'current_period_starts_at' => now(),
+        'current_period_ends_at' => now()->addMonth(),
+        'onboarding_status' => Tenant::ONBOARDING_APPROVED,
+        'database' => 'tenant_'.Str::lower(Str::random(8)),
+        'db_host' => '127.0.0.1',
+        'db_port' => 3306,
+        'db_username' => 'root',
+        'db_password' => '',
+    ]);
+
+    $admin = User::factory()->create([
+        'role' => User::ROLE_ADMIN,
+        'tenant_id' => $tenant->id,
+    ]);
+
+    $response = $this
+        ->actingAs($admin)
+        ->patch('http://localhost:'.PortalDetector::adminPort().'/profile', [
+            'name' => $admin->name,
+            'email' => $admin->email,
+            'appearance_theme' => 'green',
+            'appearance_mode' => 'dark',
+        ]);
+
+    $response->assertRedirect('/profile');
+
+    $admin->refresh();
+
+    expect($admin->appearanceTheme())->toBe('green');
+    expect($admin->appearanceMode())->toBe('dark');
+});
+
+it('saves profile appearance for tenant guest on tenant host', function () {
+    try {
+        Tenant::query()->count();
+    } catch (QueryException $exception) {
+        $this->markTestSkipped('Landlord test database is not available in this environment.');
+    }
+
+    $slug = 'phase-two-guest-'.Str::lower(Str::random(8));
+    $tenant = Tenant::query()->create([
+        'name' => 'Phase Two Guest Tenant',
+        'slug' => $slug,
+        'domain' => $slug.'.localhost',
+        'owner_user_id' => null,
+        'plan' => Tenant::PLAN_BASIC,
+        'subscription_status' => 'active',
+        'trial_ends_at' => now()->addDays(14),
+        'current_period_starts_at' => now(),
+        'current_period_ends_at' => now()->addMonth(),
+        'onboarding_status' => Tenant::ONBOARDING_APPROVED,
+        'database' => 'tenant_'.Str::lower(Str::random(8)),
+        'db_host' => '127.0.0.1',
+        'db_port' => 3306,
+        'db_username' => 'root',
+        'db_password' => '',
+    ]);
+
+    $guest = User::factory()->create([
+        'role' => User::ROLE_CLIENT,
+        'tenant_id' => $tenant->id,
+    ]);
+
+    RbacCatalog::ensurePermissionsExist();
+    RbacCatalog::ensureRolesAndGrantPermissions();
+
+    Tenant::forgetCurrent();
+    $tenant->makeCurrent();
+    $guest->syncEffectiveTenantPermissions($tenant);
+
+    $tenantPort = (int) env('TENANT_PORT', env('CENTRAL_PORT', 8000));
+    $profileUrl = "http://{$tenant->domain}:{$tenantPort}/profile";
+
+    $response = $this
+        ->actingAs($guest)
+        ->patch($profileUrl, [
+            'name' => $guest->name,
+            'email' => $guest->email,
+            'appearance_theme' => 'impasugong',
+            'appearance_mode' => 'system',
+        ]);
+
+    $response->assertRedirect('/profile');
+
+    $guest->refresh();
+
+    expect($guest->appearanceTheme())->toBe('impasugong');
+    expect($guest->appearanceMode())->toBe('system');
 });

@@ -62,51 +62,184 @@
             @include('owner.partials.top-navbar-styles')
         @elseif($showClientNav)
             @include('client.partials.top-navbar-styles')
+        @elseif($showPortalPublicNav)
+            @include('client.partials.guest-shell-styles')
         @endif
 
-        body:not(.client-nav-page) {
+        body.explore-portal-page {
+            display: flex;
+            flex-direction: column;
+            min-height: 100dvh;
+            background-color: #f8fafc;
+            background-image: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.95) 0%,
+                rgba(255, 255, 255, 0.88) 50%,
+                rgba(27, 94, 32, 0.08) 100%
+            ), url('/COMMUNAL.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--gray-800, #1f2937);
+        }
+
+        body:not(.client-nav-page):not(.explore-portal-page):not(.owner-nav-page) {
             background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
             min-height: 100vh;
             color: var(--gray-800);
         }
-        
-        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary { background: var(--green-primary); color: var(--white); }
-        .btn-primary:hover { background: var(--green-dark); }
-        .btn-secondary { background: var(--green-soft); color: var(--green-dark); }
-        
-        /* Main Container */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-top: var(--client-nav-offset);
-            padding-left: 20px;
-            padding-right: 20px;
-            padding-bottom: 40px;
+
+        .btn {
+            padding: 0.55rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            text-decoration: none;
+            transition: filter 0.15s ease, background 0.15s ease;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
         }
-        
-        /* Breadcrumb */
-        .breadcrumb { display: flex; gap: 10px; margin-bottom: 20px; font-size: 0.9rem; }
-        .breadcrumb a { color: var(--green-primary); text-decoration: none; }
-        .breadcrumb a:hover { text-decoration: underline; }
-        .breadcrumb span { color: var(--gray-500); }
-        
-        /* Image Gallery — carousel + lightbox */
-        .gallery-container { margin-bottom: 30px; }
+        .btn-primary { background: var(--green-primary, #457359); color: #fff; }
+        .btn-primary:hover { filter: brightness(1.06); }
+        .btn-secondary { background: var(--green-soft, #e8f0eb); color: var(--green-dark, #14532d); }
+
+        .explore-stay-show {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(1rem, 2vw, 1.5rem);
+            flex: 1;
+        }
+
+        body.explore-portal-page .explore-stay-show.portal-public-main,
+        body.explore-portal-page .explore-stay-show.main-container {
+            padding: var(--portal-content-below-nav, calc(var(--app-topbar-height, 84px) + clamp(1.25rem, 2vw, 1.875rem)))
+                clamp(1rem, 2.5vw, 2rem)
+                clamp(2rem, 4vw, 3rem);
+        }
+
+        body.client-nav-page .explore-stay-show.client-guest-main {
+            padding-left: clamp(1rem, 2.5vw, 2rem);
+            padding-right: clamp(1rem, 2.5vw, 2rem);
+            padding-bottom: clamp(2rem, 4vw, 3rem);
+        }
+
+        .main-container.explore-stay-show:not(.portal-public-main):not(.client-guest-main) {
+            max-width: none;
+            padding-top: var(--client-nav-offset, var(--app-main-top-offset, 100px));
+            padding-left: clamp(1rem, 2.5vw, 2rem);
+            padding-right: clamp(1rem, 2.5vw, 2rem);
+            padding-bottom: clamp(2rem, 4vw, 3rem);
+        }
+
+        .explore-stay-show__crumb {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.35rem 0.5rem;
+            font-size: 0.75rem;
+            color: var(--gray-500, #6b7280);
+        }
+
+        .explore-stay-show__crumb a {
+            color: var(--green-primary, #457359);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .explore-stay-show__crumb a:hover { text-decoration: underline; }
+
+        .explore-stay-show__crumb [aria-current="page"] {
+            color: var(--gray-800, #1f2937);
+            font-weight: 600;
+        }
+
+        .explore-stay-panel {
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 0.75rem;
+            padding: clamp(1rem, 2vw, 1.25rem);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        .explore-stay-show__gallery {
+            width: 100%;
+        }
+
+        .explore-stay-show__summary {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 20rem);
+            gap: clamp(1rem, 2.5vw, 1.5rem);
+            align-items: start;
+            width: 100%;
+        }
+
+        .explore-stay-show__intro {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .explore-stay-show__book-wrap {
+            width: 100%;
+            max-width: 20rem;
+            justify-self: end;
+        }
+
+        .explore-stay-show__content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.75rem, 1.5vw, 1rem);
+        }
+
+        .explore-stay-show__panels {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: clamp(0.75rem, 1.5vw, 1rem);
+            width: 100%;
+        }
+
+        @media (min-width: 900px) {
+            .explore-stay-show__panels--split {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .explore-stay-show__panels--split > :first-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .explore-stay-book-card:has(.booking-form) {
+            max-height: calc(100dvh - var(--app-topbar-height, 84px) - 2rem);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .gallery-container { margin-bottom: 0; }
         .gallery-carousel {
             position: relative;
         }
         .carousel-main-wrap {
             position: relative;
             width: 100%;
-            border-radius: 20px;
+            border-radius: 0.75rem;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(27, 94, 32, 0.12);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: var(--gray-100, #f3f4f6);
         }
         .main-image {
             width: 100%;
-            height: 450px;
-            border-radius: 20px;
+            height: clamp(240px, min(42vh, 38vw), 500px);
+            border-radius: 0;
             object-fit: cover;
             cursor: zoom-in;
             display: block;
@@ -117,36 +250,35 @@
         }
         .carousel-hint {
             position: absolute;
-            bottom: 14px;
+            bottom: 0.65rem;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(27, 94, 32, 0.88);
-            color: var(--white);
-            font-size: 0.78rem;
+            background: rgba(15, 23, 42, 0.72);
+            color: #fff;
+            font-size: 0.6875rem;
             font-weight: 600;
-            padding: 6px 14px;
+            padding: 0.3rem 0.65rem;
             border-radius: 999px;
             pointer-events: none;
-            opacity: 0.95;
         }
         .carousel-btn {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             z-index: 2;
-            width: 48px;
-            height: 48px;
+            width: 2.25rem;
+            height: 2.25rem;
             border-radius: 50%;
-            border: none;
-            background: var(--white);
-            color: var(--green-dark);
-            box-shadow: 0 2px 12px rgba(27, 94, 32, 0.15);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--green-dark, #14532d);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
-            transition: background 0.2s, transform 0.2s, opacity 0.2s;
+            font-size: 1.1rem;
+            transition: background 0.15s ease, opacity 0.15s ease;
         }
         .carousel-btn.prev { left: 12px; }
         .carousel-btn.next { right: 12px; }
@@ -172,9 +304,30 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             pointer-events: none;
         }
-        .thumbnail-row { display: flex; gap: 15px; margin-top: 15px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; }
-        .thumbnail { width: 120px; height: 80px; border-radius: 10px; object-fit: cover; cursor: pointer; opacity: 0.6; transition: all 0.3s; border: 3px solid transparent; flex-shrink: 0; scroll-snap-align: start; }
-        .thumbnail:hover, .thumbnail.active { opacity: 1; border-color: var(--green-primary); }
+        .thumbnail-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.25rem;
+            scroll-snap-type: x mandatory;
+        }
+        .thumbnail {
+            width: 5.5rem;
+            height: 3.75rem;
+            border-radius: 0.5rem;
+            object-fit: cover;
+            cursor: pointer;
+            opacity: 0.55;
+            transition: opacity 0.15s ease, border-color 0.15s ease;
+            border: 2px solid transparent;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+        }
+        .thumbnail:hover, .thumbnail.active {
+            opacity: 1;
+            border-color: var(--green-primary, #457359);
+        }
 
         /* Lightbox */
         .lightbox {
@@ -250,147 +403,305 @@
             max-width: 90%;
         }
         
-        /* Content Grid */
-        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-        
-        /* Info Card */
+        .content-grid { display: contents; }
+
         .info-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.08);
-            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 0.75rem;
+            padding: clamp(1rem, 2vw, 1.25rem);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+            margin-bottom: 0;
         }
-        
-        .property-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .property-header h1 { font-size: 1.8rem; color: var(--green-dark); margin-bottom: 8px; }
-        .property-location { display: flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 1rem; margin-bottom: 10px; }
-        .rating { display: flex; align-items: center; gap: 8px; }
-        .rating-stars { color: #FFC107; font-size: 1.1rem; }
-        .rating-value { font-weight: 600; color: var(--gray-700); }
-        .rating-count { color: var(--gray-500); font-size: 0.9rem; }
-        
+
+        .explore-stay-panel.info-card { margin-bottom: 0; }
+
+        .property-header { margin-bottom: 0.75rem; }
+        .property-header h1 {
+            margin: 0.35rem 0 0.4rem;
+            font-family: var(--app-font-display, inherit);
+            font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--gray-900, #0f172a);
+            line-height: 1.2;
+        }
+        .property-location {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: var(--gray-500, #6b7280);
+            font-size: 0.8125rem;
+            margin-bottom: 0.35rem;
+        }
+        .property-location i { color: var(--green-primary, #457359); font-size: 0.75rem; }
+        .rating { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; font-size: 0.75rem; }
+        .rating-stars { color: #f59e0b; font-size: 0.7rem; }
+        .rating-value { font-weight: 600; color: var(--gray-800, #1f2937); }
+        .rating-count { color: var(--gray-500, #6b7280); }
+
         .type-badge {
             display: inline-block;
-            padding: 8px 18px;
-            border-radius: 50px;
-            font-size: 0.85rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.625rem;
             font-weight: 600;
-            text-transform: capitalize;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: rgba(69, 115, 89, 0.12);
+            color: var(--green-primary, #457359);
+            border: 1px solid rgba(69, 115, 89, 0.2);
         }
-        .type-badge.traveller-inn { background: #E3F2FD; color: #1565C0; }
-        .type-badge.airbnb { background: #FFF3E0; color: #E65100; }
-        .type-badge.daily-rental { background: #D1FAE5; color: #065F46; }
-        
-        .section-title { font-size: 1.2rem; color: var(--green-dark); margin-bottom: 15px; font-weight: 600; }
-        
-        .description { color: var(--gray-600); line-height: 1.8; margin-bottom: 25px; }
-        
-        /* Features Grid */
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .feature-item { display: flex; align-items: center; gap: 12px; padding: 15px; background: var(--cream); border-radius: 12px; }
-        .feature-icon { font-size: 1.5rem; display: inline-flex; align-items: center; justify-content: center; }
-        .feature-icon i { font-size: 1.4rem; color: var(--green-primary); }
-        .feature-text h4 { font-size: 0.85rem; color: var(--gray-500); margin-bottom: 3px; }
-        .feature-text p { font-weight: 600; color: var(--gray-800); }
-        
-        /* Amenities */
-        .amenities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .amenity-item { display: flex; align-items: center; gap: 10px; padding: 12px 15px; background: var(--green-white); border-radius: 10px; }
-        .amenity-item span.check-icon { color: var(--green-primary); font-size: 1rem; display: inline-flex; align-items: center; }
-        
-        /* Map Section */
-        
-        /* Booking Card */
-        .booking-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.08);
-            position: sticky;
-            top: 100px;
+
+        .section-title {
+            margin: 0 0 0.65rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--gray-800, #1f2937);
         }
-        
-        .price-display { margin-bottom: 25px; }
-        .price-display .amount { font-size: 2rem; font-weight: 700; color: var(--green-dark); }
-        .price-display .period { color: var(--gray-500); font-size: 1rem; }
-        
-        /* Booking Form */
-        .booking-form .form-group { margin-bottom: 15px; }
-        .booking-form label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-700); font-size: 0.9rem; }
-        .booking-form input, .booking-form select, .booking-form textarea {
+
+        .section-title i { margin-right: 0.35rem; color: var(--green-primary, #457359); }
+
+        .explore-stay-panel__lede {
+            margin: 0 0 0.85rem;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--gray-600, #4b5563);
+        }
+
+        .description {
+            color: var(--gray-600, #4b5563);
+            line-height: 1.6;
+            font-size: 0.875rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 0;
+        }
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.65rem 0.75rem;
+            background: var(--gray-50, #f9fafb);
+            border: 1px solid var(--gray-100, #f3f4f6);
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .feature-icon i { font-size: 1rem; color: var(--green-primary, #457359); }
+        .feature-text h4 {
+            margin: 0;
+            font-size: 0.625rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--gray-500, #6b7280);
+        }
+        .feature-text p { margin: 0; font-size: 0.9375rem; font-weight: 700; color: var(--gray-900, #0f172a); }
+
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+            gap: 0.4rem;
+            margin-bottom: 0;
+        }
+        .amenity-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.55rem;
+            background: var(--gray-50, #f9fafb);
+            border: 1px solid var(--gray-100, #f3f4f6);
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--gray-700, #374151);
+        }
+        .amenity-item span.check-icon { color: var(--green-primary, #457359); font-size: 0.65rem; }
+
+        .booking-card,
+        .explore-stay-book-card {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid var(--gray-200);
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s;
+            max-width: 20rem;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 0.75rem;
+            padding: 0.9rem 1rem;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+            position: sticky;
+            top: calc(var(--app-topbar-height, 84px) + 0.75rem);
         }
-        .booking-form input:focus, .booking-form select:focus, .booking-form textarea:focus {
+
+        .price-display {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-100, #f3f4f6);
+        }
+        .price-display .amount {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--gray-900, #0f172a);
+            letter-spacing: -0.02em;
+        }
+        .price-display .period { color: var(--gray-500, #6b7280); font-size: 0.75rem; }
+
+        .booking-form .form-group { margin-bottom: 0.65rem; }
+        .booking-form label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            color: var(--gray-600, #4b5563);
+            font-size: 0.6875rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .booking-form input,
+        .booking-form select,
+        .booking-form textarea {
+            width: 100%;
+            padding: 0.5rem 0.65rem;
+            border: 1px solid var(--gray-200, #e5e7eb);
+            border-radius: 0.5rem;
+            font-size: 0.8125rem;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .booking-form input:focus,
+        .booking-form select:focus,
+        .booking-form textarea:focus {
             outline: none;
-            border-color: var(--green-primary);
+            border-color: var(--green-primary, #457359);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--green-primary, #457359) 18%, transparent);
         }
-        
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        .price-breakdown { background: var(--cream); border-radius: 12px; padding: 20px; margin: 20px 0; }
-        .price-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--gray-600); }
-        .price-row.total { border-top: 1px solid var(--gray-300); padding-top: 10px; margin-top: 10px; font-weight: 700; color: var(--gray-800); font-size: 1.1rem; }
-        
-        .btn-book { width: 100%; padding: 15px; font-size: 1.1rem; justify-content: center; margin-bottom: 15px; }
-        .btn-wishlist { width: 100%; justify-content: center; background: transparent; border: 2px solid var(--gray-300); color: var(--gray-600); }
-        .btn-wishlist:hover { border-color: var(--red-500); color: var(--red-500); }
-        
-        .host-info { display: flex; align-items: center; gap: 15px; padding: 20px 0; border-top: 1px solid var(--gray-200); margin-top: 20px; }
-        .host-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--green-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 600; }
-        .host-details h4 { color: var(--gray-800); margin-bottom: 3px; }
-        .host-details p { color: var(--gray-500); font-size: 0.85rem; }
-        
-        /* House Rules */
-        .rules-list { list-style: none; }
-        .rules-list li { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+
+        .btn-book { width: 100%; padding: 0.65rem; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .btn-wishlist {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--gray-200, #e5e7eb);
+            color: var(--gray-600, #4b5563);
+        }
+        .btn-wishlist:hover { border-color: #fca5a5; color: #dc2626; }
+
+        .explore-stay-book__notice {
+            text-align: center;
+            padding: 0.75rem 0;
+            color: var(--gray-600, #4b5563);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            line-height: 1.45;
+        }
+
+        .explore-stay-book__guest-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .explore-stay-book__guest-cta p {
+            margin: 0 0 0.25rem;
+            font-size: 0.8125rem;
+            color: var(--gray-500, #6b7280);
+        }
+
+        .host-info {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding-top: 0.85rem;
+            margin-top: 0.85rem;
+            border-top: 1px solid var(--gray-100, #f3f4f6);
+        }
+        .host-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: var(--green-primary, #457359);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .host-details h4 { margin: 0 0 0.1rem; font-size: 0.8125rem; color: var(--gray-900, #0f172a); }
+        .host-details p { margin: 0; color: var(--gray-500, #6b7280); font-size: 0.6875rem; }
+
+        .rules-list { list-style: none; margin: 0; padding: 0; }
+        .rules-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            padding: 0.45rem 0;
+            border-bottom: 1px solid var(--gray-100, #f3f4f6);
+            font-size: 0.8125rem;
+            color: var(--gray-600, #4b5563);
+            line-height: 1.45;
+        }
         .rules-list li:last-child { border-bottom: none; }
-        .rules-list span { color: var(--green-primary); font-size: 1.1rem; }
-        
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .content-grid { grid-template-columns: 1fr; }
-            .booking-card { position: static; }
+        .rules-list span { color: var(--green-primary, #457359); }
+
+        .explore-stay-show__calendar {
+            margin-top: 0;
         }
-        
+
+        .explore-stay-show__calendar .section-title { margin-bottom: 0.35rem; }
+
+        .explore-stay-show__calendar-note {
+            margin: 0 0 0.75rem;
+            font-size: 0.8125rem;
+            color: var(--gray-500, #6b7280);
+            line-height: 1.45;
+        }
+
+        @media (max-width: 900px) {
+            .explore-stay-show__summary {
+                grid-template-columns: 1fr;
+            }
+            .explore-stay-show__book-wrap {
+                max-width: none;
+                justify-self: stretch;
+            }
+            .booking-card,
+            .explore-stay-book-card {
+                max-width: none;
+                position: static;
+            }
+        }
+
         @media (max-width: 768px) {
             @if($showLegacyNav)
             .navbar { padding: 0 20px; height: 60px; }
             .nav-links { display: none; }
             @endif
-            .main-container { padding-top: calc(var(--client-nav-offset) - 10px); }
-            .main-image { height: 300px; }
-            .carousel-btn { width: 40px; height: 40px; font-size: 1rem; }
-            .carousel-btn.prev { left: 8px; }
-            .carousel-btn.next { right: 8px; }
-            .lightbox { padding: 56px 12px 72px; }
-            .lightbox-nav.prev { left: 6px; }
-            .lightbox-nav.next { right: 6px; }
+            .main-image { height: min(48vw, 260px); }
+            .features-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .form-row { grid-template-columns: 1fr; }
-            .property-header { flex-direction: column; gap: 15px; }
         }
 
-        /* Animations */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate { animation: fadeInUp 0.6s ease forwards; }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
+        @media (max-width: 480px) {
+            .features-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
-<body class="{{ $isTenantManager ? 'owner-nav-page' : ($showClientNav ? 'client-nav-page font-sans text-gray-800' : '') }}">
+<body class="{{ $isTenantManager ? 'owner-nav-page' : ($showClientNav ? 'client-nav-page font-sans text-gray-800' : ($showPortalPublicNav ? 'explore-portal-page font-sans text-gray-800' : '')) }}">
     <!-- Navigation -->
     @if($isTenantManager)
     @include('owner.partials.top-navbar', ['active' => 'accommodations'])
     @elseif($showClientNav)
         @include('client.partials.top-navbar', ['active' => 'dashboard', 'portalDirectory' => $portalDirectory ?? false])
     @elseif($showPortalPublicNav)
-        @include('partials.portal-public-nav', ['active' => 'browse', 'municipalityName' => config('portals.municipality_name', 'Impasug-ong')])
+        @include('partials.portal-public-nav', [
+            'active' => 'browse',
+            'municipalityName' => config('portals.municipality_name', 'Impasug-ong'),
+            'navLayout' => 'minimal',
+        ])
     @else
     <nav class="navbar">
         <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('dashboard') }}" class="nav-logo">
@@ -413,7 +724,7 @@
                     <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
                 @endif
                 @if(Auth::user()->tenantClientMayManageOwnStays())
-                <li><a href="{{ ($portalDirectory ?? false) ? route('portal.bookings.index') : route('bookings.index')) }}">My Bookings</a></li>
+                <li><a href="{{ ($portalDirectory ?? false) ? route('portal.bookings.index') : route('bookings.index') }}">My Bookings</a></li>
                 @endif
                 @if(Auth::user()->tenantClientMayUseMessaging())
                     <li><a href="{{ route('messages.index', [], false) }}">Messages</a></li>
@@ -440,19 +751,27 @@
     </nav>
     @endif
     
-    <!-- Main Container -->
-    <div class="{{ $isTenantManager ? 'main-container with-owner-nav' : ($showClientNav ? 'client-guest-main' : 'main-container') }}">
-        <!-- Breadcrumb -->
-        <div class="breadcrumb animate">
-            <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('landing') }}">Home</a>
-            <span>›</span>
-            <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('dashboard') }}">Dashboard</a>
-            <span>›</span>
-            <span>{{ $accommodation->name }}</span>
-        </div>
-        
-        <!-- Image Gallery (carousel + lightbox) -->
-        <div class="gallery-container animate delay-1">
+    @php
+        $showMainClass = $isTenantManager
+            ? 'main-container with-owner-nav explore-stay-show'
+            : ($showClientNav
+                ? 'client-guest-main client-guest-main--full explore-stay-show'
+                : ($showPortalPublicNav
+                    ? 'portal-public-main explore-stay-show'
+                    : 'main-container explore-stay-show'));
+        $listingsUrl = ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index');
+        $homeUrl = ($portalDirectory ?? false) ? route('portal.landing') : route('landing');
+    @endphp
+    <main class="{{ $showMainClass }}">
+        <nav class="explore-stay-show__crumb" aria-label="Breadcrumb">
+            <a href="{{ $homeUrl }}">{{ ($portalDirectory ?? false) ? 'Explore' : 'Home' }}</a>
+            <span aria-hidden="true">/</span>
+            <a href="{{ $listingsUrl }}">Accommodations</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{{ $accommodation->name }}</span>
+        </nav>
+
+        <section class="explore-stay-show__gallery gallery-container" aria-label="Property photos">
             @php
                 $galleryImages = $accommodation->galleryImageUrls();
                 if (count($galleryImages) === 0) {
@@ -496,7 +815,7 @@
                     @endforeach
                 </div>
             @endif
-        </div>
+        </section>
 
         <div class="lightbox" id="photoLightbox" role="dialog" aria-modal="true" aria-label="Full size photos">
             <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close full screen photo">×</button>
@@ -510,102 +829,33 @@
             @endif
         </div>
         
-        <!-- Content Grid -->
-        <div class="content-grid">
-            <!-- Left Column -->
-            <div>
-                <!-- Property Info -->
-                <div class="info-card animate delay-2">
-                    <div class="property-header">
-                        <div>
-                            <span class="type-badge {{ $accommodation->type }}">{{ str_replace('-', ' ', ucfirst($accommodation->type)) }}</span>
-                            <h1>{{ $accommodation->name }}</h1>
-                            <div class="property-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> {{ $accommodation->address }}</div>
-                            <div class="rating">
-                                <span class="rating-stars" aria-hidden="true">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($accommodation->rating))
-                                            <i class="fa-solid fa-star"></i>
-                                        @elseif($i - 0.5 <= $accommodation->rating)
-                                            <i class="fa-solid fa-star-half-stroke"></i>
-                                        @else
-                                            <i class="fa-regular fa-star"></i>
-                                        @endif
-                                    @endfor
-                                </span>
-                                <span class="rating-value">{{ number_format($accommodation->rating, 1) }}</span>
-                                <span class="rating-count">({{ $accommodation->total_reviews }} reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <p class="description">{{ $accommodation->description }}</p>
-                    
-                    <!-- Features -->
-                    <h3 class="section-title">Property Details</h3>
-                    <div class="features-grid">
-                        <div class="feature-item">
-                            <span class="feature-icon"><i class="fa-solid fa-bed" aria-hidden="true"></i></span>
-                            <div class="feature-text">
-                                <h4>Bedrooms</h4>
-                                <p>{{ $accommodation->bedrooms }}</p>
-                            </div>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon"><i class="fa-solid fa-bath" aria-hidden="true"></i></span>
-                            <div class="feature-text">
-                                <h4>Bathrooms</h4>
-                                <p>{{ $accommodation->bathrooms }}</p>
-                            </div>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
-                            <div class="feature-text">
-                                <h4>Max Guests</h4>
-                                <p>{{ $accommodation->max_guests }}</p>
-                            </div>
-                        </div>
-                    </div>
+        <header class="explore-stay-show__summary">
+            <div class="explore-stay-show__intro property-header">
+                <span class="type-badge {{ $accommodation->type }}">{{ str_replace('-', ' ', $accommodation->type) }}</span>
+                <h1>{{ $accommodation->name }}</h1>
+                <div class="property-location">
+                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                    {{ $accommodation->address }}@if($accommodation->barangay), Brgy. {{ $accommodation->barangay }}@endif
                 </div>
-                
-                <!-- Amenities -->
-                <div class="info-card animate delay-2">
-                    <h3 class="section-title">Amenities</h3>
-                    <div class="amenities-grid">
-                        @if(is_array($accommodation->amenities))
-                            @foreach($accommodation->amenities as $amenity)
-                                <div class="amenity-item">
-                                    <span class="check-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
-                                    <span>{{ $amenity }}</span>
-                                </div>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
-                
-                <!-- House Rules -->
-                <div class="info-card animate delay-2">
-                    <h3 class="section-title">House Rules</h3>
-                    <ul class="rules-list">
-                        @if($accommodation->house_rules)
-                            @foreach(explode('.', $accommodation->house_rules) as $rule)
-                                @if(trim($rule))
-                                    <li><span>•</span> {{ trim($rule) }}</li>
-                                @endif
-                            @endforeach
-                        @else
-                            <li><span>•</span> Standard house rules apply</li>
-                            <li><span>•</span> No smoking inside the property</li>
-                            <li><span>•</span> Pets allowed with prior notice</li>
-                            <li><span>•</span> Check-in: 2PM | Check-out: 11AM</li>
-                        @endif
-                    </ul>
+                <div class="rating">
+                    <span class="rating-stars" aria-hidden="true">
+                        @for($i = 1; $i <= 5; $i++)
+                            @if($i <= floor($accommodation->rating))
+                                <i class="fa-solid fa-star"></i>
+                            @elseif($i - 0.5 <= $accommodation->rating)
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                            @else
+                                <i class="fa-regular fa-star"></i>
+                            @endif
+                        @endfor
+                    </span>
+                    <span class="rating-value">{{ number_format($accommodation->rating, 1) }}</span>
+                    <span class="rating-count">({{ $accommodation->total_reviews }} reviews)</span>
                 </div>
             </div>
-            
-            <!-- Right Column - Booking Card -->
-            <div>
-                <div class="booking-card animate delay-3">
+
+            <aside class="explore-stay-show__book-wrap" aria-label="Book this stay">
+                <div class="booking-card explore-stay-book-card">
                     @auth
                         @if(($portalDirectory ?? false) && auth()->user()->isClient() && auth()->user()->tenantClientMayManageOwnStays() && (int) $accommodation->owner_id !== (int) auth()->id())
                             <form method="POST" action="{{ route('portal.wishlist.toggle', $accommodation) }}" class="mb-4">
@@ -698,13 +948,9 @@
                             </button>
                         </form>
                         @elseif($authUser && $authUser->isClient() && (int) $accommodation->owner_id !== (int) $authUser->id)
-                            <div style="text-align: center; padding: 16px 0 10px; color: var(--gray-600); font-weight: 600;">
-                                Booking is disabled for your account. Contact the business if you need access.
-                            </div>
+                            <p class="explore-stay-book__notice">Booking is disabled for your account. Contact the business if you need access.</p>
                         @else
-                            <div style="text-align: center; padding: 16px 0 10px; color: var(--gray-600); font-weight: 600;">
-                                Booking is available for client accounts only.
-                            </div>
+                            <p class="explore-stay-book__notice">Booking is available for client accounts only.</p>
                         @endif
 
                         <button type="button" class="btn btn-wishlist">
@@ -719,30 +965,104 @@
                             </div>
                         </div>
                     @else
-                        <div style="text-align: center; padding: 30px 0;">
-                            <p style="color: var(--gray-500); margin-bottom: 20px;">Sign in to book, save to wishlist, or message the host.</p>
-                            <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="btn btn-primary btn-book">Login</a>
-                            <a href="{{ ($portalDirectory ?? false) ? route('register.guest') : route('register') }}" class="btn btn-wishlist">Create account</a>
+                        <div class="explore-stay-book__guest-cta">
+                            <p>Sign in to book, save to wishlist, or message the host.</p>
+                            <a
+                                href="{{ $tenantGuestLoginUrl ?? route('login').'?'.http_build_query(['intended' => url()->full()]) }}"
+                                class="btn btn-primary btn-book"
+                            >Log in</a>
+                            <a
+                                href="{{ $tenantGuestRegisterUrl ?? (($portalDirectory ?? false) ? route('register.guest') : route('register')) }}"
+                                class="btn btn-wishlist"
+                            >Create account</a>
                         </div>
                     @endauth
+                </div>
+            </aside>
+        </header>
+
+        <div class="explore-stay-show__content content-grid">
+            <div class="explore-stay-show__panels explore-stay-show__panels--split">
+                <div class="info-card explore-stay-panel">
+                    <h3 class="section-title">About this stay</h3>
+                    <p class="description">{{ $accommodation->description }}</p>
+                    <h3 class="section-title">Property details</h3>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <span class="feature-icon"><i class="fa-solid fa-bed" aria-hidden="true"></i></span>
+                            <div class="feature-text">
+                                <h4>Bedrooms</h4>
+                                <p>{{ $accommodation->bedrooms }}</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon"><i class="fa-solid fa-bath" aria-hidden="true"></i></span>
+                            <div class="feature-text">
+                                <h4>Bathrooms</h4>
+                                <p>{{ $accommodation->bathrooms }}</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
+                            <div class="feature-text">
+                                <h4>Max guests</h4>
+                                <p>{{ $accommodation->max_guests }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card explore-stay-panel">
+                    <h3 class="section-title">Amenities</h3>
+                    <div class="amenities-grid">
+                        @if(is_array($accommodation->amenities))
+                            @foreach($accommodation->amenities as $amenity)
+                                <div class="amenity-item">
+                                    <span class="check-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+                                    <span>{{ $amenity }}</span>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+
+                <div class="info-card explore-stay-panel explore-stay-show__rules-panel">
+                    <h3 class="section-title">House rules</h3>
+                    <ul class="rules-list">
+                        @if($accommodation->house_rules)
+                            @foreach(explode('.', $accommodation->house_rules) as $rule)
+                                @if(trim($rule))
+                                    <li><span>•</span> {{ trim($rule) }}</li>
+                                @endif
+                            @endforeach
+                        @else
+                            <li><span>•</span> Standard house rules apply</li>
+                            <li><span>•</span> No smoking inside the property</li>
+                            <li><span>•</span> Pets allowed with prior notice</li>
+                            <li><span>•</span> Check-in: 2PM | Check-out: 11AM</li>
+                        @endif
+                    </ul>
                 </div>
             </div>
         </div>
 
         @if(isset($availabilityAccommodations) && $availabilityAccommodations->isNotEmpty())
-            <div class="info-card animate delay-2" style="margin-top: 28px;">
-                <h3 class="section-title"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Availability calendar</h3>
-                <p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 16px;">
-                    Open dates appear in green. Shaded dates already have a booking hold (pending or confirmed). Pick check-in and check-out around open nights before you book.
+            <section class="info-card explore-stay-panel explore-stay-show__calendar" aria-labelledby="availability-heading">
+                <h3 class="section-title" id="availability-heading">
+                    <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Availability
+                </h3>
+                <p class="explore-stay-show__calendar-note">
+                    Green dates are open. Shaded dates have a pending or confirmed booking. Choose check-in and check-out on open nights before you book.
                 </p>
                 @include('partials.availability-calendar', [
                     'calendarId' => 'guestListingCal',
                     'availabilityAccommodations' => $availabilityAccommodations,
                     'availabilityEventsByAccommodation' => $availabilityEventsByAccommodation ?? [],
+                    'compact' => true,
                 ])
-            </div>
+            </section>
         @endif
-    </div>
+    </main>
     
     <script>
         (function () {

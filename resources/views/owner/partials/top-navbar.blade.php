@@ -1,4 +1,4 @@
-<nav class="navbar" id="appNavbar">
+<nav class="navbar portal-nav-minimal public-nav-tribal" id="appNavbar">
     @include('partials.navbar-tribal-accent')
     @php
         $currentTenant = \App\Models\Tenant::current();

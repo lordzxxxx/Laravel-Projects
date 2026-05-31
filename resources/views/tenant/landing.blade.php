@@ -6,7 +6,10 @@
     @include('partials.tenant-favicon')
     <title>{{ $tenant->name }} | Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.appearance-boot')
     <style>
+        @include('partials.ui-foundation-styles')
         @include('partials.app-typography-styles')
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -40,15 +43,21 @@
             --shadow-md: var(--shadow-md, 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 34px -26px rgba(15, 23, 42, 0.22));
         }
 
-        body {
-            background:
-                radial-gradient(1200px 520px at 20% 12%, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.0) 55%),
-                linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.90) 100%),
-                url('/COMMUNAL.jpg') no-repeat center center/cover;
-            min-height: 100vh;
+        body.tenant-landing-page {
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             color: var(--ink-800);
+            background-color: var(--app-page-bg, #f8fafc);
+            background-image: var(--communal-bg-overlay-light, linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.95) 0%,
+                rgba(255, 255, 255, 0.88) 50%,
+                rgba(27, 94, 32, 0.08) 100%
+            ), url('/COMMUNAL.jpg'));
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
         }
 
         .tenant-landing-main {
@@ -67,86 +76,6 @@
             padding-right: clamp(18px, 3vw, 40px);
         }
 
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 12px clamp(18px, 3vw, 40px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(226, 232, 240, 0.95);
-            box-shadow: 0 10px 26px -22px rgba(15, 23, 42, 0.35);
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .brand-mark {
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            display: grid;
-            place-items: center;
-            font-weight: 800;
-            font-size: 1.2rem;
-            color: var(--white);
-            background: linear-gradient(145deg, var(--green-dark), var(--green-primary));
-            box-shadow: 0 8px 20px color-mix(in srgb, var(--green-primary) 30%, transparent);
-            flex-shrink: 0;
-        }
-
-        .brand-logo {
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            object-fit: contain;
-            background: var(--white);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(226, 232, 240, 0.95);
-            padding: 4px;
-            flex-shrink: 0;
-        }
-
-        .nav-brand .system-name {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--ink-900);
-            letter-spacing: -0.5px;
-        }
-
-        .nav-brand .tagline {
-            font-size: 0.72rem;
-            color: var(--ink-500);
-            margin-left: 8px;
-            display: inline;
-            line-height: 1.2;
-        }
-
-        .nav-links { display: flex; gap: 30px; list-style: none; }
-        .nav-links a {
-            text-decoration: none;
-            color: var(--ink-700);
-            font-weight: 600;
-            padding: 10px 14px;
-            border-radius: 8px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.92rem;
-        }
-        .nav-links a:hover { background: rgba(15, 23, 42, 0.04); color: var(--ink-900); }
-
-        .nav-buttons { display: flex; gap: 12px; }
         .btn {
             padding: 11px 18px;
             font-size: 0.92rem;
@@ -177,13 +106,36 @@
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px -18px rgba(15, 23, 42, 0.35); }
 
         .hero {
-            min-height: min(820px, 100vh);
+            width: 100%;
+            box-sizing: border-box;
+            min-height: min(820px, calc(100dvh - var(--app-topbar-height, 4rem)));
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 116px clamp(18px, 3vw, 40px) 72px;
+            padding: var(--portal-content-below-nav, calc(var(--app-topbar-height, 4rem) + 1.5rem))
+                clamp(1.25rem, 4vw, 2.5rem)
+                72px;
             text-align: center;
+        }
+
+        .hero__inner {
+            width: 100%;
+            max-width: 44rem;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero__logos {
+            margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+            display: flex;
+            justify-content: center;
+            width: 100%;
         }
 
         .hero-badge {
@@ -201,27 +153,40 @@
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
         }
-        .hero-badge i { color: var(--green-primary); }
+        .hero-badge i { color: var(--chrome-active-bg, var(--green-primary)); }
 
         .hero h1 {
+            width: 100%;
+            margin: 0 auto 14px;
             font-family: var(--app-font-display);
             font-size: clamp(2rem, 4.2vw, 3.25rem);
             color: var(--ink-900);
-            margin-bottom: 14px;
             letter-spacing: -1px;
             font-weight: 800;
+            text-align: center;
+            text-wrap: balance;
         }
-        .hero h1 span { color: var(--green-primary); }
+        .hero h1 span { color: var(--chrome-active-bg, var(--green-primary)); }
 
         .hero p {
+            width: 100%;
+            max-width: 40rem;
+            margin: 0 auto 26px;
             font-size: clamp(1rem, 1.25vw, 1.125rem);
             color: var(--ink-600);
-            max-width: 760px;
-            margin-bottom: 26px;
             line-height: 1.7;
+            text-align: center;
         }
 
-        .hero-buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 0; flex-wrap: wrap; }
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
         .hero-buttons .btn { padding: 12px 20px; font-size: 0.95rem; }
 
         .carousel-section {
@@ -352,17 +317,13 @@
         .delay-2 { animation-delay: 0.3s; }
 
         @media (max-width: 1024px) {
-            .navbar { padding: 15px 25px; }
-            .nav-links { gap: 15px; }
-            .nav-links a { padding: 8px 12px; font-size: 0.9rem; }
             .hero h1 { font-size: 2.8rem; }
         }
 
         @media (max-width: 768px) {
-            .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
-            .nav-brand .tagline { display: none; }
-            .nav-links { display: none; }
-            .hero { padding: 100px 20px 40px; }
+            .hero {
+                padding-top: var(--portal-content-below-nav, calc(5.75rem + 1rem));
+            }
             .hero h1 { font-size: 2rem; }
             .hero p { font-size: 1rem; }
             .hero-buttons { flex-direction: column; align-items: center; }
@@ -376,75 +337,33 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased">
-    @php
-        $currentUser = auth()->user();
-        $tenantNavLogo = $tenant->brandLogoUrl();
-        $tenantNavLogoFallback = \App\Models\Tenant::defaultBrandLogoUrl();
-        $canUseTenantPortal = false;
-
-        if ($currentUser) {
-            if ($currentUser->isOwner()) {
-                $canUseTenantPortal = (int) ($currentUser->tenant_id ?? 0) === (int) $tenant->id
-                    || (int) optional($currentUser->ownedTenant)->id === (int) $tenant->id;
-            } elseif ($currentUser->isAdmin() || $currentUser->isClient()) {
-                $canUseTenantPortal = (int) ($currentUser->tenant_id ?? 0) === (int) $tenant->id;
-            }
-        }
-    @endphp
-
-    <nav class="navbar">
-        <div class="nav-brand">
-            <img src="{{ $tenantNavLogo }}" alt="{{ $tenant->name }}" class="brand-logo" width="54" height="54"
-                 onerror="this.onerror=null;this.src='{{ $tenantNavLogoFallback }}';">
-            <div>
-                <span class="system-name">{{ $tenant->name }}</span>
-                <span class="tagline">| {{ $settings['hero_subtitle'] }}</span>
-            </div>
-        </div>
-        <ul class="nav-links">
-            <li><a href="#properties"><i class="fas fa-building"></i> Properties</a></li>
-        </ul>
-        <div class="nav-buttons">
-            @if($canUseTenantPortal)
-                @if($currentUser->isClient())
-                    <a href="{{ route('dashboard') }}" class="btn btn-outline"><i class="fas fa-search"></i> Browse</a>
-                @endif
-                <form method="POST" action="/logout">
-                    @csrf
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                </form>
-            @else
-                @if(auth()->check())
-                    <span class="btn btn-outline" style="cursor: default;"><i class="fas fa-triangle-exclamation"></i> Wrong tenant account</span>
-                    <form method="POST" action="/logout">
-                        @csrf
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-right-left"></i> Switch Account</button>
-                    </form>
-                @else
-                    <a href="/login" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> {{ $settings['login_text'] }}</a>
-                    <a href="/register" class="btn btn-primary"><i class="fas fa-user-plus"></i> {{ $settings['signup_text'] }}</a>
-                @endif
-            @endif
-        </div>
-    </nav>
+<body class="tenant-landing-page font-sans antialiased text-gray-800">
+    @include('partials.tenant-public-nav', [
+        'tenant' => $tenant,
+        'settings' => $settings,
+        'active' => 'landing',
+    ])
 
     <main class="tenant-landing-main">
-    <section class="hero">
-        <div class="container">
-        <div class="hero-badge animate">
-            <i class="fas fa-store"></i>
-            <span>Welcome to {{ $tenant->name }}</span>
-        </div>
+    <section class="hero" aria-labelledby="tenant-landing-heading">
+        <div class="hero__inner">
+            <div class="hero__logos animate">
+                @include('tenant.partials.auth-brand-logos', ['tenant' => $tenant])
+            </div>
 
-        <h1 class="animate delay-1">{{ $tenant->name }} <span>Accommodations</span></h1>
+            <div class="hero-badge animate">
+                <i class="fas fa-store" aria-hidden="true"></i>
+                <span>Welcome to {{ $tenant->name }}</span>
+            </div>
 
-        <p class="animate delay-2">{{ $settings['hero_subtitle'] }}</p>
+            <h1 id="tenant-landing-heading" class="animate delay-1">{{ $tenant->name }} <span>Accommodations</span></h1>
 
-        <div class="hero-buttons animate delay-2">
-            <a href="{{ route('dashboard') }}" class="btn btn-primary"><i class="fas fa-rocket"></i> {{ $settings['cta_text'] }}</a>
-            <a href="#properties" class="btn btn-outline"><i class="fas fa-search"></i> Browse Properties</a>
-        </div>
+            <p class="animate delay-2">{{ $settings['hero_subtitle'] }}</p>
+
+            <div class="hero-buttons animate delay-2">
+                <a href="{{ route('dashboard') }}" class="btn btn-primary"><i class="fas fa-rocket" aria-hidden="true"></i> {{ $settings['cta_text'] }}</a>
+                <a href="#properties" class="btn btn-outline"><i class="fas fa-search" aria-hidden="true"></i> Browse Properties</a>
+            </div>
         </div>
     </section>
 

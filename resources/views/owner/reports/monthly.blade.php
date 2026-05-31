@@ -29,27 +29,6 @@
             --shadow-md: 0 10px 25px rgba(15, 23, 42, 0.08);
         }
 
-        body {
-            background:
-                radial-gradient(circle at top right, color-mix(in srgb, var(--chrome-focus-ring, #10b981) 6%, transparent), transparent 55%),
-                radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.04), transparent 50%),
-                var(--app-page-bg, var(--cream));
-            min-height: 100vh;
-            color: var(--ink-800, var(--gray-800));
-            line-height: 1.55;
-        }
-
-        .main-content {
-            width: min(1600px, 100%);
-            margin: 0 auto;
-            padding: var(--owner-content-offset) clamp(14px, 2.5vw, 36px) 36px;
-            min-height: calc(100vh - var(--owner-content-offset));
-        }
-
-        /* ── Page header ───────────────────────────────────────────────────── */
-        .page-header {
-            margin-bottom: 22px;
-        }
         /* Title typography provided by ui-foundation-styles */
 
         /* ── Surface card primitive ────────────────────────────────────────── */
@@ -411,7 +390,6 @@
 
         /* ── Responsive ────────────────────────────────────────────────────── */
         @media (max-width: 768px) {
-            .main-content { padding: calc(var(--owner-content-offset) - 8px) 14px 24px; min-height: auto; }
             .filters { flex-direction: column; align-items: stretch; }
             .field { min-width: 0; }
             .filter-actions { width: 100%; }
@@ -430,15 +408,12 @@
 <body class="owner-nav-page">
     @include('owner.partials.top-navbar', ['active' => 'reports'])
 
-    <main class="main-content with-owner-nav">
-        {{-- Page header --}}
-        <div class="page-header">
-            <h1>
-                <span class="page-title-icon"><i class="fa-solid fa-chart-column"></i></span>
-                <span>Monthly Tenant Report</span>
-            </h1>
-            <p>Track monthly sales, total guests catered, and booking activity for {{ $monthName }}.</p>
-        </div>
+    <main class="main-content with-owner-nav owner-app-main">
+        <header class="owner-page-hero">
+            <p class="owner-page-hero__eyebrow">Analytics</p>
+            <h1 class="owner-page-hero__title">Monthly Tenant Report</h1>
+            <p class="owner-page-hero__lede">Track monthly sales, total guests catered, and booking activity for {{ $monthName }}.</p>
+        </header>
 
         {{-- Filter bar --}}
         <section class="surface filters-card">

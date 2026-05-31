@@ -5,6 +5,15 @@
     $linkActive = 'border-b-2 border-brand-primary text-brand-primary bg-brand-soft/50';
 @endphp
 <style>
+    @include('partials.navbar-tribal-shell-styles')
+    :root {
+        --app-topbar-height: 84px;
+        --app-topbar-height-mobile: 72px;
+        --app-main-top-offset: 100px;
+    }
+    @media (max-width: 768px) {
+        :root { --app-main-top-offset: 88px; }
+    }
     .public-nav-tribal { position: relative; overflow: hidden; }
     .public-nav-tribal > *:not(.navbar-tribal-accent) { position: relative; z-index: 2; }
     .public-nav-tribal .navbar-tribal-accent { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
@@ -16,7 +25,7 @@
         background-repeat: repeat;
         background-size: auto 100%;
         background-position: center center;
-        opacity: 0.30;
+        opacity: var(--nav-tribal-pattern-opacity, 0.8);
     }
     .public-nav-tribal::after {
         content: '';
@@ -31,9 +40,9 @@
         text-shadow: 0 1px 0 rgba(255,255,255,0.55);
     }
 </style>
-<nav class="public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col items-stretch justify-between gap-3 bg-white/95 px-5 py-3 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md md:flex-row md:items-center md:gap-8 md:px-8 md:py-3.5 lg:px-10">
+<nav class="public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col items-stretch justify-between bg-white/95 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md md:flex-row md:items-center">
     @include('partials.navbar-tribal-accent')
-    <a href="{{ route('landing') }}" class="flex min-w-0 items-center gap-3 no-underline md:gap-3.5">
+    <a href="{{ route('portal.landing') }}" class="flex min-w-0 items-center gap-3 no-underline md:gap-3.5">
         <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM" class="h-11 w-auto shrink-0 rounded-lg md:h-[48px]">
         <div class="min-w-0 leading-tight">
             <span class="block text-base font-extrabold tracking-tight text-brand-dark md:text-lg">IMPASUGONG TOURISM</span>
@@ -42,22 +51,27 @@
     </a>
     <ul class="hidden list-none items-center gap-2 md:flex lg:gap-5">
         <li>
-            <a href="{{ route('landing') }}#pricing" class="{{ $linkBase }} {{ $linkDefault }}">
-                <i class="fas fa-tags text-sm opacity-90"></i> Pricing
+            <a href="{{ route('portal.landing') }}" class="{{ $linkBase }} {{ in_array($active, ['home', 'landing'], true) ? $linkActive : $linkDefault }}">
+                <i class="fas fa-house text-sm opacity-90" aria-hidden="true"></i> Home
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('portal.accommodations.index') }}" class="{{ $linkBase }} {{ $active === 'browse' ? $linkActive : $linkDefault }}">
+                <i class="fas fa-compass text-sm opacity-90" aria-hidden="true"></i> Explore
             </a>
         </li>
         <li>
             <a href="{{ route('portal.about') }}" class="{{ $linkBase }} {{ $active === 'about' ? $linkActive : $linkDefault }}">
-                <i class="fas fa-circle-info text-sm opacity-90"></i> About Us
+                <i class="fas fa-circle-info text-sm opacity-90" aria-hidden="true"></i> About Us
             </a>
         </li>
     </ul>
     <div class="flex flex-wrap items-center gap-2.5">
-        <a href="/login" class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-4 py-2 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-primary hover:text-white">
-            <i class="fas fa-sign-in-alt text-sm"></i> Login
+        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-4 py-2 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-primary hover:text-white">
+            <i class="fas fa-sign-in-alt text-sm" aria-hidden="true"></i> Login
         </a>
-        <a href="/register" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_3px_12px_rgba(46,125,50,0.25)] transition-all hover:opacity-95 hover:shadow-[0_4px_14px_rgba(46,125,50,0.3)]">
-            <i class="fas fa-user-plus text-sm"></i> Register
+        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_3px_12px_rgba(46,125,50,0.25)] transition-all hover:opacity-95 hover:shadow-[0_4px_14px_rgba(46,125,50,0.3)]">
+            <i class="fas fa-user-plus text-sm" aria-hidden="true"></i> Register
         </a>
     </div>
 </nav>

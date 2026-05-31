@@ -14,27 +14,6 @@
             @include('partials.tenant-theme-css-vars', ['themeTenant' => $tenant])
         }
 
-        body.owner-nav-page {
-            margin: 0;
-            background: var(--app-page-bg, #f4f8f5);
-            color: var(--ink-800, #1f2937);
-            min-height: 100vh;
-        }
-
-        .landing-settings-main {
-            width: min(1600px, 100%);
-            margin: 0 auto;
-            padding: var(--owner-content-offset) clamp(16px, 2.5vw, 36px) 32px;
-            min-height: calc(100vh - var(--owner-content-offset));
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
-        .page-header p {
-            margin-top: 0.35rem;
-            max-width: 42rem;
-        }
 
         .landing-settings-form {
             flex: 1;
@@ -297,14 +276,12 @@
 <body class="owner-nav-page">
     @include('owner.partials.top-navbar', ['active' => ''])
 
-    <main class="landing-settings-main with-owner-nav">
-        <div class="page-header">
-            <h1>
-                <span class="page-title-icon"><i class="fa-solid fa-palette"></i></span>
-                <span>Landing &amp; logo</span>
-            </h1>
-            <p>Brand colors, portal theme, logo, and GCash QR for your subdomain.</p>
-        </div>
+    <main class="landing-settings-main with-owner-nav owner-app-main">
+        <header class="owner-page-hero">
+            <p class="owner-page-hero__eyebrow">Branding</p>
+            <h1 class="owner-page-hero__title">Landing &amp; logo</h1>
+            <p class="owner-page-hero__lede">Brand colors, portal theme, logo, and GCash QR for your subdomain.</p>
+        </header>
 
         @include('partials.flash-alerts')
 

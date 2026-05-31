@@ -12,16 +12,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             @include('partials.tenant-theme-css-vars')
-            --gray-50: #F9FAFB; --gray-100: #F3F4F6; --gray-200: #E5E7EB;
-            --gray-300: #D1D5DB; --gray-400: #9CA3AF; --gray-500: #6B7280;
-            --gray-600: #4B5563; --gray-700: #374151; --gray-800: #1F2937;
-        }
-        body {  background: var(--app-page-bg, #f1f8e9); color: var(--ink-800, #1f2937); min-height: 100vh; }
-        .main-content {
-            width: min(1800px, 100%);
-            margin: 0 auto;
-            padding: var(--owner-content-offset) clamp(12px, 2vw, 28px) 24px;
-            min-height: calc(100vh - var(--owner-content-offset));
         }
         .panel { background: var(--app-surface-bg, #fff); border: 1px solid var(--app-surface-border, #e5e7eb); border-radius: 14px; box-shadow: var(--shadow-sm, 0 4px 16px rgba(0,0,0,0.08)); margin-bottom: 18px; }
         .panel-header { padding: 18px 20px; border-bottom: 1px solid var(--app-surface-border, #e5e7eb); }
@@ -100,8 +90,8 @@
         .perm-category .perm-body { padding: 8px 10px; }
         .rbac-summary { display: flex; gap: 10px; flex-wrap: wrap; }
         .rbac-chip { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; border-radius: 999px; padding: 4px 10px; font-size: 0.78rem; }
-        .rbac-note { font-size: 0.84rem; color: #6b7280; margin-top: 8px; }
-        .muted { color: #6b7280; font-size: 0.82rem; }
+        .rbac-note { font-size: 0.84rem; color: var(--ink-500, #6b7280); margin-top: 8px; }
+        .muted { color: var(--ink-500, #6b7280); font-size: 0.82rem; }
         .template-create-form { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
         .template-create-perms { grid-column: span 2; }
         .template-create-actions { grid-column: span 2; }
@@ -119,9 +109,9 @@
             gap: 8px;
         }
         .role-summary::-webkit-details-marker { display: none; }
-        .role-summary-title { font-size: 0.9rem; font-weight: 700; color: #14532d; }
-        .role-summary-meta { font-size: 0.76rem; color: #4b5563; }
-        .role-card-body { padding: 10px; background: #fafafa; }
+        .role-summary-title { font-size: 0.9rem; font-weight: 700; color: var(--chrome-icon-color, #14532d); }
+        .role-summary-meta { font-size: 0.76rem; color: var(--ink-500, #4b5563); }
+        .role-card-body { padding: 10px; background: var(--app-surface-muted-bg, #fafafa); }
         .role-card .perm-grid { grid-template-columns: 1fr; max-height: 190px; overflow: auto; padding-right: 6px; }
         .perm-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
         @media (max-width: 1200px) {
@@ -138,17 +128,15 @@
         @include('owner.partials.top-navbar-styles')
     </style>
 </head>
-<body class="owner-nav-page bg-[#f1f8e9] text-slate-800 antialiased">
+<body class="owner-nav-page text-slate-800 antialiased">
     @include('owner.partials.top-navbar', ['active' => 'users'])
 
-    <main class="main-content with-owner-nav space-y-4">
-        <div class="page-header">
-            <h1>
-                <span class="page-title-icon"><i class="fa-solid fa-users-gear"></i></span>
-                <span>User Management</span>
-            </h1>
-            <p>Tenant: <strong>{{ $currentTenant->name }}</strong> &middot; Manage users and role-based access within this tenant only.</p>
-        </div>
+    <main class="main-content with-owner-nav owner-app-main">
+        <header class="owner-page-hero">
+            <p class="owner-page-hero__eyebrow">Team</p>
+            <h1 class="owner-page-hero__title">User Management</h1>
+            <p class="owner-page-hero__lede">Tenant: <strong>{{ $currentTenant->name }}</strong> — manage users and role-based access within this tenant only.</p>
+        </header>
 
         @if(session('success'))
             <div class="flash success rounded-lg border border-emerald-200 bg-emerald-100 px-4 py-3 text-sm font-medium text-emerald-800">{{ session('success') }}</div>
@@ -192,7 +180,7 @@
             };
         @endphp
 
-        <section class="panel rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <section class="panel rounded-2xl border border-slate-200 shadow-sm">
             <div class="section-body px-5 py-4">
                 @php
                     $viewer = auth()->user();
@@ -246,7 +234,7 @@
         </section>
 
         @if($canAssignRoles && ($customRbacReady ?? false))
-            <section class="panel rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <section class="panel rounded-2xl border border-slate-200 shadow-sm">
                 <div class="panel-header border-b border-slate-200 px-5 py-4">
                     <h1 class="text-2xl font-bold tracking-tight text-green-900">Custom Role Templates</h1>
                     <p class="mt-1 text-sm text-slate-600">Create tenant-specific role templates, then assign them to users. Access is determined by the assigned template permissions.</p>
@@ -368,7 +356,7 @@
             </section>
         @endif
 
-        <section class="panel rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <section class="panel rounded-2xl border border-slate-200 shadow-sm">
             <div class="panel-header border-b border-slate-200 px-5 py-4">
                 <h1 class="text-2xl font-bold tracking-tight text-green-900">Tenant Users</h1>
             </div>

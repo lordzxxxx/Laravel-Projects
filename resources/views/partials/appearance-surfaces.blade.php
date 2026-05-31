@@ -22,7 +22,9 @@
     .log-card,
     .surface,
     .properties-section,
-    .perm-option
+    .perm-option,
+    .table-wrap,
+    .support-table-wrap
 ) {
     background: var(--app-surface-bg, #fff);
     border-color: var(--app-surface-border, rgba(209, 213, 219, 0.7));
@@ -201,9 +203,9 @@
 }
 
 :where(.btn.primary, .btn-filter.primary, .btn-primary) {
-    background: var(--chrome-active-bg, var(--green-primary, #457359));
-    border-color: var(--chrome-active-border, transparent);
-    color: #fff;
+    background: var(--action-primary-bg, var(--brand-700, #457359));
+    border-color: var(--action-primary-border, transparent);
+    color: var(--action-primary-text, #fff);
 }
 
 :where(.support-table th, .tenants-table-head) {
@@ -246,7 +248,9 @@ html.dark :where(
     .properties-section,
     .perm-option,
     .report-page .card,
-    .report-page .table-wrap
+    .report-page .table-wrap,
+    .table-wrap,
+    .support-table-wrap
 ) {
     background: var(--app-surface-bg) !important;
     border-color: var(--app-surface-border) !important;
@@ -254,8 +258,17 @@ html.dark :where(
     color: var(--ink-800);
 }
 
-html.dark :where(.card-header, .card-body, .table-container) {
+html.dark :where(.card-header, .card-body, .table-container, .card-padded) {
     border-color: var(--app-surface-border);
+    color: var(--ink-800);
+}
+
+html.dark :where(.page-header h1, .page-header p) {
+    color: var(--ink-900) !important;
+}
+
+html.dark :where(.page-header p) {
+    color: var(--ink-500) !important;
 }
 
 html.dark :where(
@@ -296,9 +309,9 @@ html.dark :where(.btn, .btn-filter) {
 }
 
 html.dark :where(.btn.primary, .btn-filter.primary, .btn.primary) {
-    background: var(--chrome-active-bg) !important;
-    color: #fff !important;
-    border-color: var(--chrome-active-border) !important;
+    background: var(--action-primary-bg) !important;
+    color: var(--action-primary-text, #fff) !important;
+    border-color: var(--action-primary-border) !important;
 }
 
 html.dark :where(.support-table th, .support-table td, th, td) {
@@ -549,7 +562,12 @@ html.dark :where(.btn-admin-sm-outline) {
 }
 
 /* Tailwind utility classes used on admin/owner/client pages */
-html.dark .bg-white {
+html.dark .bg-white,
+html.dark [class*="bg-white/"] {
+    background-color: var(--app-surface-bg) !important;
+}
+
+html.dark [class*="bg-white\\/"] {
     background-color: var(--app-surface-bg) !important;
 }
 
@@ -585,11 +603,16 @@ html.dark .text-slate-600 {
 
 html.dark .text-gray-500,
 html.dark .text-slate-500 {
-    color: var(--ink-500) !important;
+    color: var(--text-muted, var(--ink-600)) !important;
 }
 
 html.dark .text-gray-400,
 html.dark .text-slate-400 {
+    color: var(--text-faint, var(--ink-500)) !important;
+}
+
+html.dark .text-gray-300,
+html.dark .text-slate-300 {
     color: var(--ink-400) !important;
 }
 
@@ -609,3 +632,7 @@ html.dark .shadow,
 html.dark .shadow-md {
     box-shadow: var(--shadow-sm) !important;
 }
+
+@include('partials.appearance-page-backgrounds')
+@include('partials.appearance-dark-compat')
+@include('partials.appearance-minimal-layouts')

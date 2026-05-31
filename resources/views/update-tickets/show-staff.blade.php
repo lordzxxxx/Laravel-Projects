@@ -14,8 +14,6 @@
             --gray-200: #E5E7EB; --gray-500: #6B7280; --gray-600: #4B5563; --gray-700: #374151; --gray-800: #1F2937;
         }
         @include('owner.partials.top-navbar-styles')
-        body {  background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%); min-height: 100vh; color: var(--gray-800); }
-        .page-shell { padding: 96px 24px 40px; max-width: 960px; margin: 0 auto; }
         .card { background: var(--white); border: 1px solid var(--green-soft); border-radius: 14px; padding: 22px; box-shadow: 0 5px 20px rgba(27, 94, 32, 0.08); }
         h1 { font-size: 1.35rem; color: var(--green-dark); margin-bottom: 12px; }
         .status-row { margin-bottom: 14px; }
@@ -48,10 +46,14 @@
 <body class="owner-nav-page">
     @include('owner.partials.top-navbar', ['active' => 'updates'])
 
-    <main class="page-shell">
-        <p style="margin-bottom:12px;"><a href="{{ $backToUpdatesPath ?? '/settings/updates' }}" class="btn"><i class="fas fa-arrow-left"></i> System updates</a></p>
+    <main class="page-shell with-owner-nav owner-app-main">
+        <header class="owner-page-hero">
+            <p class="owner-page-hero__eyebrow">Support ticket</p>
+            <h1 class="owner-page-hero__title">{{ $ticket->subject }}</h1>
+        </header>
+        <p style="margin:0 0 12px;"><a href="{{ $backToUpdatesPath ?? '/settings/updates' }}" class="btn"><i class="fas fa-arrow-left"></i> System updates</a></p>
         <div class="card">
-            <h1>{{ $ticket->subject }}</h1>
+            <h2 style="font-size:1.1rem;font-weight:700;color:var(--green-dark);margin-bottom:12px;">Details</h2>
             <div class="status-row">
                 @if($ticket->status === \App\Models\UpdateTicket::STATUS_RESOLVED)
                     <span class="status-badge resolved"><i class="fas fa-check mr-1"></i> Resolved</span>

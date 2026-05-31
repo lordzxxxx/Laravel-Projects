@@ -165,14 +165,52 @@ class Tenant extends BaseTenant
 
     public function publicUrl(): string
     {
-        $host = env('TENANCY_BASE_HOST', parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost');
-        $port = ':'.env('CENTRAL_PORT', 8000);
+        return $this->httpOrigin();
+    }
 
-        if ($this->domain) {
-            return 'http://'.$this->domain.$port;
+    /**
+     * Base URL for this tenant's dedicated site (subdomain + app port).
+     */
+    public function httpOrigin(): string
+    {
+        $scheme = parse_url((string) config('app.url'), PHP_URL_SCHEME) ?: 'http';
+        $host = $this->domain
+            ?: (string) env('TENANCY_BASE_HOST', parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost');
+        $port = (int) env('TENANT_PORT', env('CENTRAL_PORT', 8000));
+        $defaultPort = $scheme === 'https' ? 443 : 80;
+        $portSuffix = ($port > 0 && $port !== $defaultPort) ? ':'.$port : '';
+
+        return $scheme.'://'.$host.$portSuffix;
+    }
+
+    public function url(string $path = '/'): string
+    {
+        return $this->httpOrigin().'/'.ltrim($path, '/');
+    }
+
+    /**
+     * Client/guest sign-in on the tenant subdomain (after central explore, etc.).
+     */
+    public function guestLoginUrl(?string $intendedRelativePath = null): string
+    {
+        $query = ['portal' => 'client'];
+        if ($intendedRelativePath !== null && $intendedRelativePath !== '') {
+            $query['intended'] = $this->url($intendedRelativePath);
         }
 
-        return 'http://'.$host.$port;
+        return $this->url('/login').'?'.http_build_query($query);
+    }
+
+    public function guestRegisterUrl(?string $intendedRelativePath = null): string
+    {
+        $query = [];
+        if ($intendedRelativePath !== null && $intendedRelativePath !== '') {
+            $query['intended'] = $this->url($intendedRelativePath);
+        }
+
+        $base = $this->url('/register');
+
+        return $query === [] ? $base : $base.'?'.http_build_query($query);
     }
 
     /**

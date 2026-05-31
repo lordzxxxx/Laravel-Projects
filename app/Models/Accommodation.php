@@ -104,7 +104,7 @@ class Accommodation extends Model
     }
 
     /**
-     * Central public directory: approved, provisioned hosts + geographic text match for the configured municipality.
+     * Central public directory: listings from approved, provisioned municipal hosts.
      */
     public function scopeForCentralMunicipalityDirectory($query)
     {
@@ -113,18 +113,7 @@ class Accommodation extends Model
             ->where('database_provisioned', true)
             ->pluck('id');
 
-        $municipality = (string) config('portals.municipality_name', 'Impasug-ong');
-        $term = strtolower(str_replace('-', '', $municipality));
-
-        return $query->whereIn('tenant_id', $approvedTenantIds)
-            ->where(function ($q) use ($municipality, $term) {
-                $q->where('address', 'like', '%'.$municipality.'%')
-                    ->orWhere('address', 'like', '%'.$term.'%')
-                    ->orWhere('barangay', 'like', '%'.$municipality.'%')
-                    ->orWhere('barangay', 'like', '%'.$term.'%')
-                    ->orWhere('description', 'like', '%'.$municipality.'%')
-                    ->orWhere('description', 'like', '%'.$term.'%');
-            });
+        return $query->whereIn('tenant_id', $approvedTenantIds);
     }
 
     // Accessors

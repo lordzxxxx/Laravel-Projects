@@ -22,9 +22,6 @@
         
         :root {
             @include('partials.tenant-theme-css-vars')
-            --gray-50: #F9FAFB; --gray-100: #F3F4F6; --gray-200: #E5E7EB;
-            --gray-500: #6B7280; --gray-600: #4B5563; --gray-700: #374151;
-            --gray-800: #1F2937;
         }
         
         @include('partials.appearance-boot')
@@ -62,6 +59,7 @@
             @include('owner.partials.top-navbar-styles')
         @elseif($authUser?->isClient())
             @include('client.partials.top-navbar-styles')
+            @include('client.partials.guest-bookings-styles')
         @endif
 
         body:not(.client-nav-page) {
@@ -80,12 +78,34 @@
             padding-right: clamp(12px, 2vw, 34px);
             min-height: calc(100vh - var(--client-nav-offset));
         }
+
+        /* Owner bookings — header must not stretch (flex-grow was creating huge gap) */
+        body.owner-nav-page .main-content.with-owner-nav.owner-app-main {
+            align-content: flex-start;
+        }
+
+        body.owner-nav-page .main-content.with-owner-nav.owner-app-main > .owner-page-hero {
+            flex: 0 0 auto;
+            margin-bottom: 0;
+            padding-bottom: clamp(0.75rem, 1.25vw, 1.25rem);
+        }
+
+        body.owner-nav-page .main-content.with-owner-nav.owner-app-main > .alert-stack:empty,
+        body.owner-nav-page .main-content.with-owner-nav.owner-app-main > .alert-stack:not(:has(.alert)) {
+            display: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.owner-nav-page .main-content.with-owner-nav.owner-app-main > * + * {
+            margin-top: 0;
+        }
         
         /* Page Header — title styling provided by ui-foundation-styles for cross-system consistency. */
         .page-header { margin-bottom: 30px; }
         
         /* Filter Tabs */
-        .filter-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .filter-tabs { display: flex; gap: 10px; margin-bottom: 0; flex-wrap: wrap; }
         .filter-tab { padding: 10px 20px; border-radius: 8px; border: 1px solid var(--app-surface-border, var(--gray-200)); background: var(--app-surface-bg, var(--white)); color: var(--ink-600, var(--gray-600)); cursor: pointer; font-weight: 500; transition: all 0.3s; text-decoration: none; }
         .filter-tab:hover { background: var(--chrome-surface-bg, var(--green-soft)); }
         .filter-tab.active { background: var(--chrome-active-bg, var(--green-primary)); color: white; border-color: var(--chrome-active-border, transparent); }
@@ -311,27 +331,160 @@
     @endif
     @endif
     
-    <!-- Main Content -->
-    <main class="{{ $isTenantManager ? 'main-content with-owner-nav w-full' : ($authUser?->isClient() ? 'client-guest-main client-guest-main--wide' : 'mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10') }}"@if(! $isTenantManager && ! $authUser?->isClient()) style="padding-top: calc(var(--client-nav-offset) + 24px);"@endif>
-        @php
-            $isOwner = $isTenantManager;
-            $bookingsIndexRoute = Auth::check() && $isTenantManager ? 'owner.bookings.index' : 'bookings.index';
-            $bookingsShowRoute = Auth::check() && $isTenantManager ? 'owner.bookings.show' : 'bookings.show';
-            $ownerBookingsBase = '/owner/bookings';
-            $ownerAccommodationsBase = '/owner/accommodations';
-        @endphp
+    @php
+        $isOwner = $isTenantManager;
+        $bookingsIndexRoute = Auth::check() && $isTenantManager ? 'owner.bookings.index' : 'bookings.index';
+        $bookingsShowRoute = Auth::check() && $isTenantManager ? 'owner.bookings.show' : 'bookings.show';
+        $ownerBookingsBase = '/owner/bookings';
+        $ownerAccommodationsBase = '/owner/accommodations';
+        $isGuestClient = $authUser?->isClient() && ! $isTenantManager;
+        $browseHref = $isOwner
+            ? $ownerAccommodationsBase
+            : route(\Illuminate\Support\Facades\Route::has('accommodations.index') ? 'accommodations.index' : 'dashboard');
+    @endphp
 
-        <div class="page-header {{ $isOwner ? 'rounded-2xl border border-emerald-100 bg-white/70 p-4 shadow-sm' : 'mb-6 rounded-2xl border border-emerald-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm' }}">
-            <h1>
-                <span class="page-title-icon"><i class="fa-solid fa-calendar-check"></i></span>
-                <span>My Bookings</span>
-            </h1>
-            <p>View and manage your accommodation bookings.</p>
-        </div>
+    <!-- Main Content -->
+    @if($isGuestClient)
+    <main class="client-guest-main client-guest-main--wide guest-bookings-main">
+        <header class="guest-bookings-hero">
+            <div class="guest-bookings-hero__copy">
+                <p class="guest-bookings-hero__eyebrow">Your reservations</p>
+                <h1 class="guest-bookings-hero__title">My Bookings</h1>
+                <p class="guest-bookings-hero__lede">View and manage your accommodation bookings.</p>
+            </div>
+        </header>
+
+        @include('partials.flash-alerts')
+
+        <nav class="guest-bookings-filters" aria-label="Filter by status">
+            <a href="{{ route($bookingsIndexRoute) }}" class="guest-bookings-filters__tab {{ ! request('status') ? 'is-active' : '' }}">All</a>
+            <a href="{{ route($bookingsIndexRoute, ['status' => 'pending']) }}" class="guest-bookings-filters__tab {{ request('status') === 'pending' ? 'is-active' : '' }}">Pending</a>
+            <a href="{{ route($bookingsIndexRoute, ['status' => 'confirmed']) }}" class="guest-bookings-filters__tab {{ request('status') === 'confirmed' ? 'is-active' : '' }}">Confirmed</a>
+            <a href="{{ route($bookingsIndexRoute, ['status' => 'completed']) }}" class="guest-bookings-filters__tab {{ request('status') === 'completed' ? 'is-active' : '' }}">Completed</a>
+            <a href="{{ route($bookingsIndexRoute, ['status' => 'cancelled']) }}" class="guest-bookings-filters__tab {{ request('status') === 'cancelled' ? 'is-active' : '' }}">Cancelled</a>
+        </nav>
+
+        @if(isset($bookings) && count($bookings) > 0)
+            <section class="guest-bookings-results" aria-label="Your bookings">
+                <div class="guest-bookings-grid">
+                    @foreach($bookings as $booking)
+                        @php
+                            $paymentUi = $booking->payment_ui_state;
+                            $paymentTone = $paymentUi['tone'] === 'pending_review' ? 'payment-review' : $paymentUi['tone'];
+                            $statusClass = match ($booking->status) {
+                                'pending' => 'pending',
+                                'confirmed' => 'confirmed',
+                                'cancelled' => 'cancelled',
+                                default => 'completed',
+                            };
+                        @endphp
+                        <article class="guest-booking-card">
+                            <div class="guest-booking-card__meta-row">
+                                <span>Booking <strong>#{{ $booking->id }}</strong></span>
+                                <span>{{ $booking->created_at->format('M d, Y') }}</span>
+                            </div>
+                            <div class="guest-booking-card__body">
+                                <a href="{{ route($bookingsShowRoute, $booking) }}" class="guest-booking-card__media">
+                                    @if($booking->accommodation && $booking->accommodation->primary_image)
+                                        <img src="{{ $booking->accommodation->primary_image_url }}" alt="{{ $booking->accommodation->name }}" loading="lazy" decoding="async">
+                                    @else
+                                        <img src="/COMMUNAL.jpg" alt="Property" loading="lazy" decoding="async">
+                                    @endif
+                                </a>
+                                <div class="guest-booking-card__details">
+                                    <h2 class="guest-booking-card__title">
+                                        <a href="{{ route($bookingsShowRoute, $booking) }}" class="text-inherit no-underline hover:underline">
+                                            {{ $booking->accommodation->name ?? 'N/A' }}
+                                        </a>
+                                    </h2>
+                                    <p class="guest-booking-card__location">
+                                        <i class="fas fa-location-dot" aria-hidden="true"></i>
+                                        <span>{{ $booking->accommodation->address ?? 'Impasugong' }}</span>
+                                    </p>
+                                    <div class="guest-booking-card__facts">
+                                        <div class="guest-booking-card__fact">
+                                            <span class="guest-booking-card__fact-label">Check-in</span>
+                                            <span class="guest-booking-card__fact-value">{{ \Carbon\Carbon::parse($booking->check_in_date)->format('M d, Y') }}</span>
+                                        </div>
+                                        <div class="guest-booking-card__fact">
+                                            <span class="guest-booking-card__fact-label">Check-out</span>
+                                            <span class="guest-booking-card__fact-value">{{ \Carbon\Carbon::parse($booking->check_out_date)->format('M d, Y') }}</span>
+                                        </div>
+                                        <div class="guest-booking-card__fact">
+                                            <span class="guest-booking-card__fact-label">Guests</span>
+                                            <span class="guest-booking-card__fact-value">{{ $booking->number_of_guests ?? 1 }}</span>
+                                        </div>
+                                        <div class="guest-booking-card__fact">
+                                            <span class="guest-booking-card__fact-label">Total</span>
+                                            <span class="guest-booking-card__fact-value">₱{{ number_format($booking->total_price, 0, '.', ',') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="guest-booking-card__footer">
+                                <div class="guest-booking-card__badges">
+                                    <span class="guest-booking-card__badge guest-booking-card__badge--{{ $statusClass }}">{{ ucfirst($booking->status) }}</span>
+                                    <span class="guest-booking-card__badge guest-booking-card__badge--payment-{{ $paymentTone }}">{{ $paymentUi['label'] }}</span>
+                                </div>
+                                <div class="guest-booking-card__actions">
+                                    <a href="{{ route($bookingsShowRoute, $booking) }}" class="guest-booking-card__btn guest-booking-card__btn--primary">View details</a>
+                                    @if($booking->status === 'confirmed')
+                                        <a href="{{ route($bookingRouteGroup.'.payment', $booking) }}" class="guest-booking-card__btn guest-booking-card__btn--primary">Pay now</a>
+                                    @endif
+                                    @if($booking->status === 'pending' || $booking->status === 'confirmed')
+                                        <form action="{{ route($bookingRouteGroup.'.cancel', $booking) }}" method="POST" data-loading-form>
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" data-loading-button class="guest-booking-card__btn guest-booking-card__btn--ghost" onclick="return confirm('Are you sure you want to cancel this booking?')">Cancel</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+
+            @if(method_exists($bookings, 'links'))
+                <nav class="guest-bookings-pagination" aria-label="Booking pages">
+                    {{ $bookings->links() }}
+                </nav>
+            @endif
+        @else
+            <section class="guest-bookings-empty" aria-label="No bookings">
+                <div class="guest-bookings-empty__card">
+                    <i class="fa-regular fa-calendar-xmark" aria-hidden="true"></i>
+                    <h3>No bookings found</h3>
+                    <p>You haven't made any bookings yet. Start exploring accommodations.</p>
+                    <a href="{{ $browseHref }}" class="guest-bookings-empty__cta">
+                        <i class="fas fa-compass" aria-hidden="true"></i> Browse properties
+                    </a>
+                </div>
+            </section>
+        @endif
+    </main>
+    @else
+    <main class="{{ $isTenantManager ? 'main-content with-owner-nav owner-app-main w-full' : 'mx-auto min-h-screen w-full max-w-[1800px] px-4 pb-10 sm:px-6 lg:px-10' }}"@if(! $isTenantManager && ! $authUser?->isClient()) style="padding-top: calc(var(--client-nav-offset) + 24px);"@endif>
+
+        @if($isOwner)
+            <header class="owner-page-hero">
+                <p class="owner-page-hero__eyebrow">Reservations</p>
+                <h1 class="owner-page-hero__title">My Bookings</h1>
+                <p class="owner-page-hero__lede">View and manage accommodation bookings for your properties.</p>
+            </header>
+        @else
+            <div class="page-header mb-6 rounded-2xl border border-emerald-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm">
+                <h1>
+                    <span class="page-title-icon"><i class="fa-solid fa-calendar-check"></i></span>
+                    <span>My Bookings</span>
+                </h1>
+                <p>View and manage your accommodation bookings.</p>
+            </div>
+        @endif
         @include('partials.flash-alerts')
 
         @if($isOwner)
-            <div class="rounded-2xl border border-emerald-100 bg-white/95 p-4 shadow-sm" style="margin-bottom: 18px;">
+            <div class="rounded-2xl border border-emerald-100 bg-white/95 p-4 shadow-sm">
                 <h3 style="color: var(--green-dark); margin-bottom: 10px; font-size: 1rem;">GCash QR Code</h3>
                 @if(session('success'))
                     <p style="font-size:0.85rem;color:var(--green-dark);margin-bottom:8px;">{{ session('success') }}</p>
@@ -496,6 +649,7 @@
             </div>
         @endif
     </main>
+    @endif
 
     <script>
         document.querySelectorAll('form[data-loading-form]').forEach((form) => {

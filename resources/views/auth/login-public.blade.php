@@ -86,7 +86,7 @@
             <header class="auth-public-brand shrink-0 bg-transparent pb-2 pt-0">
                 <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-14 sm:gap-y-7 md:gap-x-16" aria-label="Official partner marks">
                     <img src="{{ asset('SYSTEMLOGO.png') }}" alt="{{ $municipality }} official seal" class="auth-partner-img" width="260" height="174" fetchpriority="high" decoding="async">
-                    <img src="{{ asset('Love Impasugong.png') }}" alt="Love Impasugong" class="auth-partner-img" width="260" height="174" loading="eager" decoding="async">
+                    <img src="{{ asset('images/love-impasugong-transparent.png') }}" alt="Love Impasugong" class="auth-partner-img" width="260" height="174" loading="eager" decoding="async">
                     <img src="{{ asset('Lgu Socmed Template-02.png') }}" alt="LGU {{ $municipality }}" class="auth-partner-img auth-partner-img--wide" width="400" height="140" loading="lazy" decoding="async">
                 </div>
                 {{-- Clear separation from logos: hero copy lowered with even spacing between each line/block --}}

@@ -689,11 +689,11 @@ body.client-nav-page.msg-thread-page .messages-show-main.main-content {
     word-break: break-word;
 }
 .msg-bubble--in {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    color: #0f172a;
+    background: var(--app-surface-bg, #fff);
+    border: 1px solid var(--app-surface-border, #e2e8f0);
+    color: var(--ink-900, #0f172a);
     border-bottom-left-radius: 5px;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    box-shadow: var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.05));
 }
 .msg-bubble--out {
     background: linear-gradient(145deg, var(--msg-bubble-out-a), var(--msg-bubble-out-b));
@@ -833,4 +833,47 @@ body.client-nav-page.msg-thread-page .messages-show-main.main-content {
     .msg-thread-chevron {
         display: none;
     }
+}
+
+html.dark .msg-card,
+html.dark .msg-sidebar,
+html.dark .msg-thread-panel,
+html.dark .msg-compose-card {
+    background: var(--app-surface-bg) !important;
+    border-color: var(--app-surface-border) !important;
+}
+
+html.dark .msg-card-header,
+html.dark .msg-sidebar-header,
+html.dark .msg-thread-header {
+    background: var(--app-surface-muted-bg) !important;
+    border-color: var(--app-surface-border) !important;
+}
+
+html.dark .msg-thread-item {
+    color: var(--ink-800);
+}
+
+html.dark .msg-thread-item:hover,
+html.dark .msg-thread-item.is-active {
+    background: var(--app-surface-muted-bg) !important;
+}
+
+html.dark .msg-thread-item strong {
+    color: var(--ink-900) !important;
+}
+
+html.dark .msg-thread-preview,
+html.dark .msg-thread-time {
+    color: var(--ink-500) !important;
+}
+
+html.dark .msg-btn-danger {
+    background: var(--app-surface-bg) !important;
+    border-color: var(--status-danger) !important;
+    color: #fca5a5 !important;
+}
+
+html.dark .msg-btn-danger:hover {
+    background: color-mix(in srgb, var(--status-danger) 15%, var(--app-surface-bg)) !important;
 }

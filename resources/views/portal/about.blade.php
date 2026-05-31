@@ -2,14 +2,18 @@
 <html lang="en">
 <head>
     @include('partials.central-public-head', ['pageTitle' => 'About Us | IMPASUGONG TOURISM'])
+    <style>
+        @include('client.partials.guest-shell-styles')
+    </style>
 </head>
-<body
-    class="flex min-h-screen flex-col font-sans text-brand-dark antialiased bg-cover bg-center bg-fixed"
-    style="background-image: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, rgba(27, 94, 32, 0.1) 100%), url('/COMMUNAL.jpg');"
->
-    @include('partials.portal-public-nav', ['active' => 'about', 'municipalityName' => config('portals.municipality_name', 'Impasug-ong')])
+<body class="about-portal-page min-h-screen font-sans text-brand-dark antialiased">
+    @include('partials.portal-public-nav', [
+        'active' => 'about',
+        'municipalityName' => config('portals.municipality_name', 'Impasug-ong'),
+        'navLayout' => 'minimal',
+    ])
 
-    @include('partials.about-us-main', ['aboutHomeUrl' => route('portal.landing')])
+    @include('partials.about-us-main')
 
     @include('partials.portal-public-footer')
 </body>

@@ -1,17 +1,56 @@
 {{-- Tribal pattern shell — shared by portal-public-nav (/explore) and app .navbar --}}
 :root {
-    --nav-tribal-pattern-opacity: 0.30;
+    --nav-tribal-pattern-opacity: 0.8;
     --nav-brand-soft-border: var(--brand-200, #CBDFC6);
     --nav-brand-shell-shadow: 0 2px 12px rgba(27, 94, 32, 0.08);
     --nav-heading-font: var(--app-font-display);
     --nav-heading-color: var(--brand-800, #34543F);
-    --nav-heading-accent: var(--brand-500, #799F76);
+    --nav-heading-accent: var(--brand-800, #34543F);
 }
 
 .navbar,
 .public-nav-tribal {
-    position: relative;
     overflow: hidden;
+}
+
+/* Portal/public top bars use Tailwind `fixed` — do not override with relative */
+nav.public-nav-tribal.fixed {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1100;
+    box-sizing: border-box;
+}
+
+.navbar {
+    position: relative;
+}
+
+/* Portal / public explore nav — match app .navbar dimensions (size only) */
+.public-nav-tribal:not(.portal-nav-minimal) {
+    min-height: var(--app-topbar-height, 84px);
+    height: auto;
+    padding: 0.5rem clamp(14px, 2vw, 28px) !important;
+    box-sizing: border-box;
+    gap: 12px !important;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    .public-nav-tribal {
+        flex-direction: row !important;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 767px) {
+    .public-nav-tribal:not(.portal-nav-minimal) {
+        min-height: var(--app-topbar-height-mobile, 72px);
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
 }
 
 .navbar .navbar-tribal-accent,
@@ -36,7 +75,7 @@
     background-repeat: repeat;
     background-size: auto 100%;
     background-position: center center;
-    opacity: var(--nav-tribal-pattern-opacity, 0.30);
+    opacity: var(--nav-tribal-pattern-opacity, 0.8);
 }
 
 .navbar::after,
@@ -135,8 +174,9 @@ html.dark .public-nav-tribal .nav-brand-subtitle {
     padding: 0;
     font-family: var(--app-font-sans);
     font-size: 0.68rem;
-    font-weight: 500;
-    color: var(--nav-heading-accent, #799F76);
+    font-weight: 600;
+    color: var(--nav-heading-accent, #34543F);
+    opacity: 1;
     line-height: 1;
     letter-spacing: 0.01em;
     font-variant-numeric: tabular-nums;

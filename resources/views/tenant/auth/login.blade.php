@@ -59,20 +59,19 @@
         ? 'Use the email address registered for your guest account.'
         : 'Use the email tied to your owner or staff record on this business.';
 
-    $tenantLogo = $tenant->brandLogoUrl();
-    $defaultLogo = \App\Models\Tenant::defaultBrandLogoUrl();
 @endphp
 <!DOCTYPE html>
 <html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="color-scheme" content="light">
+    <meta name="color-scheme" content="light dark">
     <meta name="description" content="Sign in to {{ $tenant->name ?? 'this business' }} — property management and guest bookings.">
     <title>Sign in — {{ $tenant->name ?? 'Tenant' }}</title>
     @include('partials.tenant-favicon')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @include('partials.appearance-boot')
     <style>
         @include('partials.ui-foundation-styles')
     </style>
@@ -199,24 +198,7 @@
             <div class="auth-hero__photo" aria-hidden="true"></div>
             <div class="auth-hero__scrim" aria-hidden="true"></div>
             <div class="auth-hero__content">
-                <div class="flex flex-wrap items-center gap-x-2 gap-y-3 sm:gap-x-3">
-                    <img
-                        src="{{ $tenantLogo }}"
-                        alt="{{ $tenant->name }}"
-                        class="h-24 w-auto object-contain sm:h-28 lg:h-36"
-                        decoding="async"
-                        onerror="this.onerror=null;this.src='{{ $defaultLogo }}';"
-                    >
-                    @if($tenantLogo !== $defaultLogo)
-                        <img
-                            src="{{ asset('images/love-impasugong-watermark.png') }}"
-                            alt=""
-                            class="h-24 w-auto object-contain sm:h-28 lg:h-36"
-                            decoding="async"
-                            role="presentation"
-                        >
-                    @endif
-                </div>
+                @include('tenant.partials.auth-brand-logos', ['tenant' => $tenant])
 
                 <div class="mt-3 sm:mt-4">
                     <span class="auth-eyebrow">{{ $eyebrowText }}</span>

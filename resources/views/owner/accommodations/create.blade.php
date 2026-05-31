@@ -16,23 +16,6 @@
         :root {
             @include('partials.tenant-theme-css-vars')
         }
-        body.owner-accommodation-create {
-            
-            background:
-                radial-gradient(circle at top right, rgba(16, 185, 129, 0.06), transparent 55%),
-                radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.04), transparent 50%),
-                var(--cream, #f8fafc);
-            color: #1f2937;
-            min-height: 100vh;
-        }
-        .owner-accommodation-create .main-content.with-owner-nav {
-            width: min(1800px, 100%);
-            margin-left: auto;
-            margin-right: auto;
-            padding-left: clamp(14px, 2.5vw, 36px);
-            padding-right: clamp(14px, 2.5vw, 36px);
-            padding-bottom: 2rem;
-        }
         @include('owner.partials.top-navbar-styles')
     </style>
 </head>
@@ -60,22 +43,19 @@
             ->all();
     @endphp
 
-    <main class="main-content with-owner-nav">
-    <div class="mx-auto w-full max-w-[1800px] py-6 sm:py-8">
+    <main class="main-content with-owner-nav owner-app-main">
         @include('partials.flash-alerts')
-        <div class="mb-6 rounded-2xl border border-green-100 bg-white/85 p-6 shadow-sm backdrop-blur-sm">
-            <div class="page-header flex flex-col gap-4 border-b border-green-100 pb-4 md:flex-row md:items-start md:justify-between">
-                <div>
-                    <h1>
-                        <span class="page-title-icon"><i class="fa-solid fa-circle-plus"></i></span>
-                        <span>Create Accommodation</span>
-                    </h1>
-                    <p>Add a new listing to your properties. Required fields are marked with an asterisk.</p>
-                </div>
-                <a href="{{ route('owner.accommodations.index', [], false) }}" class="inline-flex items-center gap-2 rounded-lg border border-green-200 px-4 py-2 text-sm font-semibold text-green-700 transition hover:border-green-400 hover:bg-green-50">
-                    <i class="fas fa-arrow-left"></i> Back to Listings
-                </a>
+        <header class="owner-page-top">
+            <div class="owner-page-hero owner-page-hero--flush">
+                <p class="owner-page-hero__eyebrow">Listings</p>
+                <h1 class="owner-page-hero__title">Create Accommodation</h1>
+                <p class="owner-page-hero__lede">Add a new listing to your properties. Required fields are marked with an asterisk.</p>
             </div>
+            <a href="{{ route('owner.accommodations.index', [], false) }}" class="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to listings
+            </a>
+        </header>
+        <div class="owner-page-body rounded-xl border border-slate-200/90 bg-white/94 p-6 shadow-sm">
 
             <div class="mt-4 flex items-start gap-3 rounded-xl border border-green-100 bg-green-50 p-4">
                 <i class="fas fa-clipboard-check mt-0.5 text-green-700"></i>
@@ -112,7 +92,6 @@
                     </div>
                 </div>
             @endif
-        </div>
 
         @if ($errors->any())
             <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-900 shadow-sm">

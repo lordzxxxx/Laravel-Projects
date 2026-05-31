@@ -9,7 +9,7 @@
 >
     @include('partials.central-public-nav', ['active' => 'about'])
 
-    @include('partials.about-us-main', ['aboutHomeUrl' => route('portal.landing')])
+    @include('partials.about-us-main')
 
     @include('partials.central-public-footer')
 </body>

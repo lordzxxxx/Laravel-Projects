@@ -85,6 +85,8 @@
 
         .auth-link { color:var(--auth-accent); font-weight:600; text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:.2em; }
         .auth-link:hover { color:var(--auth-accent-strong); }
+        .auth-link.auth-link--plain,
+        .auth-link.auth-link--plain:hover { text-decoration: none; }
 
         @media (min-width: 1024px) {
             .auth-shell { flex-direction: row; }
@@ -109,7 +111,7 @@
             <div class="auth-hero__scrim" aria-hidden="true"></div>
             <div class="auth-hero__content">
                 <div class="flex flex-wrap items-center gap-x-2 gap-y-3 sm:gap-x-3">
-                    <img src="{{ asset('images/love-impasugong-watermark.png') }}" alt="" class="h-24 w-auto object-contain sm:h-28 lg:h-36" decoding="async" role="presentation">
+                    <img src="{{ asset('images/love-impasugong-transparent.png') }}" alt="" class="h-24 w-auto object-contain sm:h-28 lg:h-36" decoding="async" role="presentation">
                     <img src="{{ asset('SYSTEMLOGO.png') }}" alt="" class="h-24 w-auto object-contain sm:h-28 lg:h-36" decoding="async" role="presentation">
                     <img src="{{ asset('Lgu Socmed Template-02 2.png') }}" alt="" class="h-20 w-auto object-contain sm:h-24 lg:h-32" decoding="async" role="presentation">
                 </div>
@@ -139,6 +141,13 @@
 
         <div class="auth-form-wrap">
             <main id="register-guest-main" tabindex="-1" class="auth-card">
+                <p class="mb-6">
+                    <a href="{{ route('portal.accommodations.index') }}" class="auth-link auth-link--plain inline-flex items-center gap-2 text-[13.5px]">
+                        <i class="fas fa-arrow-left text-xs" aria-hidden="true"></i>
+                        Back to explore accommodations
+                    </a>
+                </p>
+
                 <header class="mb-8">
                     <h2 class="auth-display text-[1.55rem] font-semibold tracking-tight text-slate-900">Guest registration</h2>
                     <p class="mt-2 text-[14.5px] leading-relaxed text-slate-600">
