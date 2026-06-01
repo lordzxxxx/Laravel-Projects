@@ -90,7 +90,9 @@ class DatabaseSeeder extends Seeder
 
         // Demo bookings / charts (single-DB): php artisan db:seed --class=DashboardVisualizationSeeder
         // Admin dashboard KPIs/charts (central): php artisan db:seed --class=AdminDashboardVisualizationSeeder
+        // Admin PDF reports (15+ rows, current month): php artisan db:seed --class=AdminReportSampleSeeder
         // Optional: ADMIN_DEMO_BOOKING_COUNT=36, ADMIN_DEMO_MAX_TENANTS=5, ADMIN_DEMO_DEMOGRAPHICS_EXTRAS=18
+        // Optional: ADMIN_REPORT_SAMPLE_COUNT=18, ADMIN_REPORT_SAMPLE_TENANTS=5
         // Optional: DEMO_SEED_TENANT_ID=8 or DEMO_SEED_DOMAIN=inns in .env to pick a tenant.
 
         // Legacy multi-DB note: Per-tenant listings used AccommodationSeeder with a current tenant context.

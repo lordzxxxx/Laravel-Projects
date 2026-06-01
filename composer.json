@@ -66,6 +66,9 @@
         "report:pdf-assets": [
             "node scripts/generate-report-pdf-assets.mjs"
         ],
+        "seed:admin-reports": [
+            "@php artisan db:seed --class=AdminReportSampleSeeder"
+        ],
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
