@@ -390,12 +390,12 @@
             padding: 10px 12px;
             font-size: 0.88rem;
             font-weight: 600;
-            color: #14532d;
-            background: #f7fcf8;
-            border-bottom: 1px solid rgba(34, 197, 94, 0.12);
+            color: #ffffff;
+            background: #166534;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
         .pbi-chart-panel-head i {
-            color: var(--green-primary);
+            color: #bbf7d0;
             font-size: 1rem;
         }
         .pbi-chart-panel-body {
@@ -426,9 +426,11 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            color: #166534;
-            padding: 0 4px 6px;
-            margin: 0;
+            color: #ffffff;
+            background: #14532d;
+            padding: 6px 8px;
+            margin: 0 0 6px;
+            border-radius: 6px 6px 0 0;
         }
         .pbi-mini-table {
             width: 100%;
@@ -1093,6 +1095,16 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const demographics = @json($demographics ?? []);
+            const chartColors = {
+                primary: '#166534',
+                mid: '#22c55e',
+                light: '#4ade80',
+                dark: '#14532d',
+                muted: '#94a3b8',
+                barFill: '#22c55e',
+                barBorder: '#166534',
+                lineAccent: '#ca8a04',
+            };
 
             const genderChartEl = document.getElementById('genderChart');
             if (genderChartEl) {
@@ -1200,13 +1212,18 @@
             const ageChartEl = document.getElementById('ageChart');
             if (ageChartEl) {
                 const actx = ageChartEl.getContext('2d');
-                const ageGradient = actx.createLinearGradient(0, 0, 0, 220);
-                ageGradient.addColorStop(0, 'rgba(187, 247, 208, 0.98)');
-                ageGradient.addColorStop(0.5, 'rgba(74, 222, 128, 0.9)');
-                ageGradient.addColorStop(1, 'rgba(22, 101, 52, 0.88)');
                 const ageCounts = demographics.age?.counts ?? [0, 0, 0, 0, 0, 0, 0];
                 const ageMaxRaw = Math.max(...ageCounts, 0);
                 const ageYMax = ageMaxRaw === 0 ? 5 : Math.max(4, Math.ceil(ageMaxRaw * 1.12));
+                const ageBarColors = [
+                    chartColors.dark,
+                    chartColors.primary,
+                    chartColors.mid,
+                    chartColors.light,
+                    '#86efac',
+                    '#bbf7d0',
+                    chartColors.muted,
+                ];
                 new Chart(actx, {
                     type: 'bar',
                     data: {
@@ -1214,8 +1231,8 @@
                         datasets: [{
                             label: 'Bookings',
                             data: ageCounts,
-                            backgroundColor: ageGradient,
-                            borderColor: 'rgba(22, 101, 52, 0.9)',
+                            backgroundColor: ageBarColors,
+                            borderColor: chartColors.barBorder,
                             borderWidth: 1,
                             borderRadius: 5,
                             borderSkipped: false,
@@ -1289,9 +1306,6 @@
                     return Math.round((sum / slice.length) * 10) / 10;
                 });
                 const ctx = bookingsTrendEl.getContext('2d');
-                const barGradient = ctx.createLinearGradient(0, 0, 0, 300);
-                barGradient.addColorStop(0, 'rgba(56, 189, 248, 0.95)');
-                barGradient.addColorStop(1, 'rgba(14, 165, 233, 0.45)');
 
                 new Chart(ctx, {
                     type: 'bar',
@@ -1302,8 +1316,8 @@
                                 type: 'bar',
                                 label: 'Bookings',
                                 data: monthlyBookings,
-                                backgroundColor: barGradient,
-                                borderColor: 'rgba(14, 165, 233, 0.9)',
+                                backgroundColor: chartColors.barFill,
+                                borderColor: chartColors.barBorder,
                                 borderWidth: 1,
                                 borderRadius: 6,
                                 borderSkipped: false,
@@ -1315,14 +1329,14 @@
                                 type: 'line',
                                 label: '3-mo avg',
                                 data: rollingAverage3,
-                                borderColor: '#fbbf24',
-                                backgroundColor: 'rgba(251, 191, 36, 0.12)',
+                                borderColor: chartColors.lineAccent,
+                                backgroundColor: 'rgba(202, 138, 4, 0.1)',
                                 borderWidth: 2.5,
                                 tension: 0.35,
                                 fill: true,
                                 pointRadius: 3,
                                 pointHoverRadius: 6,
-                                pointBackgroundColor: '#fbbf24',
+                                pointBackgroundColor: chartColors.lineAccent,
                                 pointBorderColor: '#fff',
                                 pointBorderWidth: 1,
                                 yAxisID: 'y',
@@ -1390,10 +1404,6 @@
             const guestsChartEl = document.getElementById('guestsChart');
             if (guestsChartEl) {
                 const gctx = guestsChartEl.getContext('2d');
-                const guestsGradient = gctx.createLinearGradient(0, 0, 0, 300);
-                guestsGradient.addColorStop(0, 'rgba(187, 247, 208, 0.98)');
-                guestsGradient.addColorStop(0.45, 'rgba(74, 222, 128, 0.92)');
-                guestsGradient.addColorStop(1, 'rgba(22, 101, 52, 0.88)');
 
                 new Chart(gctx, {
                     type: 'bar',
@@ -1415,8 +1425,8 @@
                                 {{ $monthlyGuestsData['nov'] ?? 0 }},
                                 {{ $monthlyGuestsData['dec'] ?? 0 }}
                             ],
-                            backgroundColor: guestsGradient,
-                            borderColor: 'rgba(22, 101, 52, 0.95)',
+                            backgroundColor: chartColors.barFill,
+                            borderColor: chartColors.barBorder,
                             borderWidth: 1,
                             borderRadius: 6,
                             borderSkipped: false,
@@ -1492,11 +1502,12 @@
                                 {{ $bookingsByType['daily-rental'] ?? 0 }}
                             ],
                             backgroundColor: [
-                                'rgb(46, 125, 50)',
-                                'rgb(59, 162, 246)',
-                                'rgb(249, 115, 22)'
+                                chartColors.primary,
+                                chartColors.mid,
+                                chartColors.light,
                             ],
-                            borderWidth: 0
+                            borderColor: '#ffffff',
+                            borderWidth: 2
                         }]
                     },
                     options: {

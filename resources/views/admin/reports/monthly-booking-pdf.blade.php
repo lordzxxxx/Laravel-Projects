@@ -131,9 +131,8 @@
 @endif
 
 @include('reports.partials.municipal-pdf-footer', [
-    'pdfFooterLeft' => '<strong>Date:</strong> '.now('Asia/Manila')->format('M d, Y h:i A'),
-    'pdfFooterCenter' => '<strong>Doc Tracking:</strong> BR-'.$year.str_pad((string) $month, 2, '0', STR_PAD_LEFT).'-'.strtoupper(substr(md5(now('Asia/Manila')->toString()), 0, 6)),
-    'pdfFooterRight' => '<strong>Page:</strong> <span class="pagenum"></span> / <span class="pagecount"></span>',
+    'pdfFooterDate' => now('Asia/Manila')->format('M d, Y h:i A'),
+    'pdfFooterTracking' => 'BR-'.$year.str_pad((string) $month, 2, '0', STR_PAD_LEFT).'-'.strtoupper(substr(md5(now('Asia/Manila')->toString()), 0, 6)),
 ])
 
 @include('reports.partials.municipal-pdf-close')

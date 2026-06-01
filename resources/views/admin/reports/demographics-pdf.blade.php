@@ -74,9 +74,8 @@
 </table>
 
 @include('reports.partials.municipal-pdf-footer', [
-    'pdfFooterLeft' => '<strong>Date:</strong> '.now('Asia/Manila')->format('M d, Y h:i A'),
-    'pdfFooterCenter' => '<strong>Doc Tracking:</strong> '.$docTracking,
-    'pdfFooterRight' => '<strong>Page:</strong> <span class="pagenum"></span> / <span class="pagecount"></span>',
+    'pdfFooterDate' => now('Asia/Manila')->format('M d, Y h:i A'),
+    'pdfFooterTracking' => $docTracking,
 ])
 
 @include('reports.partials.municipal-pdf-close')

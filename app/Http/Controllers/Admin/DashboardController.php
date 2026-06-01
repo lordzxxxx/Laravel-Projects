@@ -12,6 +12,7 @@ use App\Models\Tenant;
 use App\Models\TenantLifecycleLog;
 use App\Models\User;
 use App\Services\TenantOnboardingService;
+use App\Support\AdminOwnerUnitScope;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -104,10 +105,26 @@ class DashboardController extends Controller
      */
     private function tenantsForAdminDashboardMetrics()
     {
+        $primaryTenantId = AdminOwnerUnitScope::resolveOwnerTenantId();
+        if ($primaryTenantId !== null) {
+            $tenant = Tenant::query()->whereKey($primaryTenantId)->first();
+            if ($tenant !== null) {
+                return collect([$tenant]);
+            }
+        }
+
         return Tenant::query()
             ->whereNotNull('owner_user_id')
             ->orderBy('id')
             ->get();
+    }
+
+    /**
+     * Bookings tied to real owner-uploaded units (excludes Demo / Report Sample listings).
+     */
+    private function adminMetricsBookingQuery(?int $tenantId = null)
+    {
+        return AdminOwnerUnitScope::applyToBookings(Booking::query(), $tenantId);
     }
 
     /**
@@ -160,20 +177,25 @@ class DashboardController extends Controller
 
         // Tests use the default connection for everything, so skip the per-tenant execute() loop there.
         if (app()->environment('testing')) {
-            $metrics['total_bookings'] = Booking::count();
-            $metrics['total_accommodations'] = Accommodation::count();
-            $metrics['pending_bookings'] = Booking::where('status', 'pending')->count();
-            $metrics['verified_properties'] = Accommodation::where('is_verified', true)->count();
+            $metrics['total_bookings'] = $this->adminMetricsBookingQuery()->count();
+            $metrics['total_accommodations'] = AdminOwnerUnitScope::ownerUploadedAccommodations()->count();
+            $metrics['pending_bookings'] = $this->adminMetricsBookingQuery()->where('status', 'pending')->count();
+            $metrics['verified_properties'] = AdminOwnerUnitScope::ownerUploadedAccommodations()->where('is_verified', true)->count();
 
             foreach ($monthRanges as $monthKey => [$monthStart, $monthEnd]) {
-                $metrics['monthly_bookings'][$monthKey] = Booking::whereBetween('created_at', [$monthStart, $monthEnd])->count();
-                $metrics['monthly_guests'][$monthKey] = (int) Booking::whereBetween('created_at', [$monthStart, $monthEnd])->sum('number_of_guests');
+                $metrics['monthly_bookings'][$monthKey] = $this->adminMetricsBookingQuery()
+                    ->whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->count();
+                $metrics['monthly_guests'][$monthKey] = (int) $this->adminMetricsBookingQuery()
+                    ->whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->sum('number_of_guests');
             }
 
             foreach ($bookingTypes as $type) {
-                $metrics['bookings_by_type'][$type] = Booking::whereHas('accommodation', function ($query) use ($type) {
-                    $query->where('type', $type);
-                })
+                $metrics['bookings_by_type'][$type] = $this->adminMetricsBookingQuery()
+                    ->whereHas('accommodation', function ($query) use ($type) {
+                        $query->where('type', $type);
+                    })
                     ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                     ->whereIn('status', $paidStatuses)
                     ->count();
@@ -181,8 +203,11 @@ class DashboardController extends Controller
 
             $days = $startOfMonth->diffInDays($endOfMonth) + 1;
             $metrics['total_capacity'] = $metrics['total_accommodations'] * $days;
-            $metrics['booked_nights'] = (int) Booking::whereBetween('check_in_date', [$startOfMonth, $endOfMonth])
-                ->orWhereBetween('check_out_date', [$startOfMonth, $endOfMonth])
+            $metrics['booked_nights'] = (int) $this->adminMetricsBookingQuery()
+                ->where(function ($query) use ($startOfMonth, $endOfMonth) {
+                    $query->whereBetween('check_in_date', [$startOfMonth, $endOfMonth])
+                        ->orWhereBetween('check_out_date', [$startOfMonth, $endOfMonth]);
+                })
                 ->whereIn('status', $paidStatuses)
                 ->get()
                 ->sum(function ($booking) use ($startOfMonth, $endOfMonth) {
@@ -192,7 +217,8 @@ class DashboardController extends Controller
                     return $checkIn->diffInDays($checkOut) + 1;
                 });
 
-            $metrics['recent_bookings'] = Booking::with(['client', 'accommodation'])
+            $metrics['recent_bookings'] = $this->adminMetricsBookingQuery()
+                ->with(['client', 'accommodation'])
                 ->latest()
                 ->take(5)
                 ->get();
@@ -237,29 +263,30 @@ class DashboardController extends Controller
                     $accommodationCount = 0;
                     $verifiedCount = 0;
                     if ($hasAccommodationsTable) {
-                        $accommodationCount = (int) Accommodation::query()->where('tenant_id', $tenantKey)->count();
-                        $verifiedCount = (int) Accommodation::query()->where('tenant_id', $tenantKey)->where('is_verified', true)->count();
+                        $accommodationCount = (int) AdminOwnerUnitScope::ownerUploadedAccommodations($tenantKey)->count();
+                        $verifiedCount = (int) AdminOwnerUnitScope::ownerUploadedAccommodations($tenantKey)
+                            ->where('is_verified', true)
+                            ->count();
                     }
 
-                    $metrics['total_bookings'] += (int) Booking::query()->where('tenant_id', $tenantKey)->count();
+                    $tenantBookingQuery = fn () => $this->adminMetricsBookingQuery($tenantKey);
+
+                    $metrics['total_bookings'] += (int) $tenantBookingQuery()->count();
                     $metrics['total_accommodations'] += $accommodationCount;
-                    $metrics['pending_bookings'] += (int) Booking::query()->where('tenant_id', $tenantKey)->where('status', 'pending')->count();
+                    $metrics['pending_bookings'] += (int) $tenantBookingQuery()->where('status', 'pending')->count();
                     $metrics['verified_properties'] += $verifiedCount;
 
                     foreach ($monthRanges as $monthKey => [$monthStart, $monthEnd]) {
-                        $metrics['monthly_bookings'][$monthKey] += (int) Booking::query()
-                            ->where('tenant_id', $tenantKey)
+                        $metrics['monthly_bookings'][$monthKey] += (int) $tenantBookingQuery()
                             ->whereBetween('created_at', [$monthStart, $monthEnd])
                             ->count();
-                        $metrics['monthly_guests'][$monthKey] += (int) Booking::query()
-                            ->where('tenant_id', $tenantKey)
+                        $metrics['monthly_guests'][$monthKey] += (int) $tenantBookingQuery()
                             ->whereBetween('created_at', [$monthStart, $monthEnd])
                             ->sum('number_of_guests');
                     }
 
                     foreach ($bookingTypes as $type) {
-                        $metrics['bookings_by_type'][$type] += (int) Booking::query()
-                            ->where('tenant_id', $tenantKey)
+                        $metrics['bookings_by_type'][$type] += (int) $tenantBookingQuery()
                             ->whereHas('accommodation', function ($query) use ($type) {
                                 $query->where('type', $type);
                             })
@@ -269,8 +296,7 @@ class DashboardController extends Controller
                     }
 
                     $metrics['total_capacity'] += $accommodationCount * $daysInMonth;
-                    $metrics['booked_nights'] += (int) Booking::query()
-                        ->where('tenant_id', $tenantKey)
+                    $metrics['booked_nights'] += (int) $tenantBookingQuery()
                         ->where(function ($query) use ($startOfMonth, $endOfMonth) {
                             $query->whereBetween('check_in_date', [$startOfMonth, $endOfMonth])
                                 ->orWhereBetween('check_out_date', [$startOfMonth, $endOfMonth]);
@@ -287,15 +313,13 @@ class DashboardController extends Controller
                     $tenantBookingsThisMonth[] = [
                         'tenant_id' => $tenant->id,
                         'name' => $tenant->name,
-                        'count' => (int) Booking::query()
-                            ->where('tenant_id', $tenantKey)
+                        'count' => (int) $tenantBookingQuery()
                             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                             ->whereIn('status', $paidStatuses)
                             ->count(),
                     ];
 
-                    $todayBookings = Booking::query()
-                        ->where('tenant_id', $tenantKey)
+                    $todayBookings = $tenantBookingQuery()
                         ->whereDate('check_in_date', '<=', $today)
                         ->whereDate('check_out_date', '>=', $today)
                         ->whereIn('status', $paidStatuses)
@@ -310,8 +334,7 @@ class DashboardController extends Controller
                         ];
                     }
 
-                    $recentBookingsByTenant[] = Booking::query()
-                        ->where('tenant_id', $tenantKey)
+                    $recentBookingsByTenant[] = $tenantBookingQuery()
                         ->with(['client', 'accommodation'])
                         ->latest()
                         ->take(5)
@@ -1237,11 +1260,13 @@ class DashboardController extends Controller
 
     private function demographicsBaseQuery(?int $tenantId, Carbon $startDate, Carbon $endDate)
     {
-        return Booking::query()
-            ->whereIn('bookings.status', ['pending', 'confirmed', 'completed', 'paid'])
-            // Demographics report tracks booking activity by when bookings were made.
-            ->whereBetween('bookings.created_at', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
-            ->when($tenantId, fn ($query) => $query->where('bookings.tenant_id', $tenantId));
+        return AdminOwnerUnitScope::applyToBookings(
+            Booking::query()
+                ->whereIn('bookings.status', ['pending', 'confirmed', 'completed', 'paid'])
+                // Demographics report tracks booking activity by when bookings were made.
+                ->whereBetween('bookings.created_at', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()]),
+            $tenantId
+        )->when($tenantId, fn ($query) => $query->where('bookings.tenant_id', $tenantId));
     }
 
     private function streamDemographicsCsv(array $demographics, string $filename): StreamedResponse
@@ -1375,8 +1400,7 @@ class DashboardController extends Controller
                 foreach ($this->tenantsForAdminDashboardMetrics() as $tenant) {
                     try {
                         $tenant->execute(function () use ($tenant, $startDate, $endDate, $paidStatuses, &$rows) {
-                            $bookings = Booking::query()
-                                ->where('tenant_id', (int) $tenant->getKey())
+                            $bookings = $this->adminMetricsBookingQuery((int) $tenant->getKey())
                                 ->where(function ($query) use ($startDate, $endDate) {
                                     $query->whereBetween('check_in_date', [$startDate, $endDate])
                                         ->orWhereBetween('check_out_date', [$startDate, $endDate]);

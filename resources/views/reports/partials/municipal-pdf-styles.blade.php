@@ -39,49 +39,70 @@ body {
     @endif
 }
 
-.letterhead {
+.letterhead-outer {
     width: 100%;
-    max-width: @if($pdfOrientation === 'portrait') 480px @else 620px @endif;
+    margin: 0 0 14px;
+    border: none;
+}
+
+.letterhead {
     border-collapse: collapse;
-    margin: 0 auto 22px;
+    margin: 0 auto;
 }
 
 .letterhead td {
     vertical-align: middle;
+    padding: 0;
+    border: none;
 }
 
 .letterhead-logos {
-    text-align: right;
+    text-align: center;
     white-space: nowrap;
-    padding-right: 18px;
-    width: 42%;
+    padding-right: 10px;
 }
 
 .letterhead-logo {
-    width: @if($pdfOrientation === 'portrait') 44px @else 52px @endif;
     height: auto;
     vertical-align: middle;
-    margin-left: 10px;
-    object-fit: contain;
+    border: none;
+}
+
+.letterhead-logo--bagong {
+    width: @if($pdfOrientation === 'portrait') 48px @else 58px @endif;
+    margin-right: 8px;
+}
+
+.letterhead-logo--seal {
+    width: @if($pdfOrientation === 'portrait') 50px @else 60px @endif;
+    margin-right: 8px;
+}
+
+.letterhead-logo--love {
+    width: @if($pdfOrientation === 'portrait') 48px @else 58px @endif;
 }
 
 .letterhead-divider {
-    width: 1px;
-    border-left: 1px solid #9ca3af;
+    width: 2px;
+    padding: 0;
+    background-color: #000000;
+    font-size: 1px;
+    line-height: 1px;
 }
 
 .letterhead-text {
-    padding-left: 18px;
+    padding-left: 16px;
     text-align: center;
     text-transform: uppercase;
-    color: #000;
-    width: 58%;
+    color: #000000;
 }
 
 .letterhead-text p,
 .letterhead-text h1 {
     margin: 0;
-    line-height: 1.18;
+    padding: 0;
+    line-height: 1.2;
+    text-align: center;
 }
 
 .letterhead-text .country,
@@ -96,27 +117,45 @@ body {
 
 .letterhead-text h1 {
     font-size: @if($pdfOrientation === 'portrait') 14px @else 17px @endif;
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 
 .letterhead-text .province,
 .letterhead-text .office,
 .letterhead-text .section {
     font-family: Arial, DejaVu Sans, sans-serif;
+    font-weight: 400;
     font-size: @if($pdfOrientation === 'portrait') 8.5px @else 9.5px @endif;
 }
 
+.report-heading {
+    width: 100%;
+    margin: 0 0 14px;
+    border: none;
+}
+
+.report-heading td {
+    text-align: center;
+    padding: 0;
+    border: none;
+}
+
 .report-title {
-    margin: 0 0 8px;
+    margin: 0 0 6px;
+    padding: 0;
     text-align: center;
     font-family: "Times New Roman", DejaVu Serif, serif;
     font-size: @if($pdfOrientation === 'portrait') 12px @else 14px @endif;
-    font-weight: 900;
+    font-weight: 700;
     text-transform: uppercase;
-    color: #000;
+    color: #000000;
+    text-decoration: underline;
 }
 
 .report-subtitle {
-    margin: 0 0 12px;
+    margin: 0;
+    padding: 0;
     text-align: center;
     font-size: 9px;
     color: #374151;
@@ -194,8 +233,14 @@ body {
 .report-footer-center { text-align: center; width: 32%; }
 .report-footer-right { text-align: right; width: 34%; }
 
-.pagenum:before { content: counter(page); }
-.pagecount:before { content: counter(pages); }
+.report-footer-label {
+    font-weight: 700;
+}
+
+.report-footer-value {
+    font-weight: 400;
+}
+
 
 .signature-image {
     width: 200px;

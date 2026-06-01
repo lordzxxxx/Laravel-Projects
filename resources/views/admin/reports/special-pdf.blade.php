@@ -49,9 +49,10 @@
 </table>
 
 @include('reports.partials.municipal-pdf-footer', [
-    'pdfFooterLeft' => '<strong>Prepared by:</strong> '.($admin->name ?? 'Administrator'),
-    'pdfFooterCenter' => '<strong>Generated:</strong> '.($generatedAt ?? now())->timezone('Asia/Manila')->format('M d, Y h:i A'),
-    'pdfFooterRight' => '<strong>Page:</strong> <span class="pagenum"></span> / <span class="pagecount"></span>',
+    'pdfFooterLeftLabel' => 'Prepared by:',
+    'pdfFooterLeftValue' => $admin->name ?? 'Administrator',
+    'pdfFooterCenterLabel' => 'Generated:',
+    'pdfFooterCenterValue' => ($generatedAt ?? now())->timezone('Asia/Manila')->format('M d, Y h:i A'),
 ])
 
 @include('reports.partials.municipal-pdf-close')

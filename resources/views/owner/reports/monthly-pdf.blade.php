@@ -39,9 +39,10 @@
 @endif
 
 @include('reports.partials.municipal-pdf-footer', [
-    'pdfFooterLeft' => '<strong>Generated:</strong> '.now('Asia/Manila')->format('M d, Y h:i A'),
-    'pdfFooterCenter' => '<strong>Period:</strong> '.$monthName,
-    'pdfFooterRight' => '<strong>Page:</strong> <span class="pagenum"></span> / <span class="pagecount"></span>',
+    'pdfFooterLeftLabel' => 'Generated:',
+    'pdfFooterLeftValue' => now('Asia/Manila')->format('M d, Y h:i A'),
+    'pdfFooterCenterLabel' => 'Period:',
+    'pdfFooterCenterValue' => $monthName,
 ])
 
 @include('reports.partials.municipal-pdf-close')
