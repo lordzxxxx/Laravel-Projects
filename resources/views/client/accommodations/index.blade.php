@@ -1,24 +1,32 @@
+@php
+    $portalDirectory = $portalDirectory ?? false;
+    $showClientNav = auth()->user()?->isClient() === true;
+    $showPortalPublicNav = $portalDirectory && ! auth()->check();
+    $showLegacyNav = ! $showClientNav && ! $showPortalPublicNav;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    @php
-        $portalDirectory = $portalDirectory ?? false;
-        $showClientNav = auth()->user()?->isClient() === true;
-        $showPortalPublicNav = $portalDirectory && ! auth()->check();
-        $showLegacyNav = ! $showClientNav && ! $showPortalPublicNav;
-    @endphp
-    @include('partials.tenant-favicon')
-    <title>Properties - Impasugong Accommodations</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @if($showPortalPublicNav)
+        @include('partials.central-public-head', ['pageTitle' => 'Explore stays | IMPASUGONG TOURISM'])
+    @else
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        @include('partials.tenant-favicon')
+        <title>Properties - Impasugong Accommodations</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
     <style>
-        @include('partials.typography-system')
-        :root {
-            @include('partials.tenant-theme-css-vars')
-            --gray-200: #E5E7EB; --gray-500: #6B7280; --gray-600: #4B5563; --gray-700: #374151; --gray-800: #1F2937;
-        }
+        @if($showPortalPublicNav)
+            @include('partials.central-portal-shell-styles')
+        @else
+            @include('partials.typography-system')
+            :root {
+                @include('partials.tenant-theme-css-vars')
+                --gray-200: #E5E7EB; --gray-500: #6B7280; --gray-600: #4B5563; --gray-700: #374151; --gray-800: #1F2937;
+            }
+        @endif
         
         @if($showLegacyNav)
         /* Legacy fixed nav (non–client users on this page) */
@@ -71,23 +79,7 @@
 
         @if($showClientNav)
             @include('client.partials.top-navbar-styles')
-        @elseif($showPortalPublicNav)
-            @include('client.partials.guest-shell-styles')
         @endif
-
-        body.explore-portal-page {
-            min-height: 100dvh;
-            background-color: #f8fafc;
-            background-image: linear-gradient(
-                135deg,
-                rgba(255, 255, 255, 0.95) 0%,
-                rgba(255, 255, 255, 0.88) 50%,
-                rgba(27, 94, 32, 0.08) 100%
-            ), url('/COMMUNAL.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
 
         @include('client.partials.guest-stays-browse-styles')
 
@@ -187,7 +179,7 @@
                 @endif
             </div>
             <div class="explore-stays-hero__logos" aria-hidden="true">
-                @include('tenant.partials.auth-brand-logos', ['tenant' => \App\Models\Tenant::current()])
+                @include('partials.partner-logos-strip', ['tenant' => ($portalDirectory ?? false) ? null : \App\Models\Tenant::current()])
             </div>
         </header>
 

@@ -115,6 +115,7 @@ test('tenant owner can upload optional business logo on landing settings', funct
 
         $tenant->refresh();
         expect($tenant->logo_path)->not->toBeNull();
+        expect($tenant->logo_path)->toEndWith('.png');
         Storage::disk('public')->assertExists($tenant->logo_path);
     } finally {
         if ($tenant->fresh()->logo_path && $tenant->fresh()->logo_path !== $originalLogo) {

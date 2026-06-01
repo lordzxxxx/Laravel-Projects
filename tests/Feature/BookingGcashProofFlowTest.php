@@ -4,6 +4,7 @@ use App\Http\Middleware\EnsureOwnerOnboardingComplete;
 use App\Http\Middleware\SetCurrentTenant;
 use App\Models\Accommodation;
 use App\Models\Booking;
+use App\Models\Message;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\StripeRefundService;
@@ -38,6 +39,7 @@ function createBookingFixture(array $bookingOverrides = []): array
     ]);
     $tenant->update([
         'onboarding_status' => Tenant::ONBOARDING_APPROVED,
+        'owner_user_id' => $owner->id,
     ]);
     $owner->update([
         'tenant_id' => $tenant->id,
@@ -324,4 +326,58 @@ it('refunds stripe payment when tenant admin rejects a paid pending booking', fu
 
     $fixture['booking']->refresh();
     expect($fixture['booking']->status)->toBe(Booking::STATUS_CANCELLED);
+});
+
+it('delivers booking inquiry message to the property owner inbox when a guest books', function () {
+    try {
+        $fixture = createBookingFixture();
+    } catch (QueryException $exception) {
+        $this->markTestSkipped('Landlord test database is locked in this environment.');
+    }
+
+    $this->withoutMiddleware([EnsureOwnerOnboardingComplete::class, VerifyCsrfToken::class]);
+
+    $checkIn = now()->addDays(5)->toDateString();
+    $checkOut = now()->addDays(7)->toDateString();
+
+    $response = $this
+        ->actingAs($fixture['client'])
+        ->post(tenantAppUrl($fixture['tenant']->domain, '/accommodations/'.$fixture['accommodation']->id.'/book'), [
+            'check_in_date' => $checkIn,
+            'check_out_date' => $checkOut,
+            'number_of_guests' => 2,
+            'client_message' => 'We would like the deluxe room for our family trip.',
+        ]);
+
+    $response->assertRedirect();
+
+    $booking = Booking::query()
+        ->where('client_id', $fixture['client']->id)
+        ->where('accommodation_id', $fixture['accommodation']->id)
+        ->where('check_in_date', $checkIn)
+        ->latest('id')
+        ->first();
+
+    expect($booking)->not->toBeNull();
+
+    $message = Message::query()
+        ->where('booking_id', $booking->id)
+        ->where('type', Message::TYPE_BOOKING_INQUIRY)
+        ->first();
+
+    expect($message)->not->toBeNull();
+    expect($message->sender_id)->toBe($fixture['client']->id);
+    expect($message->receiver_id)->toBe($fixture['owner']->id);
+    expect($message->tenant_id)->toBe($fixture['tenant']->id);
+    expect($message->content)->toBe('We would like the deluxe room for our family trip.');
+
+    $fixture['tenant']->makeCurrent();
+
+    $inbox = $this
+        ->actingAs($fixture['owner'])
+        ->get(tenantAppUrl($fixture['tenant']->domain, '/messages'));
+
+    $inbox->assertOk();
+    $inbox->assertSee('We would like the deluxe room for our family trip.', false);
+    $inbox->assertSee($fixture['client']->name, false);
 });

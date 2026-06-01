@@ -35,6 +35,26 @@ class Tenant extends BaseTenant
 
     public const ONBOARDING_REJECTED = 'rejected';
 
+    /** Secure-media keys for municipality onboarding uploads (owner registration). */
+    public const MUNICIPALITY_DOCUMENTS = [
+        'business_permit' => [
+            'column' => 'municipality_business_permit_path',
+            'label' => 'Business permit',
+        ],
+        'mayors_permit' => [
+            'column' => 'municipality_mayors_permit_path',
+            'label' => "Mayor's permit",
+        ],
+        'barangay_clearance' => [
+            'column' => 'municipality_barangay_clearance_path',
+            'label' => 'Barangay clearance',
+        ],
+        'valid_id' => [
+            'column' => 'municipality_valid_id_path',
+            'label' => 'Government photo ID',
+        ],
+    ];
+
     protected $fillable = [
         'name',
         'slug',
@@ -664,6 +684,30 @@ class Tenant extends BaseTenant
         return $this->onboarding_gcash_proof_path
             ? route('secure-media.onboarding-proof', ['tenant' => $this], false)
             : null;
+    }
+
+    public function hasMunicipalityDocuments(): bool
+    {
+        foreach (self::MUNICIPALITY_DOCUMENTS as $meta) {
+            if ((string) ($this->{$meta['column']} ?? '') !== '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function municipalityDocumentUrl(string $document): ?string
+    {
+        $meta = self::MUNICIPALITY_DOCUMENTS[$document] ?? null;
+        if ($meta === null || (string) ($this->{$meta['column']} ?? '') === '') {
+            return null;
+        }
+
+        return route('secure-media.municipality-document', [
+            'tenant' => $this,
+            'document' => $document,
+        ], false);
     }
 
     /**

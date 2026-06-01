@@ -20,13 +20,10 @@ class DashboardController extends Controller
         $currentTenant = Tenant::current();
         $onTenantHost = Tenant::checkCurrent();
 
-        if ($user) {
-            if ($user->isOwner() || ($user->isAdmin() && $currentTenant && (int) $user->tenant_id === (int) $currentTenant->id)) {
-                return redirect()->route('owner.dashboard');
-            }
-
-            if (! $user->isClient() && $onTenantHost) {
-                return redirect()->route('owner.dashboard');
+        if ($user && $onTenantHost) {
+            $tenantDashboard = $user->getDashboardRoute();
+            if ($tenantDashboard !== '/dashboard') {
+                return redirect()->to($tenantDashboard);
             }
         }
 

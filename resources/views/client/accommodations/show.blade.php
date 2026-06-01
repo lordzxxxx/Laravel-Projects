@@ -1,28 +1,37 @@
+@php
+    $authUser = auth()->user();
+    $currentTenant = \App\Models\Tenant::current();
+    $isTenantManager = $authUser && (
+        $authUser->isOwner()
+        || ($authUser->isAdmin() && $currentTenant && ((int) $authUser->tenant_id === (int) $currentTenant->id || $authUser->tenant_id === null))
+    );
+    $portalDirectory = $portalDirectory ?? false;
+    $showClientNav = $authUser?->isClient() === true;
+    $showPortalPublicNav = $portalDirectory && ! auth()->check();
+    $showLegacyNav = ! $isTenantManager && ! $showClientNav && ! $showPortalPublicNav;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    @include('partials.tenant-favicon')
-    <title>{{ $accommodation->name }} - Impasugong Accommodations</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @if($showPortalPublicNav)
+        @include('partials.central-public-head', ['pageTitle' => $accommodation->name.' | IMPASUGONG TOURISM'])
+    @else
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        @include('partials.tenant-favicon')
+        <title>{{ $accommodation->name }} - Impasugong Accommodations</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
     <style>
-        @include('partials.typography-system')
-        @php
-            $authUser = auth()->user();
-            $currentTenant = \App\Models\Tenant::current();
-            $isTenantManager = $authUser && (
-                $authUser->isOwner()
-                || ($authUser->isAdmin() && $currentTenant && ((int) $authUser->tenant_id === (int) $currentTenant->id || $authUser->tenant_id === null))
-            );
-            $portalDirectory = $portalDirectory ?? false;
-            $showClientNav = $authUser?->isClient() === true;
-            $showPortalPublicNav = $portalDirectory && ! auth()->check();
-            $showLegacyNav = ! $isTenantManager && ! $showClientNav && ! $showPortalPublicNav;
-        @endphp
+        @if($showPortalPublicNav)
+            @include('partials.central-portal-shell-styles')
+        @else
+            @include('partials.typography-system')
+        @endif
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
+        @if(! $showPortalPublicNav)
         :root {
             @include('partials.tenant-theme-css-vars')
             --gray-50: #F9FAFB; --gray-100: #F3F4F6; --gray-200: #E5E7EB;
@@ -31,6 +40,7 @@
             --blue-500: #3B82F6;
             --orange-500: #F97316;
         }
+        @endif
         
         @if($showLegacyNav)
         /* Legacy fixed nav (guest / non–client) */
@@ -62,25 +72,11 @@
             @include('owner.partials.top-navbar-styles')
         @elseif($showClientNav)
             @include('client.partials.top-navbar-styles')
-        @elseif($showPortalPublicNav)
-            @include('client.partials.guest-shell-styles')
         @endif
 
         body.explore-portal-page {
             display: flex;
             flex-direction: column;
-            min-height: 100dvh;
-            background-color: #f8fafc;
-            background-image: linear-gradient(
-                135deg,
-                rgba(255, 255, 255, 0.95) 0%,
-                rgba(255, 255, 255, 0.88) 50%,
-                rgba(27, 94, 32, 0.08) 100%
-            ), url('/COMMUNAL.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: var(--gray-800, #1f2937);
         }
 
         body:not(.client-nav-page):not(.explore-portal-page):not(.owner-nav-page) {

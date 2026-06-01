@@ -1,77 +1,141 @@
-{{-- Shared styles for CA municipal PDF header (logos + government block + report title). --}}
-{{-- Formal serif: DejaVu Serif ships with DomPDF and embeds reliably; Times stacks are fallbacks. --}}
+{{-- Municipal PDF — header typography & layout (DomPDF: DejaVu Sans). --}}
 body {
-    font-family: DejaVu Serif, Times, "Times New Roman", serif;
-    color: #000000;
+    font-family: DejaVu Sans, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #1f2937;
 }
 
-/* Municipal PDF header */
 .header {
-    margin-bottom: 3px;
-    border-bottom: 2px solid #457359;
-    padding-bottom: 0;
+    margin: 0 0 2px 0;
+    padding: 0;
+    border: none;
 }
+
 .header-table {
-    width: 100%;
+    width: auto;
+    margin: 0 auto;
     border-collapse: collapse;
-    margin-bottom: 2px;
+    table-layout: fixed;
 }
+
 .header-table td {
     border: none;
     vertical-align: middle;
+    padding: 0;
 }
-.header-left {
-    width: 90px;
+
+/* Fixed 50px spacer — keeps logos beside text (DomPDF won't stretch them to page edges). */
+.header-gap {
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+    padding: 0;
+    font-size: 1px;
+    line-height: 1px;
 }
-.header-center {
-    text-align: center;
+
+.header-logo-cell {
+    width: 100px;
+    white-space: nowrap;
+    vertical-align: middle;
 }
-.header-right {
-    width: 90px;
+
+.header-logo-cell--left {
     text-align: right;
 }
-.header-side-logo {
-    width: 74px;
-    height: 74px;
+
+.header-logo-cell--right {
+    text-align: left;
+}
+
+.header-center {
+    text-align: center;
+    padding: 0;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.header-logo-slot {
     display: inline-block;
-    object-fit: contain;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.header-logo-cell .header-logo-slot {
+    margin: 0;
+}
+
+.header-side-logo {
+    display: inline-block;
+    vertical-align: middle;
+    border: none;
+}
+
+/* Tall Love mark vs round LGU seal — matched for equal visual weight */
+.header-side-logo--love {
+    width: 92px;
+    height: 100px;
+}
+
+.header-side-logo--lgu {
+    width: 94px;
+    height: 94px;
+}
+
+.header-topline,
+.header-main,
+.header-office,
+.header-report-line,
+.header h1,
+.header p {
+    font-size: 12px;
+    color: #000000;
 }
 
 .header-topline {
-    font-size: 12px;
-    color: #000000;
-    margin-bottom: 3px;
+    margin: 0 0 4px 0;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 .header-main {
-    font-size: 20px;
+    margin: 0 0 3px 0;
     font-weight: 700;
-    color: #000000;
-    letter-spacing: 0.2px;
-    margin-bottom: 2px;
+    line-height: 1.2;
 }
 
 .header-office {
-    font-size: 14px;
-    font-weight: 700;
-    color: #000000;
-    margin-bottom: 2px;
+    margin: 0 0 6px 0;
+    font-weight: 600;
 }
 
 .header-report-line {
-    font-size: 12px;
-    color: #000000;
-    margin-bottom: 1px;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .header h1 {
-    color: #000000;
-    font-size: 16px;
-    margin-bottom: 3px;
+    margin: 6px 0 0 0;
+    font-weight: 700;
 }
 
 .header p {
-    color: #000000;
-    font-size: 12px;
-    margin: 2px 0;
+    margin: 2px 0 0 0;
+    font-weight: 400;
+}
+
+.header-divider {
+    width: 100%;
+    height: 8px;
+    margin: 10px 0 12px 0;
+    background-repeat: repeat-x;
+    background-position: center center;
+    background-size: auto 8px;
 }

@@ -493,7 +493,8 @@
                                                 <div class="min-w-0">
                                                     <p class="text-[13px] font-semibold leading-tight text-amber-900">Onboarding pending approval</p>
                                                     <p class="mt-0.5 text-[11px] leading-snug text-amber-800/80">
-                                                        Review the payment proof and decide whether to approve or reject this tenant's onboarding.
+                                                        Review compliance documents below{{ $tenant->onboarding_payment_channel === 'gcash' ? ', GCash payment proof,' : '' }}
+                                                        then approve or reject this tenant's onboarding.
                                                     </p>
                                                 </div>
                                             </div>
@@ -541,6 +542,8 @@
                                         </div>
                                     </div>
                                 @endif
+
+                                @include('admin.partials.tenants-compliance-documents', ['tenant' => $tenant])
 
                                 {{-- Main grid: 6 cards in a responsive grid (1 → 2 → 3 columns).
                                      items-stretch is default in CSS grid, so all cards in a row match the tallest height.

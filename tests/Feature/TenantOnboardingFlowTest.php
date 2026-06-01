@@ -130,3 +130,45 @@ it('delegates admin approval to tenant onboarding service', function () {
     $response->assertRedirect(route('admin.tenants'));
     $response->assertSessionHasNoErrors();
 });
+
+it('lets central admin view municipality compliance documents securely', function () {
+    try {
+        Tenant::query()->count();
+    } catch (QueryException) {
+        $this->markTestSkipped('Landlord test database is not available in this environment.');
+    }
+
+    Storage::fake('public');
+
+    $admin = User::factory()->create([
+        'role' => User::ROLE_ADMIN,
+        'tenant_id' => null,
+    ]);
+
+    $path = 'owner-municipality-docs/test-id.jpg';
+    Storage::disk('public')->put($path, 'fake-image');
+
+    $tenant = Tenant::create([
+        'name' => 'Docs Review Tenant',
+        'slug' => 'docs-review-tenant',
+        'plan' => Tenant::PLAN_BASIC,
+        'subscription_status' => 'active',
+        'onboarding_status' => Tenant::ONBOARDING_PENDING_APPROVAL,
+        'municipality_valid_id_path' => $path,
+        'municipality_requirements_submitted_at' => now(),
+    ]);
+
+    $docUrl = route('secure-media.municipality-document', [
+        'tenant' => $tenant,
+        'document' => 'valid_id',
+    ], false);
+
+    $tenantsPage = $this->actingAs($admin)->get(route('admin.tenants'));
+    $tenantsPage->assertOk();
+    $tenantsPage->assertSee('Compliance documents', false);
+    $tenantsPage->assertSee($docUrl, false);
+
+    $this->actingAs($admin)
+        ->get($docUrl)
+        ->assertOk();
+});

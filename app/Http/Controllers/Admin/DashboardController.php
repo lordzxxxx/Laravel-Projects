@@ -990,7 +990,9 @@ class DashboardController extends Controller
 
         $pdf = \PDF::loadView('admin.reports.demographics-pdf', [
             'demographics' => $demographics,
-        ])->setPaper('a4', 'landscape');
+        ])
+            ->setPaper('a4', 'landscape')
+            ->setOption('enable_php', true);
 
         return $pdf->download($baseFileName.'.pdf');
     }
@@ -1334,7 +1336,8 @@ class DashboardController extends Controller
         $data = $this->monthlyBookingReportPayload($year, $month);
 
         $pdf = \PDF::loadView('admin.reports.monthly-booking-pdf', $data)
-            ->setPaper('a4', 'landscape');
+            ->setPaper('a4', 'landscape')
+            ->setOption('enable_php', true);
         $filename = "booking-report-{$year}-{$month}-".now()->timestamp.'.pdf';
 
         return $pdf->download($filename);

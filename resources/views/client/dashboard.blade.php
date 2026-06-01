@@ -156,7 +156,7 @@
                 @endif
             </div>
             <div class="explore-stays-hero__logos" aria-hidden="true">
-                @include('tenant.partials.auth-brand-logos', ['tenant' => \App\Models\Tenant::current()])
+                @include('partials.partner-logos-strip', ['tenant' => ($portalDirectory ?? false) ? null : \App\Models\Tenant::current()])
             </div>
         </header>
 

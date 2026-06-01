@@ -25,6 +25,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Tenant\SettingsController as TenantSettingsController;
 use App\Http\Controllers\TenantLandingController;
 use App\Http\Controllers\UpdateTicketController;
+use App\Models\Tenant;
 use App\Support\PortalDetector;
 use Illuminate\Support\Facades\Route;
 
@@ -139,6 +140,9 @@ Route::middleware('portal.port:any')->group(function () {
 
         Route::get('/secure-media/onboarding-proof/{tenant}', [\App\Http\Controllers\SecureMediaController::class, 'onboardingProof'])
             ->name('secure-media.onboarding-proof');
+        Route::get('/secure-media/municipality-document/{tenant}/{document}', [\App\Http\Controllers\SecureMediaController::class, 'municipalityDocument'])
+            ->whereIn('document', array_keys(Tenant::MUNICIPALITY_DOCUMENTS))
+            ->name('secure-media.municipality-document');
         Route::get('/secure-media/booking-proof/{booking}', [\App\Http\Controllers\SecureMediaController::class, 'bookingProof'])
             ->name('secure-media.booking-proof');
 

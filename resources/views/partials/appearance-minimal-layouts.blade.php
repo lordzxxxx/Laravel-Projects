@@ -41,7 +41,8 @@ html.dark :where(
     .guest-messages-hero__eyebrow,
     .guest-support-hero__eyebrow,
     .guest-profile-hero__eyebrow,
-    .explore-stays-hero__eyebrow
+    .explore-stays-hero__eyebrow,
+    .portal-landing-hero__eyebrow
 ) {
     color: var(--ui-accent-color, var(--chrome-icon-color)) !important;
 }
@@ -52,7 +53,8 @@ html.dark :where(
     .guest-messages-hero__title,
     .guest-support-hero__title,
     .guest-profile-hero__title,
-    .explore-stays-hero__title
+    .explore-stays-hero__title,
+    .portal-landing-hero__title
 ) {
     color: var(--ink-900) !important;
 }
@@ -73,7 +75,8 @@ html.dark :where(
     .guest-messages-hero__lede,
     .guest-support-hero__lede,
     .guest-profile-hero__lede,
-    .explore-stays-hero__lede
+    .explore-stays-hero__lede,
+    .portal-landing-lede
 ) {
     color: var(--text-secondary, var(--ink-700)) !important;
 }

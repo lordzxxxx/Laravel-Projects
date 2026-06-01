@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Accommodation;
 use App\Models\Tenant;
 use App\Support\AppearancePreferences;
+use App\Support\TenantLogoProcessor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -102,7 +103,7 @@ class TenantLandingController extends Controller
                 Storage::disk('public')->delete($tenant->logo_path);
             }
 
-            $tenant->logo_path = $request->file('logo')->store('tenant-logos', 'public');
+            $tenant->logo_path = TenantLogoProcessor::store($request->file('logo'));
         }
 
         $removeGcashQr = (bool) ($validated['remove_gcash_qr'] ?? false);

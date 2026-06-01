@@ -7,10 +7,10 @@ use App\Models\Concerns\UsesTenantConnectionWithLandlordFallback;
 use App\Support\AppearancePreferences;
 use App\Support\PortalDetector;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -835,7 +835,7 @@ class User extends Authenticatable
     public function getDashboardRoute(): string
     {
         if (Tenant::checkCurrent()) {
-            return '/dashboard';
+            return $this->tenantDashboardPath();
         }
 
         return match ($this->role) {
@@ -843,6 +843,36 @@ class User extends Authenticatable
             self::ROLE_OWNER => $this->ownerCentralDashboardPath(),
             default => '/guest/dashboard',
         };
+    }
+
+    /**
+     * Dashboard entry point on a tenant subdomain (e.g. kasyatel-inn.localhost).
+     */
+    private function tenantDashboardPath(): string
+    {
+        $tenant = Tenant::current();
+
+        if ($tenant instanceof Tenant && $this->canAccessTenantWorkspace($tenant)) {
+            if ($this->isOwner() || $this->isAdmin()) {
+                return '/owner/dashboard';
+            }
+        }
+
+        return '/dashboard';
+    }
+
+    private function canAccessTenantWorkspace(Tenant $tenant): bool
+    {
+        if ($this->isOwner()) {
+            return (int) ($this->tenant_id ?? 0) === (int) $tenant->id
+                || (int) optional($this->ownedTenant)->id === (int) $tenant->id;
+        }
+
+        if ($this->isAdmin()) {
+            return (int) ($this->tenant_id ?? 0) === (int) $tenant->id;
+        }
+
+        return false;
     }
 
     private function ownerCentralDashboardPath(): string

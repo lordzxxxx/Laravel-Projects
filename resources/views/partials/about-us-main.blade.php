@@ -1,18 +1,4 @@
 <style>
-    body.about-portal-page {
-        min-height: 100dvh;
-        background-color: #f8fafc;
-        background-image: linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.95) 0%,
-            rgba(255, 255, 255, 0.85) 50%,
-            rgba(27, 94, 32, 0.1) 100%
-        ), url('/COMMUNAL.jpg');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }
-
     /* Clear fixed portal nav: bar height + 20–30px breathing room */
     body.about-portal-page main.about-page {
         position: relative;
@@ -60,7 +46,11 @@
         font-weight: 600;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--green-primary, #457359);
+        color: var(--ui-accent-color, var(--accent-pink-deep, #B0436E));
+    }
+
+    .about-page__eyebrow i {
+        color: var(--ui-accent-strong, var(--accent-pink-strong, #C25C82));
     }
 
     .about-page__title {
@@ -74,7 +64,7 @@
     }
 
     .about-page__title span {
-        color: var(--green-primary, #457359);
+        color: var(--ui-accent-color, var(--accent-pink-deep, #B0436E));
     }
 
     .about-page__lede {
@@ -85,24 +75,7 @@
         color: var(--gray-600, #4b5563);
     }
 
-    .about-page__logos {
-        display: flex;
-        flex-wrap: nowrap;
-        align-items: center;
-        justify-content: flex-end;
-        gap: clamp(0.5rem, 1.5vw, 1rem);
-        flex-shrink: 0;
-        max-width: min(100%, 20rem);
-        padding-top: 0;
-    }
-
-    .about-page__logos img {
-        height: clamp(5.5rem, 11vw, 11rem);
-        width: auto;
-        max-width: min(7.25rem, 30vw);
-        object-fit: contain;
-        flex: 0 1 auto;
-    }
+    @include('partials.partner-logos-strip-rules')
 
     .about-page__content {
         flex: 1;
@@ -135,7 +108,7 @@
     }
 
     .about-page__section-head h2 i {
-        color: var(--green-primary, #457359);
+        color: var(--ui-accent-color, var(--accent-pink-deep, #B0436E));
         font-size: 0.8rem;
     }
 
@@ -165,7 +138,7 @@
     }
 
     .about-page__leadership-head h2 i {
-        color: var(--green-primary, #457359);
+        color: var(--ui-accent-color, var(--accent-pink-deep, #B0436E));
         font-size: 0.8rem;
     }
 
@@ -225,7 +198,7 @@
     }
 
     .about-page .about-team-card:hover {
-        border-color: color-mix(in srgb, var(--green-primary, #457359) 28%, var(--gray-200, #e5e7eb));
+        border-color: color-mix(in srgb, var(--ui-accent-color, var(--accent-pink-deep, #B0436E)) 35%, var(--gray-200, #e5e7eb));
         box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
     }
 
@@ -234,10 +207,6 @@
             grid-template-columns: minmax(0, 1fr) minmax(min-content, 17rem);
         }
 
-        .about-page__logos img {
-            height: clamp(4.75rem, 9vw, 8.5rem);
-            max-width: min(6.25rem, 26vw);
-        }
     }
 
     @media (max-width: 900px) {
@@ -247,30 +216,8 @@
             gap: 1rem;
         }
 
-        .about-page__logos {
-            justify-content: flex-start;
-            flex-wrap: wrap;
-            max-width: 100%;
-        }
-
-        .about-page__logos img {
-            height: clamp(4.25rem, 16vw, 7rem);
-            max-width: min(5.75rem, 30vw);
-        }
-
         .about-page__grid--leadership {
             grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .about-page__logos {
-            justify-content: center;
-        }
-
-        .about-page__logos img {
-            height: clamp(3.75rem, 22vw, 5.5rem);
-            max-width: min(5rem, 28vw);
         }
     }
 
@@ -322,11 +269,7 @@
                 property owners, and the community through one central platform.
             </p>
         </div>
-        <div class="about-page__logos">
-            <img src="{{ asset('images/love-impasugong-transparent.png') }}" alt="Love Impasugong" decoding="async">
-            <img src="{{ asset('SYSTEMLOGO.png') }}" alt="IMPASUGONG TOURISM" decoding="async">
-            <img src="{{ asset('Lgu Socmed Template-02 2.png') }}" alt="LGU Impasugong" decoding="async">
-        </div>
+        @include('partials.partner-logos-strip')
     </header>
 
     <div class="about-page__content">

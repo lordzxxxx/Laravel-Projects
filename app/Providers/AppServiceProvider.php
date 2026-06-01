@@ -10,6 +10,8 @@ use App\Policies\AccommodationPolicy;
 use App\Policies\BookingPolicy;
 use App\Services\Messaging\CentralSupportInboxService;
 use App\Support\SingleDbMigrationMode;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
@@ -32,6 +34,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RedirectIfAuthenticated::redirectUsing(function (Request $request): string {
+            $user = $request->user();
+
+            if ($user) {
+                return $user->getDashboardRoute();
+            }
+
+            if (Tenant::checkCurrent()) {
+                return '/dashboard';
+            }
+
+            return '/';
+        });
+
         $this->ensureCaBundleConfigured();
 
         if (SingleDbMigrationMode::unifiedSchema() && ! SingleDbMigrationMode::tenantDatabaseNameMatchesLandlord()) {

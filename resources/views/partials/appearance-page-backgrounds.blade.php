@@ -21,7 +21,8 @@ html.dark {
     --owner-page-bg-image: var(--communal-bg-overlay-dark);
 }
 
-html.dark body.explore-portal-page.portal-landing-page,
+html.dark body.explore-portal-page,
+html.dark body.about-portal-page,
 html.dark body.tenant-landing-page {
     background-color: var(--app-page-bg) !important;
     background-image: var(--communal-bg-overlay-dark) !important;

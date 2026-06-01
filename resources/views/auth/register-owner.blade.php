@@ -310,7 +310,7 @@
                     <section class="reg-section" aria-labelledby="reg-owner-compliance-heading">
                         <h3 id="reg-owner-compliance-heading" class="reg-section-label">Compliance verification</h3>
                         <p id="documents-help" class="mb-5 mt-1.5 reg-helper">
-                            PDF or image (JPEG, PNG), <span class="font-semibold text-slate-800">up to 10 MB each</span>. Drag and drop or click each zone. Clear scans avoid delays.
+                            PDF or image (JPEG, PNG), <span class="font-semibold text-slate-800">up to 10 MB each</span>. All four files upload together — keep the total under your connection limit. Drag and drop or click each zone. iPhone HEIC photos must be saved as JPEG or PDF first.
                         </p>
 
                         <div class="grid gap-4 sm:grid-cols-2">
@@ -418,8 +418,11 @@
             var ACCEPT_EXT = /\.(pdf|jpe?g|png)$/i;
             function allowedType(file) {
                 var t = (file && file.type) || '';
-                var mimeOk = /^(application\/pdf|image\/(jpeg|png))$/i.test(t);
                 var name = (file && file.name) || '';
+                if (/^image\/hei(c|f)$/i.test(t) || /\.hei(c|f)$/i.test(name)) {
+                    return false;
+                }
+                var mimeOk = /^(application\/pdf|image\/(jpeg|png))$/i.test(t);
                 return mimeOk || ACCEPT_EXT.test(name);
             }
             function showFileClientError(input, message) {
@@ -438,7 +441,13 @@
                 var maxB = maxAttr ? parseInt(maxAttr, 10) : MAX_BYTES;
                 if (!file) return false;
                 if (!allowedType(file)) {
-                    showFileClientError(input, 'Use PDF, JPEG, or PNG only.');
+                    var name = (file && file.name) || '';
+                    var t = (file && file.type) || '';
+                    if (/^image\/hei(c|f)$/i.test(t) || /\.hei(c|f)$/i.test(name)) {
+                        showFileClientError(input, 'Save as JPEG or PDF first (HEIC not supported).');
+                    } else {
+                        showFileClientError(input, 'Use PDF, JPEG, or PNG only.');
+                    }
                     return false;
                 }
                 if (file.size > maxB) {

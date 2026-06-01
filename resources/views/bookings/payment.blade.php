@@ -4,284 +4,306 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
-    <title>Checkout Payment - ImpaStay</title>
+    <title>Checkout — Booking #{{ $booking->id }}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.appearance-boot')
     @php
-        $bookingRouteGroup = \App\Models\Tenant::current() ? 'bookings' : 'portal.bookings';
+        $portalDirectory = $portalDirectory ?? false;
+        $currentTenant = \App\Models\Tenant::current();
+        $bookingRouteGroup = $currentTenant ? 'bookings' : 'portal.bookings';
+        $bookingsIndexRoute = $portalDirectory ? 'portal.bookings.index' : ($currentTenant ? 'bookings.index' : 'portal.bookings.index');
+        $showRoute = route($bookingRouteGroup.'.show', $booking, false);
+        $stripeConfigured = filled(config('services.stripe.secret'));
+        $gcashQrUrl = $currentTenant?->getGcashQrUrl();
+        $isPaid = in_array($booking->status, ['paid', 'completed'], true);
+        $isCancelled = $booking->status === 'cancelled';
+        $canPay = ! $isPaid && ! $isCancelled;
+        $checkIn = optional($booking->check_in_date);
+        $checkOut = optional($booking->check_out_date);
+        $nights = ($checkIn && $checkOut) ? max(1, $checkIn->diffInDays($checkOut)) : null;
     @endphp
     <style>
-        @include('partials.app-typography-styles')
+        @include('partials.typography-system')
         @include('partials.ui-foundation-styles')
-
-        * { box-sizing: border-box; }
+        @include('client.partials.top-navbar-styles')
+        @include('client.partials.guest-shell-styles')
 
         :root {
             @include('partials.tenant-theme-css-vars')
-            --gray-200: #E5E7EB; --gray-500: #6B7280; --gray-700: #374151; --gray-800: #1F2937;
-            --red-500: #EF4444;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--green-white) 0%, var(--cream) 50%, var(--green-soft) 100%);
-            min-height: 100vh;
-            color: var(--gray-800);
-        }
-
-        .wrapper {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 35px 20px;
-        }
-
-        .header {
-            margin-bottom: 18px;
-        }
-        /* Title styling provided by ui-foundation-styles (.page-header h1). */
-
-        .checkout-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--white);
-            border: 1px solid var(--green-soft);
-            border-radius: 16px;
-            box-shadow: 0 10px 28px rgba(27, 94, 32, 0.1);
-            padding: 22px;
-        }
-
-        .card h2 {
-            color: var(--green-dark);
-            margin-bottom: 16px;
-            font-size: 1.15rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            color: var(--gray-700);
-            font-size: 0.95rem;
-        }
-
-        .summary-total {
-            margin-top: 14px;
-            padding-top: 12px;
-            border-top: 1px solid var(--gray-200);
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--green-dark);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .notice {
-            margin-top: 14px;
-            background: #EFF6FF;
-            border: 1px solid #BFDBFE;
-            border-radius: 10px;
-            padding: 10px 12px;
-            color: #1E40AF;
-            font-size: 0.85rem;
-        }
-
-        .error-list {
-            margin-bottom: 14px;
-            padding: 10px 12px;
-            border: 1px solid #FECACA;
-            background: #FEF2F2;
-            color: #991B1B;
-            border-radius: 10px;
-            font-size: 0.86rem;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 6px;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--green-dark), var(--green-primary));
-            color: #fff;
-            flex: 1;
-        }
-
-        .btn-secondary {
-            background: var(--gray-200);
-            color: var(--gray-700);
-        }
-
-        .status-paid {
-            border-left: 4px solid var(--green-primary);
-            background: #F0FDF4;
-            color: #166534;
-            padding: 11px 12px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            margin-top: 12px;
-        }
-
-        .status-cancelled {
-            border-left: 4px solid var(--red-500);
-            background: #FEF2F2;
-            color: #991B1B;
-            padding: 11px 12px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            margin-top: 12px;
-        }
-
-        @media (max-width: 900px) {
-            .checkout-grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
-<body>
-    @php
-        $stripeConfigured = filled(config('services.stripe.secret'));
-        $currentTenant = \App\Models\Tenant::current();
-        $gcashQrUrl = $currentTenant?->getGcashQrUrl();
-    @endphp
-    <div class="wrapper">
-        @include('partials.flash-alerts')
-        <div class="header page-header">
-            <h1>
-                <span class="page-title-icon"><i class="fa-solid fa-credit-card"></i></span>
-                <span>Checkout Payment</span>
-            </h1>
-            <p>Complete your reservation payment for booking #{{ $booking->id }}.</p>
-        </div>
+<body class="client-nav-page font-sans text-slate-800 antialiased">
+    @include('client.partials.top-navbar', ['active' => 'bookings', 'portalDirectory' => $portalDirectory])
 
-        <div class="checkout-grid">
-            <section class="card">
-                <h2><i class="fas fa-receipt"></i> Booking Summary</h2>
+    <main class="client-guest-main client-guest-main--full flex min-h-0 flex-1 flex-col">
+        <div class="mx-auto flex w-full min-h-0 flex-1 flex-col gap-5">
+            @include('partials.flash-alerts')
 
-                <div class="summary-item">
-                    <span>Accommodation</span>
-                    <strong>{{ $booking->accommodation->name ?? 'N/A' }}</strong>
-                </div>
-                <div class="summary-item">
-                    <span>Check-in</span>
-                    <strong>{{ optional($booking->check_in_date)->format('M d, Y') }}</strong>
-                </div>
-                <div class="summary-item">
-                    <span>Check-out</span>
-                    <strong>{{ optional($booking->check_out_date)->format('M d, Y') }}</strong>
-                </div>
-                <div class="summary-item">
-                    <span>Guests</span>
-                    <strong>{{ $booking->number_of_guests }}</strong>
-                </div>
-                <div class="summary-item">
-                    <span>Status</span>
-                    <strong>{{ ucfirst($booking->status) }}</strong>
-                </div>
+            <a
+                href="{{ $showRoute }}"
+                class="inline-flex w-max items-center gap-2 text-sm font-semibold text-emerald-800 transition hover:text-emerald-950"
+            >
+                <i class="fas fa-arrow-left text-xs" aria-hidden="true"></i>
+                Back to booking details
+            </a>
 
-                @if($booking->status === 'pending')
-                    <div class="notice">
-                        Client payment must be submitted first. Tenant admin reviews the payment and then approves the booking.
+            <article class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-emerald-100/90 bg-white shadow-lg">
+                <header class="shrink-0 bg-gradient-to-r from-emerald-900 to-emerald-700 px-5 py-6 text-white sm:px-8 sm:py-8">
+                    <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                        <div class="min-w-0">
+                            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200/90">Secure checkout</p>
+                            <h1 class="mt-2 text-2xl font-bold leading-tight tracking-tight sm:text-3xl">
+                                {{ $booking->accommodation->name ?? 'Your stay' }}
+                            </h1>
+                            <p class="mt-2 text-sm text-emerald-100">
+                                Booking #{{ $booking->id }}
+                                <span class="mx-2 text-emerald-300/80" aria-hidden="true">·</span>
+                                {{ ucfirst($booking->status) }}
+                            </p>
+                        </div>
+                        <div class="shrink-0 rounded-2xl bg-white/10 px-5 py-4 ring-1 ring-inset ring-white/20 backdrop-blur-sm sm:min-w-[12rem]">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-emerald-100">Amount due</p>
+                            <p class="mt-1 text-3xl font-bold tabular-nums tracking-tight sm:text-4xl">
+                                ₱{{ number_format((float) $booking->total_price, 2) }}
+                            </p>
+                            @if($nights)
+                                <p class="mt-1 text-xs text-emerald-100/90">{{ $nights }} night{{ $nights === 1 ? '' : 's' }}</p>
+                            @endif
+                        </div>
                     </div>
-                @endif
+                </header>
 
-                <div class="summary-total">
-                    <span>Total Amount</span>
-                    <span>₱{{ number_format((float) $booking->total_price, 2) }}</span>
-                </div>
+                <div class="flex min-h-0 flex-1 flex-col lg:flex-row">
+                    {{-- Booking summary --}}
+                    <section class="flex flex-col border-b border-slate-100 p-5 sm:p-8 lg:w-[min(100%,22rem)] lg:shrink-0 lg:border-b-0 lg:border-r xl:w-80">
+                        <h2 class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Reservation</h2>
 
-                @if($booking->status === 'paid' || $booking->status === 'completed')
-                    <div class="status-paid">
-                        This booking is already paid. Payment reference: {{ $booking->payment_reference ?? 'N/A' }}
-                    </div>
-                @elseif($booking->status === 'cancelled')
-                    <div class="status-cancelled">
-                        This booking was cancelled and can no longer be paid.
-                    </div>
-                @endif
-            </section>
+                        <dl class="mt-5 flex flex-1 flex-col gap-4">
+                            <div class="rounded-xl border border-emerald-100 bg-emerald-50/50 px-4 py-3.5">
+                                <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Check-in</dt>
+                                <dd class="mt-1 text-base font-bold text-slate-900">{{ $checkIn?->format('M d, Y') ?? '—' }}</dd>
+                            </div>
+                            <div class="rounded-xl border border-emerald-100 bg-emerald-50/50 px-4 py-3.5">
+                                <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Check-out</dt>
+                                <dd class="mt-1 text-base font-bold text-slate-900">{{ $checkOut?->format('M d, Y') ?? '—' }}</dd>
+                            </div>
+                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/80 px-4 py-3.5">
+                                <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Guests</dt>
+                                <dd class="mt-1 text-base font-bold text-slate-900">{{ $booking->number_of_guests }}</dd>
+                            </div>
+                        </dl>
 
-            <section class="card">
-                <h2><i class="fas fa-lock"></i> Payment Details</h2>
+                        @if($booking->status === 'pending')
+                            <p class="mt-6 rounded-xl border border-sky-200/80 bg-sky-50 px-4 py-3 text-sm leading-relaxed text-sky-900">
+                                <i class="fas fa-circle-info mr-1.5 text-sky-600" aria-hidden="true"></i>
+                                Pay below, then your host reviews and approves the booking.
+                            </p>
+                        @endif
 
-                <form action="{{ route($bookingRouteGroup.'.payment.confirm', $booking) }}" method="POST" data-loading-form>
-                    @csrf
+                        @if($isPaid)
+                            <div class="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3.5 text-sm text-emerald-900">
+                                <p class="font-semibold">Already paid</p>
+                                <p class="mt-1 text-emerald-800/90">
+                                    Reference: {{ $booking->payment_reference ?? 'On file' }}
+                                </p>
+                            </div>
+                        @elseif($isCancelled)
+                            <div class="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm text-red-900">
+                                <p class="font-semibold">Booking cancelled</p>
+                                <p class="mt-1 text-red-800/90">This reservation can no longer be paid.</p>
+                            </div>
+                        @endif
 
-                    <div class="actions">
-                        <button
-                            type="submit"
-                            data-loading-button
-                            class="btn btn-primary"
-                            @disabled(! $stripeConfigured || in_array($booking->status, ['paid', 'completed', 'cancelled']))
+                        <a
+                            href="{{ route($bookingsIndexRoute, [], false) }}"
+                            class="mt-auto pt-8 text-sm font-semibold text-slate-500 transition hover:text-emerald-800"
                         >
-                            <i class="fab fa-stripe"></i> Pay with Stripe
-                        </button>
-                        <a href="{{ route($bookingRouteGroup.'.show', $booking) }}" class="btn btn-secondary">
-                            Back
+                            View all bookings
                         </a>
-                    </div>
-                </form>
+                    </section>
 
-                <div class="notice" style="margin-top: 14px;">
-                    <strong>GCash (manual review)</strong>
-                    @if($gcashQrUrl)
-                        <div style="margin-top:10px;">
-                            <a href="{{ $gcashQrUrl }}" target="_blank">
-                                <img src="{{ $gcashQrUrl }}" alt="GCash QR" style="max-width:180px; width:100%; border-radius:10px; border:1px solid var(--gray-200);">
+                    {{-- Payment methods --}}
+                    <section class="flex min-h-0 flex-1 flex-col gap-8 p-5 sm:p-8">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">Payment options</h2>
+                            <p class="mt-1 max-w-xl text-sm leading-relaxed text-slate-600">
+                                Choose card checkout or upload a GCash proof screenshot for manual review.
+                            </p>
+                        </div>
+
+                        {{-- Stripe --}}
+                        <div class="rounded-2xl border border-slate-200/90 bg-slate-50/60 p-5 sm:p-6">
+                            <div class="flex flex-wrap items-start justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
+                                        <i class="fab fa-stripe text-lg" aria-hidden="true"></i>
+                                    </span>
+                                    <div>
+                                        <h3 class="text-base font-bold text-slate-900">Card via Stripe</h3>
+                                        <p class="mt-0.5 text-sm text-slate-600">Secure checkout — redirects to Stripe</p>
+                                    </div>
+                                </div>
+                                @if(! $stripeConfigured)
+                                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">Unavailable</span>
+                                @endif
+                            </div>
+
+                            <form
+                                action="{{ route($bookingRouteGroup.'.payment.confirm', $booking, false) }}"
+                                method="POST"
+                                class="mt-5"
+                                data-loading-form
+                            >
+                                @csrf
+                                <button
+                                    type="submit"
+                                    data-loading-button
+                                    class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                                    @disabled(! $stripeConfigured || ! $canPay)
+                                >
+                                    <i class="fab fa-stripe" aria-hidden="true"></i>
+                                    Pay with Stripe
+                                </button>
+                            </form>
+
+                            @if(! $stripeConfigured)
+                                <p class="mt-3 text-sm text-amber-800">Online card payments are not configured for this property yet.</p>
+                            @endif
+                        </div>
+
+                        {{-- GCash --}}
+                        <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm sm:p-6">
+                            <div class="flex items-center gap-3">
+                                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-600 text-white shadow-sm">
+                                    <i class="fas fa-mobile-screen text-lg" aria-hidden="true"></i>
+                                </span>
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900">GCash</h3>
+                                    <p class="mt-0.5 text-sm text-slate-600">Scan, pay, then upload your receipt screenshot</p>
+                                </div>
+                            </div>
+
+                            @if($gcashQrUrl)
+                                <div class="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
+                                    <a
+                                        href="{{ $gcashQrUrl }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="mx-auto shrink-0 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm ring-1 ring-slate-100 sm:mx-0"
+                                    >
+                                        <img
+                                            src="{{ $gcashQrUrl }}"
+                                            alt="GCash QR code"
+                                            class="h-40 w-40 rounded-xl object-contain sm:h-44 sm:w-44"
+                                        >
+                                    </a>
+                                    <div class="min-w-0 flex-1 space-y-4">
+                                        <ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-600">
+                                            <li>Scan the QR code and send <strong class="text-slate-900">₱{{ number_format((float) $booking->total_price, 2) }}</strong>.</li>
+                                            <li>Save a screenshot of your successful transfer.</li>
+                                            <li>Upload the proof below for host review.</li>
+                                        </ol>
+
+                                        <form
+                                            action="{{ route($bookingRouteGroup.'.payment-proof.upload', $booking, false) }}"
+                                            method="POST"
+                                            enctype="multipart/form-data"
+                                            class="rounded-xl border border-dashed border-emerald-200 bg-emerald-50/30 p-4"
+                                            data-loading-form
+                                        >
+                                            @csrf
+                                            <label class="block text-xs font-semibold uppercase tracking-wide text-slate-500" for="gcash_payment_proof">
+                                                Proof screenshot
+                                            </label>
+                                            <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+                                                <input
+                                                    id="gcash_payment_proof"
+                                                    type="file"
+                                                    name="gcash_payment_proof"
+                                                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                                    required
+                                                    @disabled(! $canPay)
+                                                    class="w-full text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-700 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-emerald-800 disabled:opacity-60"
+                                                >
+                                                <button
+                                                    type="submit"
+                                                    data-loading-button
+                                                    class="inline-flex shrink-0 items-center justify-center rounded-xl border-2 border-emerald-600 bg-white px-5 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                                    @disabled(! $canPay)
+                                                >
+                                                    Upload proof
+                                                </button>
+                                            </div>
+                                        </form>
+
+                                        @if($booking->gcash_payment_proof_url)
+                                            <div class="flex flex-wrap items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50/50 px-4 py-3">
+                                                <span class="text-sm font-semibold text-emerald-900">
+                                                    <i class="fas fa-check-circle mr-1 text-emerald-600" aria-hidden="true"></i>
+                                                    Proof on file
+                                                </span>
+                                                <a
+                                                    href="{{ $booking->gcash_payment_proof_url }}"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="text-sm font-semibold text-emerald-800 underline decoration-emerald-300 underline-offset-2 hover:text-emerald-950"
+                                                >
+                                                    View screenshot
+                                                </a>
+                                                <form
+                                                    action="{{ route($bookingRouteGroup.'.payment-proof.remove', $booking, false) }}"
+                                                    method="POST"
+                                                    data-loading-form
+                                                    class="ml-auto"
+                                                >
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button
+                                                        type="submit"
+                                                        data-loading-button
+                                                        class="text-sm font-semibold text-red-700 hover:text-red-900"
+                                                        @disabled(! $canPay)
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @else
+                                <p class="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+                                    The host has not uploaded a GCash QR code yet. Use Stripe or contact them via messages.
+                                </p>
+                            @endif
+                        </div>
+
+                        <div class="mt-auto flex flex-wrap gap-3 border-t border-slate-100 pt-6">
+                            <a
+                                href="{{ $showRoute }}"
+                                class="inline-flex items-center justify-center rounded-xl border-2 border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+                            >
+                                Cancel and return
                             </a>
                         </div>
-                    @else
-                        <p style="margin-top:8px;">Tenant admin has not uploaded a GCash QR photo yet.</p>
-                    @endif
-
-                    <form action="{{ route($bookingRouteGroup.'.payment-proof.upload', $booking) }}" method="POST" enctype="multipart/form-data" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;" data-loading-form>
-                        @csrf
-                        <input type="file" name="gcash_payment_proof" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
-                        <button type="submit" data-loading-button class="btn btn-secondary">Upload Proof Screenshot</button>
-                    </form>
-
-                    @if($booking->gcash_payment_proof_url)
-                        <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                            <a href="{{ $booking->gcash_payment_proof_url }}" target="_blank" class="btn btn-secondary">View Uploaded Proof</a>
-                            <form action="{{ route($bookingRouteGroup.'.payment-proof.remove', $booking) }}" method="POST" data-loading-form>
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" data-loading-button class="btn btn-secondary">Remove Proof</button>
-                            </form>
-                        </div>
-                    @endif
+                    </section>
                 </div>
-            </section>
+            </article>
         </div>
-    </div>
+    </main>
+
     <script>
-        document.querySelectorAll('form[data-loading-form]').forEach((form) => {
-            form.addEventListener('submit', () => {
-                const button = form.querySelector('[data-loading-button]');
+        document.querySelectorAll('form[data-loading-form]').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                var button = form.querySelector('[data-loading-button]');
                 if (!button) return;
                 button.disabled = true;
-                button.textContent = 'Processing...';
+                var label = button.getAttribute('data-loading-label') || 'Processing…';
+                if (button.tagName === 'BUTTON') {
+                    button.textContent = label;
+                }
             });
         });
     </script>

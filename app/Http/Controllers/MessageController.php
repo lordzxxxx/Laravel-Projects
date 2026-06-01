@@ -29,7 +29,7 @@ class MessageController extends Controller
     {
         $user = $request->user();
         $user->assertTenantGuestMayUseMessages();
-        $currentTenant = Tenant::current();
+        $currentTenant = $this->currentTenantOrActivateForMessaging($user);
         $this->assertTenantAdminHasPermission($user, $currentTenant, User::PERM_MESSAGES_MANAGE);
 
         // One inbox row per conversation partner (latest message in each pair).

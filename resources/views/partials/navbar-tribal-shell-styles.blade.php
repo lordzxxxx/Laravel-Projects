@@ -141,6 +141,11 @@ html.dark .public-nav-tribal .nav-brand-subtitle {
     object-fit: contain;
     flex-shrink: 0;
 }
+.nav-logo img.nav-logo__custom,
+.tenant-brand-logo {
+    background: transparent;
+    border-radius: 0;
+}
 @media (min-width: 768px) {
     .nav-logo img { width: 3.75rem; height: 3.75rem; }
 }

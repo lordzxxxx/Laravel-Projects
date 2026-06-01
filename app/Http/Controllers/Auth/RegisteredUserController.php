@@ -7,7 +7,9 @@ use App\Models\Tenant;
 use App\Models\TenantLifecycleLog;
 use App\Models\User;
 use App\Services\CentralAdminNotifier;
+use App\Support\MunicipalityDocumentUploads;
 use App\Support\PortalDetector;
+use App\Support\TenantLogoProcessor;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -134,8 +136,7 @@ class RegisteredUserController extends Controller
                 ];
 
                 if ($request->hasFile('logo_path')) {
-                    $logoPath = $request->file('logo_path')->store('tenant-logos', 'public');
-                    $customizationData['logo_path'] = $logoPath;
+                    $customizationData['logo_path'] = TenantLogoProcessor::store($request->file('logo_path'));
                 }
             }
 
@@ -278,69 +279,67 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone' => ['nullable', 'string', 'max:20'],
             'app_title' => ['nullable', 'string', 'max:255'],
-            'business_permit' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
-            'mayors_permit' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
-            'barangay_clearance' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
-            'valid_id' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
         ], [
             'name.required' => 'Provide your full legal name as the authorised operator.',
             'email.required' => 'Official correspondence requires a reachable business email address.',
             'email.unique' => 'This email already exists. Recover access instead of creating a duplicate record.',
             'password.required' => 'Create an administrator-caliber password.',
             'app_title.max' => 'Shorten your business name to fewer than two hundred fifty characters.',
-            'business_permit.required' => 'Attach your municipality business permit or equivalent credential.',
-            'business_permit.mimes' => 'Business permits must upload as PDF, JPEG, or PNG.',
-            'business_permit.max' => 'Compress or split uploads so each attachment stays below ten megabytes.',
-            'mayors_permit.required' => 'Attach your mayor\'s permit (or analogous executive authorization).',
-            'mayors_permit.mimes' => 'Mayor\'s permit uploads accept PDF, JPEG, or PNG only.',
-            'mayors_permit.max' => 'Mayor\'s permit uploads must remain under ten megabytes.',
-            'barangay_clearance.required' => 'Attach the barangay clearance currently in force.',
-            'barangay_clearance.mimes' => 'Clearance uploads accept PDF, JPEG, or PNG only.',
-            'barangay_clearance.max' => 'Clearance files must remain under ten megabytes.',
-            'valid_id.required' => 'Attach a readable government identification document.',
-            'valid_id.mimes' => 'Identification uploads accept PDF, JPEG, or PNG.',
-            'valid_id.max' => 'Identification uploads must remain under ten megabytes.',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => User::ROLE_OWNER,
-            'tenant_id' => null,
-            'phone' => $request->phone,
-        ]);
+        MunicipalityDocumentUploads::validate($request);
+        $documentPaths = MunicipalityDocumentUploads::storeAll($request);
 
-        $user->syncRbacFromLegacyRole();
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => User::ROLE_OWNER,
+                'tenant_id' => null,
+                'phone' => $request->phone,
+            ]);
 
-        $customizationData = [
-            'subscription_plan' => null,
-            'app_title' => $request->input('app_title'),
-            'primary_color' => '#2E7D32',
-            'accent_color' => '#43A047',
-            'locale' => 'en',
-            'feature_bookings' => true,
-            'feature_messaging' => true,
-            'feature_reviews' => true,
-            'feature_payments' => true,
-            'logo_path' => null,
-        ];
+            $user->syncRbacFromLegacyRole();
 
-        $provisionedTenant = $user->ensureTenant($customizationData);
+            $customizationData = [
+                'subscription_plan' => null,
+                'app_title' => $request->input('app_title'),
+                'primary_color' => '#2E7D32',
+                'accent_color' => '#43A047',
+                'locale' => 'en',
+                'feature_bookings' => true,
+                'feature_messaging' => true,
+                'feature_reviews' => true,
+                'feature_payments' => true,
+                'logo_path' => null,
+            ];
 
-        if (! $provisionedTenant instanceof Tenant) {
-            return redirect()->route('portal.landing')
-                ->with('error', 'Registration could not be finalized. Contact the municipality tourism coordination desk so they can reconcile your workspace.');
+            $provisionedTenant = $user->ensureTenant($customizationData);
+
+            if (! $provisionedTenant instanceof Tenant) {
+                throw new \RuntimeException('owner_tenant_provision_failed');
+            }
+
+            $provisionedTenant->forceFill([
+                ...$documentPaths,
+                'municipality_requirements_submitted_at' => now(),
+                'onboarding_status' => Tenant::ONBOARDING_PENDING_APPROVAL,
+            ])->save();
+        } catch (\RuntimeException $e) {
+            MunicipalityDocumentUploads::deleteStoredPaths(array_values($documentPaths));
+
+            if ($e->getMessage() === 'owner_tenant_provision_failed') {
+                return redirect()->route('portal.landing')
+                    ->with('error', 'Registration could not be finalized. Contact the municipality tourism coordination desk so they can reconcile your workspace.');
+            }
+
+            throw $e;
+        } catch (\Throwable $e) {
+            MunicipalityDocumentUploads::deleteStoredPaths(array_values($documentPaths));
+
+            throw $e;
         }
-
-        $provisionedTenant->forceFill([
-            'municipality_business_permit_path' => $request->file('business_permit')->store('owner-municipality-docs', 'public'),
-            'municipality_mayors_permit_path' => $request->file('mayors_permit')->store('owner-municipality-docs', 'public'),
-            'municipality_barangay_clearance_path' => $request->file('barangay_clearance')->store('owner-municipality-docs', 'public'),
-            'municipality_valid_id_path' => $request->file('valid_id')->store('owner-municipality-docs', 'public'),
-            'municipality_requirements_submitted_at' => now(),
-            'onboarding_status' => Tenant::ONBOARDING_PENDING_APPROVAL,
-        ])->save();
 
         try {
             TenantLifecycleLog::create([

@@ -141,18 +141,37 @@ class BookingController extends Controller
 
         $booking = Booking::create($validated);
 
-        // Send message to owner
-        Message::create([
-            'sender_id' => $user->id,
-            'receiver_id' => $accommodation->owner_id,
-            'booking_id' => $booking->id,
-            'tenant_id' => $booking->tenant_id,
-            'subject' => 'New Booking Request: '.$accommodation->name,
-            'content' => $validated['client_message'] ?? 'I would like to book this accommodation.',
-            'type' => Message::TYPE_BOOKING_INQUIRY,
-        ]);
+        $accommodation->loadMissing('owner');
+        $inquiryContent = trim((string) ($validated['client_message'] ?? ''));
+        if ($inquiryContent === '') {
+            $inquiryContent = 'I would like to book this accommodation.';
+        }
 
-        $owner = $accommodation->owner;
+        $ownerRecipientId = $this->bookingInquiryRecipientId($accommodation, $booking->tenant_id, (int) $user->id);
+
+        if ($ownerRecipientId) {
+            Message::create([
+                'sender_id' => $user->id,
+                'receiver_id' => $ownerRecipientId,
+                'booking_id' => $booking->id,
+                'tenant_id' => $booking->tenant_id,
+                'subject' => 'New Booking Request: '.$accommodation->name,
+                'content' => $inquiryContent,
+                'type' => Message::TYPE_BOOKING_INQUIRY,
+                'status' => Message::STATUS_SENT,
+            ]);
+        } else {
+            Log::warning('booking.inquiry_message_skipped', [
+                'booking_id' => $booking->id,
+                'accommodation_id' => $accommodation->id,
+                'tenant_id' => $booking->tenant_id,
+                'accommodation_owner_id' => $accommodation->owner_id,
+            ]);
+        }
+
+        $owner = $ownerRecipientId
+            ? User::query()->find($ownerRecipientId)
+            : $accommodation->owner;
 
         $notifyStaff = static function (User $recipient) use ($accommodation, $booking): void {
             try {
@@ -689,9 +708,10 @@ class BookingController extends Controller
         ]);
 
         $sender = $request->user();
-        $receiver = $sender->id === $booking->client_id
-            ? $booking->accommodation->owner_id
-            : $booking->client_id;
+        $booking->loadMissing('accommodation');
+        $receiver = (int) $sender->id === (int) $booking->client_id
+            ? ($this->bookingInquiryRecipientId($booking->accommodation, $booking->tenant_id, (int) $sender->id) ?? (int) $booking->accommodation->owner_id)
+            : (int) $booking->client_id;
 
         Message::create([
             'sender_id' => $sender->id,
@@ -703,6 +723,29 @@ class BookingController extends Controller
         ]);
 
         return back()->with('success', 'Message sent successfully.');
+    }
+
+    /**
+     * Resolve who receives the automatic booking inquiry (tenant owner first, then listing owner).
+     */
+    private function bookingInquiryRecipientId(Accommodation $accommodation, ?int $tenantId, int $guestId): ?int
+    {
+        $candidates = collect();
+
+        if ($tenantId) {
+            $tenantOwnerId = (int) (Tenant::query()->whereKey($tenantId)->value('owner_user_id') ?? 0);
+            if ($tenantOwnerId > 0) {
+                $candidates->push($tenantOwnerId);
+            }
+        }
+
+        if ((int) $accommodation->owner_id > 0) {
+            $candidates->push((int) $accommodation->owner_id);
+        }
+
+        return $candidates
+            ->unique()
+            ->first(fn (int $id) => $id !== $guestId && User::query()->whereKey($id)->exists());
     }
 
     private function bookingsRoute(string $suffix = 'show'): string

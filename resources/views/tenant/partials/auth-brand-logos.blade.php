@@ -22,7 +22,10 @@
     <img
         src="{{ $centerLogo }}"
         alt="{{ $centerAlt }}"
-        class="h-24 w-auto object-contain sm:h-28 lg:h-36"
+        @class([
+            'h-24 w-auto object-contain sm:h-28 lg:h-36',
+            'tenant-brand-logo' => (bool) $tenant?->getLogoUrl(),
+        ])
         decoding="async"
         onerror="this.onerror=null;this.src='{{ $centerFallback }}';"
     >

@@ -371,6 +371,8 @@
                         @php
                             $paymentUi = $booking->payment_ui_state;
                             $paymentTone = $paymentUi['tone'] === 'pending_review' ? 'payment-review' : $paymentUi['tone'];
+                            $isPaymentRecorded = ($paymentUi['tone'] ?? 'neutral') === 'paid';
+                            $showPayNow = $booking->status === 'pending' && ! $isPaymentRecorded;
                             $statusClass = match ($booking->status) {
                                 'pending' => 'pending',
                                 'confirmed' => 'confirmed',
@@ -428,7 +430,7 @@
                                 </div>
                                 <div class="guest-booking-card__actions">
                                     <a href="{{ route($bookingsShowRoute, $booking) }}" class="guest-booking-card__btn guest-booking-card__btn--primary">View details</a>
-                                    @if($booking->status === 'confirmed')
+                                    @if($showPayNow)
                                         <a href="{{ route($bookingRouteGroup.'.payment', $booking) }}" class="guest-booking-card__btn guest-booking-card__btn--primary">Pay now</a>
                                     @endif
                                     @if($booking->status === 'pending' || $booking->status === 'confirmed')
@@ -617,7 +619,11 @@
                                 <div class="{{ $isOwner ? 'action-btns' : 'flex flex-wrap gap-2' }}">
                                     <a href="{{ route($bookingsShowRoute, $booking) }}" class="{{ $isOwner ? 'btn btn-primary' : 'inline-flex items-center rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-800' }}">View Details</a>
                                     @if(Auth::check() && Auth::user()->isClient() && ($booking->status == 'pending' || $booking->status == 'confirmed'))
-                                        @if($booking->status === 'confirmed')
+                                        @php
+                                            $legacyPaymentUi = $booking->payment_ui_state;
+                                            $legacyShowPayNow = $booking->status === 'pending' && ($legacyPaymentUi['tone'] ?? 'neutral') !== 'paid';
+                                        @endphp
+                                        @if($legacyShowPayNow)
                                             <a href="{{ route($bookingRouteGroup.'.payment', $booking) }}" class="inline-flex items-center rounded-lg bg-green-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-800">Pay Now</a>
                                         @endif
                                         <form action="{{ route($bookingRouteGroup.'.cancel', $booking) }}" method="POST" style="display: inline;" data-loading-form>

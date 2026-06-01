@@ -1,15 +1,31 @@
 {{--
     Municipal PDF header (logos + government block + report title).
     Used by CA admin PDFs and owner/tenant monthly PDFs.
-    Logos: public/report-headers/ca-left-logo.png, ca-right-logo.png (embedded as data URIs when present).
-    Re-apply edge transparency after replacing PNGs: npm run report-logos:transparency
+    Logos: Love Impasugong (left), LGU seal (right) — embedded as data URIs when present.
+    Left: public/images/love-impasugong-transparent.png (fallback: report-headers/ca-left-logo.png).
+    Right: public/Lgu Socmed Template-02 2.png (fallback: report-headers/ca-right-logo.png).
+    Divider: public/images/pdf-header-tribal-divider.png (fallback: nav-tribal-pattern.png).
     Expects: $pdfReportTitle (string), $pdfReportSubtitle (string, optional)
 --}}
 @php
-    $pdfReportTitle = $pdfReportTitle ?? 'Report';
+    $pdfReportTitle = $pdfReportTitle ?? '';
     $pdfReportSubtitle = $pdfReportSubtitle ?? '';
 
+    $dividerCandidates = [
+        public_path('images/pdf-header-tribal-divider.png'),
+        public_path('images/nav-tribal-pattern.png'),
+    ];
+    $dividerData = null;
+    foreach ($dividerCandidates as $candidatePath) {
+        if (is_string($candidatePath) && $candidatePath !== '' && file_exists($candidatePath)) {
+            $mime = function_exists('mime_content_type') ? (mime_content_type($candidatePath) ?: 'image/png') : 'image/png';
+            $dividerData = 'data:'.$mime.';base64,'.base64_encode((string) file_get_contents($candidatePath));
+            break;
+        }
+    }
+
     $leftLogoCandidates = [
+        public_path('images/love-impasugong-transparent.png'),
         public_path('report-headers/ca-left-logo.png'),
     ];
     $leftLogoData = null;
@@ -22,6 +38,7 @@
     }
 
     $rightLogoCandidates = [
+        public_path('Lgu Socmed Template-02 2.png'),
         public_path('report-headers/ca-right-logo.png'),
     ];
     $rightLogoData = null;
@@ -34,28 +51,39 @@
     }
 @endphp
 <div class="header">
-    <table class="header-table">
+    <table class="header-table" align="center" cellpadding="0" cellspacing="0">
         <tr>
-            <td class="header-left">
+            <td class="header-logo-cell header-logo-cell--left">
                 @if($leftLogoData)
-                    <img src="{{ $leftLogoData }}" alt="Municipality Logo" class="header-side-logo">
+                    <div class="header-logo-slot">
+                        <img src="{{ $leftLogoData }}" alt="Love Impasugong" class="header-side-logo header-side-logo--love" width="92" height="100">
+                    </div>
                 @endif
             </td>
+            <td class="header-gap" width="50">&nbsp;</td>
             <td class="header-center">
                 <div class="header-topline">Republic of the Philippines</div>
-                <div class="header-main">Municipality of Impasug-ong, Bukidnon</div>
+                <div class="header-main">Municipality of Impasug-ong</div>
                 <div class="header-office">Tourism Management Office</div>
                 <div class="header-report-line">Tulogan Monthly Report</div>
-                <h1>{{ $pdfReportTitle }}</h1>
+                @if($pdfReportTitle !== '')
+                    <h1>{{ $pdfReportTitle }}</h1>
+                @endif
                 @if($pdfReportSubtitle !== '')
                     <p>{{ $pdfReportSubtitle }}</p>
                 @endif
             </td>
-            <td class="header-right">
+            <td class="header-gap" width="50">&nbsp;</td>
+            <td class="header-logo-cell header-logo-cell--right">
                 @if($rightLogoData)
-                    <img src="{{ $rightLogoData }}" alt="Impasug-ong Logo" class="header-side-logo">
+                    <div class="header-logo-slot">
+                        <img src="{{ $rightLogoData }}" alt="LGU Impasug-ong" class="header-side-logo header-side-logo--lgu" width="94" height="94">
+                    </div>
                 @endif
             </td>
         </tr>
     </table>
+    @if($dividerData)
+        <div class="header-divider" style="background-image: url('{{ $dividerData }}');" role="presentation" aria-hidden="true"></div>
+    @endif
 </div>

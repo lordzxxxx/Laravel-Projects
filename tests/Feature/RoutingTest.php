@@ -221,3 +221,52 @@ test('unauthenticated user cannot access messages', function () {
     expect($response->status())->toBeIn([302, 403]);
     Tenant::forgetCurrent();
 });
+
+test('tenant owner dashboard route resolves to owner workspace', function () {
+    skipIfLandlordMemoryDb();
+
+    $tenant = ensureRoutingTenantFixture();
+    $owner = User::factory()->create([
+        'role' => User::ROLE_OWNER,
+        'tenant_id' => $tenant->id,
+    ]);
+
+    Tenant::forgetCurrent();
+    $tenant->makeCurrent();
+
+    expect($owner->getDashboardRoute())->toBe('/owner/dashboard');
+
+    Tenant::forgetCurrent();
+});
+
+test('authenticated tenant owner is redirected from login to owner dashboard', function () {
+    skipIfLandlordMemoryDb();
+
+    $tenant = ensureRoutingTenantFixture();
+    $owner = User::factory()->create([
+        'role' => User::ROLE_OWNER,
+        'tenant_id' => $tenant->id,
+    ]);
+
+    Tenant::forgetCurrent();
+
+    $this->actingAs($owner)
+        ->get(tenantUrl($tenant, '/login'))
+        ->assertRedirect('/owner/dashboard');
+});
+
+test('authenticated tenant owner visiting guest dashboard is redirected to owner dashboard', function () {
+    skipIfLandlordMemoryDb();
+
+    $tenant = ensureRoutingTenantFixture();
+    $owner = User::factory()->create([
+        'role' => User::ROLE_OWNER,
+        'tenant_id' => $tenant->id,
+    ]);
+
+    Tenant::forgetCurrent();
+
+    $this->actingAs($owner)
+        ->get(tenantUrl($tenant, '/dashboard'))
+        ->assertRedirect('/owner/dashboard');
+});

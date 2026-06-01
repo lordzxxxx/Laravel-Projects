@@ -29,6 +29,30 @@ class SecureMediaController extends Controller
         return $this->streamStoredFile((string) $tenant->onboarding_gcash_proof_path);
     }
 
+    public function municipalityDocument(Request $request, Tenant $tenant, string $document): Response
+    {
+        $user = $request->user();
+        abort_unless($user, 403);
+
+        $meta = Tenant::MUNICIPALITY_DOCUMENTS[$document] ?? null;
+        abort_unless($meta !== null, 404);
+
+        $canView = false;
+        if ($user->isAdmin()) {
+            $canView = $user->tenant_id === null || (int) $user->tenant_id === (int) $tenant->id;
+        } elseif ($user->isOwner()) {
+            $canView = (int) ($user->tenant_id ?? 0) === (int) $tenant->id
+                || (int) optional($user->ownedTenant)->id === (int) $tenant->id;
+        }
+
+        abort_unless($canView, 403);
+
+        $path = (string) ($tenant->{$meta['column']} ?? '');
+        abort_unless($path !== '', 404);
+
+        return $this->streamStoredFile($path);
+    }
+
     public function bookingProof(Request $request, Booking $booking): Response
     {
         $user = $request->user();

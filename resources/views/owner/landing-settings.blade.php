@@ -138,15 +138,29 @@
             background: var(--app-surface-muted-bg, #f8fafc);
         }
 
+        .logo-checkerboard {
+            background-color: #f8fafc;
+            background-image:
+                linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+                linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+                linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+            background-size: 12px 12px;
+            background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+        }
+
         .upload-preview img {
             width: 4.5rem;
             height: 4.5rem;
             object-fit: contain;
             border-radius: 10px;
-            background: #fff;
             border: 1px solid var(--app-surface-border, #e5e7eb);
             padding: 0.35rem;
             flex-shrink: 0;
+        }
+
+        .upload-preview img.logo-checkerboard {
+            background-color: #f8fafc;
         }
 
         .upload-preview__meta {
@@ -197,7 +211,6 @@
             border-radius: 10px;
             border: 1px solid var(--app-surface-border, #e5e7eb);
             padding: 0.35rem;
-            background: #fff;
         }
 
         .settings-actions {
@@ -331,11 +344,11 @@
                     <section class="settings-panel">
                         <div class="settings-panel__head">
                             <h2>Brand logo</h2>
-                            <p>Optional. Love Impasugong is used until you upload your own.</p>
+                            <p>Optional. Love Impasugong is used until you upload your own. Logos are saved as PNG with a transparent background (white areas are removed automatically).</p>
                         </div>
                         <div class="settings-panel__body">
                             <div class="upload-preview">
-                                <img src="{{ $tenant->brandLogoUrl() }}" alt="Current logo">
+                                <img src="{{ $tenant->brandLogoUrl() }}" alt="Current logo" class="{{ $tenant->logo_path ? 'logo-checkerboard' : '' }}">
                                 <div class="upload-preview__meta">
                                     <p>Shown on your landing page, login, and navigation.</p>
                                 </div>
@@ -345,7 +358,7 @@
                                 <input type="file" id="logo" name="logo" class="file-input" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">
                                 @error('logo') <div class="field-error">{{ $message }}</div> @enderror
                                 <div class="logo-preview-new" id="logo-preview" aria-hidden="true">
-                                    <img src="" alt="Selected logo preview">
+                                    <img src="" alt="Selected logo preview" class="logo-checkerboard">
                                 </div>
                             </div>
                             @if($tenant->logo_path)

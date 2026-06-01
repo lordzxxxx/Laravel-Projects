@@ -62,12 +62,12 @@
             color: var(--gray-500, #6b7280);
         }
 
+        @include('partials.partner-logos-strip-rules')
+
         .explore-stays-hero__logos {
             display: flex;
-            flex-wrap: wrap;
-            align-items: center;
             justify-content: flex-end;
-            max-width: min(100%, 28rem);
+            max-width: min(100%, 20rem);
         }
 
         .explore-stays-filters {
@@ -335,6 +335,11 @@
                 align-items: start;
             }
             .explore-stays-hero__logos {
+                justify-content: flex-start;
+                max-width: 100%;
+            }
+
+            .explore-stays-hero__logos .partner-logos-strip {
                 justify-content: flex-start;
                 flex-wrap: wrap;
                 max-width: 100%;

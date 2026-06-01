@@ -3,26 +3,19 @@
 <head>
     @include('partials.central-public-head', ['pageTitle' => 'IMPASUGONG TOURISM | Impasugong Accommodations'])
     <style>
-        @include('partials.ui-foundation-styles')
-        @include('client.partials.guest-shell-styles')
-
-        body.explore-portal-page.portal-landing-page {
-            min-height: 100dvh;
-            background-color: var(--app-page-bg, #f8fafc);
-            background-image: var(--communal-bg-overlay-light);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
+        @include('partials.central-portal-shell-styles')
 
         .portal-landing-main {
             width: 100%;
             max-width: none;
-            margin: 0;
+            margin: 0 auto;
             box-sizing: border-box;
             display: flex;
+            flex: 1;
             flex-direction: column;
-            gap: clamp(1rem, 2vw, 1.5rem);
+            align-items: center;
+            justify-content: center;
+            gap: 0;
         }
 
         body.explore-portal-page .portal-landing-main.portal-public-main {
@@ -33,70 +26,125 @@
 
         .portal-landing-hero {
             display: flex;
-            flex: 1;
-            min-height: calc(100dvh - var(--app-topbar-height, 4rem) - clamp(2rem, 4vw, 3rem));
+            width: 100%;
+            max-width: 44rem;
+            margin-inline: auto;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 4vw, 2.5rem);
+            padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 2.5rem);
             text-align: center;
         }
 
-        .portal-landing-logos {
+        .portal-landing-hero > * {
+            width: 100%;
+            max-width: 42rem;
+            margin-inline: auto;
+            text-align: center;
+        }
+
+        .portal-landing-hero .partner-logos-strip {
             display: flex;
-            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: min(100%, 42rem);
+            margin-bottom: 0.35rem;
+            gap: clamp(0.65rem, 2vw, 1.15rem);
+        }
+
+        .portal-landing-hero .partner-logos-strip img {
+            height: clamp(7rem, 15vw, 13.5rem);
+            max-width: min(10.5rem, 32vw);
+        }
+
+        @media (max-width: 1100px) {
+            .portal-landing-hero .partner-logos-strip img {
+                height: clamp(6rem, 12vw, 10.5rem);
+                max-width: min(9rem, 28vw);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .portal-landing-hero .partner-logos-strip {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .portal-landing-hero .partner-logos-strip img {
+                height: clamp(5.25rem, 18vw, 8.5rem);
+                max-width: min(7.5rem, 32vw);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .portal-landing-hero .partner-logos-strip img {
+                height: clamp(4.5rem, 24vw, 7rem);
+                max-width: min(6.5rem, 30vw);
+            }
+        }
+
+        .portal-landing-hero__eyebrow {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: clamp(0.85rem, 2.5vw, 1.75rem);
-            margin-bottom: clamp(1.25rem, 3vw, 2rem);
-        }
-
-        .portal-landing-logos img {
-            height: clamp(6.5rem, 18vw, 11rem);
+            gap: 0.4rem;
             width: auto;
-            max-width: min(11rem, 32vw);
-            object-fit: contain;
+            max-width: 100%;
+            margin: 0 auto 0.65rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ui-accent-color, var(--accent-pink-deep, #B0436E));
         }
 
-        .portal-landing-hero h1 {
-            margin: 0 0 1rem;
+        .portal-landing-hero__eyebrow i {
+            color: var(--ui-accent-strong, var(--accent-pink-strong, #C25C82));
+        }
+
+        .portal-landing-hero__title {
+            margin: 0 auto 0.75rem;
             font-family: var(--app-font-display, inherit);
-            font-size: clamp(1.85rem, 5vw, 3.25rem);
-            font-weight: 800;
+            font-size: clamp(1.85rem, 5vw, 3rem);
+            font-weight: 700;
             letter-spacing: -0.03em;
-            line-height: 1.1;
-            color: var(--brand-dark, #1b5e20);
+            line-height: 1.12;
+            color: var(--ink-900, #0f172a);
         }
 
-        .portal-landing-hero h1 span {
-            color: var(--brand-primary, #2e7d32);
+        .portal-landing-hero__title span {
+            color: var(--ui-accent-color, var(--accent-pink-deep, #B0436E));
         }
 
         .portal-landing-badge {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
-            margin-bottom: 1.25rem;
-            padding: 0.65rem 1.35rem;
+            width: auto;
+            max-width: 100%;
+            margin: 0 auto 1rem;
+            padding: 0.55rem 1.15rem;
             border-radius: 999px;
-            border: 2px solid var(--brand-soft, #e8f5e9);
-            background: #fff;
-            font-size: 0.875rem;
+            border: 1px solid var(--ui-accent-border, var(--accent-pink-border, #F0C3D2));
+            background: color-mix(in srgb, var(--ui-accent-surface, var(--accent-pink-soft, #F9DEE5)) 65%, #fff);
+            font-size: 0.8125rem;
             font-weight: 600;
-            color: var(--brand-dark, #1b5e20);
-            box-shadow: 0 4px 15px rgba(27, 94, 32, 0.1);
+            color: var(--ink-700, #334155);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
         }
 
         .portal-landing-badge i {
-            color: var(--brand-primary, #2e7d32);
+            color: var(--ui-accent-color, var(--accent-pink-deep, #B0436E));
         }
 
         .portal-landing-lede {
-            margin: 0 auto 2rem;
+            margin: 0 auto 1.75rem;
             max-width: 42rem;
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            line-height: 1.65;
-            color: var(--brand-medium, #4b5563);
+            font-size: clamp(0.9375rem, 2vw, 1.125rem);
+            line-height: 1.6;
+            color: var(--ink-600, #4b5563);
         }
 
         .portal-landing-ctas {
@@ -104,7 +152,62 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: center;
-            gap: 0.85rem;
+            gap: 0.75rem;
+            width: 100%;
+            max-width: 42rem;
+            margin-inline: auto;
+        }
+
+        .portal-landing-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.625rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, filter 0.15s ease, transform 0.05s ease;
+        }
+
+        .portal-landing-btn--primary {
+            border: 1px solid var(--action-primary-border, transparent);
+            background: var(--action-primary-bg, var(--brand-700, #457359));
+            color: var(--action-primary-text, #fff);
+            box-shadow: 0 4px 14px color-mix(in srgb, var(--action-primary-bg, #457359) 28%, transparent);
+        }
+
+        .portal-landing-btn--primary:hover {
+            background: var(--action-primary-hover, var(--brand-800, #34543f));
+            filter: brightness(1.03);
+        }
+
+        .portal-landing-btn--secondary {
+            border: 1px solid var(--ui-accent-border, var(--accent-pink-border, #F0C3D2));
+            background: #fff;
+            color: var(--ui-accent-color, var(--accent-pink-deep, #B0436E));
+        }
+
+        .portal-landing-btn--secondary:hover {
+            background: var(--ui-accent-surface, var(--accent-pink-soft, #F9DEE5));
+            border-color: var(--ui-accent-strong, var(--accent-pink-strong, #C25C82));
+        }
+
+        html.dark .portal-landing-badge {
+            background: var(--app-surface-bg, rgba(30, 41, 59, 0.92));
+            color: var(--text-secondary, var(--ink-700));
+        }
+
+        html.dark .portal-landing-btn--secondary {
+            background: var(--app-surface-bg, rgba(30, 41, 59, 0.92));
+            color: var(--ui-accent-color, var(--accent-pink-deep, #F9DEE5));
+        }
+
+        @media (max-width: 767px) {
+            body.explore-portal-page .portal-landing-main.portal-public-main {
+                padding-top: var(--portal-content-below-nav, calc(var(--app-topbar-height-mobile, 5.75rem) + clamp(1rem, 2vw, 1.5rem)));
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -116,7 +219,7 @@
         }
     </style>
 </head>
-<body class="explore-portal-page portal-landing-page flex min-h-screen flex-col font-sans text-brand-dark antialiased">
+<body class="explore-portal-page portal-landing-page flex min-h-screen flex-col font-sans antialiased">
     @include('partials.portal-public-nav', [
         'active' => 'home',
         'municipalityName' => $municipalityName,
@@ -125,19 +228,20 @@
 
     <main class="portal-public-main portal-landing-main flex flex-1 flex-col outline-none">
         <section class="portal-landing-hero" aria-labelledby="portal-landing-heading">
-            <div class="portal-landing-logos" aria-hidden="true">
-                <img src="{{ asset('images/love-impasugong-transparent.png') }}" alt="Love Impasugong" decoding="async">
-                <img src="{{ asset('SYSTEMLOGO.png') }}" alt="" decoding="async">
-                <img src="{{ asset('Lgu Socmed Template-02.png') }}" alt="" decoding="async">
-            </div>
+            @include('partials.partner-logos-strip')
 
-            <h1 id="portal-landing-heading">
-                Find Your Perfect <span>Stay</span>
+            <p class="portal-landing-hero__eyebrow">
+                <i class="fas fa-compass" aria-hidden="true"></i>
+                Official tourism portal
+            </p>
+
+            <h1 id="portal-landing-heading" class="portal-landing-hero__title">
+                Find your perfect <span>stay</span>
             </h1>
 
             <div class="portal-landing-badge">
                 <i class="fas fa-home" aria-hidden="true"></i>
-                <span>Your Gateway to Impasugong Accommodations</span>
+                <span>Your gateway to Impasugong accommodations</span>
             </div>
 
             <p class="portal-landing-lede">
@@ -146,17 +250,13 @@
             </p>
 
             <div class="portal-landing-ctas">
-                <a
-                    href="{{ route('portal.accommodations.index') }}"
-                    class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-8 py-3.5 text-base font-semibold text-white shadow-[0_4px_15px_rgba(46,125,50,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(46,125,50,0.4)]"
-                >
-                    <i class="fas fa-compass" aria-hidden="true"></i> Explore stays
+                <a href="{{ route('portal.accommodations.index') }}" class="portal-landing-btn portal-landing-btn--primary">
+                    <i class="fas fa-compass" aria-hidden="true"></i>
+                    Explore stays
                 </a>
-                <a
-                    href="{{ route('register.guest') }}"
-                    class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-8 py-3.5 text-base font-semibold text-brand-dark transition-all hover:bg-brand-primary hover:text-white"
-                >
-                    <i class="fas fa-user-plus" aria-hidden="true"></i> Create guest account
+                <a href="{{ route('register.guest') }}" class="portal-landing-btn portal-landing-btn--secondary">
+                    <i class="fas fa-user-plus" aria-hidden="true"></i>
+                    Create guest account
                 </a>
             </div>
         </section>
