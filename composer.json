@@ -63,6 +63,9 @@
         "smoke:portals": [
             "bash scripts/smoke-portal-endpoints.sh"
         ],
+        "report:pdf-assets": [
+            "node scripts/generate-report-pdf-assets.mjs"
+        ],
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"

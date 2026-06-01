@@ -989,7 +989,7 @@ class DashboardController extends Controller
 
         $pdf = \PDF::loadView('admin.reports.demographics-pdf', [
             'demographics' => $demographics,
-        ])->setPaper('a4', 'landscape');
+        ])->setPaper('a4', 'portrait');
 
         return $pdf->download($baseFileName.'.pdf');
     }
