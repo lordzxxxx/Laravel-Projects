@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @include('partials.central-public-head', ['pageTitle' => 'About Us | IMPASUGONG TOURISM'])
-    <style>
-        @include('partials.central-portal-shell-styles')
-    </style>
+    @include('partials.central-public-head', ['pageTitle' => 'About Impasug-ong Tourism | IMPASUGONG TOURISM'])
 </head>
 <body class="about-portal-page explore-portal-page min-h-screen font-sans text-gray-800 antialiased">
     @include('partials.portal-public-nav', [

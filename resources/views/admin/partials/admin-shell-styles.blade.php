@@ -225,4 +225,26 @@ body {
 
 @include('admin.partials.top-navbar-styles')
 
-@include('admin.partials.central-portal-background-styles')
+/* Central admin portal pages: use <body class="admin-central-portal"> (owner pages omit this class). */
+body.admin-central-portal {
+    background: transparent;
+    min-height: 100vh;
+}
+body.admin-central-portal::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: url("{{ asset('newbg.png') }}") center / cover no-repeat;
+    transform: scale(1.045);
+    filter: blur(5px);
+    pointer-events: none;
+}
+body.admin-central-portal::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+}

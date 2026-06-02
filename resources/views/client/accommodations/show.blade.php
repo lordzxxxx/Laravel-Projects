@@ -747,27 +747,19 @@
     </nav>
     @endif
     
-    @php
-        $showMainClass = $isTenantManager
-            ? 'main-container with-owner-nav explore-stay-show'
-            : ($showClientNav
-                ? 'client-guest-main client-guest-main--full explore-stay-show'
-                : ($showPortalPublicNav
-                    ? 'portal-public-main explore-stay-show'
-                    : 'main-container explore-stay-show'));
-        $listingsUrl = ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index');
-        $homeUrl = ($portalDirectory ?? false) ? route('portal.landing') : route('landing');
-    @endphp
-    <main class="{{ $showMainClass }}">
-        <nav class="explore-stay-show__crumb" aria-label="Breadcrumb">
-            <a href="{{ $homeUrl }}">{{ ($portalDirectory ?? false) ? 'Explore' : 'Home' }}</a>
-            <span aria-hidden="true">/</span>
-            <a href="{{ $listingsUrl }}">Accommodations</a>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page">{{ $accommodation->name }}</span>
-        </nav>
-
-        <section class="explore-stay-show__gallery gallery-container" aria-label="Property photos">
+    <!-- Main Container -->
+    <div class="main-container {{ $isTenantManager ? 'with-owner-nav' : '' }}">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb animate">
+            <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('landing') }}">Home</a>
+            <span>›</span>
+            <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index') }}">Accommodations</a>
+            <span>›</span>
+            <span>{{ $accommodation->name }}</span>
+        </div>
+        
+        <!-- Image Gallery (carousel + lightbox) -->
+        <div class="gallery-container animate delay-1">
             @php
                 $galleryImages = $accommodation->galleryImageUrls();
                 if (count($galleryImages) === 0) {
@@ -961,16 +953,10 @@
                             </div>
                         </div>
                     @else
-                        <div class="explore-stay-book__guest-cta">
-                            <p>Sign in to book, save to wishlist, or message the host.</p>
-                            <a
-                                href="{{ $tenantGuestLoginUrl ?? route('login').'?'.http_build_query(['intended' => url()->full()]) }}"
-                                class="btn btn-primary btn-book"
-                            >Log in</a>
-                            <a
-                                href="{{ $tenantGuestRegisterUrl ?? (($portalDirectory ?? false) ? route('register.guest') : route('register')) }}"
-                                class="btn btn-wishlist"
-                            >Create account</a>
+                        <div style="text-align: center; padding: 30px 0;">
+                            <p style="color: var(--gray-500); margin-bottom: 20px;">Sign in to book, save to wishlist, or message the host.</p>
+                            <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="btn btn-primary btn-book">Login</a>
+                            <a href="{{ route('register') }}" class="btn btn-wishlist">Create account</a>
                         </div>
                     @endauth
                 </div>

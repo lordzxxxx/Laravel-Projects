@@ -52,52 +52,10 @@
             color:var(--auth-ink);
             transition: border-color .15s ease, box-shadow .15s ease;
         }
-        .auth-input::placeholder { color:#94a3b8; }
-        .auth-input:hover { border-color:#cbd5e1; }
-        .auth-input:focus { outline:none; border-color:var(--auth-accent); box-shadow:0 0 0 4px rgba(27,94,32,.10); }
-
-        .reg-section + .reg-section { margin-top: 1.75rem; border-top: 1px solid #e5e7eb; padding-top: 1.75rem; }
-        .reg-section-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #334155; }
-        .reg-field-label { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #334155; }
-        .reg-helper { font-size: 0.8rem; line-height: 1.5; color: #475569; }
-
-        .reg-auth-password-wrap { position: relative; }
-        .reg-auth-password-toggle {
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            display: flex;
-            width: 2.75rem;
-            align-items: center;
-            justify-content: center;
-            color: rgb(27 94 32);
-            border-radius: 0 0.625rem 0.625rem 0;
-            transition: background-color 0.15s ease;
+        .reg-owner-dropzone {
+            position: relative;
+            isolation: isolate;
         }
-        .reg-auth-password-toggle:hover { background-color: rgba(200, 230, 201, 0.5); }
-        .reg-auth-password-toggle:focus-visible { outline: 2px solid rgb(46 125 50); outline-offset: 2px; }
-
-        .auth-submit { display:inline-flex; width:100%; align-items:center; justify-content:center; gap:.5rem; background:var(--auth-ink); color:#fff; font-weight:600; font-size:.95rem; padding:.75rem 1rem; border-radius:.625rem; transition: background .15s ease, transform .05s ease; }
-        .auth-submit:hover { background:#000; }
-        .auth-submit:active { transform: translateY(1px); }
-        .auth-submit:disabled { opacity:.65; cursor:not-allowed; }
-
-        .auth-link { color:var(--auth-accent); font-weight:600; text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:.2em; }
-        .auth-link:hover { color:var(--auth-accent-strong); }
-        .auth-link.auth-link--plain,
-        .auth-link.auth-link--plain:hover { text-decoration: none; }
-
-        .reg-owner-stepper { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; color: #64748b; }
-        .reg-owner-stepper__item { display: inline-flex; align-items: center; gap: 0.5rem; }
-        .reg-owner-stepper__num { display: inline-flex; height: 1.5rem; width: 1.5rem; align-items: center; justify-content: center; border-radius: 999px; background: #0f172a; color: #fff; font-size: 0.72rem; font-weight: 700; }
-        .reg-owner-stepper__num--alt { background: transparent; color: #94a3b8; border: 1px solid #cbd5e1; }
-        .reg-owner-stepper__label { font-weight: 600; color: #0f172a; }
-        .reg-owner-stepper__label--alt { color: #64748b; font-weight: 500; }
-        .reg-owner-stepper__sep { height: 1px; flex: 1 1 auto; min-width: 1.5rem; background: #e2e8f0; }
-
-        .reg-owner-doc { display: flex; flex-direction: column; }
-        .reg-owner-dropzone { position: relative; isolation: isolate; }
         .reg-owner-dropzone-surface {
             border: 1.5px dashed #cbd5e1;
             background: #f8fafc;
@@ -146,13 +104,68 @@
                     <img src="{{ asset('Lgu Socmed Template-02 2.png') }}" alt="" class="h-20 w-auto object-contain sm:h-24 lg:h-32" decoding="async" role="presentation">
                 </div>
 
-                <div class="mt-3 sm:mt-4">
-                    <span class="auth-eyebrow">Host registration</span>
-                    <h1 class="auth-display mt-4 text-[2rem] font-semibold leading-[1.1] text-slate-900 sm:text-[2.4rem] lg:text-[2.75rem]">
-                        Become a host.
-                    </h1>
-                    <p class="mt-4 max-w-md text-[15px] leading-relaxed text-slate-700">
-                        Start an operator record for <span class="font-semibold text-slate-900">{{ $municipality }}</span>. Listings remain hidden until compliance review is completed.
+                <section class="rounded-xl border border-emerald-100/80 bg-white/80 p-4 shadow-sm sm:p-5" aria-labelledby="reg-owner-contact-heading">
+                    <h2 id="reg-owner-contact-heading" class="mb-4 flex items-center gap-2 text-sm font-extrabold text-brand-dark">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-brand-primary" aria-hidden="true"><i class="fas fa-address-book text-xs"></i></span>
+                        Contact &amp; organisation
+                    </h2>
+                    <div class="flex flex-col gap-5">
+                        <div class="space-y-1.5">
+                            <label for="name" class="block text-xs font-bold uppercase tracking-wider text-brand-dark">Full legal name <span class="text-red-600" aria-hidden="true">*</span></label>
+                            <input id="name" type="text" name="name" value="{{ old('name') }}" required autocomplete="name" aria-required="true" aria-invalid="{{ $errors->has('name') ? 'true' : 'false' }}"
+                                class="{{ $fieldClass }} min-h-[2.75rem] sm:min-h-11"
+                                placeholder="Authorised representative">
+                            @error('name')
+                                <p class="mt-1 text-xs font-semibold text-red-700" role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="space-y-1.5">
+                            <label for="email" class="block text-xs font-bold uppercase tracking-wider text-brand-dark">Business email <span class="text-red-600" aria-hidden="true">*</span></label>
+                            <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" inputmode="email" aria-describedby="hint-email-owner" aria-required="true" aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
+                                class="{{ $fieldClass }} min-h-[2.75rem] sm:min-h-11"
+                                placeholder="operations@establishment.tld">
+                            <p id="hint-email-owner" class="text-xs text-brand-medium/95">Reviews and official notices.</p>
+                            @error('email')
+                                <p class="mt-1 text-xs font-semibold text-red-700" role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="grid gap-5 sm:grid-cols-2 sm:items-start">
+                            <div class="space-y-1.5">
+                                <label for="phone" class="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-dark">
+                                    Phone
+                                    <span class="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-brand-dark">Optional</span>
+                                </label>
+                                <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel" inputmode="tel" aria-invalid="{{ $errors->has('phone') ? 'true' : 'false' }}"
+                                    class="{{ $fieldClass }} min-h-[2.75rem] sm:min-h-11">
+                                @error('phone')
+                                    <p class="mt-1 text-xs font-semibold text-red-700" role="alert">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div class="space-y-1.5">
+                                <label for="app_title" class="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-dark">
+                                    Trade name
+                                    <span class="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-brand-dark">Optional</span>
+                                </label>
+                                <input id="app_title" type="text" name="app_title" value="{{ old('app_title') }}" autocomplete="organization" aria-invalid="{{ $errors->has('app_title') ? 'true' : 'false' }}"
+                                    class="{{ $fieldClass }} min-h-[2.75rem] sm:min-h-11"
+                                    placeholder="Public listing name">
+                                @error('app_title')
+                                    <p class="mt-1 text-xs font-semibold text-red-700" role="alert">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                @include('partials.auth-registration-password-fields')
+
+                <section class="rounded-xl border border-emerald-100/80 bg-white/80 p-4 shadow-sm sm:p-5" aria-labelledby="reg-owner-compliance-heading">
+                    <h2 id="reg-owner-compliance-heading" class="mb-3 flex items-center gap-2 text-sm font-extrabold text-brand-dark">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-brand-primary" aria-hidden="true"><i class="fas fa-clipboard-check text-xs"></i></span>
+                        Compliance verification
+                    </h2>
+                    <p id="documents-help" class="mb-4 text-xs leading-relaxed text-brand-medium sm:text-sm">
+                        PDF or image (JPEG, PNG), <span class="font-semibold text-brand-dark">up to 10 MB each</span>. Drag and drop or click each zone. Clear scans avoid delays.
                     </p>
                 </div>
 
@@ -385,34 +398,6 @@
 
     @include('partials.auth-registration-scripts', ['fileInputs' => true])
     <script>
-        (function () {
-            document.querySelectorAll('[data-password-toggle]').forEach(function (btn) {
-                var fieldId = btn.getAttribute('data-password-toggle');
-                var input = fieldId ? document.getElementById(fieldId) : null;
-                var icon = btn.querySelector('i');
-                if (!input || !icon) return;
-                var isConfirm = fieldId === 'password_confirmation';
-                function setLabel(visible) {
-                    if (isConfirm) {
-                        btn.setAttribute('aria-label', visible ? 'Hide confirm password' : 'Show confirm password');
-                    } else {
-                        btn.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
-                    }
-                }
-                function sync() {
-                    var visible = input.type === 'text';
-                    btn.setAttribute('aria-pressed', visible ? 'true' : 'false');
-                    setLabel(visible);
-                    icon.className = visible ? 'fas fa-eye-slash text-base' : 'fas fa-eye text-base';
-                }
-                btn.addEventListener('click', function () {
-                    input.type = input.type === 'password' ? 'text' : 'password';
-                    sync();
-                });
-                sync();
-            });
-        })();
-
         (function () {
             var MAX_BYTES = 10485760;
             var ACCEPT_EXT = /\.(pdf|jpe?g|png)$/i;

@@ -7,16 +7,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @if($showPortalPublicNav)
-        @include('partials.central-public-head', ['pageTitle' => 'Explore stays | IMPASUGONG TOURISM'])
-    @else
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-        @include('partials.tenant-favicon')
-        <title>Properties - Impasugong Accommodations</title>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    @php
+        $portalDirectory = $portalDirectory ?? false;
+        $showClientNav = auth()->user()?->isClient() === true;
+        $showPortalPublicNav = $portalDirectory && ! auth()->check();
+        $showLegacyNav = ! $showClientNav && ! $showPortalPublicNav;
+    @endphp
+    @include('partials.tenant-favicon')
+    <title>Properties - Impasugong Accommodations</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @include('partials.app-vite-head')
     <style>
         @if($showPortalPublicNav)
             @include('partials.central-portal-shell-styles')
@@ -150,7 +152,7 @@
             </form>
             @else
             <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="nav-btn secondary">Login</a>
-            <a href="{{ $portalDirectory ? route('register.guest') : route('register') }}" class="nav-btn primary">Register</a>
+            <a href="{{ route('register') }}" class="nav-btn primary">Register</a>
             @endauth
         </div>
     </nav>
@@ -229,33 +231,50 @@
         </form>
 
         @if(isset($accommodations) && count($accommodations) > 0)
-            <section class="explore-stays-results" aria-label="Property listings">
-                <div class="explore-stays-grid">
-                    @foreach($accommodations as $accommodation)
-                        <article class="explore-stay-card">
-                            <a
-                                href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.show', $accommodation) : route('accommodations.show', $accommodation) }}"
-                                class="explore-stay-card__media"
-                            >
-                                @if($accommodation->primary_image)
-                                    <img src="{{ $accommodation->primary_image_url }}" alt="{{ $accommodation->name }}" loading="lazy" decoding="async">
-                                @else
-                                    <img src="/COMMUNAL.jpg" alt="{{ $accommodation->name }}" loading="lazy" decoding="async">
-                                @endif
-                                <span class="explore-stay-card__type">{{ str_replace('-', ' ', $accommodation->type) }}</span>
-                            </a>
-                            <div class="explore-stay-card__body">
-                                <div class="explore-stay-card__head">
-                                    <h2 class="explore-stay-card__title">
-                                        <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.show', $accommodation) : route('accommodations.show', $accommodation) }}" class="text-inherit no-underline hover:underline">
-                                            {{ $accommodation->name }}
-                                        </a>
-                                    </h2>
-                                    @guest
-                                    <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="explore-stay-card__fav property-favorite" title="Sign in to save to wishlist" aria-label="Sign in to save to wishlist"><i class="fa-regular fa-heart" aria-hidden="true"></i></a>
-                                    @else
-                                    <button type="button" class="explore-stay-card__fav property-favorite" title="Add to favorites" aria-label="Add to favorites"><i class="fa-regular fa-heart" aria-hidden="true"></i></button>
-                                    @endguest
+            <div class="guest-property-grid">
+                @foreach($accommodations as $accommodation)
+                    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="relative h-44 overflow-hidden">
+                            <x-accommodation-image :accommodation="$accommodation" :alt="$accommodation->name" class="h-full w-full object-cover transition duration-300 hover:scale-105" />
+                            <span class="absolute left-3 top-3 rounded-full bg-green-700 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">{{ str_replace('-', ' ', $accommodation->type) }}</span>
+                            @guest
+                            <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="property-favorite absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-base shadow-sm transition hover:scale-110 hover:bg-green-50 text-red-500" title="Sign in to save to wishlist" aria-label="Sign in to save to wishlist"><i class="fa-regular fa-heart" aria-hidden="true"></i></a>
+                            @else
+                            <button type="button" class="property-favorite absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-base shadow-sm transition hover:scale-110 hover:bg-green-50 text-gray-600" title="Add to favorites" aria-label="Add to favorites"><i class="fa-regular fa-heart" aria-hidden="true"></i></button>
+                            @endguest
+                        </div>
+                        
+                        <div class="p-4">
+                            <div class="mb-2 text-xl font-bold text-green-700">₱{{ number_format($accommodation->price_per_night, 0, '.', ',') }} <span class="text-sm font-normal text-gray-500">/ night</span></div>
+                            <h3 class="mb-2 text-lg font-semibold text-gray-800">{{ $accommodation->name }}</h3>
+                            <div class="mb-3 flex items-center gap-2 text-sm text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                {{ $accommodation->address }}, Brgy. {{ $accommodation->barangay }}
+                            </div>
+                            
+                            <p class="mb-3 line-clamp-2 text-sm text-gray-600">{{ Str::limit($accommodation->description, 100) }}</p>
+                            
+                            <div class="mb-3 flex flex-wrap gap-3 border-t border-gray-200 pt-3">
+                                <div class="flex items-center gap-1.5 text-xs text-gray-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    {{ $accommodation->bedrooms ?? 1 }} Bed
+                                </div>
+                                <div class="flex items-center gap-1.5 text-xs text-gray-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                                    </svg>
+                                    {{ $accommodation->bathrooms ?? 1 }} Bath
+                                </div>
+                                <div class="flex items-center gap-1.5 text-xs text-gray-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                    {{ $accommodation->max_guests ?? 2 }} Guests
                                 </div>
                                 <p class="explore-stay-card__location">
                                     <i class="fa-solid fa-location-dot" aria-hidden="true"></i>

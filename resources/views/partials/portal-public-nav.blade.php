@@ -4,138 +4,50 @@
     $active = $active ?? '';
     $navLayout = $navLayout ?? 'default';
     $navVariant = $navVariant ?? 'public';
-    $publicOrigin = $navVariant === 'admin' ? PortalDetector::publicPortalOrigin(request()) : null;
-    $homeUrl = $publicOrigin ? rtrim($publicOrigin, '/').'/' : route('portal.landing');
+    $isAdminHeader = $navVariant === 'admin' || PortalDetector::isAdminPortal(request());
+    $publicOrigin = $isAdminHeader ? PortalDetector::publicPortalOrigin(request()) : null;
     $exploreUrl = $publicOrigin ? $publicOrigin.'/explore/accommodations' : route('portal.accommodations.index');
     $aboutUrl = $publicOrigin ? $publicOrigin.'/about' : route('portal.about');
     $registerOwnerUrl = $publicOrigin ? $publicOrigin.'/register/owner' : route('register.owner');
     $linkBase = 'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2';
     $linkDefault = 'text-brand-dark';
     $linkActive = 'border-b-2 border-brand-primary text-brand-primary bg-brand-soft/50';
-    $registerHighlight = $registerHighlight ?? '';
-    $hostRegisterClasses = $registerHighlight === 'host'
-        ? 'ring-2 ring-brand-dark ring-offset-2 ring-offset-white dark:ring-offset-slate-900 '
-        : '';
-    $brandSubtitle = $navVariant === 'admin'
-        ? '| Staff portal · port '.PortalDetector::adminPort()
-        : '| '.($municipalityName ?? 'Impasug-ong').' stays';
-    $loginLabel = $navVariant === 'admin' ? 'Staff login' : 'Login';
 @endphp
-@if ($navLayout === 'minimal')
-<style>
-    @include('partials.navbar-tribal-shell-styles')
-    @include('partials.portal-public-nav-minimal-styles')
-</style>
-<nav class="portal-nav-minimal public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
-    @include('partials.navbar-tribal-accent')
-    <div class="portal-nav-minimal__inner">
-        @include('partials.navbar-brand-block', [
-            'brandHref' => route('portal.landing'),
-            'brandSubtitle' => $brandSubtitle,
-        ])
-        <ul class="portal-nav-minimal__links">
-            <li>
-                <a
-                    href="{{ $homeUrl }}"
-                    class="portal-nav-minimal__link {{ in_array($active, ['home', 'landing'], true) ? 'is-active' : '' }}"
-                    @if(in_array($active, ['home', 'landing'], true)) aria-current="page" @endif
-                ><i class="fas fa-house" aria-hidden="true"></i> Home</a>
-            </li>
-            <li>
-                <a
-                    href="{{ $exploreUrl }}"
-                    class="portal-nav-minimal__link {{ $active === 'browse' ? 'is-active' : '' }}"
-                    @if($active === 'browse') aria-current="page" @endif
-                ><i class="fas fa-compass" aria-hidden="true"></i> Explore</a>
-            </li>
-            <li>
-                <a
-                    href="{{ $aboutUrl }}"
-                    class="portal-nav-minimal__link {{ $active === 'about' ? 'is-active' : '' }}"
-                    @if($active === 'about') aria-current="page" @endif
-                ><i class="fas fa-circle-info" aria-hidden="true"></i> About</a>
-            </li>
-        </ul>
-        <div class="portal-nav-minimal__actions">
-            <a href="{{ route('login') }}" class="portal-nav-minimal__action portal-nav-minimal__action--text"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> {{ $loginLabel }}</a>
-            <a
-                href="{{ $registerOwnerUrl }}"
-                class="portal-nav-minimal__action portal-nav-minimal__action--primary {{ $registerHighlight === 'host' ? 'is-highlighted' : '' }}"
-                @if($registerHighlight === 'host') aria-current="page" @endif
-            ><i class="fas fa-home" aria-hidden="true"></i> Host</a>
+<nav class="portal-public-nav fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col items-stretch gap-3 overflow-visible border-b-2 border-brand-soft bg-white/95 px-4 py-3 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md sm:px-5 md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-8 md:px-8 md:py-3.5 lg:px-10">
+    <a href="{{ route('portal.landing') }}" class="portal-public-nav__brand flex min-w-0 items-center justify-center gap-2.5 no-underline rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 sm:justify-start md:gap-3.5">
+        <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM" class="h-12 w-auto shrink-0 rounded-xl object-contain sm:h-14 md:h-[3.75rem] lg:h-16">
+        <div class="portal-public-nav__brand-text min-w-0 leading-tight">
+            <span class="block truncate text-sm font-extrabold tracking-tight text-brand-dark sm:text-base md:text-lg">IMPASUGONG TOURISM</span>
+            @if($isAdminHeader)
+                <span class="block text-[0.68rem] font-medium leading-none text-brand-medium md:text-[0.75rem]">| Staff portal · port {{ PortalDetector::adminPort() }}</span>
+            @endif
         </div>
-    </div>
-    <ul class="portal-nav-minimal__mobile-links" aria-label="Sections">
+    </a>
+    <ul class="order-3 flex w-full list-none items-center justify-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:order-none md:w-auto md:justify-center md:gap-3 lg:gap-5">
         <li>
-            <a
-                href="{{ $homeUrl }}"
-                class="portal-nav-minimal__link {{ in_array($active, ['home', 'landing'], true) ? 'is-active' : '' }}"
-                @if(in_array($active, ['home', 'landing'], true)) aria-current="page" @endif
-            ><i class="fas fa-house" aria-hidden="true"></i> Home</a>
+            <a href="{{ $exploreUrl }}" class="{{ $linkBase }} whitespace-nowrap {{ $active === 'browse' ? $linkActive : $linkDefault }}">
+                <i class="fas fa-compass text-sm opacity-90"></i> Explore
+            </a>
         </li>
-        <li>
-            <a
-                href="{{ $exploreUrl }}"
-                class="portal-nav-minimal__link {{ $active === 'browse' ? 'is-active' : '' }}"
-                @if($active === 'browse') aria-current="page" @endif
-            ><i class="fas fa-compass" aria-hidden="true"></i> Explore</a>
-        </li>
-        <li>
-            <a
-                href="{{ $aboutUrl }}"
-                class="portal-nav-minimal__link {{ $active === 'about' ? 'is-active' : '' }}"
-                @if($active === 'about') aria-current="page" @endif
-            ><i class="fas fa-circle-info" aria-hidden="true"></i> About</a>
-        </li>
+        @unless($isAdminHeader)
+            <li>
+                <a href="{{ $aboutUrl }}" class="{{ $linkBase }} whitespace-nowrap {{ $active === 'about' ? $linkActive : $linkDefault }}">
+                    <i class="fas fa-circle-info text-sm opacity-90"></i> About Us
+                </a>
+            </li>
+        @endunless
     </ul>
-</nav>
-@else
-<style>
-    @include('partials.navbar-tribal-shell-styles')
-    :root {
-        --app-topbar-height: 84px;
-        --app-topbar-height-mobile: 72px;
-        --app-main-top-offset: 100px;
-        --portal-public-nav-offset: var(--app-main-top-offset);
-        --portal-content-below-nav: calc(var(--app-topbar-height, 84px) + clamp(1.25rem, 2vw, 1.875rem));
-    }
-    @media (max-width: 768px) {
-        :root {
-            --app-main-top-offset: 88px;
-            --portal-content-below-nav: calc(var(--app-topbar-height-mobile, 72px) + clamp(1.25rem, 2vw, 1.875rem));
-        }
-    }
-</style>
-<nav class="public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col items-stretch justify-between bg-white/95 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md md:flex-row md:items-center">
-    @include('partials.navbar-tribal-accent')
-    @include('partials.navbar-brand-block', [
-        'brandHref' => route('portal.landing'),
-        'brandSubtitle' => $brandSubtitle,
-    ])
-    <ul class="hidden list-none items-center gap-2 md:flex lg:gap-5">
-        <li>
-            <a href="{{ $homeUrl }}" class="{{ $linkBase }} {{ in_array($active, ['home', 'landing'], true) ? $linkActive : $linkDefault }}">
-                <i class="fas fa-house text-sm opacity-90" aria-hidden="true"></i> Home
-            </a>
-        </li>
-        <li>
-            <a href="{{ $exploreUrl }}" class="{{ $linkBase }} {{ $active === 'browse' ? $linkActive : $linkDefault }}">
-                <i class="fas fa-compass text-sm opacity-90" aria-hidden="true"></i> Explore
-            </a>
-        </li>
-        <li>
-            <a href="{{ $aboutUrl }}" class="{{ $linkBase }} {{ $active === 'about' ? $linkActive : $linkDefault }}">
-                <i class="fas fa-circle-info text-sm opacity-90" aria-hidden="true"></i> About Us
-            </a>
-        </li>
-    </ul>
-    <div class="flex flex-wrap items-center gap-2.5">
-        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-4 py-2 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
-            <i class="fas fa-sign-in-alt text-sm"></i> {{ $loginLabel }}
+    <div class="order-2 flex shrink-0 flex-nowrap items-center justify-center gap-2 sm:gap-2.5 md:order-none md:justify-self-end md:justify-end">
+        <a href="{{ route('login') }}" class="ui-btn ui-btn-secondary ui-btn-sm">
+            <i class="fas fa-sign-in-alt text-sm" aria-hidden="true"></i>
+            <span>@if($isAdminHeader) Staff login @else Login @endif</span>
         </a>
-        <a href="{{ $registerOwnerUrl }}" {{ $registerHighlight === 'host' ? 'aria-current="page"' : '' }} class="{{ $hostRegisterClasses }}inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_3px_12px_rgba(46,125,50,0.25)] transition-all hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
-            <i class="fas fa-home text-sm" aria-hidden="true"></i> Host
-        </a>
+        @include('partials.register-choice-menu', [
+            'guestUrl' => $registerGuestUrl,
+            'hostUrl' => $registerOwnerUrl,
+            'buttonClass' => 'ui-btn ui-btn-primary ui-btn-sm cursor-pointer select-none',
+            'menuClass' => 'absolute right-0 z-[1100] mt-2 w-[min(18rem,calc(100vw-2rem))]',
+        ])
     </div>
 </nav>
 @endif

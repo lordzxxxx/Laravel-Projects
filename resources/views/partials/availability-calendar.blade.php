@@ -8,20 +8,21 @@
 @once
 <style>
     .availability-calendar-wrap {
-        margin: 0;
+        margin-top: 0;
+        width: 100%;
+        max-width: 21.5rem;
+        margin-inline: auto;
+    }
+    .availability-calendar-wrap .availability-controls {
         display: flex;
         flex-direction: column;
-        gap: 0.65rem;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 14px;
+        max-width: 100%;
     }
-
-    .avail-cal-toolbar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem 0.75rem;
-        padding-bottom: 0.65rem;
-        border-bottom: 1px solid var(--gray-200, #e5e7eb);
+    .availability-calendar-wrap .availability-controls__unit {
+        width: 100%;
     }
 
     .avail-cal-toolbar__unit {
@@ -41,15 +42,24 @@
     }
 
     .availability-calendar-wrap .availability-select {
+        display: block;
         width: 100%;
-        padding: 0.4rem 0.55rem;
-        border-radius: 0.375rem;
+        min-width: 0;
+        max-width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
         border: 1px solid var(--gray-200, #e5e7eb);
-        font-size: 0.8125rem;
-        font-weight: 500;
+        font-size: 0.88rem;
+        line-height: 1.35;
+        background: #fff;
         color: var(--gray-800, #1f2937);
-        background: var(--app-surface-bg, #fff);
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .availability-calendar-wrap .availability-controls__month {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
     }
 
     .availability-calendar-wrap .availability-select:focus {
@@ -66,25 +76,31 @@
     }
 
     .availability-calendar-wrap .month-nav-btn {
-        width: 1.75rem;
-        height: 1.75rem;
-        border-radius: 0.375rem;
-        border: 1px solid var(--gray-200, #e5e7eb);
-        background: #fff;
-        color: var(--gray-700, #374151);
-        font-size: 0.75rem;
-        font-weight: 600;
+        flex-shrink: 0;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 10px;
+        border: 1px solid rgba(16, 124, 89, 0.35);
+        background: #ecfdf5;
+        color: #065f46;
+        font-weight: 700;
+        font-size: 1rem;
+        line-height: 1;
         cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+        transition: background 0.15s ease, transform 0.15s ease;
     }
-
     .availability-calendar-wrap .month-nav-btn:hover {
-        border-color: var(--green-primary, #457359);
-        background: var(--green-white, #edf4ea);
+        background: #d1fae5;
+        transform: scale(1.04);
+    }
+    .availability-month-label {
+        flex: 1 1 auto;
+        min-width: 0;
+        text-align: center;
+        font-weight: 700;
         color: var(--green-dark, #14532d);
+        font-size: 0.95rem;
+        white-space: nowrap;
     }
 
     .availability-month-label {
@@ -103,50 +119,54 @@
 
     .availability-grid {
         display: grid;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
-        gap: 0.25rem;
-        width: 100%;
-        max-width: 18.5rem;
+        grid-template-columns: repeat(7, 2.5rem);
+        grid-auto-rows: 2.5rem;
+        gap: 0.35rem;
+        width: fit-content;
+        max-width: 100%;
+        align-items: center;
+        justify-items: center;
     }
 
     .availability-dow {
-        font-size: 0.5625rem;
-        font-weight: 600;
-        letter-spacing: 0.06em;
+        width: 2.5rem;
+        height: auto;
+        font-size: 0.65rem;
+        font-weight: 700;
         text-transform: uppercase;
         text-align: center;
-        color: var(--gray-400, #9ca3af);
-        padding: 0 0 0.2rem;
+        color: var(--gray-500, #6b7280);
+        padding: 2px 0 4px;
+        line-height: 1.2;
     }
 
     .availability-day {
-        width: 100%;
-        aspect-ratio: 1;
-        max-height: 1.65rem;
-        min-height: 0;
+        box-sizing: border-box;
+        width: 2.5rem;
+        height: 2.5rem;
+        min-width: 2.5rem;
+        min-height: 2.5rem;
+        max-width: 2.5rem;
+        max-height: 2.5rem;
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 0.3rem;
-        font-size: 0.6875rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
         font-weight: 600;
-        color: var(--gray-700, #374151);
-        background: #fff;
-        border: 1px solid var(--gray-200, #e5e7eb);
-        transition: border-color 0.12s ease, background 0.12s ease;
+        line-height: 1;
+        color: var(--gray-800, #1f2937);
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.25);
     }
-
     .availability-day.empty {
         visibility: hidden;
         background: transparent;
         border: none;
-        min-height: 0;
+        width: 2.5rem;
+        height: 2.5rem;
     }
-
-    .availability-day:not(.empty):not(.blocked) {
-        background: var(--gray-50, #f9fafb);
-    }
-
     .availability-day.blocked {
         background: #fef2f2;
         border-color: #fecaca;
@@ -154,10 +174,36 @@
     }
 
     .availability-day.today {
-        border-color: var(--green-primary, #457359);
-        box-shadow: 0 0 0 1px color-mix(in srgb, var(--green-primary, #457359) 35%, transparent);
-        color: var(--green-dark, #14532d);
-        font-weight: 700;
+        outline: 2px solid var(--green-primary, #22c55e);
+        outline-offset: 0;
+    }
+
+    @media (min-width: 480px) {
+        .availability-calendar-wrap {
+            max-width: 23.5rem;
+        }
+        .availability-grid {
+            grid-template-columns: repeat(7, 2.75rem);
+            grid-auto-rows: 2.75rem;
+            gap: 0.4rem;
+        }
+        .availability-dow {
+            width: 2.75rem;
+        }
+        .availability-day {
+            width: 2.75rem;
+            height: 2.75rem;
+            min-width: 2.75rem;
+            min-height: 2.75rem;
+            max-width: 2.75rem;
+            max-height: 2.75rem;
+            font-size: 0.84rem;
+            border-radius: 9px;
+        }
+        .availability-day.empty {
+            width: 2.75rem;
+            height: 2.75rem;
+        }
     }
 
     .availability-legend {
@@ -325,10 +371,10 @@
 </style>
 @endonce
 
-<div class="availability-calendar-wrap{{ ($compact ?? false) ? ' avail-cal--compact' : '' }}">
-    <div class="avail-cal-toolbar">
-        <div class="avail-cal-toolbar__unit">
-            <label for="{{ $calendarId }}Accommodation" class="avail-cal-label">Unit</label>
+<div class="availability-calendar-wrap">
+    <div class="availability-controls">
+        <div class="availability-controls__unit">
+            <label for="{{ $calendarId }}Accommodation" class="sr-only">Select unit</label>
             <select id="{{ $calendarId }}Accommodation"
                     class="availability-select"
                     aria-label="Select unit for availability calendar">
@@ -337,14 +383,10 @@
                 @endforeach
             </select>
         </div>
-        <div class="avail-cal-toolbar__nav" role="group" aria-label="Change month">
-            <button type="button" class="month-nav-btn" id="{{ $calendarId }}Prev" aria-label="Previous month">
-                <i class="fas fa-chevron-left" aria-hidden="true"></i>
-            </button>
+        <div class="availability-controls__month" role="group" aria-label="Change month">
+            <button type="button" class="month-nav-btn" id="{{ $calendarId }}Prev" aria-label="Previous month">&lt;</button>
             <div class="availability-month-label" id="{{ $calendarId }}MonthLabel" aria-live="polite">Month</div>
-            <button type="button" class="month-nav-btn" id="{{ $calendarId }}Next" aria-label="Next month">
-                <i class="fas fa-chevron-right" aria-hidden="true"></i>
-            </button>
+            <button type="button" class="month-nav-btn" id="{{ $calendarId }}Next" aria-label="Next month">&gt;</button>
         </div>
     </div>
 

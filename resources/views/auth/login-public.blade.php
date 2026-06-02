@@ -67,11 +67,46 @@
             color: #1b5e20 !important;
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95), 0 0 20px rgba(255, 255, 255, 0.45);
         }
+        .auth-gateway-labels {
+            margin-top: 0.5rem;
+        }
+        .auth-public-login-main {
+            margin-top: 2rem;
+        }
+        .auth-public-welcome-copy {
+            margin-bottom: 1.25rem;
+        }
+        @media (min-width: 640px) {
+            .auth-gateway-labels {
+                margin-top: 0.625rem;
+            }
+            .auth-public-login-main {
+                margin-top: 2.25rem;
+            }
+            .auth-public-welcome-copy {
+                margin-bottom: 1.5rem;
+            }
+        }
+        @media (min-width: 1024px) {
+            .auth-gateway-labels {
+                margin-top: 0.75rem;
+            }
+            .auth-public-login-main {
+                margin-top: 2.5rem;
+            }
+        }
         /* White card: ~10% of ~64px reference blur (“frosted” layer) */
         .auth-shell.auth-shell-public-glass {
             background: rgba(255, 255, 255, 0.87);
             -webkit-backdrop-filter: blur(6.4px);
             backdrop-filter: blur(6.4px);
+        }
+        .auth-card-intro {
+            max-width: 21rem;
+            text-wrap: balance;
+        }
+        .auth-card-intro__place {
+            white-space: nowrap;
         }
         /* Page background: see partials/auth-public-carousel-bg (rotating photos + 60% white scrim) */
     </style>
@@ -89,23 +124,25 @@
                     <img src="{{ asset('images/love-impasugong-transparent.png') }}" alt="Love Impasugong" class="auth-partner-img" width="260" height="174" loading="eager" decoding="async">
                     <img src="{{ asset('Lgu Socmed Template-02.png') }}" alt="LGU {{ $municipality }}" class="auth-partner-img auth-partner-img--wide" width="400" height="140" loading="lazy" decoding="async">
                 </div>
-                {{-- Clear separation from logos: hero copy lowered with even spacing between each line/block --}}
-                <div class="auth-public-hero-copy mx-auto mt-12 max-w-2xl space-y-5 px-4 text-center sm:mt-16 sm:space-y-6 sm:px-6 lg:mt-[4.25rem] lg:max-w-3xl lg:space-y-7">
+                {{-- Gateway labels sit directly beneath the official partner marks. --}}
+                <div class="auth-public-hero-copy auth-gateway-labels mx-auto max-w-2xl space-y-2 px-4 text-center sm:px-6 lg:max-w-3xl">
                     <p class="text-[0.7rem] font-bold uppercase tracking-[0.22em] sm:text-xs sm:tracking-[0.26em]">
                         Impasugong Tourism · Hospitality gateway
                     </p>
                     <p class="text-[0.68rem] font-bold uppercase tracking-[0.26em] sm:text-[0.72rem]">Trusted stays</p>
-                    <h2 id="public-welcome-heading" class="text-xl font-extrabold leading-snug tracking-tight sm:text-2xl lg:text-[1.625rem]">{{ $municipality }} welcomes you</h2>
-                    <p class="mx-auto max-w-xl text-sm font-medium leading-[1.65] text-[#1b5e20] sm:text-[0.975rem] sm:leading-relaxed lg:text-base">Municipality-reviewed listings. Plan your visit, message hosts, and manage reservations in one place.</p>
                 </div>
             </header>
 
-            <main id="public-signin-main" tabindex="-1" class="mt-10 flex w-full flex-col items-center pb-8 sm:mt-12 lg:mt-14 sm:pb-12">
+            <main id="public-signin-main" tabindex="-1" class="auth-public-login-main flex w-full flex-col items-center pb-8 sm:pb-12">
+                <div class="auth-public-hero-copy auth-public-welcome-copy mx-auto max-w-2xl space-y-3 px-4 text-center sm:px-6">
+                    <h2 id="public-welcome-heading" class="text-xl font-extrabold leading-snug tracking-tight sm:text-2xl lg:text-[1.625rem]">{{ $municipality }} welcomes you</h2>
+                    <p class="mx-auto max-w-xl text-sm font-medium leading-[1.65] text-[#1b5e20] sm:text-[0.975rem] sm:leading-relaxed lg:text-base">Municipality-reviewed listings. Plan your visit, message hosts, and manage reservations in one place.</p>
+                </div>
                 <div class="auth-shell auth-shell-public-glass w-full max-w-md rounded-2xl border border-emerald-200/65 p-7 shadow-[0_20px_50px_-12px_rgba(27,94,32,0.14)] ring-1 ring-emerald-900/[0.05] sm:p-9">
-                    <header class="mb-7 px-0.5 text-center pt-2 sm:mb-8 sm:text-left">
+                    <header class="mb-7 px-0.5 pt-2 text-center sm:mb-8">
                         <h1 class="text-2xl font-extrabold tracking-tight text-[#14532d] sm:text-[1.65rem]">Welcome back</h1>
-                        <p class="mt-4 text-sm font-medium leading-relaxed text-[#1b5e20] sm:mt-[1.125rem] sm:text-[0.9375rem]">
-                            Sign in for verified stays and bookings in <span class="font-semibold text-[#14532d]">{{ $municipality }}</span>.
+                        <p class="auth-card-intro mt-4 text-sm font-medium leading-relaxed text-[#1b5e20] sm:mt-[1.125rem] sm:text-[0.9375rem]">
+                            Sign in for verified stays and bookings in <span class="auth-card-intro__place font-semibold text-[#14532d]">{{ $municipality }}</span>.
                         </p>
                     </header>
 
@@ -186,12 +223,13 @@
                     </form>
 
                     <div class="mt-8 space-y-4 border-t border-emerald-200/80 pb-1 pt-8 text-center text-xs font-medium text-[#1b5e20] sm:mt-9 sm:space-y-5 sm:pt-9 sm:text-[0.8125rem]">
-                        <p>
-                            New here?
-                            <a href="{{ route('register.guest') }}" class="font-bold text-[#14532d] underline decoration-[#1b5e20] decoration-2 underline-offset-2 hover:text-[#0d4710]">Guest registration</a>
-                            <span class="text-emerald-700/55" aria-hidden="true"> · </span>
-                            <a href="{{ route('register.owner') }}" class="font-bold text-[#14532d] underline decoration-[#1b5e20] decoration-2 underline-offset-2 hover:text-[#0d4710]">Host onboarding</a>
-                        </p>
+                        <div class="flex flex-col items-center justify-center gap-3">
+                            <p>New here?</p>
+                            @include('partials.register-choice-menu', [
+                                'buttonClass' => 'inline-flex items-center gap-2 rounded-full border border-brand-soft bg-white/85 px-4 py-2 text-sm font-extrabold text-brand-dark shadow-sm transition hover:border-brand-primary hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
+                                'menuClass' => 'absolute bottom-full left-1/2 z-30 mb-2 w-72 -translate-x-1/2',
+                            ])
+                        </div>
                         <p>
                             <a href="{{ url('/') }}" class="inline-flex items-center justify-center gap-1.5 font-bold text-[#166534] underline decoration-brand-dark/30 underline-offset-2 hover:text-[#14532d]">
                                 <i class="fas fa-chevron-left text-[0.65rem]" aria-hidden="true"></i>

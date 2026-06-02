@@ -1,64 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    @include('partials.tenant-favicon')
-    <title>Monthly Guests Catered Report - {{ $monthName }}</title>
-    <style>
-        @include('reports.partials.municipal-pdf-header-styles')
-        @include('reports.partials.municipal-pdf-body-styles')
-        @include('reports.partials.municipal-pdf-footer-styles')
-    </style>
-</head>
-<body>
-    @include('reports.partials.municipal-pdf-header', [
-        'pdfReportTitle' => 'Monthly Guests Catered Report',
-        'pdfReportSubtitle' => $monthName,
-    ])
+@include('reports.partials.municipal-pdf-open', [
+    'pdfOrientation' => 'portrait',
+    'pdfReportTitle' => 'Monthly Guests Catered Report',
+    'pdfReportSubtitle' => 'Reporting month: '.$monthName,
+    'documentTitle' => 'Monthly Guests Report — '.$monthName,
+])
 
-    <div class="pdf-body">
-        <table class="pdf-kpi-row pdf-kpi-row--two">
+<table class="summary">
+    <tr>
+        <td class="text-center"><strong>{{ number_format((int) $monthlyGuests) }}</strong><br>Guests Catered</td>
+        <td class="text-center"><strong>{{ number_format((int) $monthlyBookings) }}</strong><br>Total Bookings</td>
+        <td class="text-center"><strong>PHP {{ number_format((float) $monthlySales, 2) }}</strong><br>Monthly Sales</td>
+    </tr>
+</table>
+
+@if($dailyBreakdown->count() > 0)
+    <table class="report-table">
+        <thead>
             <tr>
-                <td>
-                    <div class="kpi-title">People catered</div>
-                    <div class="kpi-value">{{ number_format((int) $monthlyGuests) }}</div>
-                </td>
-                <td>
-                    <div class="kpi-title">Total bookings</div>
-                    <div class="kpi-value">{{ number_format((int) $monthlyBookings) }}</div>
-                </td>
+                <th>Date</th>
+                <th class="text-right">Bookings</th>
+                <th class="text-right">Guests</th>
             </tr>
-        </table>
+        </thead>
+        <tbody>
+            @foreach($dailyBreakdown as $row)
+                <tr>
+                    <td>{{ \Carbon\Carbon::parse($row->report_date)->format('M d, Y') }}</td>
+                    <td class="text-right">{{ (int) $row->booking_count }}</td>
+                    <td class="text-right">{{ (int) $row->total_guests }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@else
+    <p class="text-center" style="padding: 18px 0;">No qualified bookings found for this month.</p>
+@endif
 
-        <div class="pdf-section">
-            <div class="pdf-section__title">Daily breakdown</div>
-            @if($dailyBreakdown->count() > 0)
-                <table class="pdf-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th class="num">Bookings</th>
-                            <th class="num">Guests catered</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($dailyBreakdown as $row)
-                            <tr>
-                                <td>{{ \Carbon\Carbon::parse($row->report_date)->format('M d, Y') }}</td>
-                                <td class="num">{{ (int) $row->booking_count }}</td>
-                                <td class="num">{{ (int) $row->total_guests }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <table class="pdf-table report-empty">
-                    <tbody>
-                        <tr><td class="pdf-empty">No qualified bookings found for this month.</td></tr>
-                    </tbody>
-                </table>
-            @endif
-        </div>
-    </div>
-</body>
-</html>
+@include('reports.partials.municipal-pdf-footer', [
+    'pdfFooterLeftLabel' => 'Generated:',
+    'pdfFooterLeftValue' => now('Asia/Manila')->format('M d, Y h:i A'),
+    'pdfFooterCenterLabel' => 'Period:',
+    'pdfFooterCenterValue' => $monthName,
+])
+
+@include('reports.partials.municipal-pdf-close')

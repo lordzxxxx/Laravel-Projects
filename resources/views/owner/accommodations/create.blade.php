@@ -180,7 +180,7 @@
                         <div class="sm:col-span-2">
                             <label for="images" class="mb-2 block text-sm font-semibold text-gray-700">Room Photos (Multiple)</label>
                             <input id="images" name="images[]" type="file" accept="image/*" multiple class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm">
-                            <p class="mt-1 text-xs text-gray-500">Upload up to 10 photos (JPG, PNG, or WebP, max 5MB each).</p>
+                            <p class="mt-1 text-xs text-gray-500">Upload up to {{ \App\Models\Accommodation::MAX_GALLERY_IMAGES }} photos (JPG, PNG, or WebP, max 5MB each).</p>
                         </div>
                     </div>
                 </section>

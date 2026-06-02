@@ -165,7 +165,7 @@ class AccommodationController extends Controller
             'house_rules' => 'nullable|string',
             'check_in_instructions' => 'nullable|string',
             'primary_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'images' => 'nullable|array|max:10',
+            'images' => 'nullable|array|max:'.Accommodation::MAX_GALLERY_IMAGES,
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
@@ -185,13 +185,13 @@ class AccommodationController extends Controller
 
         // Handle gallery images upload
         if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $imageFile) {
+            foreach (array_slice($request->file('images'), 0, Accommodation::MAX_GALLERY_IMAGES) as $imageFile) {
                 $galleryImages[] = $imageFile->store('accommodations', 'public');
             }
         }
 
         if (! empty($galleryImages)) {
-            $validated['images'] = $galleryImages;
+            $validated['images'] = array_slice($galleryImages, 0, Accommodation::MAX_GALLERY_IMAGES);
         }
 
         if (empty($validated['primary_image']) && ! empty($galleryImages)) {
@@ -244,7 +244,7 @@ class AccommodationController extends Controller
             'check_in_instructions' => 'nullable|string',
             'is_available' => 'nullable|boolean',
             'primary_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'images' => 'nullable|array|max:10',
+            'images' => 'nullable|array|max:'.Accommodation::MAX_GALLERY_IMAGES,
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
@@ -269,11 +269,11 @@ class AccommodationController extends Controller
             }
 
             $galleryImages = [];
-            foreach ($request->file('images') as $imageFile) {
+            foreach (array_slice($request->file('images'), 0, Accommodation::MAX_GALLERY_IMAGES) as $imageFile) {
                 $galleryImages[] = $imageFile->store('accommodations', 'public');
             }
 
-            $validated['images'] = $galleryImages;
+            $validated['images'] = array_slice($galleryImages, 0, Accommodation::MAX_GALLERY_IMAGES);
 
             if (! isset($validated['primary_image']) && ! empty($galleryImages)) {
                 $validated['primary_image'] = $galleryImages[0];

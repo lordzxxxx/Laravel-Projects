@@ -12,6 +12,9 @@ class Accommodation extends Model
     use HasFactory;
     use UsesTenantConnectionForTenantData;
 
+    /** Maximum gallery photos per unit (excluding cover / primary_image). */
+    public const MAX_GALLERY_IMAGES = 20;
+
     protected $fillable = [
         'owner_id',
         'tenant_id',
@@ -164,7 +167,11 @@ class Accommodation extends Model
             $path = substr($path, strlen('storage/'));
         }
 
-        return asset('storage/'.$path);
+        if (! \Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+            return null;
+        }
+
+        return url('storage/'.$path);
     }
 
     /**

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @include('partials.central-public-head', ['pageTitle' => 'About Us | IMPASUGONG TOURISM'])
+    @include('partials.central-public-head', ['pageTitle' => 'About Impasug-ong Tourism | IMPASUGONG TOURISM'])
 </head>
 <body
     class="flex min-h-screen flex-col font-sans text-brand-dark antialiased bg-cover bg-center bg-fixed"

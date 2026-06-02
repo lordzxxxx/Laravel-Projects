@@ -28,8 +28,6 @@
         <a href="/login" class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-4 py-2 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-primary hover:text-white">
             <i class="fas fa-sign-in-alt text-sm"></i> Login
         </a>
-        <a href="/register" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_3px_12px_rgba(46,125,50,0.25)] transition-all hover:opacity-95 hover:shadow-[0_4px_14px_rgba(46,125,50,0.3)]">
-            <i class="fas fa-user-plus text-sm"></i> Register
-        </a>
+        @include('partials.register-choice-menu')
     </div>
 </nav>

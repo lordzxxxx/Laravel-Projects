@@ -13,8 +13,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['var(--app-font-sans)', 'Inter', ...defaultTheme.fontFamily.sans],
-                display: ['var(--app-font-display)', 'var(--app-font-sans)', 'Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                display: ['Space Grotesk', 'Inter', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 brand: {

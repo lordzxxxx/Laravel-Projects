@@ -236,7 +236,7 @@ class DashboardController extends Controller
             'monthlyGuests' => $report['monthly_guests'],
             'monthlyBookings' => $report['monthly_bookings'],
             'dailyBreakdown' => $report['daily_breakdown'],
-        ]);
+        ])->setPaper('a4', 'portrait');
 
         return $pdf->download('tenant-monthly-sales-report-'.$year.'-'.str_pad((string) $month, 2, '0', STR_PAD_LEFT).'.pdf');
     }
@@ -265,7 +265,7 @@ class DashboardController extends Controller
             'monthlyGuests' => $report['monthly_guests'],
             'monthlyBookings' => $report['monthly_bookings'],
             'dailyBreakdown' => $report['daily_breakdown'],
-        ]);
+        ])->setPaper('a4', 'portrait');
 
         return $pdf->download('tenant-monthly-guests-report-'.$year.'-'.str_pad((string) $month, 2, '0', STR_PAD_LEFT).'.pdf');
     }

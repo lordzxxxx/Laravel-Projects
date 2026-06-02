@@ -51,7 +51,7 @@
                     @continue(!$acc)
                     <article class="overflow-hidden rounded-2xl border border-green-100 bg-white shadow-md">
                         <a href="{{ route('portal.accommodations.show', $acc) }}" class="block aspect-[16/10] bg-gray-100">
-                            <img src="{{ $acc->primary_image_url }}" alt="" class="h-full w-full object-cover hover:opacity-95">
+                            <x-accommodation-image :accommodation="$acc" class="h-full w-full object-cover hover:opacity-95" />
                         </a>
                         <div class="p-4">
                             <h2 class="line-clamp-2 text-base font-bold text-gray-900">{{ $acc->name }}</h2>

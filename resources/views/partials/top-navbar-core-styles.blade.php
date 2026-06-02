@@ -507,57 +507,97 @@ html.dark .navbar .imp-notify-btn {
 @media (max-width: 960px) {
     .navbar {
         grid-template-columns: minmax(0, 1fr) auto;
-        padding: 0 14px;
+        grid-auto-rows: auto;
+        height: auto;
+        min-height: var(--app-topbar-height-mobile, 64px);
+        padding: 10px 14px;
+        align-content: center;
     }
-
-    .navbar > .nav-logo {
-        grid-column: 1;
-        justify-self: start;
+    .navbar.nav-open {
+        align-content: start;
+        max-height: 100dvh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+    .nav-logo {
+        max-width: 100%;
+    }
+    .nav-logo-text,
+    .nav-brand-text,
+    .nav-logo > span {
         min-width: 0;
     }
-
-    .nav-toggle {
-        display: inline-flex;
-        grid-column: 2;
-        justify-self: end;
-        align-self: center;
-    }
+    .nav-toggle { display: inline-flex; order: 2; justify-self: end; }
     .nav-links {
         display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: var(--app-surface-bg, var(--white));
+        grid-column: 1 / -1;
+        position: static;
+        background: var(--white);
         flex-direction: column;
         align-items: stretch;
-        padding: 12px 14px;
+        padding: 12px 0 0;
         gap: 6px;
-        box-shadow: var(--shadow-md, 0 10px 25px rgba(27, 94, 32, 0.12));
-        border-top: 1px solid var(--app-surface-border, var(--green-soft));
-        max-height: calc(100vh - 64px);
-        overflow-y: auto;
+        border-top: 1px solid var(--green-soft);
+        box-shadow: none;
+        max-height: none;
+        overflow: visible;
+        width: 100%;
     }
-    .navbar > .nav-links a { width: 100%; text-shadow: none; }
+    .nav-links a {
+        width: 100%;
+        justify-content: flex-start;
+        white-space: normal;
+    }
     #appNavbar.nav-open .nav-links { display: flex; }
     .nav-actions { display: none; }
     #appNavbar.nav-open .nav-actions {
         display: flex;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        padding: 0 14px 14px;
-        background: var(--app-surface-bg, var(--white));
+        grid-column: 1 / -1;
+        justify-self: stretch;
+        position: static;
+        padding: 10px 0 2px;
+        background: var(--white);
         flex-wrap: wrap;
         gap: 10px;
-        box-shadow: var(--shadow-md, 0 10px 25px rgba(27, 94, 32, 0.12));
-        transform: translateY(calc(100% + 1px));
+        box-shadow: none;
+        transform: none;
+        width: 100%;
+    }
+    #appNavbar.nav-open .nav-actions > * {
+        min-width: 0;
+    }
+    #appNavbar.nav-open .nav-actions form,
+    #appNavbar.nav-open .nav-actions .nav-btn {
+        width: 100%;
+    }
+    #appNavbar.nav-open .nav-actions .nav-btn {
+        justify-content: center;
     }
 }
 
 @media (max-width: 768px) {
-    .navbar:not(.portal-nav-minimal) { padding: 0 12px; height: var(--app-topbar-height-mobile, 64px); }
-    .navbar.portal-nav-minimal { padding-left: 1rem !important; padding-right: 1rem !important; }
+    .navbar { padding: 10px 12px; }
     .user-display { max-width: 170px; }
+}
+
+@media (max-width: 420px) {
+    .nav-logo img {
+        width: 40px;
+        height: 40px;
+    }
+    .nav-logo span,
+    .nav-logo-title {
+        font-size: 0.95rem;
+    }
+    .nav-logo-subtitle,
+    .nav-brand-subtitle {
+        display: none;
+    }
+    .user-display {
+        width: 100%;
+        max-width: 100%;
+    }
+    .user-name {
+        max-width: min(220px, calc(100vw - 110px));
+    }
 }

@@ -8,7 +8,7 @@
     <title>Admin Dashboard - IMPASUGONG TOURISM</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    @vite(['resources/js/app.js', 'resources/css/app.css'])
+    @include('partials.app-vite-head')
     <style>
         @include('admin.partials.admin-shell-styles')
         @include('partials.ui-foundation-styles')
@@ -39,20 +39,24 @@
             gap: 14px;
             margin-bottom: 0;
             width: 100%;
+            align-items: stretch;
         }
         .kpi-card {
-            background: var(--app-surface-bg, var(--white));
-            padding: 18px 20px;
+            background: var(--white);
+            padding: 18px;
             border-radius: 12px;
             box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
             display: flex;
-            align-items: center;
+            align-items: stretch;
             gap: 16px;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-            border: 1px solid var(--app-surface-border, #e8ece9);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid rgba(27, 94, 32, 0.34);
+            min-height: 96px;
+            height: 100%;
+            font-family: inherit;
         }
         .kpi-card:hover {
-            border-color: #c8e6c9;
+            border-color: rgba(27, 94, 32, 0.55);
             box-shadow: 0 6px 20px rgba(27, 94, 32, 0.08);
         }
         .kpi-card--link {
@@ -68,15 +72,16 @@
             outline-offset: 2px;
         }
         .kpi-icon {
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             flex-shrink: 0;
             border: 1px solid transparent;
+            align-self: center;
         }
         /* Flat icon tiles — hue variations stay within brand + one neutral */
         .kpi-icon.tone-primary {
@@ -104,20 +109,30 @@
             border-color: #fdba74;
             color: #c2410c;
         }
-        .kpi-info { min-width: 0; flex: 1; }
+        .kpi-info {
+            min-width: 0;
+            flex: 1;
+            display: grid;
+            grid-template-rows: 1.85rem 1.15rem 1rem;
+            align-content: center;
+            row-gap: 2px;
+        }
         .kpi-info h3 {
-            font-size: 1.65rem;
-            color: var(--chrome-icon-color, var(--green-dark));
-            margin-bottom: 2px;
+            font-size: 1.55rem;
+            color: var(--green-dark);
+            margin: 0;
             font-weight: 700;
             line-height: 1.15;
             letter-spacing: -0.02em;
+            display: flex;
+            align-items: end;
         }
         .kpi-info h3.kpi-value-compact {
-            font-size: 1.15rem;
+            font-size: 1rem;
             font-weight: 700;
-            line-height: 1.25;
+            line-height: 1.18;
             word-break: break-word;
+            align-items: center;
         }
         .kpi-info h3.kpi-value-empty {
             font-size: 1.25rem;
@@ -128,15 +143,25 @@
             color: var(--ink-500, var(--gray-500));
             font-size: 0.8rem;
             font-weight: 500;
-            line-height: 1.35;
+            line-height: 1.2;
             margin: 0;
+            display: flex;
+            align-items: center;
         }
         .kpi-info .kpi-sub {
             display: block;
             font-size: 0.72rem;
             color: #94a3b8;
-            margin-top: 4px;
+            margin: 0;
             font-weight: 500;
+            line-height: 1.2;
+            min-height: 1rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .kpi-sub--blank {
+            visibility: hidden;
         }
         
         /* Dashboard Card */
@@ -367,12 +392,12 @@
             padding: 10px 12px;
             font-size: 0.88rem;
             font-weight: 600;
-            color: var(--chrome-icon-color, #14532d);
-            background: var(--app-surface-muted-bg, #f7fcf8);
-            border-bottom: 1px solid var(--app-surface-border, rgba(34, 197, 94, 0.12));
+            color: #ffffff;
+            background: #166534;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
         .pbi-chart-panel-head i {
-            color: var(--chrome-focus-ring, var(--green-primary));
+            color: #bbf7d0;
             font-size: 1rem;
         }
         .pbi-chart-panel-body {
@@ -403,9 +428,11 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            color: var(--chrome-icon-color, #166534);
-            padding: 0 4px 6px;
-            margin: 0;
+            color: #ffffff;
+            background: #14532d;
+            padding: 6px 8px;
+            margin: 0 0 6px;
+            border-radius: 6px 6px 0 0;
         }
         .pbi-mini-table {
             width: 100%;
@@ -716,25 +743,90 @@
                 </div>
             </div>
 
-            <div class="dashboard-card animate delay-1">
-                <h3><i class="fas fa-people-group icon"></i>Booking Demographics</h3>
-                <p class="demographics-meta">
-                    {{ $demographics['scope_label'] ?? 'All tenants' }} |
-                    {{ optional($demographicsStartDate)->toFormattedDateString() }} - {{ optional($demographicsEndDate)->toFormattedDateString() }}
-                </p>
-
-                @if(empty($demographics['columns_ready']))
-                    <div style="background:#FFFBEB; border:1px solid #FCD34D; color:#92400E; padding:10px 12px; border-radius:10px; margin-bottom:12px;">
-                        Demographic columns are not on tenant <code>bookings</code> tables yet. Bookings live in each tenant database; plain <code>php artisan migrate</code> only touches the landlord DB. Run tenant schema migrations:
-                        <code style="display:block; margin-top:8px; padding:8px 10px; background:#fff; border-radius:6px; font-size:0.82rem;">php artisan tenants:migrate</code>
-                        One tenant: <code style="font-size:0.82rem;">php artisan tenants:migrate YOUR_TENANT_ID</code>
+            <section class="kpi-surface animate delay-1" aria-label="Key metrics">
+                <div class="kpi-region">
+                    <h2 class="kpi-region-title">Volume &amp; engagement</h2>
+                    <div class="kpi-grid">
+                        <a href="#admin-demographics" class="kpi-card kpi-card--link">
+                            <div class="kpi-icon tone-primary"><i class="fas fa-ticket-alt" aria-hidden="true"></i></div>
+                            <div class="kpi-info">
+                                <h3>{{ number_format($kpis['total_bookings'] ?? 0) }}</h3>
+                                <p>Total bookings</p>
+                                <span class="kpi-sub">Tied to demographics scope below</span>
+                            </div>
+                        </a>
+                        <a href="#admin-demographics" class="kpi-card kpi-card--link">
+                            <div class="kpi-icon tone-mint"><i class="fas fa-users" aria-hidden="true"></i></div>
+                            <div class="kpi-info">
+                                <h3>{{ number_format($kpis['active_clients'] ?? 0) }}</h3>
+                                <p>Active guests</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
+                            </div>
+                        </a>
+                        <a href="{{ route('admin.tenants', [], false) }}" class="kpi-card kpi-card--link">
+                            <div class="kpi-icon tone-neutral"><i class="fas fa-user-group" aria-hidden="true"></i></div>
+                            <div class="kpi-info">
+                                <h3>{{ number_format($kpis['total_users'] ?? 0) }}</h3>
+                                <p>Total users</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
+                            </div>
+                        </a>
+                        <a href="#admin-tenant-bookings" class="kpi-card kpi-card--link">
+                            <div class="kpi-icon tone-warm"><i class="fas fa-clock" aria-hidden="true"></i></div>
+                            <div class="kpi-info">
+                                <h3>{{ number_format($kpis['pending_bookings'] ?? 0) }}</h3>
+                                <p>Pending bookings</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
+                            </div>
+                        </a>
                     </div>
-                @endif
-
-                <div class="demographics-summary">
-                    <div class="demographics-pill">
-                        <span class="value">{{ number_format($demographics['total_bookings'] ?? 0) }}</span>
-                        <span class="label">Bookings in Scope</span>
+                </div>
+                <div class="kpi-region">
+                    <h2 class="kpi-region-title">Pipeline &amp; portfolio</h2>
+                    <div class="kpi-grid">
+                        <a href="{{ route('admin.tenants', ['onboarding_status' => \App\Models\Tenant::ONBOARDING_PENDING_APPROVAL]) }}" class="kpi-card kpi-card--link">
+                            <div class="kpi-icon {{ ($kpis['pending_host_applications'] ?? 0) > 0 ? 'tone-amber' : 'tone-mint' }}"><i class="fas fa-file-signature" aria-hidden="true"></i></div>
+                            <div class="kpi-info">
+                                <h3>{{ number_format($kpis['pending_host_applications'] ?? 0) }}</h3>
+                                <p>Pending host applications</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
+                            </div>
+                        </a>
+                        <a href="#admin-activity-overview" class="kpi-card kpi-card--link">
+                            <div class="kpi-icon tone-mint"><i class="fas fa-percent" aria-hidden="true"></i></div>
+                            <div class="kpi-info">
+                                <h3>{{ number_format($kpis['occupancy_rate'] ?? 0, 1) }}%</h3>
+                                <p>Occupancy (this month)</p>
+                                <span class="kpi-sub">Booked nights vs capacity</span>
+                            </div>
+                        </a>
+                        <a href="{{ route('admin.owner.accommodations.index', [], false) }}" class="kpi-card kpi-card--link">
+                            <div class="kpi-icon tone-primary"><i class="fas fa-check-circle" aria-hidden="true"></i></div>
+                            <div class="kpi-info">
+                                <h3>{{ number_format($kpis['verified_properties'] ?? 0) }}</h3>
+                                <p>Verified units</p>
+                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
+                            </div>
+                        </a>
+                        @if($topTenantByBookings)
+                            <a href="{{ route('admin.tenants', [], false) }}" class="kpi-card kpi-card--link">
+                                <div class="kpi-icon tone-amber"><i class="fas fa-trophy" aria-hidden="true"></i></div>
+                                <div class="kpi-info">
+                                    <h3 class="kpi-value-compact">{{ $topTenantByBookings->name }}</h3>
+                                    <p>Top tenant by bookings</p>
+                                    <span class="kpi-sub">Current period leader</span>
+                                </div>
+                            </a>
+                        @else
+                            <div class="kpi-card" role="status">
+                                <div class="kpi-icon tone-neutral"><i class="fas fa-trophy" aria-hidden="true"></i></div>
+                                <div class="kpi-info">
+                                    <h3 class="kpi-value-empty">&mdash;</h3>
+                                    <p>Top tenant by bookings</p>
+                                    <span class="kpi-sub">No leader in the current period</span>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </section>
@@ -1008,6 +1100,16 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const demographics = @json($demographics ?? []);
+            const chartColors = {
+                primary: '#166534',
+                mid: '#22c55e',
+                light: '#4ade80',
+                dark: '#14532d',
+                muted: '#94a3b8',
+                barFill: '#22c55e',
+                barBorder: '#166534',
+                lineAccent: '#ca8a04',
+            };
 
             function chartTheme() {
                 var root = document.documentElement;
@@ -1132,13 +1234,18 @@
             const ageChartEl = document.getElementById('ageChart');
             if (ageChartEl) {
                 const actx = ageChartEl.getContext('2d');
-                const ageGradient = actx.createLinearGradient(0, 0, 0, 220);
-                ageGradient.addColorStop(0, 'rgba(187, 247, 208, 0.98)');
-                ageGradient.addColorStop(0.5, 'rgba(74, 222, 128, 0.9)');
-                ageGradient.addColorStop(1, 'rgba(22, 101, 52, 0.88)');
                 const ageCounts = demographics.age?.counts ?? [0, 0, 0, 0, 0, 0, 0];
                 const ageMaxRaw = Math.max(...ageCounts, 0);
                 const ageYMax = ageMaxRaw === 0 ? 5 : Math.max(4, Math.ceil(ageMaxRaw * 1.12));
+                const ageBarColors = [
+                    chartColors.dark,
+                    chartColors.primary,
+                    chartColors.mid,
+                    chartColors.light,
+                    '#86efac',
+                    '#bbf7d0',
+                    chartColors.muted,
+                ];
                 new Chart(actx, {
                     type: 'bar',
                     data: {
@@ -1146,8 +1253,8 @@
                         datasets: [{
                             label: 'Bookings',
                             data: ageCounts,
-                            backgroundColor: ageGradient,
-                            borderColor: 'rgba(22, 101, 52, 0.9)',
+                            backgroundColor: ageBarColors,
+                            borderColor: chartColors.barBorder,
                             borderWidth: 1,
                             borderRadius: 5,
                             borderSkipped: false,
@@ -1221,9 +1328,6 @@
                     return Math.round((sum / slice.length) * 10) / 10;
                 });
                 const ctx = bookingsTrendEl.getContext('2d');
-                const barGradient = ctx.createLinearGradient(0, 0, 0, 300);
-                barGradient.addColorStop(0, 'rgba(56, 189, 248, 0.95)');
-                barGradient.addColorStop(1, 'rgba(14, 165, 233, 0.45)');
 
                 new Chart(ctx, {
                     type: 'bar',
@@ -1234,8 +1338,8 @@
                                 type: 'bar',
                                 label: 'Bookings',
                                 data: monthlyBookings,
-                                backgroundColor: barGradient,
-                                borderColor: 'rgba(14, 165, 233, 0.9)',
+                                backgroundColor: chartColors.barFill,
+                                borderColor: chartColors.barBorder,
                                 borderWidth: 1,
                                 borderRadius: 6,
                                 borderSkipped: false,
@@ -1247,14 +1351,14 @@
                                 type: 'line',
                                 label: '3-mo avg',
                                 data: rollingAverage3,
-                                borderColor: '#fbbf24',
-                                backgroundColor: 'rgba(251, 191, 36, 0.12)',
+                                borderColor: chartColors.lineAccent,
+                                backgroundColor: 'rgba(202, 138, 4, 0.1)',
                                 borderWidth: 2.5,
                                 tension: 0.35,
                                 fill: true,
                                 pointRadius: 3,
                                 pointHoverRadius: 6,
-                                pointBackgroundColor: '#fbbf24',
+                                pointBackgroundColor: chartColors.lineAccent,
                                 pointBorderColor: '#fff',
                                 pointBorderWidth: 1,
                                 yAxisID: 'y',
@@ -1322,10 +1426,6 @@
             const guestsChartEl = document.getElementById('guestsChart');
             if (guestsChartEl) {
                 const gctx = guestsChartEl.getContext('2d');
-                const guestsGradient = gctx.createLinearGradient(0, 0, 0, 300);
-                guestsGradient.addColorStop(0, 'rgba(187, 247, 208, 0.98)');
-                guestsGradient.addColorStop(0.45, 'rgba(74, 222, 128, 0.92)');
-                guestsGradient.addColorStop(1, 'rgba(22, 101, 52, 0.88)');
 
                 new Chart(gctx, {
                     type: 'bar',
@@ -1347,8 +1447,8 @@
                                 {{ $monthlyGuestsData['nov'] ?? 0 }},
                                 {{ $monthlyGuestsData['dec'] ?? 0 }}
                             ],
-                            backgroundColor: guestsGradient,
-                            borderColor: 'rgba(22, 101, 52, 0.95)',
+                            backgroundColor: chartColors.barFill,
+                            borderColor: chartColors.barBorder,
                             borderWidth: 1,
                             borderRadius: 6,
                             borderSkipped: false,
@@ -1424,11 +1524,12 @@
                                 {{ $bookingsByType['daily-rental'] ?? 0 }}
                             ],
                             backgroundColor: [
-                                'rgb(46, 125, 50)',
-                                'rgb(59, 162, 246)',
-                                'rgb(249, 115, 22)'
+                                chartColors.primary,
+                                chartColors.mid,
+                                chartColors.light,
                             ],
-                            borderWidth: 0
+                            borderColor: '#ffffff',
+                            borderWidth: 2
                         }]
                     },
                     options: {
