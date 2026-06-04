@@ -70,7 +70,7 @@ class DashboardController extends Controller
         }
 
         $ownerId = $isTenantAdmin ? null : $user->id;
-        [$trendLabels, $bookingsTrend] = $this->buildMonthlyBookingsTrend($dashboardTenant?->id, $ownerId);
+        [$trendLabels, $revenueTrend, $bookingsTrend] = $this->buildMonthlyTrendData($dashboardTenant?->id, $ownerId);
         $bookingStatusBreakdown = $this->buildBookingStatusBreakdown($dashboardTenant?->id, $ownerId);
 
         if ($isTenantAdmin && $currentTenant) {
@@ -111,6 +111,7 @@ class DashboardController extends Controller
             'recent_bookings',
             'unread_messages',
             'trendLabels',
+            'revenueTrend',
             'bookingsTrend',
             'bookingStatusBreakdown',
             'availabilityAccommodations',
@@ -119,16 +120,14 @@ class DashboardController extends Controller
         ));
     }
 
-    /**
-     * @return array{0: list<string>, 1: list<int>}
-     */
-    private function buildMonthlyBookingsTrend(?int $tenantId, ?int $ownerId): array
+    private function buildMonthlyTrendData(?int $tenantId, ?int $ownerId): array
     {
-        $months = collect(range(11, 0))->map(
-            fn (int $offset) => Carbon::now()->startOfMonth()->subMonths($offset)
-        );
+        // Show 1-month trend using daily points from the last 30 days.
+        $days = collect(range(29, 0))->map(function (int $offset) {
+            return Carbon::now()->subDays($offset)->startOfDay();
+        })->push(Carbon::now()->startOfDay());
 
-        $labels = $months->map(fn (Carbon $month) => $month->format('M Y'))->values()->all();
+        $labels = $days->map(fn (Carbon $day) => $day->format('M d'));
 
         $baseQuery = Booking::query()->whereIn('status', [
             Booking::STATUS_CONFIRMED,
@@ -142,20 +141,25 @@ class DashboardController extends Controller
             $baseQuery->forOwner($ownerId);
         }
 
-        $rangeStart = $months->first()->copy()->startOfMonth();
-        $rangeEnd = $months->last()->copy()->endOfMonth();
+        $groupedRevenue = (clone $baseQuery)
+            ->selectRaw('DATE(created_at) as trend_date, SUM(total_price) as total_revenue')
+            ->groupBy('trend_date')
+            ->pluck('total_revenue', 'trend_date');
 
-        $countsByMonth = (clone $baseQuery)
-            ->whereBetween('created_at', [$rangeStart, $rangeEnd])
-            ->get(['created_at'])
-            ->countBy(fn (Booking $booking) => $booking->created_at->format('Y-m'));
+        $groupedBookings = (clone $baseQuery)
+            ->selectRaw('DATE(created_at) as trend_date, COUNT(*) as total_bookings')
+            ->groupBy('trend_date')
+            ->pluck('total_bookings', 'trend_date');
 
-        $bookingsTrend = $months
-            ->map(fn (Carbon $month) => (int) ($countsByMonth[$month->format('Y-m')] ?? 0))
-            ->values()
-            ->all();
+        $revenueTrend = $days->map(function (Carbon $day) use ($groupedRevenue) {
+            return (float) ($groupedRevenue[$day->toDateString()] ?? 0);
+        });
 
-        return [$labels, $bookingsTrend];
+        $bookingsTrend = $days->map(function (Carbon $day) use ($groupedBookings) {
+            return (int) ($groupedBookings[$day->toDateString()] ?? 0);
+        });
+
+        return [$labels->values()->all(), $revenueTrend->values()->all(), $bookingsTrend->values()->all()];
     }
 
     private function buildBookingStatusBreakdown(?int $tenantId, ?int $ownerId): array
@@ -232,7 +236,7 @@ class DashboardController extends Controller
             'monthlyGuests' => $report['monthly_guests'],
             'monthlyBookings' => $report['monthly_bookings'],
             'dailyBreakdown' => $report['daily_breakdown'],
-        ])->setPaper('a4', 'portrait');
+        ]);
 
         return $pdf->download('tenant-monthly-sales-report-'.$year.'-'.str_pad((string) $month, 2, '0', STR_PAD_LEFT).'.pdf');
     }
@@ -261,7 +265,7 @@ class DashboardController extends Controller
             'monthlyGuests' => $report['monthly_guests'],
             'monthlyBookings' => $report['monthly_bookings'],
             'dailyBreakdown' => $report['daily_breakdown'],
-        ])->setPaper('a4', 'portrait');
+        ]);
 
         return $pdf->download('tenant-monthly-guests-report-'.$year.'-'.str_pad((string) $month, 2, '0', STR_PAD_LEFT).'.pdf');
     }

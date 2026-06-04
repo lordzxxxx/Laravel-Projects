@@ -6,9 +6,7 @@
     left: 0;
     right: 0;
     z-index: 1000;
-    width: 100vw;
-    max-width: 100vw;
-    margin: 0;
+    width: 100%;
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
@@ -301,7 +299,7 @@ html.dark .navbar > .nav-links a.active {
     position: absolute;
     right: 0;
     top: calc(100% + 10px);
-    z-index: 2000;
+    z-index: 50;
     width: max-content;
     min-width: 220px;
     padding: 8px;
@@ -496,20 +494,13 @@ html.dark .navbar .imp-notify-btn {
     background: transparent;
     border: 1px solid var(--chrome-surface-border, var(--green-soft));
     color: var(--nav-brand-color, var(--green-dark));
-    width: 2.75rem;
-    height: 2.75rem;
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-    padding: 0;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    align-self: center;
     font-size: 1.05rem;
-    line-height: 1;
-    box-sizing: border-box;
-    flex-shrink: 0;
 }
 .nav-toggle:focus-visible { outline: 2px solid var(--chrome-focus-ring, var(--green-primary)); outline-offset: 2px; }
 
@@ -528,14 +519,7 @@ html.dark .navbar .imp-notify-btn {
     .nav-toggle {
         display: inline-flex;
         grid-column: 2;
-        grid-row: 1;
         justify-self: end;
-        align-self: center;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .navbar.portal-nav-minimal > .nav-logo {
         align-self: center;
     }
     .nav-links {
@@ -574,6 +558,6 @@ html.dark .navbar .imp-notify-btn {
 
 @media (max-width: 768px) {
     .navbar:not(.portal-nav-minimal) { padding: 0 12px; height: var(--app-topbar-height-mobile, 64px); }
-    .navbar.portal-nav-minimal { padding: 0 !important; }
+    .navbar.portal-nav-minimal { padding-left: 1rem !important; padding-right: 1rem !important; }
     .user-display { max-width: 170px; }
 }

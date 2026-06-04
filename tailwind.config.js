@@ -12,19 +12,9 @@ export default {
 
     theme: {
         extend: {
-            /*
-             * Layout: sm/md/lg/xl/2xl (Tailwind defaults).
-             * Nav: nav (961px) matches top-navbar-core-styles hamburger threshold.
-             * Ultrawide: 3xl (1920px) for 4K content rails.
-             */
-            screens: {
-                xs: '480px',
-                nav: '961px',
-                '3xl': '1920px',
-            },
             fontFamily: {
-                sans: ['Inter', ...defaultTheme.fontFamily.sans],
-                display: ['Space Grotesk', 'Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['var(--app-font-sans)', 'Inter', ...defaultTheme.fontFamily.sans],
+                display: ['var(--app-font-display)', 'var(--app-font-sans)', 'Inter', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 brand: {

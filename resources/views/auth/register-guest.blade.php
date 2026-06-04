@@ -52,6 +52,52 @@
             color:var(--auth-ink);
             transition: border-color .15s ease, box-shadow .15s ease;
         }
+        .auth-input::placeholder { color:#94a3b8; }
+        .auth-input:hover { border-color:#cbd5e1; }
+        .auth-input:focus { outline:none; border-color:var(--auth-accent); box-shadow:0 0 0 4px rgba(27,94,32,.10); }
+
+        .reg-section + .reg-section { margin-top: 1.75rem; border-top: 1px solid #e5e7eb; padding-top: 1.75rem; }
+        .reg-section-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #334155; }
+        .reg-field-label { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #334155; }
+        .reg-helper { font-size: 0.8rem; line-height: 1.5; color: #475569; }
+
+        .reg-auth-password-wrap { position: relative; }
+        .reg-auth-password-toggle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            width: 2.75rem;
+            align-items: center;
+            justify-content: center;
+            color: rgb(27 94 32);
+            border-radius: 0 0.625rem 0.625rem 0;
+            transition: background-color 0.15s ease;
+        }
+        .reg-auth-password-toggle:hover { background-color: rgba(200, 230, 201, 0.5); }
+        .reg-auth-password-toggle:focus-visible { outline: 2px solid rgb(46 125 50); outline-offset: 2px; }
+
+        .auth-submit { display:inline-flex; width:100%; align-items:center; justify-content:center; gap:.5rem; background:var(--auth-ink); color:#fff; font-weight:600; font-size:.95rem; padding:.75rem 1rem; border-radius:.625rem; transition: background .15s ease, transform .05s ease; }
+        .auth-submit:hover { background:#000; }
+        .auth-submit:active { transform: translateY(1px); }
+        .auth-submit:disabled { opacity:.65; cursor:not-allowed; }
+
+        .auth-link { color:var(--auth-accent); font-weight:600; text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:.2em; }
+        .auth-link:hover { color:var(--auth-accent-strong); }
+        .auth-link.auth-link--plain,
+        .auth-link.auth-link--plain:hover { text-decoration: none; }
+
+        @media (min-width: 1024px) {
+            .auth-shell { flex-direction: row; }
+            .auth-hero { flex: 0 0 55%; max-width:55%; min-height: 100dvh; position: sticky; top: 0; align-self: flex-start; height: 100dvh; }
+            .auth-hero__content { padding: 4rem 3.5rem; max-width: 38rem; margin-top: auto; margin-bottom: auto; }
+            .auth-form-wrap { flex: 0 0 45%; max-width: 45%; padding: 3rem 3rem; align-items: flex-start; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .auth-hero__photo { filter: none; transform:none; }
+        }
     </style>
 </head>
 @php($municipality = config('portals.municipality_name', 'Impasug-ong'))
@@ -89,67 +135,7 @@
                         <dt class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Centralised</dt>
                         <dd class="mt-1.5 text-[13.5px] leading-snug text-slate-700">Favourites, bookings, and messages in one place.</dd>
                     </div>
-                </div>
-
-                <section class="rounded-xl border border-emerald-100/80 bg-white/80 p-4 shadow-sm sm:p-5" aria-labelledby="reg-section-contact-heading">
-                    <h2 id="reg-section-contact-heading" class="mb-4 flex items-center gap-2 text-sm font-extrabold text-brand-dark">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-brand-primary" aria-hidden="true"><i class="fas fa-address-book text-xs"></i></span>
-                        Your details
-                    </h2>
-                    <div class="grid gap-5">
-                        <div class="space-y-1.5">
-                            <label for="name" class="block text-xs font-bold uppercase tracking-wider text-brand-dark">Full name <span class="text-red-600" aria-hidden="true">*</span></label>
-                            <input id="name" type="text" name="name" value="{{ old('name') }}" required autocomplete="name" aria-required="true" aria-invalid="{{ $errors->has('name') ? 'true' : 'false' }}"
-                                class="{{ $fieldClass }} min-h-[2.75rem] sm:min-h-11"
-                                placeholder="As shown on your ID">
-                            @error('name')
-                                <p class="mt-1 flex items-start gap-1.5 text-xs font-semibold text-red-700" role="alert"><i class="fas fa-circle-xmark mt-0.5 shrink-0" aria-hidden="true"></i>{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="grid gap-5 sm:grid-cols-2 sm:items-start">
-                            <div class="space-y-1.5">
-                                <label for="email" class="block text-xs font-bold uppercase tracking-wider text-brand-dark">Email <span class="text-red-600" aria-hidden="true">*</span></label>
-                                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" inputmode="email" aria-required="true" aria-describedby="hint-email-guest" aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
-                                    class="{{ $fieldClass }} min-h-[2.75rem] sm:min-h-11"
-                                    placeholder="you@example.com">
-                                <p id="hint-email-guest" class="text-xs text-brand-medium/95">Used for sign-in and booking updates.</p>
-                                @error('email')
-                                    <p class="mt-1 flex items-start gap-1.5 text-xs font-semibold text-red-700" role="alert"><i class="fas fa-circle-xmark mt-0.5 shrink-0" aria-hidden="true"></i>{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div class="space-y-1.5">
-                                <label for="phone" class="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-dark">
-                                    Mobile number
-                                    <span class="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-brand-dark">Optional</span>
-                                </label>
-                                <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel" inputmode="tel" aria-invalid="{{ $errors->has('phone') ? 'true' : 'false' }}"
-                                    class="{{ $fieldClass }} min-h-[2.75rem] sm:min-h-11"
-                                    placeholder="e.g. +63 917 123 4567">
-                                @error('phone')
-                                    <p class="mt-1 text-xs font-semibold text-red-700" role="alert">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                @include('partials.auth-registration-password-fields')
-
-                <div class="space-y-4 border-t border-emerald-100 pt-6">
-                    <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-dark to-brand-primary py-3 text-sm font-bold text-white shadow-[0_10px_28px_rgba(46,125,50,0.28)] transition hover:brightness-[1.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark disabled:cursor-not-allowed disabled:opacity-60 sm:py-3.5" data-reg-submit>
-                        <span>Create guest profile</span>
-                        <i class="fas fa-arrow-right text-xs opacity-90" aria-hidden="true"></i>
-                    </button>
-                    <p class="text-center text-xs leading-relaxed text-brand-medium sm:text-[0.8125rem]">By submitting you confirm your details are accurate and accept the municipality’s participation rules.</p>
-                </div>
-            </form>
-
-            <div class="mt-6 border-t border-emerald-100 pt-6 text-center text-xs text-brand-medium sm:text-[0.8125rem]">
-                <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-1.5 font-bold text-brand-primary hover:text-brand-dark">
-                    <i class="fas fa-chevron-left text-[0.65rem]" aria-hidden="true"></i>
-                    Already have an account? Sign in
-                </a>
+                </dl>
             </div>
         </aside>
 
@@ -292,5 +278,34 @@
     </div>
 
     @include('partials.auth-registration-scripts', ['fileInputs' => false])
+    <script>
+        (function () {
+            document.querySelectorAll('[data-password-toggle]').forEach(function (btn) {
+                var fieldId = btn.getAttribute('data-password-toggle');
+                var input = fieldId ? document.getElementById(fieldId) : null;
+                var icon = btn.querySelector('i');
+                if (!input || !icon) return;
+                var isConfirm = fieldId === 'password_confirmation';
+                function setLabel(visible) {
+                    if (isConfirm) {
+                        btn.setAttribute('aria-label', visible ? 'Hide confirm password' : 'Show confirm password');
+                    } else {
+                        btn.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+                    }
+                }
+                function sync() {
+                    var visible = input.type === 'text';
+                    btn.setAttribute('aria-pressed', visible ? 'true' : 'false');
+                    setLabel(visible);
+                    icon.className = visible ? 'fas fa-eye-slash text-base' : 'fas fa-eye text-base';
+                }
+                btn.addEventListener('click', function () {
+                    input.type = input.type === 'password' ? 'text' : 'password';
+                    sync();
+                });
+                sync();
+            });
+        })();
+    </script>
 </body>
 </html>

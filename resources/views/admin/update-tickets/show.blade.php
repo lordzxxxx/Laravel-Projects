@@ -36,10 +36,6 @@
             .ticket-layout { grid-template-columns: 1fr; }
             .media-preview { max-height: 260px; }
         }
-        @media (max-width: 768px) {
-            textarea, select, input[type="text"], input[type="file"] { max-width: 100%; }
-            .card-inner { padding: clamp(0.75rem, 3vw, 1.25rem); }
-        }
     </style>
 </head>
 <body class="admin-central-portal">

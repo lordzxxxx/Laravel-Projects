@@ -88,7 +88,7 @@
             </div>
 
             <div class="card">
-                <div class="app-scroll-x app-scroll-x--hint table-responsive border-t border-emerald-100/90 bg-white" role="region" aria-label="Landing plans table" tabindex="0">
+                <div class="overflow-x-auto border-t border-emerald-100/90 bg-white">
                     <table class="min-w-[720px] w-full border-collapse text-left text-sm text-gray-800">
                         <thead>
                             <tr class="border-b border-gray-200 bg-gradient-to-r from-emerald-50 via-green-50/90 to-emerald-50/70">

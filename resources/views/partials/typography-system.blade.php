@@ -63,6 +63,7 @@ body {
     font-size: 0.9em;
 }
 
+/* Section eyebrows / panel labels (uppercase) — stay on UI sans */
 :where(.profile-panel__head h2, .settings-panel__head h2, .panel-eyebrow, .section-eyebrow) {
     font-family: var(--app-font-sans);
     font-size: var(--text-sm);

@@ -1,10 +1,6 @@
-# ImpaStay (Laravel-Projects)
+# Laravel-Projects
 
-[![Latest release](https://img.shields.io/github/v/release/lordzxxxx/Laravel-Projects?label=release)](https://github.com/lordzxxxx/Laravel-Projects/releases/latest)
-
-A Laravel 12 multi-tenant accommodation booking and messaging platform with role-based dashboards for **guests (clients)**, **unit owners / tenant admins**, and **central admins**.
-
-**Latest release:** [v1.0.15-dev](https://github.com/lordzxxxx/Laravel-Projects/releases/tag/v1.0.15-dev) — mobile-responsive portal UI, single-database merge, guest global access, booking payment surfaces, and nav polish.
+A Laravel 12 accommodation booking and messaging platform with role-based dashboards for clients, owners, and admins.
 
 ## Product Specification
 
@@ -232,37 +228,32 @@ This module ensures the system remains updated, customizable, and maintainable.
 
 ## Core Features
 
-- Multi-role authentication and authorization (client/guest, owner, tenant admin, central admin)
-- Multi-tenant architecture ([Spatie multitenancy](https://github.com/spatie/laravel-multitenancy)) with optional **single-database** rollout (`SINGLE_DB_*` flags)
+- Multi-role authentication and authorization (client, owner, admin)
+- Multi-tenant architecture (Spatie multitenancy) with tenant isolation
 - Port-based tenant app routing and central app routing split
-- **Mobile-responsive** guest, owner, and admin surfaces (compact cards, burger nav, shared responsive partials)
 - Public landing page and guest auth routes (register, login, password reset)
-- Accommodation browsing for authenticated users and public portal explore flows
-- Owner property management for listings (multi-photo gallery uploads)
+- Accommodation browsing for authenticated users
+- Owner property management for listings
 - Booking flow with status updates (pending, confirmed, paid, completed, cancelled)
-- **Payment UI:** Stripe checkout, GCash QR + proof upload, payment status badges on list/detail views
-- Municipality-wide **guest accounts** (`tenant_id = null`) usable across tenant subdomains
 - In-app messaging with reply, read, and archive; inbox lists the **counterparty** per thread
 - **Tenant managers** (owner or tenant-scoped admin): **New conversation** at `/messages/create` to message clients, team, or central support (proxy user in the tenant DB)
 - Optional `IMPASTAY_CENTRAL_SUPPORT_NOTIFY_EMAIL`: plain-text mail when a tenant manager messages central support
-- Shared **client top navbar** styles and content offsets for fixed navigation across client pages
-- Profile management with appearance preferences, dark mode, and avatar upload
-- Admin dashboards for tenants, bookings, demographics, messages, and monitoring
-- Admin tenant management: onboarding approval, plan, domain access, bandwidth, lifecycle logs
-- Central update channel with tenant owner/admin update checks and release registry metadata
+- Shared **client top navbar** styles (`client/partials/top-navbar-styles`) and content offsets for fixed navigation across client pages
+- Profile management with additional user details and avatar upload
+- Admin dashboards for tenants, bookings, messages, and monitoring
+- Admin tenant management: update tenant plan (Basic/Plus/Pro)
+- Admin tenant domain control: enable/disable tenant domain access
+- Central update channel with tenant owner/admin update checks and downloads
 - Persistent update history logs (checked/installed timestamps + status)
-- PDF reports (monthly bookings, demographics) with municipal letterhead layout
 
 ## Tech Stack
 
 - Laravel 12
 - PHP 8.2+
-- MySQL (recommended) or SQLite
-- [Spatie Laravel Multitenancy](https://github.com/spatie/laravel-multitenancy) (tenant DB isolation or single-DB mode)
+- MySQL or SQLite
+- [Spatie Laravel Multitenancy](https://github.com/spatie/laravel-multitenancy) (tenant DB isolation)
 - [Spatie Laravel Permission](https://github.com/spatie/laravel-permission) (RBAC on tenant manager flows)
-- [Stripe PHP SDK](https://github.com/stripe/stripe-php) (booking checkout)
-- DomPDF (PDF reports)
-- Vite + Tailwind CSS + Alpine.js + Chart.js (dashboards)
+- Vite + Tailwind CSS + Alpine.js
 - Pest / PHPUnit for testing
 
 ## Requirements
@@ -277,12 +268,11 @@ This module ensures the system remains updated, customizable, and maintainable.
 ### 1) Clone and install
 
 ~~~bash
-git clone https://github.com/lordzxxxx/Laravel-Projects.git
+git clone https://github.com/lordlylexxx/Laravel-Projects.git
 cd Laravel-Projects
 
 composer install
 npm install
-npm run build
 ~~~
 
 ### 2) Environment setup
@@ -299,46 +289,17 @@ Update your `.env` database values before migrating.
 | Variable | Purpose |
 |----------|---------|
 | `IMPASTAY_CENTRAL_SUPPORT_NOTIFY_EMAIL` | When set, tenant owners/admins messaging **ImpaStay (Central Admin)** also triggers a plain email to this address (requires working `MAIL_*` settings). |
-| `STRIPE_KEY` / `STRIPE_SECRET` | Stripe Checkout for guest booking payments |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook verification (if webhooks are enabled) |
-| `GITHUB_REPO` / `GITHUB_TOKEN` | Release registry sync for the central update channel |
 
-Related config: `config/impastay.php`, `config/single_db_migration.php`.
-
-### Database modes
-
-The app supports two deployment shapes (controlled by `SINGLE_DB_*` in `.env`):
-
-| Mode | When | Migrate |
-|------|------|---------|
-| **Multi-DB (default legacy)** | Each tenant has its own database; `tenants:migrate` switches per tenant | `php artisan migrate` (landlord) then `php artisan tenants:migrate` |
-| **Single-DB (unified)** | `SINGLE_DB_ALLOW_TENANT_SWITCHING=false` — tenant rows share the landlord database | `php artisan single-db:migrate` |
-
-See `.env.example` for rollout flags (`SINGLE_DB_MIGRATION_ENABLED`, `SINGLE_DB_READS`, `SINGLE_DB_WRITES`, etc.).
+Related config: `config/impastay.php`.
 
 ### 3) Migrate and seed
-
-**Landlord (central) database:**
 
 ~~~bash
 php artisan migrate --seed
 php artisan storage:link
 ~~~
 
-**Tenant databases (multi-DB mode only):**
-
-~~~bash
-php artisan tenants:migrate
-# one tenant: php artisan tenants:migrate {tenant_id}
-~~~
-
-**Unified single-DB mode** (when `SINGLE_DB_ALLOW_TENANT_SWITCHING=false`):
-
-~~~bash
-php artisan single-db:migrate
-~~~
-
-On the **central (landlord)** database, `db:seed` only creates RBAC, a central admin, and sample owner/client users. It does **not** create tenant registry rows (unless you run `ExistingTenantDatabasesSeeder` separately), **accommodations**, or **bookings**—those live in **tenant** databases (or the unified DB in single-DB mode). With a tenant made current, run `php artisan db:seed --class=AccommodationSeeder` if you want demo listings in that tenant DB.
+On the **central (landlord)** database, `db:seed` only creates RBAC, a central admin, and sample owner/client users. It does **not** create tenant registry rows (unless you run `ExistingTenantDatabasesSeeder` separately), **accommodations**, or **bookings**—those live in **tenant** databases. With a tenant made current, run `php artisan db:seed --class=AccommodationSeeder` if you want demo listings in that tenant DB.
 
 ### 4) Run in development
 
@@ -381,39 +342,14 @@ After seeding, you can log in with:
 # run tests
 php artisan test
 
-# landlord migrations
+# migrate database
 php artisan migrate --force
 
-# tenant migrations (multi-DB)
-php artisan tenants:migrate
-
-# unified schema (single-DB)
-php artisan single-db:migrate
-
-# convert tenant-bound clients to municipality-wide guests (optional data fix)
-php artisan users:guests-globalize --dry-run
-
-# portal smoke checks
-composer run smoke:portals
-
-# code style
+# code style (if needed)
 ./vendor/bin/pint
 
 # clear caches
 php artisan optimize:clear
-~~~
-
-## Releases
-
-Tagged releases and upgrade notes are published on GitHub:
-
-- [All releases](https://github.com/lordzxxxx/Laravel-Projects/releases)
-- [v1.0.15-dev](https://github.com/lordzxxxx/Laravel-Projects/releases/tag/v1.0.15-dev) — mobile layouts, guest access, payment UI, single-DB merge
-
-After upgrading to a new tag, run the migrations appropriate for your database mode, then rebuild assets:
-
-~~~bash
-npm run build
 ~~~
 
 ## Project Structure (High Level)
@@ -422,14 +358,10 @@ npm run build
 - `app/Http/Controllers`: auth, booking, messaging, dashboards, owner tenant user management
 - `app/Http/Middleware`: role, tenant context, tenant manager (owner or tenant admin), client access
 - `app/Services/Messaging`: e.g. central-support proxy user helper for tenant-scoped messages
-- `app/Support`: single-DB migration helpers, Stripe checkout error mapping
-- `app/Console/Commands`: tenant maintenance (e.g. `users:guests-globalize`)
 - `app/Multitenancy`: tenant finder and tenant DB switching tasks
 - `config/impastay.php`: ImpaStay-specific options (central support notify email)
-- `config/single_db_migration.php`: unified database rollout flags
 - `database/migrations` and `database/seeders`: landlord + tenant migrations, sample data
-- `resources/views`: Blade for guest/client/owner/admin; shared nav partials under `client/partials`, `owner/partials`, `admin/partials`, `partials/responsive-page-head`
-- `resources/css/app.css`: global responsive foundation (Vite)
+- `resources/views`: Blade for guest/client/owner/admin; shared nav partials under `client/partials`, `owner/partials`, `admin/partials`
 - `routes/web.php`: central vs tenant host groups, messages, owner routes
 
 ## Admin Tenant Management
@@ -477,13 +409,10 @@ Persistent update logs are stored in `update_logs` (landlord connection), includ
 
 ## Deployment Notes
 
-- Set `APP_ENV=production` and `APP_DEBUG=false` in `.env`
-- Run `php artisan config:cache` and `php artisan route:cache`
-- Run `npm run build` so Vite assets are compiled for production
-- Ensure `storage` and `bootstrap/cache` are writable
-- Apply landlord + tenant (or `single-db:migrate`) migrations on deploy
+- Set APP_ENV=production and APP_DEBUG=false in .env
+- Run php artisan config:cache and php artisan route:cache
+- Ensure storage and bootstrap/cache are writable
 - Use a process manager for queue workers if queue processing is enabled
-- Configure `STRIPE_*` for live payments; remove IP restrictions on Stripe secret keys used from server egress
 
 ## License
 

@@ -10,10 +10,7 @@
     <style>
         @include('partials.app-typography-styles')
         body { min-height: 100vh; background: linear-gradient(135deg, #E8F5E9, #fff); color: #1b5e20; }
-        .card { max-width: min(640px, 100%); margin: 4rem auto; padding: clamp(1rem, 4vw, 2rem); background: #fff; border-radius: 1rem; box-shadow: 0 10px 40px rgba(27,94,32,0.12); border: 1px solid #C8E6C9; }
-        @media (max-width: 768px) {
-            .card { margin: 1.25rem auto; width: calc(100% - 1.5rem); }
-        }
+        .card { max-width: 640px; margin: 4rem auto; padding: 2rem; background: #fff; border-radius: 1rem; box-shadow: 0 10px 40px rgba(27,94,32,0.12); border: 1px solid #C8E6C9; }
     </style>
 </head>
 <body>

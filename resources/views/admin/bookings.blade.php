@@ -6,7 +6,7 @@
     @include('admin.partials.favicon')
     <title>Bookings Management - Admin Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    @include('partials.app-vite-head')
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -36,6 +36,7 @@
         .main-content { flex: 1; padding: 30px 40px; }
         .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
         /* Title styling provided by ui-foundation-styles for cross-system consistency. */
+        .search-filter { display: flex; gap: 15px; margin-bottom: 25px; }
         .search-input { flex: 1; max-width: 400px; padding: 12px 20px; border: 2px solid var(--green-soft); border-radius: 10px; font-size: 1rem; outline: none; }
         .search-input:focus { border-color: var(--green-primary); }
         .filter-select { padding: 12px 20px; border: 2px solid var(--app-surface-border, var(--green-soft)); border-radius: 10px; font-size: 1rem; background: var(--app-surface-bg, white); color: var(--ink-800); cursor: pointer; }
@@ -46,13 +47,7 @@
         .btn-primary { background: linear-gradient(135deg, var(--green-primary), var(--green-medium)); color: var(--white); }
         .btn-secondary { background: var(--green-soft); color: var(--green-dark); }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
-        .table-container { }
-        .search-filter { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 24px; }
-        @media (max-width: 768px) {
-            .search-filter { flex-direction: column; align-items: stretch; }
-            .search-input { max-width: none; width: 100%; }
-            .filter-select { width: 100%; }
-        }
+        .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--green-soft); }
         th { font-weight: 600; color: var(--green-dark); font-size: 0.8rem; text-transform: uppercase; background: var(--cream); }
@@ -110,7 +105,7 @@
                     <button class="btn btn-secondary btn-sm">Export Report</button>
                 </div>
                 <div class="card-body">
-                    <div class="table-container app-scroll-x app-scroll-x--hint" role="region" aria-label="Bookings table" tabindex="0">
+                    <div class="table-container">
                         <table>
                             <thead>
                                 <tr>

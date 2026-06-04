@@ -480,8 +480,7 @@
                                          x-transition:enter="transition ease-out duration-150"
                                          x-transition:enter-start="opacity-0 -translate-y-1"
                                          x-transition:enter-end="opacity-100 translate-y-0"
-                                         class="mt-3 rounded-xl border border-gray-200 bg-white">
-                                        <div class="app-scroll-x app-scroll-x--hint table-responsive" role="region" aria-label="State change details" tabindex="0">
+                                         class="mt-3 overflow-hidden rounded-xl border border-gray-200 bg-white">
                                         <table class="diff-table">
                                             <thead>
                                                 <tr>
@@ -508,7 +507,6 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
-                                        </div>
                                     </div>
                                 @endif
                             </div>

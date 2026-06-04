@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
         }
 
         if (Tenant::isRequestHostForCentralLandlordApp(request())) {
-            return view('auth.register-choice');
+            return redirect()->route('register.guest');
         }
 
         return view('auth.register-wizard');

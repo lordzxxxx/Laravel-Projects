@@ -28,8 +28,13 @@ Route::middleware(['tenant.port', 'tenant.context', 'tenant.required', 'tenant.p
         Route::get('/', [TenantLandingController::class, 'showPublic'])
             ->name('landing');
 
-        Route::get('/browse-accommodations', [ClientDashboardController::class, 'guestBrowse'])
-            ->name('landing.browse-accommodations');
+        Route::get('/browse-accommodations', function (Request $request) {
+            if ($request->user()) {
+                return redirect()->route('dashboard', $request->query());
+            }
+
+            return redirect()->route('dashboard', $request->query());
+        })->name('landing.browse-accommodations');
 
         Route::get('/dashboard', [ClientDashboardController::class, 'index'])
             ->name('dashboard');

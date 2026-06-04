@@ -437,7 +437,7 @@
                     <span style="font-size: 0.8rem; color: var(--gray-600);">Each owner subdomain</span>
                 </div>
                 <div class="card-body">
-                    <div class="table-container app-scroll-x app-scroll-x--hint" role="region" aria-label="Users table" tabindex="0">
+                    <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
@@ -494,7 +494,7 @@
                     <button class="btn btn-secondary btn-sm">Export CSV</button>
                 </div>
                 <div class="card-body">
-                    <div class="table-container app-scroll-x app-scroll-x--hint" role="region" aria-label="Users table" tabindex="0">
+                    <div class="table-container">
                         <table>
                             <thead>
                                 <tr>

@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @include('partials.responsive-page-head', ['pageTitle' => 'Register - Impasugong Accommodations', 'includeTypographyInline' => true])
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Register - Impasugong Accommodations</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        @include('partials.typography-system')
         * {
             margin: 0;
             padding: 0;
@@ -23,30 +27,14 @@
 
         html,
         body {
-            min-height: 100dvh;
-        }
-
-        @media (min-width: 1024px) {
-            html,
-            body {
-                height: 100%;
-                overflow: hidden;
-            }
+            height: 100%;
+            overflow: hidden;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100dvh;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
             background: linear-gradient(135deg, var(--green-white) 0%, var(--white) 50%, var(--green-soft) 100%);
-        }
-
-        @media (min-width: 1024px) {
-            body {
-                flex-direction: row;
-                height: 100vh;
-            }
         }
         
         /* Left Side - Branding */
@@ -57,17 +45,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: clamp(1.25rem, 4vw, 2.5rem);
+            padding: 40px;
             color: var(--white);
             position: relative;
             overflow: hidden;
-        }
-
-        @media (max-width: 1023px) {
-            .branding-section {
-                min-height: auto;
-                flex: 0 0 auto;
-            }
         }
         
         .branding-section::before {
@@ -156,7 +137,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: clamp(1.25rem, 4vw, 2.5rem);
+            padding: 40px;
             max-height: 100vh;
             overflow-y: auto;
         }
@@ -414,7 +395,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            padding: clamp(1.25rem, 4vw, 2.5rem);
+            padding: 40px;
             border: 2px dashed var(--green-soft);
             border-radius: 10px;
             background: var(--cream);
@@ -611,15 +592,8 @@
         }
         
         @media (max-width: 768px) {
-            html,
-            body {
-                height: auto;
-                overflow-y: auto;
-            }
-
             body {
                 flex-direction: row;
-                min-height: 100dvh;
             }
             
             .branding-section {
@@ -633,13 +607,12 @@
             .form-section {
                 flex: 1;
                 padding: 16px;
-                max-height: none;
-                min-height: 100dvh;
+                max-height: 100vh;
             }
             
             .form-container {
                 padding: 24px;
-                max-height: none;
+                max-height: calc(100vh - 32px);
             }
             
             .progress-steps {

@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
-    @include('partials.responsive-page-head', ['pageTitle' => 'Limited Access', 'includeFontAwesome' => false])
+    <title>Limited Access</title>
     <style>
+        @include('partials.app-typography-styles')
         :root {
             --bg: #f5f7fb;
             --card: #ffffff;

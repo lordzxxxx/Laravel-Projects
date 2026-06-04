@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @include('partials.responsive-page-head', ['pageTitle' => 'Municipal Official Website - Impasugong', 'includeTypographyInline' => false])
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Municipal Official Website - Impasugong</title>
+    @include('partials.favicon-links', ['faviconStem' => 'love'])
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @include('partials.typography-system')
+        @include('partials.app-typography-styles')
         * {
             margin: 0;
             padding: 0;
@@ -11,17 +15,13 @@
         }
         
         body {
-            min-height: 100dvh;
+            min-height: 100vh;
             margin: 0;
             display: flex;
             flex-direction: column;
             background: linear-gradient(rgba(0, 50, 0, 0.7), rgba(0, 60, 0, 0.8)),
                         url('/COMMUNAL.jpg') no-repeat center center/cover;
             background-attachment: fixed;
-        }
-
-        @media (max-width: 767px) {
-            body { background-attachment: scroll; }
         }
         
         .landing-container {
@@ -30,10 +30,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding: clamp(1rem, 3vw, 2rem);
+            padding: 20px;
             width: 100%;
-            max-width: min(75rem, 100%);
-            margin-inline: auto;
             box-sizing: border-box;
         }
         
@@ -74,7 +72,7 @@
         }
         
         .main-title h1 {
-            font-size: clamp(1.75rem, 6vw, 3.5rem);
+            font-size: 3.5rem;
             color: #E8F5E9;
             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
             margin-bottom: 10px;
@@ -82,10 +80,10 @@
         }
         
         .main-title .subtitle {
-            font-size: clamp(0.9rem, 2.5vw, 1.5rem);
+            font-size: 1.5rem;
             color: #A5D6A7;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            letter-spacing: clamp(1px, 0.5vw, 4px);
+            letter-spacing: 4px;
         }
         
         /* Content Section */
@@ -93,11 +91,8 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 5vw, 3.75rem);
-            margin: clamp(1rem, 3vw, 1.875rem) 0;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
+            padding: 40px 60px;
+            margin: 30px 0;
             border: 2px solid rgba(76, 175, 80, 0.3);
             box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
         }
@@ -255,32 +250,6 @@
         .delay-1 { animation-delay: 0.2s; }
         .delay-2 { animation-delay: 0.4s; }
         .delay-3 { animation-delay: 0.6s; }
-
-        @media (max-width: 640px) {
-            .logo-section {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            .logo-divider {
-                width: 80%;
-                height: 3px;
-            }
-            .municipality-logo {
-                width: 96px;
-                height: 96px;
-            }
-            .btn-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .btn {
-                width: 100%;
-                text-align: center;
-            }
-            .features-section {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>

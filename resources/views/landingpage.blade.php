@@ -4,7 +4,7 @@
     @include('partials.central-public-head', ['pageTitle' => 'IMPASUGONG TOURISM | Impasugong Accommodations'])
 </head>
 <body
-    class="app-bg-fixed-safe flex min-h-[100dvh] flex-col font-sans text-brand-dark antialiased bg-cover bg-center bg-fixed"
+    class="flex min-h-screen flex-col font-sans text-brand-dark antialiased bg-cover bg-center bg-fixed"
     style="background-image: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, rgba(27, 94, 32, 0.1) 100%), url('/COMMUNAL.jpg');"
 >
     @include('partials.central-public-nav', ['active' => 'landing'])
@@ -18,7 +18,7 @@
             <img src="/Lgu%20Socmed%20Template-02.png" alt="LGU Impasugong" class="h-[102px] w-[102px] object-contain md:h-[200px] md:w-[200px]">
         </div>
 
-        <h1 class="app-ultrawide-cap mb-5 max-w-[min(100%,52rem)] text-[clamp(1.75rem,5vw,3.5rem)] font-extrabold tracking-tight text-brand-dark opacity-0 animate-fade-in-up-d1">
+        <h1 class="mb-5 text-3xl font-extrabold tracking-tight text-brand-dark opacity-0 animate-fade-in-up-d1 md:text-5xl lg:text-[3.5rem]">
             Find Your Perfect <span class="text-brand-primary">Stay</span>
         </h1>
 
@@ -33,10 +33,9 @@
         </p>
 
         <div class="flex flex-col items-center justify-center gap-4 opacity-0 animate-fade-in-up-d2 sm:flex-row">
-            @include('partials.register-choice-menu', [
-                'buttonClass' => 'inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-8 py-3.5 text-base font-semibold text-white shadow-[0_4px_15px_rgba(46,125,50,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(46,125,50,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2',
-                'menuClass' => 'absolute left-1/2 z-30 mt-2 w-72 -translate-x-1/2',
-            ])
+            <a href="/register" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-8 py-3.5 text-base font-semibold text-white shadow-[0_4px_15px_rgba(46,125,50,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(46,125,50,0.4)]">
+                <i class="fas fa-rocket"></i> Get Started
+            </a>
             <a href="#pricing" class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-8 py-3.5 text-base font-semibold text-brand-dark transition-all hover:bg-brand-primary hover:text-white">
                 <i class="fas fa-tags"></i> View pricing plans
             </a>

@@ -8,7 +8,7 @@
     <title>Admin Dashboard - IMPASUGONG TOURISM</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    @include('partials.app-vite-head')
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <style>
         @include('admin.partials.admin-shell-styles')
         @include('partials.ui-foundation-styles')
@@ -39,24 +39,20 @@
             gap: 14px;
             margin-bottom: 0;
             width: 100%;
-            align-items: stretch;
         }
         .kpi-card {
-            background: var(--white);
-            padding: 18px;
+            background: var(--app-surface-bg, var(--white));
+            padding: 18px 20px;
             border-radius: 12px;
             box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
             display: flex;
-            align-items: stretch;
+            align-items: center;
             gap: 16px;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid rgba(27, 94, 32, 0.34);
-            min-height: 96px;
-            height: 100%;
-            font-family: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            border: 1px solid var(--app-surface-border, #e8ece9);
         }
         .kpi-card:hover {
-            border-color: rgba(27, 94, 32, 0.55);
+            border-color: #c8e6c9;
             box-shadow: 0 6px 20px rgba(27, 94, 32, 0.08);
         }
         .kpi-card--link {
@@ -72,16 +68,15 @@
             outline-offset: 2px;
         }
         .kpi-icon {
-            width: 50px;
-            height: 50px;
+            width: 52px;
+            height: 52px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             flex-shrink: 0;
             border: 1px solid transparent;
-            align-self: center;
         }
         /* Flat icon tiles — hue variations stay within brand + one neutral */
         .kpi-icon.tone-primary {
@@ -109,30 +104,20 @@
             border-color: #fdba74;
             color: #c2410c;
         }
-        .kpi-info {
-            min-width: 0;
-            flex: 1;
-            display: grid;
-            grid-template-rows: 1.85rem 1.15rem 1rem;
-            align-content: center;
-            row-gap: 2px;
-        }
+        .kpi-info { min-width: 0; flex: 1; }
         .kpi-info h3 {
-            font-size: 1.55rem;
-            color: var(--green-dark);
-            margin: 0;
+            font-size: 1.65rem;
+            color: var(--chrome-icon-color, var(--green-dark));
+            margin-bottom: 2px;
             font-weight: 700;
             line-height: 1.15;
             letter-spacing: -0.02em;
-            display: flex;
-            align-items: end;
         }
         .kpi-info h3.kpi-value-compact {
-            font-size: 1rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            line-height: 1.18;
+            line-height: 1.25;
             word-break: break-word;
-            align-items: center;
         }
         .kpi-info h3.kpi-value-empty {
             font-size: 1.25rem;
@@ -143,25 +128,15 @@
             color: var(--ink-500, var(--gray-500));
             font-size: 0.8rem;
             font-weight: 500;
-            line-height: 1.2;
+            line-height: 1.35;
             margin: 0;
-            display: flex;
-            align-items: center;
         }
         .kpi-info .kpi-sub {
             display: block;
             font-size: 0.72rem;
             color: #94a3b8;
-            margin: 0;
+            margin-top: 4px;
             font-weight: 500;
-            line-height: 1.2;
-            min-height: 1rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .kpi-sub--blank {
-            visibility: hidden;
         }
         
         /* Dashboard Card */
@@ -392,12 +367,12 @@
             padding: 10px 12px;
             font-size: 0.88rem;
             font-weight: 600;
-            color: #ffffff;
-            background: #166534;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--chrome-icon-color, #14532d);
+            background: var(--app-surface-muted-bg, #f7fcf8);
+            border-bottom: 1px solid var(--app-surface-border, rgba(34, 197, 94, 0.12));
         }
         .pbi-chart-panel-head i {
-            color: #bbf7d0;
+            color: var(--chrome-focus-ring, var(--green-primary));
             font-size: 1rem;
         }
         .pbi-chart-panel-body {
@@ -428,11 +403,9 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            color: #ffffff;
-            background: #14532d;
-            padding: 6px 8px;
-            margin: 0 0 6px;
-            border-radius: 6px 6px 0 0;
+            color: var(--chrome-icon-color, #166534);
+            padding: 0 4px 6px;
+            margin: 0;
         }
         .pbi-mini-table {
             width: 100%;
@@ -653,288 +626,6 @@
             .pbi-kpi-table tbody td { padding: 12px 8px; }
             .pbi-kpi-value { font-size: 1.15rem; }
         }
-
-        @media (max-width: 640px) {
-            .admin-dashboard-page .page-header {
-                margin-bottom: 0.75rem;
-            }
-
-            .admin-dashboard-page .page-header h1 {
-                font-size: 1.125rem;
-            }
-
-            .admin-dashboard-page .page-header h1 .page-title-icon {
-                width: 2rem;
-                height: 2rem;
-                font-size: 0.875rem;
-            }
-
-            .admin-dashboard-page .page-header p {
-                font-size: 0.75rem;
-                line-height: 1.4;
-            }
-
-            .admin-dashboard-page .filter-card,
-            .admin-dashboard-page .dashboard-card {
-                padding: 0.75rem;
-                margin-bottom: 0.65rem;
-                border-radius: 0.625rem;
-            }
-
-            .admin-dashboard-page .filter-card h3,
-            .admin-dashboard-page .dashboard-card h3 {
-                font-size: 0.875rem;
-                margin-bottom: 0.5rem;
-                gap: 0.5rem;
-            }
-
-            .admin-dashboard-page .filters-grid {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-
-            .admin-dashboard-page .filter-field label {
-                font-size: 0.625rem;
-                margin-bottom: 0.35rem;
-            }
-
-            .admin-dashboard-page .filter-field input,
-            .admin-dashboard-page .filter-field select {
-                padding: 0.45rem 0.6rem;
-                font-size: 0.8125rem;
-            }
-
-            .admin-dashboard-page .filter-field--actions {
-                display: flex;
-                flex-direction: column;
-                gap: 0.45rem;
-            }
-
-            .admin-dashboard-page .btn-filter {
-                width: 100%;
-                min-height: 2.25rem;
-                padding: 0.5rem 0.75rem;
-                font-size: 0.75rem;
-            }
-
-            .admin-dashboard-page .demographics-report-actions {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.45rem;
-                margin-top: 0.65rem;
-                padding-top: 0.65rem;
-            }
-
-            .admin-dashboard-page .demographics-report-actions .btn-filter,
-            .admin-dashboard-page .demographics-report-actions form {
-                width: 100%;
-            }
-
-            .admin-dashboard-page .demographics-meta {
-                font-size: 0.6875rem;
-            }
-
-            .admin-dashboard-page .kpi-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 0.5rem;
-            }
-
-            .admin-dashboard-page .kpi-card {
-                padding: 0.65rem 0.75rem;
-                gap: 0.65rem;
-                border-radius: 0.625rem;
-            }
-
-            .admin-dashboard-page .kpi-icon {
-                width: 2.25rem;
-                height: 2.25rem;
-                font-size: 0.875rem;
-                border-radius: 0.5rem;
-            }
-
-            .admin-dashboard-page .kpi-info h3 {
-                font-size: 1.125rem;
-            }
-
-            .admin-dashboard-page .kpi-info p {
-                font-size: 0.6875rem;
-            }
-
-            .admin-dashboard-page .pbi-visual-header {
-                padding: 0.65rem 0.75rem;
-                gap: 0.45rem;
-            }
-
-            .admin-dashboard-page .pbi-visual-title {
-                font-size: 0.8125rem;
-                gap: 0.5rem;
-            }
-
-            .admin-dashboard-page .pbi-visual-meta {
-                font-size: 0.625rem;
-                text-align: left;
-                width: 100%;
-            }
-
-            .admin-dashboard-page .pbi-demographics-inner {
-                padding: 0.65rem;
-                gap: 0.65rem;
-            }
-
-            .admin-dashboard-page .pbi-kpi-table thead th {
-                font-size: 0.5625rem;
-                padding: 0.45rem 0.35rem;
-            }
-
-            .admin-dashboard-page .pbi-kpi-table tbody td {
-                padding: 0.55rem 0.35rem;
-            }
-
-            .admin-dashboard-page .pbi-kpi-value {
-                font-size: 0.9375rem;
-            }
-
-            .admin-dashboard-page .pbi-chart-panel-head {
-                padding: 0.5rem 0.65rem;
-                font-size: 0.75rem;
-            }
-
-            .admin-dashboard-page .pbi-chart-panel-body {
-                padding: 0.45rem 0.5rem 0.65rem;
-            }
-
-            .admin-dashboard-page .chart-container {
-                height: 200px;
-            }
-
-            .admin-dashboard-page .chart-container-sm,
-            .admin-dashboard-page .pbi-chart-panel-body .chart-container-sm {
-                height: 170px;
-            }
-
-            .admin-dashboard-page .content-grid,
-            .admin-dashboard-page .content-left,
-            .admin-dashboard-page .content-right {
-                gap: 0.65rem;
-            }
-
-            .admin-dashboard-page .quick-stats-grid {
-                gap: 0.45rem;
-            }
-
-            .admin-dashboard-page .quick-stat-card {
-                padding: 0.65rem;
-                min-height: 0;
-                border-radius: 0.5rem;
-            }
-
-            .admin-dashboard-page .quick-stat-card .icon {
-                font-size: 1.125rem;
-                margin-bottom: 0.25rem;
-            }
-
-            .admin-dashboard-page .quick-stat-card h4 {
-                font-size: 1rem;
-            }
-
-            .admin-dashboard-page .quick-stat-card p {
-                font-size: 0.6875rem;
-            }
-
-            .admin-dashboard-page .table-note {
-                font-size: 0.75rem;
-                margin-bottom: 0.5rem;
-            }
-
-            .admin-dashboard-page .admin-tenant-bookings-scroll {
-                overflow: visible;
-            }
-
-            .admin-dashboard-page .admin-tenant-bookings-table thead {
-                display: none;
-            }
-
-            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) {
-                display: grid;
-                grid-template-columns: 1fr auto;
-                grid-template-areas:
-                    "name guests"
-                    "bookings pdf";
-                gap: 0.35rem 0.5rem;
-                padding: 0.65rem 0;
-            }
-
-            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td {
-                padding: 0;
-                border: none;
-            }
-
-            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(1) {
-                grid-area: name;
-                font-size: 0.8125rem;
-            }
-
-            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(2) {
-                grid-area: bookings;
-                font-size: 0.75rem;
-                color: var(--ink-500, #6b7280);
-            }
-
-            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(2)::before {
-                content: "Bookings: ";
-                font-weight: 600;
-                color: var(--ink-600, #475569);
-            }
-
-            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(3) {
-                grid-area: guests;
-                justify-self: end;
-            }
-
-            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(4) {
-                grid-area: pdf;
-                justify-self: end;
-            }
-
-            .admin-dashboard-page .pill-guest-count {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.625rem;
-            }
-
-            .admin-dashboard-page .btn-pdf-sm {
-                padding: 0.35rem 0.55rem;
-                font-size: 0.6875rem;
-            }
-
-            .admin-dashboard-page .tenant-bookings-total-row {
-                display: block;
-                padding: 0.65rem 0;
-            }
-
-            .admin-dashboard-page .tenant-bookings-total-row td {
-                display: block;
-                padding: 0;
-                border: none;
-                font-size: 0.75rem;
-            }
-
-            .admin-dashboard-page .tenant-bookings-total-row td:first-child {
-                margin-bottom: 0.25rem;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .admin-dashboard-page .page-header p,
-            .admin-dashboard-page .table-note,
-            .admin-dashboard-page .pbi-visual-meta .pbi-meta-subtle,
-            .admin-dashboard-page .kpi-info .kpi-sub {
-                display: none;
-            }
-
-            .admin-dashboard-page .kpi-grid {
-                grid-template-columns: 1fr;
-            }
-        }
         
         /* Animations */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -953,7 +644,7 @@
     <!-- Dashboard Layout -->
     <div class="dashboard-layout">
         <!-- Main Content -->
-        <main class="main-content app-container admin-dashboard-page">
+        <main class="main-content">
             @include('partials.flash-alerts')
 
             <!-- Page Header -->
@@ -985,7 +676,7 @@
                         <label for="end_date">End Date</label>
                         <input id="end_date" type="date" name="end_date" value="{{ optional($demographicsEndDate)->toDateString() }}">
                     </div>
-                    <div class="filter-field filter-field--actions">
+                    <div class="filter-field" style="display:flex; gap:8px;">
                         <button type="submit" class="btn-filter primary"><i class="fas fa-chart-line"></i> Apply</button>
                         <a href="{{ route('admin.dashboard', [], false) }}" class="btn-filter secondary">Reset</a>
                     </div>
@@ -1025,93 +716,28 @@
                 </div>
             </div>
 
-            <section class="kpi-surface animate delay-1" aria-label="Key metrics">
-                <div class="kpi-region">
-                    <h2 class="kpi-region-title">Volume &amp; engagement</h2>
-                    <div class="kpi-grid">
-                        <a href="#admin-demographics" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-primary"><i class="fas fa-ticket-alt" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['total_bookings'] ?? 0) }}</h3>
-                                <p>Total bookings</p>
-                                <span class="kpi-sub">Tied to demographics scope below</span>
-                            </div>
-                        </a>
-                        <a href="#admin-demographics" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-mint"><i class="fas fa-users" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['active_clients'] ?? 0) }}</h3>
-                                <p>Active guests</p>
-                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
-                            </div>
-                        </a>
-                        <a href="{{ route('admin.tenants', [], false) }}" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-neutral"><i class="fas fa-user-group" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['total_users'] ?? 0) }}</h3>
-                                <p>Total users</p>
-                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
-                            </div>
-                        </a>
-                        <a href="#admin-tenant-bookings" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-warm"><i class="fas fa-clock" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['pending_bookings'] ?? 0) }}</h3>
-                                <p>Pending bookings</p>
-                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
-                            </div>
-                        </a>
+            <div class="dashboard-card animate delay-1">
+                <h3><i class="fas fa-people-group icon"></i>Booking Demographics</h3>
+                <p class="demographics-meta">
+                    {{ $demographics['scope_label'] ?? 'All tenants' }} |
+                    {{ optional($demographicsStartDate)->toFormattedDateString() }} - {{ optional($demographicsEndDate)->toFormattedDateString() }}
+                </p>
+
+                @if(empty($demographics['columns_ready']))
+                    <div style="background:#FFFBEB; border:1px solid #FCD34D; color:#92400E; padding:10px 12px; border-radius:10px; margin-bottom:12px;">
+                        Demographic columns are not on tenant <code>bookings</code> tables yet. Bookings live in each tenant database; plain <code>php artisan migrate</code> only touches the landlord DB. Run tenant schema migrations:
+                        <code style="display:block; margin-top:8px; padding:8px 10px; background:#fff; border-radius:6px; font-size:0.82rem;">php artisan tenants:migrate</code>
+                        One tenant: <code style="font-size:0.82rem;">php artisan tenants:migrate YOUR_TENANT_ID</code>
+                    </div>
+                @endif
+
+                <div class="demographics-summary">
+                    <div class="demographics-pill">
+                        <span class="value">{{ number_format($demographics['total_bookings'] ?? 0) }}</span>
+                        <span class="label">Bookings in Scope</span>
                     </div>
                 </div>
-                <div class="kpi-region">
-                    <h2 class="kpi-region-title">Pipeline &amp; portfolio</h2>
-                    <div class="kpi-grid">
-                        <a href="{{ route('admin.tenants', ['onboarding_status' => \App\Models\Tenant::ONBOARDING_PENDING_APPROVAL]) }}" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon {{ ($kpis['pending_host_applications'] ?? 0) > 0 ? 'tone-amber' : 'tone-mint' }}"><i class="fas fa-file-signature" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['pending_host_applications'] ?? 0) }}</h3>
-                                <p>Pending host applications</p>
-                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
-                            </div>
-                        </a>
-                        <a href="#admin-activity-overview" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-mint"><i class="fas fa-percent" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['occupancy_rate'] ?? 0, 1) }}%</h3>
-                                <p>Occupancy (this month)</p>
-                                <span class="kpi-sub">Booked nights vs capacity</span>
-                            </div>
-                        </a>
-                        <a href="{{ route('admin.owner.accommodations.index', [], false) }}" class="kpi-card kpi-card--link">
-                            <div class="kpi-icon tone-primary"><i class="fas fa-check-circle" aria-hidden="true"></i></div>
-                            <div class="kpi-info">
-                                <h3>{{ number_format($kpis['verified_properties'] ?? 0) }}</h3>
-                                <p>Verified units</p>
-                                <span class="kpi-sub kpi-sub--blank" aria-hidden="true">&nbsp;</span>
-                            </div>
-                        </a>
-                        @if($topTenantByBookings)
-                            <a href="{{ route('admin.tenants', [], false) }}" class="kpi-card kpi-card--link">
-                                <div class="kpi-icon tone-amber"><i class="fas fa-trophy" aria-hidden="true"></i></div>
-                                <div class="kpi-info">
-                                    <h3 class="kpi-value-compact">{{ $topTenantByBookings->name }}</h3>
-                                    <p>Top tenant by bookings</p>
-                                    <span class="kpi-sub">Current period leader</span>
-                                </div>
-                            </a>
-                        @else
-                            <div class="kpi-card" role="status">
-                                <div class="kpi-icon tone-neutral"><i class="fas fa-trophy" aria-hidden="true"></i></div>
-                                <div class="kpi-info">
-                                    <h3 class="kpi-value-empty">&mdash;</h3>
-                                    <p>Top tenant by bookings</p>
-                                    <span class="kpi-sub">No leader in the current period</span>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
+            </section>
 
             <div id="admin-demographics" class="dashboard-card pbi-visual animate delay-1 scroll-target">
                 <div class="pbi-visual-header">
@@ -1138,7 +764,7 @@
                         </div>
                     @endif
 
-                    <div class="pbi-demographics-inner app-scroll-x app-scroll-x--hint" role="region" aria-label="Demographics summary" tabindex="0">
+                    <div class="pbi-demographics-inner">
                         <table class="pbi-kpi-table" aria-label="Demographics summary for selected scope">
                             <thead>
                                 <tr>
@@ -1182,7 +808,6 @@
                                     <div class="pbi-breakdown-grid">
                                         <div class="pbi-mini-table-wrap">
                                             <p class="pbi-mini-table-title">Local places</p>
-                                            <div class="app-scroll-x app-scroll-x--hint" role="region" aria-label="Local places breakdown" tabindex="0">
                                             <table class="pbi-mini-table">
                                                 <thead>
                                                     <tr>
@@ -1203,11 +828,9 @@
                                                     @endforelse
                                                 </tbody>
                                             </table>
-                                            </div>
                                         </div>
                                         <div class="pbi-mini-table-wrap">
                                             <p class="pbi-mini-table-title">Foreign countries</p>
-                                            <div class="app-scroll-x app-scroll-x--hint" role="region" aria-label="Foreign countries breakdown" tabindex="0">
                                             <table class="pbi-mini-table">
                                                 <thead>
                                                     <tr>
@@ -1228,7 +851,6 @@
                                                     @endforelse
                                                 </tbody>
                                             </table>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1334,8 +956,7 @@
                 <h3><i class="fas fa-users-check icon"></i>Today's Tenant Bookings</h3>
                 <p class="table-note"><i class="fas fa-info-circle"></i> Shows number of guests per tenant with active check-ins today</p>
                 @if(isset($tenantBookingsToday) && count($tenantBookingsToday) > 0)
-                    <div class="app-scroll-x app-scroll-x--hint admin-tenant-bookings-scroll table-responsive" role="region" aria-label="Today's tenant bookings" tabindex="0">
-                    <table class="data-table admin-tenant-bookings-table">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th><i class="fas fa-building"></i> Tenant Name</th>
@@ -1362,7 +983,7 @@
                                     </td>
                                 </tr>
                             @endforeach
-                            <tr class="tenant-bookings-total-row" style="background: var(--cream); font-weight: 600;">
+                            <tr style="background: var(--cream); font-weight: 600;">
                                 <td colspan="1"><strong>Total This Month:</strong></td>
                                 <td colspan="3">
                                     <span style="color: var(--green-dark);">
@@ -1373,7 +994,6 @@
                             </tr>
                         </tbody>
                     </table>
-                    </div>
                 @else
                     <div style="text-align: center; padding: 40px; color: var(--gray-400);">
                         <i class="fas fa-calendar-alt" style="font-size: 3rem; margin-bottom: 15px; color: var(--gray-300);"></i>
@@ -1388,16 +1008,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const demographics = @json($demographics ?? []);
-            const chartColors = {
-                primary: '#166534',
-                mid: '#22c55e',
-                light: '#4ade80',
-                dark: '#14532d',
-                muted: '#94a3b8',
-                barFill: '#22c55e',
-                barBorder: '#166534',
-                lineAccent: '#ca8a04',
-            };
 
             function chartTheme() {
                 var root = document.documentElement;
@@ -1522,18 +1132,13 @@
             const ageChartEl = document.getElementById('ageChart');
             if (ageChartEl) {
                 const actx = ageChartEl.getContext('2d');
+                const ageGradient = actx.createLinearGradient(0, 0, 0, 220);
+                ageGradient.addColorStop(0, 'rgba(187, 247, 208, 0.98)');
+                ageGradient.addColorStop(0.5, 'rgba(74, 222, 128, 0.9)');
+                ageGradient.addColorStop(1, 'rgba(22, 101, 52, 0.88)');
                 const ageCounts = demographics.age?.counts ?? [0, 0, 0, 0, 0, 0, 0];
                 const ageMaxRaw = Math.max(...ageCounts, 0);
                 const ageYMax = ageMaxRaw === 0 ? 5 : Math.max(4, Math.ceil(ageMaxRaw * 1.12));
-                const ageBarColors = [
-                    chartColors.dark,
-                    chartColors.primary,
-                    chartColors.mid,
-                    chartColors.light,
-                    '#86efac',
-                    '#bbf7d0',
-                    chartColors.muted,
-                ];
                 new Chart(actx, {
                     type: 'bar',
                     data: {
@@ -1541,8 +1146,8 @@
                         datasets: [{
                             label: 'Bookings',
                             data: ageCounts,
-                            backgroundColor: ageBarColors,
-                            borderColor: chartColors.barBorder,
+                            backgroundColor: ageGradient,
+                            borderColor: 'rgba(22, 101, 52, 0.9)',
                             borderWidth: 1,
                             borderRadius: 5,
                             borderSkipped: false,
@@ -1616,6 +1221,9 @@
                     return Math.round((sum / slice.length) * 10) / 10;
                 });
                 const ctx = bookingsTrendEl.getContext('2d');
+                const barGradient = ctx.createLinearGradient(0, 0, 0, 300);
+                barGradient.addColorStop(0, 'rgba(56, 189, 248, 0.95)');
+                barGradient.addColorStop(1, 'rgba(14, 165, 233, 0.45)');
 
                 new Chart(ctx, {
                     type: 'bar',
@@ -1626,8 +1234,8 @@
                                 type: 'bar',
                                 label: 'Bookings',
                                 data: monthlyBookings,
-                                backgroundColor: chartColors.barFill,
-                                borderColor: chartColors.barBorder,
+                                backgroundColor: barGradient,
+                                borderColor: 'rgba(14, 165, 233, 0.9)',
                                 borderWidth: 1,
                                 borderRadius: 6,
                                 borderSkipped: false,
@@ -1639,14 +1247,14 @@
                                 type: 'line',
                                 label: '3-mo avg',
                                 data: rollingAverage3,
-                                borderColor: chartColors.lineAccent,
-                                backgroundColor: 'rgba(202, 138, 4, 0.1)',
+                                borderColor: '#fbbf24',
+                                backgroundColor: 'rgba(251, 191, 36, 0.12)',
                                 borderWidth: 2.5,
                                 tension: 0.35,
                                 fill: true,
                                 pointRadius: 3,
                                 pointHoverRadius: 6,
-                                pointBackgroundColor: chartColors.lineAccent,
+                                pointBackgroundColor: '#fbbf24',
                                 pointBorderColor: '#fff',
                                 pointBorderWidth: 1,
                                 yAxisID: 'y',
@@ -1714,6 +1322,10 @@
             const guestsChartEl = document.getElementById('guestsChart');
             if (guestsChartEl) {
                 const gctx = guestsChartEl.getContext('2d');
+                const guestsGradient = gctx.createLinearGradient(0, 0, 0, 300);
+                guestsGradient.addColorStop(0, 'rgba(187, 247, 208, 0.98)');
+                guestsGradient.addColorStop(0.45, 'rgba(74, 222, 128, 0.92)');
+                guestsGradient.addColorStop(1, 'rgba(22, 101, 52, 0.88)');
 
                 new Chart(gctx, {
                     type: 'bar',
@@ -1735,8 +1347,8 @@
                                 {{ $monthlyGuestsData['nov'] ?? 0 }},
                                 {{ $monthlyGuestsData['dec'] ?? 0 }}
                             ],
-                            backgroundColor: chartColors.barFill,
-                            borderColor: chartColors.barBorder,
+                            backgroundColor: guestsGradient,
+                            borderColor: 'rgba(22, 101, 52, 0.95)',
                             borderWidth: 1,
                             borderRadius: 6,
                             borderSkipped: false,
@@ -1812,12 +1424,11 @@
                                 {{ $bookingsByType['daily-rental'] ?? 0 }}
                             ],
                             backgroundColor: [
-                                chartColors.primary,
-                                chartColors.mid,
-                                chartColors.light,
+                                'rgb(46, 125, 50)',
+                                'rgb(59, 162, 246)',
+                                'rgb(249, 115, 22)'
                             ],
-                            borderColor: '#ffffff',
-                            borderWidth: 2
+                            borderWidth: 0
                         }]
                     },
                     options: {

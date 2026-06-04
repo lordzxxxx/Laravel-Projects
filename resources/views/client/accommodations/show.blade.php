@@ -702,19 +702,11 @@
             }
         }
 
-        @if($showLegacyNav)
-            @include('partials.legacy-navbar-responsive')
-        @endif
-
         @media (max-width: 768px) {
             @if($showLegacyNav)
-            .navbar.legacy-navbar-responsive { padding: 0 clamp(0.75rem, 3vw, 1.25rem); min-height: 70px; height: auto; }
-            body:not(.owner-nav-page):not(.client-nav-page):not(.explore-portal-page) .main-container {
-                padding-top: 5.5rem;
-            }
+            .navbar { padding: 0 20px; height: 60px; }
+            .nav-links { display: none; }
             @endif
-            .explore-stay-show__summary { min-width: 0; }
-            .explore-stay-show__meta { overflow-wrap: anywhere; }
             .main-image { height: min(48vw, 260px); }
             .features-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .form-row { grid-template-columns: 1fr; }
@@ -738,7 +730,7 @@
             'navLayout' => 'minimal',
         ])
     @else
-    <nav class="navbar legacy-navbar-responsive">
+    <nav class="navbar">
         <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('dashboard') }}" class="nav-logo">
             <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM">
             <span class="nav-brand-text">
@@ -769,10 +761,6 @@
                 @endif
             @endauth
         </ul>
-
-        <button type="button" class="legacy-nav-toggle" aria-label="Open menu" aria-expanded="false">
-            <i class="fas fa-bars" aria-hidden="true"></i>
-        </button>
         
         @auth
         <div class="nav-actions">

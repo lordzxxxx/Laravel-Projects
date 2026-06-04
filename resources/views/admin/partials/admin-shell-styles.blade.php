@@ -36,22 +36,6 @@ body {
     padding: 28px 36px;
 }
 
-/* Width cap + horizontal padding: also applied via .app-container in app.css (Vite) */
-.main-content.app-container,
-.dashboard-layout > main.main-content {
-    width: 100%;
-    max-width: min(var(--page-max, 78rem), 100%);
-    margin-inline: auto;
-    padding-inline: clamp(0.75rem, 2.5vw, 2rem);
-    box-sizing: border-box;
-}
-
-@media (max-width: 960px) {
-    .main-content {
-        padding: clamp(1rem, 3vw, 1.25rem);
-    }
-}
-
 .main-content-narrow {
     max-width: 720px;
     margin-left: auto;
@@ -241,26 +225,4 @@ body {
 
 @include('admin.partials.top-navbar-styles')
 
-/* Central admin portal pages: use <body class="admin-central-portal"> (owner pages omit this class). */
-body.admin-central-portal {
-    background: transparent;
-    min-height: 100vh;
-}
-body.admin-central-portal::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    background: url("{{ asset('newbg.png') }}") center / cover no-repeat;
-    transform: scale(1.045);
-    filter: blur(5px);
-    pointer-events: none;
-}
-body.admin-central-portal::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background: rgba(255, 255, 255, 0.6);
-    pointer-events: none;
-}
+@include('admin.partials.central-portal-background-styles')

@@ -75,7 +75,7 @@ Route::middleware('portal.port:any')->group(function () {
         Route::get('/register/owner', [RegisteredUserController::class, 'createOwner'])->name('register.owner');
         Route::post('/register/owner', [RegisteredUserController::class, 'storeOwner']);
 
-        Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+        Route::redirect('/register', '/register/guest')->name('register');
     });
 
     Route::view('/about', 'portal.about')->name('portal.about');

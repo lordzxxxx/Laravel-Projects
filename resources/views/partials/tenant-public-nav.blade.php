@@ -42,13 +42,6 @@
         cursor: default;
         pointer-events: none;
     }
-
-    /* Single-row nav on phones — Properties lives in hero (#properties); extra row caused overlap */
-    @media (max-width: 767px) {
-        body.tenant-landing-page nav.portal-nav-minimal.public-nav-tribal {
-            min-height: var(--app-topbar-height, 4rem) !important;
-        }
-    }
 </style>
 <nav class="portal-nav-minimal public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
     @include('partials.navbar-tribal-accent')
@@ -86,4 +79,12 @@
             @endif
         </div>
     </div>
+    <ul class="portal-nav-minimal__mobile-links" aria-label="Sections">
+        <li>
+            <a
+                href="#properties"
+                class="portal-nav-minimal__link {{ $active === 'properties' ? 'is-active' : '' }}"
+            ><i class="fas fa-building" aria-hidden="true"></i> Properties</a>
+        </li>
+    </ul>
 </nav>

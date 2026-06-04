@@ -9,7 +9,6 @@
     $exploreUrl = $publicOrigin ? $publicOrigin.'/explore/accommodations' : route('portal.accommodations.index');
     $aboutUrl = $publicOrigin ? $publicOrigin.'/about' : route('portal.about');
     $registerOwnerUrl = $publicOrigin ? $publicOrigin.'/register/owner' : route('register.owner');
-    $registerGuestUrl = $publicOrigin ? $publicOrigin.'/register/guest' : route('register.guest');
     $linkBase = 'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2';
     $linkDefault = 'text-brand-dark';
     $linkActive = 'border-b-2 border-brand-primary text-brand-primary bg-brand-soft/50';
@@ -27,8 +26,7 @@
     @include('partials.navbar-tribal-shell-styles')
     @include('partials.portal-public-nav-minimal-styles')
 </style>
-@include('partials.portal-nav-minimal-burger')
-<nav id="portalPublicNavbar" class="portal-nav-minimal portal-nav-minimal--burger public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
+<nav class="portal-nav-minimal public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
     @include('partials.navbar-tribal-accent')
     <div class="portal-nav-minimal__inner">
         @include('partials.navbar-brand-block', [
@@ -58,25 +56,16 @@
                 ><i class="fas fa-circle-info" aria-hidden="true"></i> About</a>
             </li>
         </ul>
-        <div class="portal-nav-minimal__actions portal-nav-minimal__actions--header-desktop">
-            <a href="{{ route('login') }}" class="portal-nav-minimal__action portal-nav-minimal__action--text" aria-label="{{ $loginLabel }}">
-                <i class="fas fa-sign-in-alt" aria-hidden="true"></i> {{ $loginLabel }}
-            </a>
-            <a href="{{ $registerGuestUrl }}" class="portal-nav-minimal__action portal-nav-minimal__action--primary" aria-label="Sign up">
-                <i class="fas fa-user-plus" aria-hidden="true"></i> Sign up
-            </a>
+        <div class="portal-nav-minimal__actions">
+            <a href="{{ route('login') }}" class="portal-nav-minimal__action portal-nav-minimal__action--text"><i class="fas fa-sign-in-alt" aria-hidden="true"></i> {{ $loginLabel }}</a>
             <a
                 href="{{ $registerOwnerUrl }}"
-                class="portal-nav-minimal__action portal-nav-minimal__action--primary portal-nav-minimal__action--host-desktop {{ $registerHighlight === 'host' ? 'is-highlighted' : '' }}"
+                class="portal-nav-minimal__action portal-nav-minimal__action--primary {{ $registerHighlight === 'host' ? 'is-highlighted' : '' }}"
                 @if($registerHighlight === 'host') aria-current="page" @endif
             ><i class="fas fa-home" aria-hidden="true"></i> Host</a>
         </div>
-        <button type="button" class="portal-nav-minimal__toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="portalPublicNavMenu"
-                onclick="var n=document.getElementById('portalPublicNavbar');if(!n)return;var o=n.classList.toggle('nav-open');this.setAttribute('aria-expanded',o?'true':'false');">
-            <i class="fas fa-bars" aria-hidden="true"></i>
-        </button>
     </div>
-    <ul id="portalPublicNavMenu" class="portal-nav-minimal__mobile-links" aria-label="Sections">
+    <ul class="portal-nav-minimal__mobile-links" aria-label="Sections">
         <li>
             <a
                 href="{{ $homeUrl }}"
@@ -98,26 +87,8 @@
                 @if($active === 'about') aria-current="page" @endif
             ><i class="fas fa-circle-info" aria-hidden="true"></i> About</a>
         </li>
-        <li>
-            <a
-                href="{{ $registerOwnerUrl }}"
-                class="portal-nav-minimal__link portal-nav-minimal__action--host-mobile {{ $registerHighlight === 'host' ? 'is-active' : '' }}"
-                @if($registerHighlight === 'host') aria-current="page" @endif
-            ><i class="fas fa-home" aria-hidden="true"></i> Host</a>
-        </li>
-        <li class="portal-nav-minimal__item--auth-mobile">
-            <a href="{{ route('login') }}" class="portal-nav-minimal__link">
-                <i class="fas fa-sign-in-alt" aria-hidden="true"></i> {{ $loginLabel }}
-            </a>
-        </li>
-        <li class="portal-nav-minimal__item--auth-mobile">
-            <a href="{{ $registerGuestUrl }}" class="portal-nav-minimal__link portal-nav-minimal__link--signup">
-                <i class="fas fa-user-plus" aria-hidden="true"></i> Sign up
-            </a>
-        </li>
     </ul>
 </nav>
-@include('partials.portal-nav-minimal-burger-script')
 @else
 <style>
     @include('partials.navbar-tribal-shell-styles')

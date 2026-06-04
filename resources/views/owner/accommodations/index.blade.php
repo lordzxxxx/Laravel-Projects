@@ -6,7 +6,7 @@
     @include('partials.tenant-favicon')
     <title>My Properties - Impasugong Accommodations</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    @include('partials.app-vite-head')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @include('owner.partials.owner-page-fonts')
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -159,33 +159,19 @@
         .owner-units-body {
             flex: 1;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-            gap: 20px;
-            padding: 20px;
-            justify-items: stretch;
-        }
-        .properties-grid:has(.property-card:only-child) {
-            grid-template-columns: minmax(0, 380px);
-            justify-content: center;
+            grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem);
+            gap: clamp(1rem, 2vw, 1.5rem);
+            align-items: stretch;
+            min-height: 0;
         }
 
         .owner-units-primary {
             min-width: 0;
             display: flex;
             flex-direction: column;
-            width: 100%;
-            max-width: 420px;
-            margin-inline: auto;
-            background: #ffffff;
-            border: 1px solid var(--gray-200);
-            border-radius: 14px;
-            overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        }
-        .property-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow);
-            border-color: rgba(16, 185, 129, 0.4);
+            gap: 0;
+            height: 100%;
+            min-height: 100%;
         }
 
         .owner-units-block {
@@ -354,80 +340,24 @@
             text-align: center;
         }
 
-        .property-card-actions {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 8px;
+        .owner-unit-card__meta dd {
+            margin: 0.15rem 0 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            text-align: center;
+        }
+
+        .owner-unit-card__meta dd.price { color: var(--green-dark); }
+
+        .owner-unit-card__actions {
+            display: flex;
+            gap: 0.35rem;
             margin-top: auto;
         }
 
-        .action-btn-form {
-            display: flex;
-            min-width: 0;
-        }
-
-        .action-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            width: 100%;
-            min-width: 0;
-            min-height: 2.5rem;
-            padding: 0.5rem 0.65rem;
-            border-radius: 10px;
-            border: 1px solid transparent;
-            cursor: pointer;
-            font-size: 0.78rem;
-            font-weight: 600;
-            text-decoration: none;
-            white-space: nowrap;
-            transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
-            background: transparent;
-        }
-        .action-btn i { font-size: 0.82rem; flex-shrink: 0; }
-        .action-btn:active { transform: translateY(1px); }
-
-        .action-btn.view {
-            background: #ECFDF5;
-            color: #047857;
-            border-color: #D1FAE5;
-        }
-        .action-btn.view:hover { background: #D1FAE5; border-color: #A7F3D0; }
-
-        .action-btn.edit {
-            background: #EFF6FF;
-            color: #1D4ED8;
-            border-color: #DBEAFE;
-        }
-        .action-btn.edit:hover { background: #DBEAFE; border-color: #BFDBFE; }
-
-        .action-btn.delete {
-            background: #FEF2F2;
-            color: #B91C1C;
-            border-color: #FECACA;
-        }
-        .action-btn.delete:hover { background: #FEE2E2; border-color: #FCA5A5; }
-
-        @media (max-width: 400px) {
-            .action-btn span {
-                position: absolute;
-                width: 1px;
-                height: 1px;
-                overflow: hidden;
-                clip: rect(0 0 0 0);
-            }
-            .property-card-actions {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-        }
-
-        /* ── Empty state ───────────────────────────────────────────────────── */
-        .empty-state {
-            text-align: center;
-            padding: 70px 28px 80px;
-        }
-        .empty-state-icon {
+        .owner-unit-card__btn {
+            flex: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -791,159 +721,7 @@
                         'availabilityEventsByAccommodation' => $availabilityEventsByAccommodation ?? [],
                         'headingId' => 'owner-units-avail-heading',
                     ])
-                </div>
-            </div>
-        @endif
-
-        {{-- Stats overview --}}
-        <div class="stats-row">
-            <div class="stat-card">
-                <span class="stat-icon green"><i class="fa-solid fa-house-chimney" aria-hidden="true"></i></span>
-                <div class="stat-info">
-                    <h3>{{ number_format($accommodations->total() ?? 0) }}</h3>
-                    <p>Total properties</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon blue"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></span>
-                <div class="stat-info">
-                    <h3>{{ number_format($accommodations->where('is_verified', true)->count() ?? 0) }}</h3>
-                    <p>Verified</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon orange"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></span>
-                <div class="stat-info">
-                    <h3>{{ number_format($accommodations->sum('bookings_count') ?? 0) }}</h3>
-                    <p>Total bookings</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon purple"><i class="fa-solid fa-star" aria-hidden="true"></i></span>
-                <div class="stat-info">
-                    <h3>{{ number_format($accommodations->avg('rating') ?? 0, 1) }}</h3>
-                    <p>Average rating</p>
-                </div>
-            </div>
-        </div>
-
-        {{-- Properties section --}}
-        <div class="properties-section">
-            <div class="properties-section-header">
-                <h3>
-                    <i class="fa-solid fa-list-ul" aria-hidden="true"></i>
-                    <span>All properties</span>
-                </h3>
-                @if(isset($accommodations) && method_exists($accommodations, 'total'))
-                    <span class="results-count">
-                        Showing {{ $accommodations->firstItem() ?? 0 }}–{{ $accommodations->lastItem() ?? 0 }}
-                        of {{ number_format($accommodations->total()) }}
-                    </span>
-                @endif
-            </div>
-
-            @if(isset($accommodations) && count($accommodations) > 0)
-                <div class="properties-grid">
-                    @foreach($accommodations as $accommodation)
-                        <article class="property-card">
-                            <div class="property-card-media">
-                                <x-accommodation-image :accommodation="$accommodation" :alt="$accommodation->name" />
-
-                                @if($accommodation->is_verified)
-                                    <span class="property-card-status verified">
-                                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i> Verified
-                                    </span>
-                                @elseif($accommodation->is_available)
-                                    <span class="property-card-status active">
-                                        <i class="fa-solid fa-circle-dot" aria-hidden="true"></i> Active
-                                    </span>
-                                @else
-                                    <span class="property-card-status inactive">
-                                        <i class="fa-solid fa-circle-pause" aria-hidden="true"></i> Inactive
-                                    </span>
-                                @endif
-
-                                <span class="property-card-type">
-                                    <i class="fa-solid fa-tag" aria-hidden="true"></i>
-                                    {{ str_replace('-', ' ', $accommodation->type) }}
-                                </span>
-                            </div>
-
-                            <div class="property-card-body">
-                                <h4 class="property-card-title">{{ $accommodation->name }}</h4>
-                                <p class="property-card-location">
-                                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                                    Brgy. {{ $accommodation->barangay }}
-                                </p>
-
-                                <div class="property-card-meta">
-                                    <div class="property-card-meta-item price">
-                                        <span class="label">Price</span>
-                                        <span class="value">₱{{ number_format($accommodation->price_per_night, 0, '.', ',') }}</span>
-                                    </div>
-                                    <div class="property-card-meta-item">
-                                        <span class="label">Bookings</span>
-                                        <span class="value">
-                                            <i class="fa-solid fa-calendar" aria-hidden="true"></i>
-                                            {{ $accommodation->bookings_count ?? 0 }}
-                                        </span>
-                                    </div>
-                                    <div class="property-card-meta-item rating">
-                                        <span class="label">Rating</span>
-                                        <span class="value">
-                                            <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                            {{ number_format($accommodation->rating ?? 0, 1) }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="property-card-actions">
-                                    <a href="/owner/accommodations/{{ $accommodation->id }}" class="action-btn view" title="View property">
-                                        <i class="fa-solid fa-eye" aria-hidden="true"></i>
-                                        <span>View</span>
-                                    </a>
-                                    <a href="/owner/accommodations/{{ $accommodation->id }}/edit" class="action-btn edit" title="Edit property">
-                                        <i class="fa-solid fa-pen" aria-hidden="true"></i>
-                                        <span>Edit</span>
-                                    </a>
-                                    <form action="/owner/accommodations/{{ $accommodation->id }}" method="POST" class="action-btn-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="action-btn delete" title="Delete property" onclick="return confirm('Are you sure you want to delete this property? This action cannot be undone.')">
-                                            <i class="fa-solid fa-trash" aria-hidden="true"></i>
-                                            <span>Delete</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </article>
-                    @endforeach
-                </div>
-
-                @if(method_exists($accommodations, 'hasPages') && $accommodations->hasPages())
-                    <div class="pagination-wrapper">
-                        {{ $accommodations->links('pagination::bootstrap-5') }}
-                    </div>
-                @endif
-            @else
-                <div class="empty-state">
-                    <span class="empty-state-icon">
-                        <i class="fa-solid fa-building-circle-exclamation" aria-hidden="true"></i>
-                    </span>
-                    <h3>No properties yet</h3>
-                    <p>Start by adding your first property to begin accepting bookings on the platform.</p>
-                    @if($canCreateListing ?? false)
-                        <a href="/owner/accommodations/create" class="add-btn">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                            <span>Add your first property</span>
-                        </a>
-                    @else
-                        <span class="add-btn add-btn-disabled" title="Adding units isn’t available right now. Check your business status (registration &amp; billing) or contact support.">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                            <span>Add your first property</span>
-                        </span>
-                    @endif
-                </div>
+                </aside>
             @endif
         </div>
     </main>

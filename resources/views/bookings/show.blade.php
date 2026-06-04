@@ -132,8 +132,6 @@
                 padding: 1.125rem 1.25rem;
             }
         }
-
-        @include('client.partials.guest-booking-detail-styles')
     </style>
 </head>
 <body class="{{ $isTenantManager ? 'owner-nav-page' : ($authUser?->isClient() ? 'client-nav-page font-sans text-slate-800 antialiased' : '') }} flex min-h-screen flex-col {{ $authUser?->isClient() ? '' : 'bg-gradient-to-br from-emerald-50 via-lime-50/90 to-emerald-100 text-slate-900 antialiased' }}">
@@ -273,7 +271,7 @@
                 @endif
 
                 <article class="booking-show-card">
-                    <header class="booking-show-card__header shrink-0 bg-gradient-to-r from-emerald-900 to-emerald-700 px-5 py-5 text-white sm:px-7 sm:py-6">
+                    <header class="shrink-0 bg-gradient-to-r from-emerald-900 to-emerald-700 px-5 py-5 text-white sm:px-7 sm:py-6">
                         <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                             <div class="min-w-0">
                                 <p class="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200/90">Booking #{{ $booking->id }}</p>
@@ -292,7 +290,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="booking-show-card__total shrink-0 rounded-xl bg-white/10 px-4 py-3.5 ring-1 ring-inset ring-white/20 backdrop-blur-sm sm:min-w-[11rem]">
+                            <div class="shrink-0 rounded-xl bg-white/10 px-4 py-3.5 ring-1 ring-inset ring-white/20 backdrop-blur-sm sm:min-w-[11rem]">
                                 <p class="text-[11px] font-semibold uppercase tracking-wide text-emerald-100">Total</p>
                                 <p class="mt-0.5 text-2xl font-bold tabular-nums tracking-tight sm:text-3xl">₱{{ number_format((float) $booking->total_price, 2) }}</p>
                                 <p class="mt-0.5 text-xs text-emerald-100/90">{{ $nights }} night{{ $nights === 1 ? '' : 's' }}</p>
@@ -302,15 +300,15 @@
 
                     <div class="flex min-h-0 flex-1 flex-col lg:flex-row">
                         {{-- Property (medium sidebar) --}}
-                        <aside class="booking-show-card__aside flex shrink-0 flex-col border-b border-slate-100 lg:w-[min(100%,20rem)] lg:min-h-0 lg:self-stretch lg:border-b-0 lg:border-r xl:w-72">
-                            <div class="booking-show-card__aside-media relative aspect-[4/3] max-h-52 w-full shrink-0 bg-slate-100 lg:aspect-auto lg:h-44 lg:max-h-44">
+                        <aside class="flex shrink-0 flex-col border-b border-slate-100 lg:w-[min(100%,20rem)] lg:min-h-0 lg:self-stretch lg:border-b-0 lg:border-r xl:w-72">
+                            <div class="relative aspect-[4/3] max-h-52 w-full shrink-0 bg-slate-100 lg:aspect-auto lg:h-44 lg:max-h-44">
                                 <img
                                     src="{{ $propertyImage }}"
                                     alt="{{ $booking->accommodation->name ?? 'Property' }}"
                                     class="absolute inset-0 h-full w-full object-cover"
                                 >
                             </div>
-                            <div class="booking-show-card__aside-body space-y-2.5 p-4 sm:p-5">
+                            <div class="space-y-2.5 p-4 sm:p-5">
                                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Property</p>
                                 <p class="text-base font-bold leading-snug text-slate-900">{{ $booking->accommodation->name ?? 'N/A' }}</p>
                                 <p class="flex items-start gap-2 text-sm text-slate-600">
@@ -327,7 +325,7 @@
                         </aside>
 
                         {{-- Details (scrollable, medium cards) --}}
-                        <div class="booking-show-card__content flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-4 sm:gap-6 sm:p-6 lg:p-7">
+                        <div class="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-4 sm:gap-6 sm:p-6 lg:p-7">
                             <section>
                                 <h2 class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Stay details</h2>
                                 <div class="mt-3 grid gap-3 sm:grid-cols-2">
@@ -416,7 +414,7 @@
                             @endif
 
                             @if(Auth::check() && $isTenantManager && $booking->status === 'pending')
-                                <div class="booking-show-card__actions mt-auto flex flex-wrap gap-2.5 border-t border-slate-100 pt-5">
+                                <div class="mt-auto flex flex-wrap gap-2.5 border-t border-slate-100 pt-5">
                                     <form action="{{ route('owner.bookings.update-status', $booking, false) }}" method="POST" data-loading-form>
                                         @csrf
                                         @method('PUT')
@@ -440,7 +438,7 @@
                                     </form>
                                 </div>
                             @elseif(Auth::check() && Auth::user()->isClient() && in_array($booking->status, ['pending', 'confirmed'], true))
-                                <div class="booking-show-card__actions mt-auto flex flex-col gap-3 border-t border-slate-100 pt-5">
+                                <div class="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-5">
                                     @if($booking->status === 'pending')
                                         <p class="text-sm leading-relaxed text-slate-600">
                                             Pay with Stripe or upload a GCash proof, then your host will review and approve.
