@@ -277,15 +277,28 @@
             @endif
             .main-content {
                 padding-top: calc(var(--client-nav-offset) - 10px);
-                padding-left: 14px;
-                padding-right: 14px;
+                padding-left: var(--app-page-pad-inline, 14px);
+                padding-right: var(--app-page-pad-inline, 14px);
                 padding-bottom: 24px;
+                font-size: var(--text-fluid-sm);
             }
             .booking-body { flex-direction: column; }
-            .property-image { width: 100%; height: 200px; }
+            .property-image { width: 100%; height: 160px; }
             .booking-footer { flex-direction: column; gap: 15px; align-items: stretch; }
             .action-btns { justify-content: center; }
             .owner-bookings-grid { grid-template-columns: 1fr; }
+            .booking-header, .booking-body { padding: var(--app-card-pad); }
+            .empty-state { padding: 2rem 1rem; }
+            .empty-icon { font-size: 2rem; }
+            .empty-state h3 { font-size: var(--text-fluid-lg); }
+            .empty-state p { font-size: var(--text-fluid-sm); }
+            table { font-size: var(--app-table-font); }
+            table th, table td { padding: var(--app-table-pad-y) var(--app-table-pad-x); }
+        }
+
+        @media (max-width: 480px) {
+            .property-image { height: 140px; }
+            .empty-state h3 { font-size: var(--text-fluid-base); }
         }
 
     </style>

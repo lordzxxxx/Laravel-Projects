@@ -89,7 +89,7 @@
         }
 
         .booking-show-inner {
-            --stay-max: 78rem;
+            --stay-max: var(--app-content-max, 78rem);
             width: 100%;
             max-width: var(--stay-max);
             margin-left: auto;

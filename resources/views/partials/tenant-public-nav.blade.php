@@ -43,13 +43,14 @@
         pointer-events: none;
     }
 </style>
-<nav class="portal-nav-minimal public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
+<nav id="tenantPublicNav" class="portal-nav-minimal public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
     @include('partials.navbar-tribal-accent')
     <div class="portal-nav-minimal__inner">
         @include('partials.navbar-brand-block', [
             'brandHref' => url('/'),
             'brandSubtitle' => $brandSubtitle,
         ])
+        @include('partials.nav-burger-toggle', ['targetId' => 'tenantPublicNav'])
         <ul class="portal-nav-minimal__links">
             <li>
                 <a
@@ -79,12 +80,4 @@
             @endif
         </div>
     </div>
-    <ul class="portal-nav-minimal__mobile-links" aria-label="Sections">
-        <li>
-            <a
-                href="#properties"
-                class="portal-nav-minimal__link {{ $active === 'properties' ? 'is-active' : '' }}"
-            ><i class="fas fa-building" aria-hidden="true"></i> Properties</a>
-        </li>
-    </ul>
 </nav>

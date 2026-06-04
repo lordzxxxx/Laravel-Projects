@@ -124,7 +124,7 @@
 
     /* Premium app navbar (SaaS typography + rhythm) */
     --app-topbar-height: 84px;
-    --app-topbar-height-mobile: 72px;
+    --app-topbar-height-mobile: 3.5rem;
     --nav-link-font-size: 0.8125rem;
     --nav-link-font-weight: 500;
     --nav-link-font-weight-active: 600;

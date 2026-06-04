@@ -540,3 +540,12 @@ body.client-nav-page .guest-messages-main {
 .guest-messages-chat__stream .msg-bubble-attachment {
     margin-top: 0.35rem;
 }
+
+@media (max-width: 768px) {
+    .guest-messages-thread { font-size: var(--text-fluid-sm); }
+    .guest-messages-thread__preview { font-size: var(--text-fluid-xs); }
+    .guest-messages-chat__stream .msg-bubble { font-size: var(--text-fluid-sm); }
+    .guest-messages-empty__card h3 { font-size: var(--text-fluid-base); }
+    .guest-messages-empty__card p { font-size: var(--text-fluid-sm); }
+    .guest-messages-empty__cta { font-size: var(--text-fluid-sm); }
+}

@@ -29,7 +29,7 @@
         .btn.muted { background: #e5e7eb; color: #1f2937; }
         .btn.warn { background: #f59e0b; color: #fff; }
         .btn.danger { background: #dc2626; color: #fff; }
-        .table-wrap { overflow-x: auto; }
+        .table-wrap { /* scroll via .app-table-responsive */ }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--app-surface-border, #e5e7eb); font-size: 0.9rem; vertical-align: top; color: var(--ink-700); }
         th { color: var(--ink-600, #4b5563); background: var(--app-surface-muted-bg, #f9fafb); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
@@ -360,8 +360,8 @@
             <div class="panel-header border-b border-slate-200 px-5 py-4">
                 <h1 class="text-2xl font-bold tracking-tight text-green-900">Tenant Users</h1>
             </div>
-            <div class="section-body table-wrap px-5 py-4">
-                <table>
+            <div class="section-body app-table-responsive table-wrap px-5 py-4" role="region" aria-label="Tenant users" tabindex="0">
+                <table class="app-data-table">
                     <thead>
                         <tr>
                             <th>Name</th>

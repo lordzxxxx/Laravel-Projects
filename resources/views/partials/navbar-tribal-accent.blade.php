@@ -1,6 +1,6 @@
 {{--
-    Tribal pattern tile for app top navbars (admin, owner, client).
-    Portrait source rotated to landscape; fitted height, tiled (no stretch) — top-navbar-core-styles.
+    Tribal chevron banner for app top navbars (admin, owner, client, portal).
+    Landscape asset — cover-fit to bar height/width (navbar-tribal-shell-styles).
 --}}
 <div class="navbar-tribal-accent" aria-hidden="true">
     <div

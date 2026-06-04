@@ -10,14 +10,7 @@
     --app-font-display: 'Space Grotesk', var(--app-font-sans);
     --client-nav-font: var(--app-font-sans);
 
-    --text-xs: 0.75rem;
-    --text-sm: 0.8125rem;
-    --text-base: 0.9375rem;
-    --text-md: 1rem;
-    --text-lg: 1.125rem;
-    --text-xl: 1.25rem;
-    --text-2xl: 1.5rem;
-    --text-3xl: 1.75rem;
+    /* --text-* scale: defined in responsive-tokens.css (fluid clamp) */
 
     --leading-tight: 1.25;
     --leading-normal: 1.55;

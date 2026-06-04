@@ -489,13 +489,23 @@ html.dark .navbar .imp-notify-btn {
     box-shadow: 0 4px 14px color-mix(in srgb, var(--chrome-active-bg, #457359) 35%, transparent);
 }
 
+/* Ultra-wide / 4K: keep nav chrome full-bleed but center inner cluster */
+@media (min-width: 1920px) {
+    .navbar:not(.portal-nav-minimal) {
+        padding-left: max(clamp(12px, 2vw, 28px), calc((100vw - var(--app-content-max-wide, 96rem)) / 2));
+        padding-right: max(clamp(12px, 2vw, 28px), calc((100vw - var(--app-content-max-wide, 96rem)) / 2));
+    }
+}
+
 .nav-toggle {
     display: none;
     background: transparent;
     border: 1px solid var(--chrome-surface-border, var(--green-soft));
     color: var(--nav-brand-color, var(--green-dark));
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 10px;
     cursor: pointer;
     align-items: center;
@@ -504,60 +514,92 @@ html.dark .navbar .imp-notify-btn {
 }
 .nav-toggle:focus-visible { outline: 2px solid var(--chrome-focus-ring, var(--green-primary)); outline-offset: 2px; }
 
-@media (max-width: 960px) {
+@media (max-width: 768px) {
     .navbar {
         grid-template-columns: minmax(0, 1fr) auto;
-        padding: 0 14px;
+        align-items: center;
+        padding-inline: clamp(1rem, 4vw, 1.25rem);
+        padding-block: 0;
+        row-gap: 0;
+        box-sizing: border-box;
+    }
+
+    .navbar > .nav-logo .nav-brand-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        white-space: nowrap;
     }
 
     .navbar > .nav-logo {
         grid-column: 1;
+        grid-row: 1;
         justify-self: start;
+        align-self: center;
+        align-items: center;
         min-width: 0;
     }
 
-    .nav-toggle {
+    .navbar > .nav-toggle {
         display: inline-flex;
         grid-column: 2;
+        grid-row: 1;
         justify-self: end;
         align-self: center;
     }
-    .nav-links {
+
+    .navbar > .nav-links,
+    .navbar > .nav-actions {
         display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: var(--app-surface-bg, var(--white));
+        grid-column: 1 / -1;
+        position: static;
+        transform: none;
+        box-shadow: none;
+        max-height: none;
+        overflow: visible;
+    }
+
+    .navbar > .nav-links {
         flex-direction: column;
         align-items: stretch;
-        padding: 12px 14px;
+        padding: 10px 0 6px;
         gap: 6px;
-        box-shadow: var(--shadow-md, 0 10px 25px rgba(27, 94, 32, 0.12));
         border-top: 1px solid var(--app-surface-border, var(--green-soft));
-        max-height: calc(100vh - 64px);
-        overflow-y: auto;
+        margin-top: 4px;
     }
-    .navbar > .nav-links a { width: 100%; text-shadow: none; }
-    #appNavbar.nav-open .nav-links { display: flex; }
-    .nav-actions { display: none; }
-    #appNavbar.nav-open .nav-actions {
-        display: flex;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        padding: 0 14px 14px;
-        background: var(--app-surface-bg, var(--white));
+
+    .navbar > .nav-links a {
+        width: 100%;
+        text-shadow: none;
+    }
+
+    .navbar > .nav-actions {
         flex-wrap: wrap;
         gap: 10px;
+        padding: 0 0 10px;
+        justify-content: flex-start;
+        border-top: 1px solid var(--app-surface-border, var(--green-soft));
+    }
+
+    .navbar.nav-open > .nav-links {
+        display: flex;
+        grid-row: 2;
+    }
+
+    .navbar.nav-open > .nav-actions {
+        display: flex;
+        grid-row: 3;
+    }
+
+    .navbar.nav-open {
+        padding-bottom: 0.5rem;
         box-shadow: var(--shadow-md, 0 10px 25px rgba(27, 94, 32, 0.12));
-        transform: translateY(calc(100% + 1px));
     }
 }
 
 @media (max-width: 768px) {
-    .navbar:not(.portal-nav-minimal) { padding: 0 12px; height: var(--app-topbar-height-mobile, 64px); }
-    .navbar.portal-nav-minimal { padding-left: 1rem !important; padding-right: 1rem !important; }
-    .user-display { max-width: 170px; }
+    .navbar { min-height: var(--app-topbar-height-mobile, 3.5rem); }
+    .user-display { max-width: min(170px, 42vw); }
 }
+
+@include('partials.mobile-nav-unified-styles')

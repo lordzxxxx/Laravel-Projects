@@ -877,3 +877,14 @@ html.dark .msg-btn-danger {
 html.dark .msg-btn-danger:hover {
     background: color-mix(in srgb, var(--status-danger) 15%, var(--app-surface-bg)) !important;
 }
+
+/* Ultra-wide / 4K — cap messaging workspace width */
+@media (min-width: 1920px) {
+    .guest-messages-main .msg-card,
+    .messages-show-main .msg-chat-shell,
+    body.msg-thread-page .messages-show-main .msg-chat-shell {
+        max-width: min(var(--app-content-max-wide, 96rem), 100%);
+        margin-inline: auto;
+        width: 100%;
+    }
+}

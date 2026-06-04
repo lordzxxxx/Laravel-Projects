@@ -15,6 +15,7 @@ html.dark body.owner-nav-page :where(
     .owner-unit-card__btn,
     .owner-avail-card,
     .property-table th,
+    .owner-dash-data-table th,
     .panel,
     .perm-category,
     .role-card,
@@ -55,6 +56,7 @@ html.dark body.owner-nav-page :where(
     .property-name,
     .info-value,
     .property-table td,
+    .owner-dash-data-table td,
     .owner-avail-card__head h3,
     .panel-header h1,
     .role-summary-title,
@@ -75,6 +77,7 @@ html.dark body.owner-nav-page :where(
     .owner-dash-action__desc,
     .property-address,
     .property-table th,
+    .owner-dash-data-table th,
     .info-label,
     .booking-id,
     .booking-date,
@@ -106,18 +109,21 @@ html.dark body.owner-nav-page .owner-page-hero__lede strong {
 }
 
 /* Tables */
-html.dark body.owner-nav-page .property-table th {
+html.dark body.owner-nav-page .property-table th,
+html.dark body.owner-nav-page .owner-dash-data-table thead th {
     background: var(--app-surface-muted-bg) !important;
     color: var(--text-muted, var(--ink-600)) !important;
     border-color: var(--app-surface-border) !important;
 }
 
-html.dark body.owner-nav-page .property-table td {
+html.dark body.owner-nav-page .property-table td,
+html.dark body.owner-nav-page .owner-dash-data-table td {
     color: var(--ink-700) !important;
     border-color: var(--app-surface-border) !important;
 }
 
-html.dark body.owner-nav-page .property-table tbody tr:hover {
+html.dark body.owner-nav-page .property-table tbody tr:hover,
+html.dark body.owner-nav-page .owner-dash-data-table tbody tr:hover {
     background: var(--app-surface-muted-bg) !important;
 }
 

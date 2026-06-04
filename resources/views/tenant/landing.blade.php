@@ -322,18 +322,22 @@
 
         @media (max-width: 768px) {
             .hero {
-                padding-top: var(--portal-content-below-nav, calc(5.75rem + 1rem));
+                padding-top: var(--portal-content-below-nav, calc(4rem + 1rem));
             }
-            .hero h1 { font-size: 2rem; }
-            .hero p { font-size: 1rem; }
+            .hero h1 { font-size: var(--text-fluid-2xl, 1.125rem); }
+            .hero p { font-size: var(--text-fluid-sm); }
             .hero-buttons { flex-direction: column; align-items: center; }
-            .carousel-section, .about { padding: 50px 20px; }
-            .carousel-slide { min-width: 280px; }
-            .carousel-header h2, .about-card h2 { font-size: 1.6rem; }
+            .carousel-section, .about { padding: 2.5rem var(--app-page-pad-inline, 1rem); }
+            .carousel-slide { min-width: 240px; }
+            .carousel-header h2, .about-card h2 { font-size: var(--text-fluid-xl); }
+            .property-card { font-size: var(--text-fluid-sm); }
+            .property-content { padding: var(--app-card-pad, 14px); }
+            body { background-attachment: scroll; }
         }
 
-        @media (max-width: 768px) {
-            body { background-attachment: scroll; }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: var(--text-fluid-lg); }
+            .carousel-header h2, .about-card h2 { font-size: var(--text-fluid-lg); }
         }
     </style>
 </head>

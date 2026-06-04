@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
+    @include('partials.app-vite-head')
     <title>Owner Dashboard - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -137,6 +138,10 @@
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
+        }
+
+        .owner-dash-block--data {
+            overflow: visible;
         }
 
         .owner-dash-block__head {
@@ -275,29 +280,84 @@
             max-width: none;
         }
 
-        .property-table { width: 100%; border-collapse: collapse; }
-        .property-table th, .property-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--gray-100);
-            vertical-align: middle;
+        .owner-dashboard-main .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Dashboard data tables */
+        .owner-dash-table-wrap {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+            scrollbar-gutter: stable;
+        }
+
+        .owner-dashboard-main .owner-dash-data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: auto;
             font-size: 0.8125rem;
         }
-        .property-table th {
-            font-weight: 600;
-            color: var(--gray-500);
-            font-size: 0.625rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            background: var(--gray-50);
+
+        .owner-dashboard-main .owner-dash-data-table th,
+        .owner-dashboard-main .owner-dash-data-table td {
+            padding: 0.85rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--app-surface-border, #e5e7eb);
+            vertical-align: middle;
+            word-break: normal;
+            overflow-wrap: normal;
         }
-        .property-table tbody tr:hover { background: var(--green-white, #f6faf4); }
-        .property-table tbody tr:last-child td { border-bottom: none; }
+
+        .owner-dashboard-main .owner-dash-data-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            font-weight: 600;
+            font-size: 0.6875rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            background: var(--gray-50, #f9fafb);
+            white-space: nowrap;
+        }
+
+        .owner-dashboard-main .owner-dash-data-table tbody tr:hover td {
+            background: var(--green-white, #f6faf4);
+        }
+
+        .owner-dashboard-main .owner-dash-data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .owner-dashboard-main .owner-dash-data-table .owner-dash-td--num {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .owner-dashboard-main .owner-dash-data-table .owner-dash-td--price {
+            font-weight: 600;
+            color: var(--gray-800);
+            white-space: nowrap;
+        }
 
         .property-cell {
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            min-width: 0;
         }
 
         .property-thumb {
@@ -306,39 +366,53 @@
             border-radius: 0.5rem;
             object-fit: cover;
             flex-shrink: 0;
+            border: 1px solid var(--app-surface-border, #e5e7eb);
         }
 
         .property-name {
             font-weight: 600;
             color: var(--gray-800);
-            font-size: 0.8125rem;
+            font-size: 0.875rem;
+            line-height: 1.3;
         }
 
         .property-address {
             font-size: 0.75rem;
             color: var(--gray-500);
-            margin-top: 0.1rem;
+            margin-top: 0.15rem;
+            line-height: 1.35;
         }
 
         .property-type-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
             background: var(--green-soft, #edf4ea);
-            padding: 0.2rem 0.5rem;
-            border-radius: 0.35rem;
+            color: var(--green-dark, #1b5e20);
+            padding: 0.3rem 0.65rem;
+            border-radius: 999px;
             font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1;
+            border: 1px solid color-mix(in srgb, var(--green-primary, #2e7d32) 18%, transparent);
         }
 
         .property-edit-btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.35rem;
-            padding: 0.4rem 0.75rem;
+            padding: 0.45rem 0.85rem;
             background: var(--green-soft, #edf4ea);
             color: var(--green-dark);
-            border-radius: 0.4rem;
+            border-radius: 0.5rem;
             text-decoration: none;
             font-size: 0.75rem;
             font-weight: 600;
-            transition: background 0.15s ease;
+            white-space: nowrap;
+            border: 1px solid color-mix(in srgb, var(--green-primary) 15%, transparent);
+            transition: background 0.15s ease, border-color 0.15s ease;
         }
 
         .property-edit-btn:hover {
@@ -348,15 +422,20 @@
         .status-badge {
             display: inline-flex;
             align-items: center;
-            padding: 0.25rem 0.6rem;
+            justify-content: center;
+            white-space: nowrap;
+            padding: 0.3rem 0.7rem;
             border-radius: 999px;
             font-size: 0.6875rem;
             font-weight: 600;
+            line-height: 1;
         }
         .status-badge.active { background: #dcfce7; color: var(--green-dark); border: 1px solid #bbf7d0; }
-        .status-badge.inactive { background: var(--gray-200); color: var(--gray-600); }
+        .status-badge.inactive { background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; }
         .status-badge.pending { background: #fffbeb; color: #B45309; border: 1px solid #fde68a; }
         .status-badge.confirmed { background: #eff6ff; color: #1D4ED8; border: 1px solid #bfdbfe; }
+        .status-badge.paid { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+        .status-badge.completed { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
         .status-badge.cancelled { background: #fee2e2; color: #DC2626; border: 1px solid #fecaca; }
 
         .pagination-clean .pagination {
@@ -480,9 +559,110 @@
         .business-status-pill.tone-danger { border-color: rgba(248, 113, 113, 0.5); background: #fef2f2; color: #b91c1c; }
         .business-status-pill.tone-danger .biz-main { color: #b91c1c; }
 
-        .owner-dash-table-scroll {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        @media (min-width: 769px) {
+            .owner-dashboard-main .owner-dash-data-table--units {
+                min-width: 36rem;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table--requests {
+                min-width: 28rem;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table--units th:nth-child(1),
+            .owner-dashboard-main .owner-dash-data-table--units td:nth-child(1) {
+                min-width: 11rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .owner-dash-charts {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+
+            .owner-dash-table-wrap {
+                overflow: visible;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table {
+                min-width: 0;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table thead {
+                display: none;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table tbody tr {
+                display: block;
+                padding: 1rem 1.1rem;
+                border-bottom: 1px solid var(--app-surface-border, #e5e7eb);
+                background: var(--app-surface-bg, #fff);
+            }
+
+            .owner-dashboard-main .owner-dash-data-table tbody tr:hover td {
+                background: transparent;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table tbody tr:hover {
+                background: var(--green-white, #f6faf4);
+            }
+
+            .owner-dashboard-main .owner-dash-data-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table td {
+                display: grid;
+                grid-template-columns: 5.25rem minmax(0, 1fr);
+                align-items: center;
+                gap: 0.35rem 0.75rem;
+                padding: 0.4rem 0;
+                border-bottom: none;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table td::before {
+                content: attr(data-label);
+                font-size: 0.625rem;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                color: var(--gray-500);
+                line-height: 1.3;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table td.owner-dash-td--lead {
+                display: block;
+                padding: 0 0 0.65rem;
+                margin-bottom: 0.35rem;
+                border-bottom: 1px solid var(--gray-100);
+            }
+
+            .owner-dashboard-main .owner-dash-data-table td.owner-dash-td--lead::before {
+                display: none;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table td.owner-dash-td--actions {
+                display: block;
+                padding-top: 0.65rem;
+                margin-top: 0.15rem;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table td.owner-dash-td--actions::before {
+                display: none;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table td.owner-dash-td--actions .property-edit-btn {
+                width: 100%;
+            }
+
+            .owner-dashboard-main .owner-dash-data-table td[data-label=""]::before {
+                display: none;
+            }
+
+            .owner-dashboard-main .property-thumb {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
         }
 
         .owner-dash-empty {
@@ -512,9 +692,12 @@
             }
         }
 
+        @media (max-width: 1280px) {
+            .owner-dash-tables { grid-template-columns: 1fr; }
+        }
+
         @media (max-width: 1100px) {
             .owner-dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .owner-dash-tables { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 900px) {
@@ -591,7 +774,7 @@
                     <div class="owner-dash-charts">
                         <section class="owner-dash-block" aria-labelledby="owner-trend-heading">
                             <div class="owner-dash-block__head">
-                                <h2 id="owner-trend-heading"><i class="fas fa-chart-line" aria-hidden="true"></i> Revenue &amp; bookings</h2>
+                                <h2 id="owner-trend-heading"><i class="fas fa-calendar-check" aria-hidden="true"></i> Bookings</h2>
                                 <p class="owner-dash-block__caption">Last 30 days</p>
                             </div>
                             <div class="owner-dash-block__body">
@@ -614,28 +797,28 @@
                     </div>
 
                     <div class="owner-dash-tables">
-                        <section class="owner-dash-block" aria-labelledby="owner-units-heading">
+                        <section class="owner-dash-block owner-dash-block--data" aria-labelledby="owner-units-heading">
                             <div class="owner-dash-block__head">
                                 <h3 id="owner-units-heading"><i class="fas fa-list" aria-hidden="true"></i> My units</h3>
                             </div>
                             <div class="owner-dash-block__body owner-dash-block__body--flush">
                             @if(isset($properties) && count($properties) > 0)
-                                <div class="owner-dash-table-scroll">
-                                    <table class="property-table">
+                                <div class="owner-dash-table-wrap" role="region" aria-label="My units" tabindex="0">
+                                    <table class="owner-dash-data-table owner-dash-data-table--units">
                                         <thead>
                                             <tr>
-                                                <th>Property</th>
-                                                <th>Type</th>
-                                                <th>Price</th>
-                                                <th>Bookings</th>
-                                                <th>Status</th>
-                                                <th></th>
+                                                <th scope="col">Property</th>
+                                                <th scope="col">Type</th>
+                                                <th scope="col">Price</th>
+                                                <th scope="col">Bookings</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col"><span class="sr-only">Actions</span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($properties as $property)
                                                 <tr>
-                                                    <td>
+                                                    <td class="owner-dash-td--lead" data-label="Property">
                                                         <div class="property-cell">
                                                             <img src="{{ $property->primary_image_url }}" alt="" class="property-thumb">
                                                             <div>
@@ -646,16 +829,16 @@
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><span class="property-type-pill">{{ ucfirst(str_replace('-', ' ', $property->type)) }}</span></td>
-                                                    <td><strong>₱{{ number_format($property->price_per_night, 0, '.', ',') }}</strong></td>
-                                                    <td>{{ $property->bookings_count ?? 0 }}</td>
-                                                    <td>
+                                                    <td data-label="Type"><span class="property-type-pill">{{ ucfirst(str_replace('-', ' ', $property->type)) }}</span></td>
+                                                    <td class="owner-dash-td--price" data-label="Price">₱{{ number_format($property->price_per_night, 0, '.', ',') }}</td>
+                                                    <td class="owner-dash-td--num" data-label="Bookings">{{ $property->bookings_count ?? 0 }}</td>
+                                                    <td data-label="Status">
                                                         <span class="status-badge {{ $property->is_available ? 'active' : 'inactive' }}">
                                                             {{ $property->is_available ? 'Active' : 'Inactive' }}
                                                         </span>
                                                     </td>
-                                                    <td>
-                                                        <a href="{{ route('owner.accommodations.edit', $property) }}" class="property-edit-btn">
+                                                    <td class="owner-dash-td--actions" data-label="">
+                                                        <a href="{{ route('owner.accommodations.edit', ['accommodation' => $property->id], false) }}" class="property-edit-btn">
                                                             <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                                         </a>
                                                     </td>
@@ -681,31 +864,29 @@
                             </div>
                         </section>
 
-                        <section class="owner-dash-block" aria-labelledby="owner-bookings-heading">
+                        <section class="owner-dash-block owner-dash-block--data" aria-labelledby="owner-bookings-heading">
                             <div class="owner-dash-block__head">
                                 <h3 id="owner-bookings-heading"><i class="fas fa-calendar-check" aria-hidden="true"></i> Recent requests</h3>
                             </div>
                             <div class="owner-dash-block__body owner-dash-block__body--flush">
                             @if(isset($recent_bookings) && count($recent_bookings) > 0)
-                                <div class="owner-dash-table-scroll">
-                                    <table class="property-table">
+                                <div class="owner-dash-table-wrap" role="region" aria-label="Recent booking requests" tabindex="0">
+                                    <table class="owner-dash-data-table owner-dash-data-table--requests">
                                         <thead>
                                             <tr>
-                                                <th>Guest</th>
-                                                <th>Property</th>
-                                                <th>Check-in</th>
-                                                <th>Amount</th>
-                                                <th>Status</th>
+                                                <th scope="col">Guest</th>
+                                                <th scope="col">Property</th>
+                                                <th scope="col">Check-in</th>
+                                                <th scope="col">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($recent_bookings as $booking)
                                                 <tr>
-                                                    <td>{{ $booking->client->name ?? 'N/A' }}</td>
-                                                    <td>{{ $booking->accommodation->name ?? 'N/A' }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($booking->check_in_date)->format('M d, Y') }}</td>
-                                                    <td><strong>₱{{ number_format($booking->total_price, 0, '.', ',') }}</strong></td>
-                                                    <td><span class="status-badge {{ $booking->status }}">{{ ucfirst($booking->status) }}</span></td>
+                                                    <td class="owner-dash-td--lead" data-label="Guest">{{ $booking->client->name ?? 'N/A' }}</td>
+                                                    <td data-label="Property">{{ $booking->accommodation->name ?? 'N/A' }}</td>
+                                                    <td data-label="Check-in">{{ \Carbon\Carbon::parse($booking->check_in_date)->format('M d, Y') }}</td>
+                                                    <td data-label="Status"><span class="status-badge {{ $booking->status }}">{{ ucfirst($booking->status) }}</span></td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -783,21 +964,12 @@
                     labels: @json($trendLabels ?? []),
                     datasets: [
                         {
-                            label: 'Revenue (PHP)',
-                            data: @json($revenueTrend ?? []),
-                            borderColor: '#457359',
-                            backgroundColor: 'rgba(46, 125, 50, 0.15)',
-                            tension: 0.35,
-                            fill: true,
-                            yAxisID: 'yRevenue'
-                        },
-                        {
                             label: 'Bookings',
                             data: @json($bookingsTrend ?? []),
                             borderColor: '#047857',
-                            backgroundColor: 'rgba(4, 120, 87, 0.12)',
+                            backgroundColor: 'rgba(4, 120, 87, 0.15)',
                             tension: 0.35,
-                            fill: false,
+                            fill: true,
                             yAxisID: 'yBookings'
                         }
                     ]
@@ -807,30 +979,30 @@
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
                     plugins: {
-                        legend: { position: 'top', labels: { color: '#334155', font: { size: 11, weight: '600' } } },
+                        legend: { display: false },
                         tooltip: {
                             backgroundColor: 'rgba(15, 61, 36, 0.94)',
                             titleColor: '#ecfdf5',
                             bodyColor: '#d1fae5',
                             padding: 12,
-                            cornerRadius: 8
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    var count = context.parsed.y;
+                                    return count + (count === 1 ? ' booking' : ' bookings');
+                                }
+                            }
                         }
                     },
                     scales: {
-                        yRevenue: {
-                            type: 'linear',
-                            position: 'left',
-                            ticks: {
-                                callback: function(value) {
-                                    return 'P' + Number(value).toLocaleString();
-                                }
-                            }
-                        },
                         yBookings: {
                             type: 'linear',
-                            position: 'right',
-                            grid: { drawOnChartArea: false },
-                            ticks: { precision: 0 }
+                            position: 'left',
+                            beginAtZero: true,
+                            ticks: { precision: 0, stepSize: 1 }
+                        },
+                        x: {
+                            ticks: { maxRotation: 45, minRotation: 0, autoSkip: true, maxTicksLimit: 8 }
                         }
                     }
                 }

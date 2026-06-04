@@ -1,4 +1,5 @@
 @import './typography.css';
+@import './responsive-tokens.css';
 
 @tailwind base;
 @tailwind components;
@@ -6,17 +7,17 @@
 
 /*
  * Global responsive foundation — loaded on every page via Vite.
- * Keeps horizontal overflow in check, stabilizes text scaling on mobile,
- * and applies dashboard-oriented breakpoints without duplicating Blade partials.
+ * Keeps horizontal overflow in check, fluid typography, adaptive tables,
+ * and dashboard breakpoints without duplicating Blade partials.
  */
 
 @layer base {
     :root {
         --app-topbar-height: 84px;
-        --app-topbar-height-mobile: 72px;
-        /* Fixed navbar + gap before main content — one token for client/owner/admin shells */
+        --app-topbar-height-mobile: 3.5rem;
         --app-main-top-offset: 100px;
         --client-nav-offset: var(--app-main-top-offset);
+        --app-shell-padding-inline: clamp(1rem, 2.5vw, 2rem);
     }
 
     @media (max-width: 768px) {
@@ -26,7 +27,6 @@
     }
 
     html {
-        /* Keep layout/nav position stable when page height changes */
         scrollbar-gutter: stable;
         max-width: 100%;
         overflow-x: hidden;
@@ -40,9 +40,21 @@
         min-height: 100dvh;
         min-height: 100vh;
         overflow-wrap: break-word;
+        font-size: var(--text-fluid-base);
     }
 
-    /* Fluid media — prevents layout blowout on small viewports */
+    :where(h1) {
+        font-size: var(--text-fluid-2xl);
+    }
+
+    :where(h2) {
+        font-size: var(--text-fluid-xl);
+    }
+
+    :where(h3) {
+        font-size: var(--text-fluid-lg);
+    }
+
     img,
     picture,
     video,
@@ -53,24 +65,225 @@
     }
 }
 
-/**
- * Portal / dashboard responsive patterns (formerly partials/global-responsive-helpers).
- * Scoped where possible so marketing landings and hero typography are not crushed.
- */
 @layer components {
+    /* Centered main column — mobile through 4K */
+    .app-page-shell {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: min(var(--app-content-max), 100%);
+        margin-inline: auto;
+        padding-inline: var(--app-shell-padding-inline);
+    }
+
+    .app-page-shell--wide {
+        max-width: min(var(--app-content-max-wide), 100%);
+    }
+
+    @media (min-width: 2560px) {
+        .app-page-shell,
+        .app-page-shell--wide {
+            padding-inline: var(--app-shell-padding-inline, clamp(2rem, 5vw, 4rem));
+        }
+    }
+
+    .app-prose-max {
+        max-width: 65ch;
+    }
+
+    .app-safe-bottom {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    }
+
+    .app-filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: clamp(0.5rem, 1.5vw, 1rem);
+    }
+
     @media (max-width: 768px) {
+        .app-filter-bar > * {
+            flex: 1 1 100%;
+            min-width: 0;
+        }
+
+        .app-filter-bar .app-filter-bar__keep {
+            flex: 1 1 auto;
+        }
+    }
+
+    .app-stack-sm {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(0.75rem, 1.5vw, 1rem);
+    }
+
+    @media (min-width: 768px) {
+        .app-stack-sm {
+            flex-direction: row;
+            align-items: center;
+        }
+    }
+
+    /* Adaptive tables — wrapper scroll only; preserve table semantics */
+    .app-table-responsive {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+    }
+
+    .app-data-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: auto;
+        font-size: var(--app-table-font);
+    }
+
+    .app-data-table th,
+    .app-data-table td {
+        padding: var(--app-table-pad-y) var(--app-table-pad-x);
+        vertical-align: top;
+        line-height: 1.35;
+        font-size: inherit;
+    }
+
+    .app-data-table th {
+        font-size: var(--app-table-header-font, var(--app-table-font));
+        font-weight: 600;
+    }
+
+    .app-data-table td {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .app-data-table small {
+        font-size: max(0.625rem, var(--text-fluid-xs));
+        line-height: 1.3;
+    }
+
+    .app-data-table .app-data-table__cell-nowrap {
+        white-space: nowrap;
+    }
+
+    .app-data-table .app-data-table__cell-long {
+        max-width: min(24rem, 100%);
+    }
+
+    /* Legacy alias */
+    .table-container:has(.app-data-table),
+    .table-container.app-table-responsive {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-container .app-data-table,
+    .table-container table,
+    .table-wrap table,
+    .data-table {
+        font-size: var(--app-table-font);
+    }
+
+    .table-container table th,
+    .table-container table td,
+    .table-wrap table th,
+    .table-wrap table td,
+    .data-table th,
+    .data-table td {
+        padding: var(--app-table-pad-y) var(--app-table-pad-x);
+        font-size: inherit;
+        line-height: 1.35;
+    }
+
+    .table-container table th,
+    .table-wrap table th,
+    .data-table th {
+        font-size: var(--app-table-header-font, var(--app-table-font));
+        font-weight: 600;
+    }
+
+    /* Card / surface density — tier tokens */
+    :where(
+        .card-padded,
+        .card-body,
+        .dashboard-card,
+        .kpi-card,
+        .booking-card,
+        .property-card,
+        .quick-stat-card,
+        .msg-card,
+        .empty-state,
+        .owner-dash-block
+    ) {
+        font-size: var(--text-fluid-sm);
+    }
+
+    :where(.card-padded) {
+        padding: var(--app-card-pad);
+    }
+
+    :where(
+        .card-header h3,
+        .dashboard-card h3,
+        .card-title,
+        .quick-stat-card h4
+    ) {
+        font-size: var(--app-card-title);
+    }
+
+    @media (max-width: 768px) {
+        :where(.main-content, main.main-content, .dashboard-layout > main, .page-shell, .owner-app-main)
+            :is(table, .app-data-table, .data-table) {
+            font-size: var(--app-table-font);
+        }
+
+        :where(.main-content, main.main-content, .dashboard-layout > main, .page-shell, .owner-app-main)
+            :is(table th, table td, .app-data-table th, .app-data-table td, .data-table th, .data-table td) {
+            padding: var(--app-table-pad-y) var(--app-table-pad-x);
+            font-size: inherit;
+            line-height: 1.3;
+        }
+
+        :where(.main-content, main.main-content, .dashboard-layout > main)
+            :is(table th, .app-data-table th, .data-table th) {
+            font-size: var(--app-table-header-font, var(--app-table-font));
+            font-weight: 600;
+        }
+
+        :where(.main-content, main.main-content, .dashboard-layout > main) table small {
+            font-size: var(--text-fluid-xs);
+        }
+
+        :where(.main-content, main.main-content, .dashboard-layout > main, .page-shell) {
+            font-size: var(--text-fluid-sm);
+        }
+
+        :where(.main-content, main.main-content, .dashboard-layout > main) :where(h2) {
+            font-size: var(--text-fluid-base) !important;
+        }
+
+        :where(.main-content, main.main-content, .dashboard-layout > main) :where(h3, h4) {
+            font-size: var(--text-fluid-sm) !important;
+        }
+
+        .card-padded {
+            padding: clamp(0.75rem, 2vw, 1rem) !important;
+        }
+
+        .card-header h3,
+        .panel-header h1,
+        .dashboard-card h3 {
+            font-size: var(--text-fluid-sm) !important;
+        }
         .card,
         .panel {
             overflow-x: auto;
-        }
-
-        /* Only tables inside primary app shells — avoids breaking arbitrary layouts */
-        .dashboard-layout table,
-        main.main-content table {
-            display: block;
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         .main-content,
@@ -82,7 +295,7 @@
 
         :where(.page-header) h1,
         :where(.page-title) h1 {
-            font-size: 1.5rem !important;
+            font-size: var(--text-fluid-lg) !important;
         }
 
         .page-header-row {
@@ -110,11 +323,15 @@
             padding-right: 10px !important;
         }
 
-        :where(.page-header) h1 {
-            font-size: 1.25rem !important;
+        :where(.page-header) h1,
+        :where(.page-title) h1 {
+            font-size: var(--text-fluid-base) !important;
         }
 
-        /* Stack primary actions in main workspace only — not global nav chrome */
+        :where(.page-header) p {
+            font-size: var(--text-fluid-xs) !important;
+        }
+
         .main-content .nav-btn,
         .main-content .btn,
         main.main-content button.primary,
@@ -131,10 +348,6 @@
     }
 }
 
-/*
- * MPA cross-document view transitions (Chromium). Paired with
- * <meta name="view-transition" content="same-origin"> in layouts. No effect elsewhere.
- */
 @view-transition {
     navigation: auto;
 }

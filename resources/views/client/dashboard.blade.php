@@ -160,46 +160,10 @@
             </div>
         </header>
 
-        <form action="{{ $listingUrl }}" method="GET" class="explore-stays-filters">
-            <div class="explore-stays-filters__grid">
-                <div class="explore-stays-field explore-stays-field--type">
-                    <label for="dashboard-filter-type">Type</label>
-                    <select id="dashboard-filter-type" name="type">
-                        <option value="">All</option>
-                        <option value="traveller-inn" {{ request('type') == 'traveller-inn' ? 'selected' : '' }}>Traveller-Inn</option>
-                        <option value="airbnb" {{ request('type') == 'airbnb' ? 'selected' : '' }}>Airbnb</option>
-                        <option value="daily-rental" {{ request('type') == 'daily-rental' ? 'selected' : '' }}>Daily Rental</option>
-                    </select>
-                </div>
-                <div class="explore-stays-field explore-stays-field--min">
-                    <label for="dashboard-filter-min-price">Min price</label>
-                    <input type="number" id="dashboard-filter-min-price" name="min_price" placeholder="₱ 0" value="{{ request('min_price') }}">
-                </div>
-                <div class="explore-stays-field explore-stays-field--max">
-                    <label for="dashboard-filter-max-price">Max price</label>
-                    <input type="number" id="dashboard-filter-max-price" name="max_price" placeholder="₱ 10,000" value="{{ request('max_price') }}">
-                </div>
-                <div class="explore-stays-field explore-stays-field--guests">
-                    <label for="dashboard-filter-guests">Guests</label>
-                    <select id="dashboard-filter-guests" name="guests">
-                        <option value="">Any</option>
-                        <option value="1" {{ request('guests') == '1' ? 'selected' : '' }}>1 guest</option>
-                        <option value="2" {{ request('guests') == '2' ? 'selected' : '' }}>2 guests</option>
-                        <option value="3" {{ request('guests') == '3' ? 'selected' : '' }}>3 guests</option>
-                        <option value="4" {{ request('guests') == '4' ? 'selected' : '' }}>4 guests</option>
-                        <option value="5" {{ request('guests') == '5' ? 'selected' : '' }}>5+ guests</option>
-                    </select>
-                </div>
-                <div class="explore-stays-field explore-stays-field--search">
-                    <label for="dashboard-filter-search">Search</label>
-                    <input type="text" id="dashboard-filter-search" name="search" placeholder="Property name, location…" value="{{ request('search') }}" aria-label="Search properties">
-                </div>
-                <div class="explore-stays-field explore-stays-field--submit">
-                    <label class="sr-only" for="dashboard-filter-submit">Search</label>
-                    <button type="submit" id="dashboard-filter-submit" class="explore-stays-search-btn">Search</button>
-                </div>
-            </div>
-        </form>
+        @include('partials.explore-stays-filters', [
+            'formAction' => $listingUrl,
+            'idPrefix' => 'dashboard-',
+        ])
 
         @if(isset($accommodations) && count($accommodations) > 0)
             <section class="explore-stays-results" aria-label="Property listings">
@@ -261,6 +225,8 @@
             </section>
         @endif
     </main>
+
+    @include('partials.explore-stays-per-page-sync')
 
     <script>
         document.querySelectorAll('button.property-favorite').forEach(btn => {

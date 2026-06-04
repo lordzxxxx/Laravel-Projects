@@ -242,9 +242,16 @@
             .auth-card { max-width: 620px; }
         }
 
+        @media (max-width: 768px) {
+            .auth-pane { padding: var(--app-page-pad-inline, 14px); }
+            .auth-card { padding: 1.25rem 1rem; }
+            .auth-header h2 { font-size: var(--text-fluid-xl, 1.125rem); }
+            .auth-header p, label, input, button { font-size: var(--text-fluid-sm); }
+        }
+
         @media (max-width: 640px) {
-            .auth-card { padding: 24px 18px; border-radius: 14px; }
-            .auth-header h2 { font-size: 1.55rem; }
+            .auth-card { padding: 1rem; border-radius: 14px; }
+            .auth-header h2 { font-size: var(--text-fluid-lg, 1rem); }
         }
     </style>
 </head>

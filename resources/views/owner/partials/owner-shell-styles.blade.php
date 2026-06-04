@@ -55,6 +55,8 @@ body.owner-nav-page .page-shell.with-owner-nav {
     justify-content: space-between;
     gap: 0.75rem 1.25rem;
     margin-bottom: 0;
+    padding-bottom: clamp(0.75rem, 1.25vw, 1.25rem);
+    border-bottom: 1px solid var(--app-surface-border, rgba(15, 23, 42, 0.08));
 }
 
 .owner-page-hero {
@@ -208,3 +210,5 @@ body.owner-nav-page .profile-flash {
         background-attachment: scroll;
     }
 }
+
+@include('owner.partials.owner-responsive-styles')

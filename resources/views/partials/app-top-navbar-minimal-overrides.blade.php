@@ -128,18 +128,47 @@
     margin-top: 0;
 }
 
-@media (max-width: 960px) {
-    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) .navbar.portal-nav-minimal > .nav-links {
+@media (max-width: 768px) {
+    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) .navbar.portal-nav-minimal.public-nav-tribal {
+        padding-block: 0 !important;
+        padding-inline: clamp(1rem, 4vw, 1.25rem) !important;
+        gap: 0.75rem !important;
+        align-items: center !important;
+        box-sizing: border-box;
+    }
+
+    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) .navbar.portal-nav-minimal:not(.nav-open) {
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        grid-template-rows: minmax(0, 1fr) !important;
+    }
+
+    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) .navbar.portal-nav-minimal.nav-open {
+        grid-template-rows: var(--app-topbar-height-mobile, 3.5rem) auto auto !important;
+    }
+
+    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) .navbar.portal-nav-minimal > .nav-toggle {
+        display: inline-flex !important;
+    }
+
+    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) .navbar.portal-nav-minimal > .nav-links,
+    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) .navbar.portal-nav-minimal > .nav-actions {
+        display: none !important;
+    }
+
+    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) .navbar.portal-nav-minimal.nav-open > .nav-links {
+        display: flex !important;
         background: rgba(255, 255, 255, 0.94);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border-top: 1px solid rgba(27, 94, 32, 0.1);
     }
 
-    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) #appNavbar.nav-open .nav-actions {
+    :is(body.owner-nav-page, body.admin-central-portal, body.client-nav-page) .navbar.portal-nav-minimal.nav-open > .nav-actions {
+        display: flex !important;
         background: rgba(255, 255, 255, 0.94);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(27, 94, 32, 0.08);
     }
 }
 

@@ -5,3 +5,4 @@
 @include('partials.ui-foundation-styles')
 @include('partials.portal-public-nav-minimal-styles')
 @include('partials.app-top-navbar-minimal-overrides')
+@include('partials.mobile-nav-unified-styles')

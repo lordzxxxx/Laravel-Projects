@@ -9,12 +9,12 @@
     --portal-content-below-nav: calc(var(--app-topbar-height, 4rem) + clamp(1.25rem, 2vw, 1.875rem));
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     :root {
-        --app-topbar-height: 5.75rem;
-        --app-topbar-height-mobile: 5.75rem;
-        --app-main-top-offset: 5.75rem;
-        --portal-content-below-nav: calc(5.75rem + clamp(1rem, 2vw, 1.5rem));
+        --app-topbar-height: 3.5rem;
+        --app-topbar-height-mobile: 3.5rem;
+        --app-main-top-offset: 3.5rem;
+        --portal-content-below-nav: calc(3.5rem + clamp(1rem, 2vw, 1.5rem));
     }
 }
 
@@ -38,19 +38,16 @@
     justify-content: center;
 }
 
-/* Portrait tribal asset rotated to span the bar; crop stays centered in the nav */
+/* Landscape tribal banner — cover-fit inside the nav bar */
 .portal-nav-minimal .navbar-tribal-accent__canvas {
     position: absolute;
-    left: 50%;
-    top: 50%;
+    inset: 0;
     width: 100%;
-    height: max(100%, 100vw);
-    min-height: 100%;
+    height: 100%;
     margin: 0;
-    transform: translate(-50%, -50%) rotate(-90deg);
-    transform-origin: center center;
+    transform: none;
     background-repeat: no-repeat;
-    background-size: auto 100%;
+    background-size: cover;
     background-position: center center;
     opacity: var(--nav-tribal-pattern-opacity, 0.42);
 }
@@ -73,6 +70,28 @@
     z-index: 2;
 }
 
+.portal-nav-minimal .nav-toggle {
+    display: none;
+    background: transparent;
+    border: 1px solid rgba(46, 125, 50, 0.25);
+    color: var(--brand-dark, #1b5e20);
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 10px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.portal-nav-minimal .nav-toggle:focus-visible {
+    outline: 2px solid var(--brand-primary, #2e7d32);
+    outline-offset: 2px;
+}
+
 .portal-nav-minimal__inner {
     display: flex;
     align-items: center;
@@ -83,6 +102,70 @@
     margin: 0 auto;
     padding: 0.625rem clamp(1rem, 3vw, 1.75rem);
     box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .portal-nav-minimal:not(.navbar) .portal-nav-minimal__inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto auto auto;
+        align-items: center;
+        gap: 0;
+        row-gap: 0;
+    }
+
+    .portal-nav-minimal:not(.navbar) .portal-nav-minimal__inner > .nav-logo {
+        grid-column: 1;
+        grid-row: 1;
+        min-width: 0;
+    }
+
+    .portal-nav-minimal:not(.navbar) .portal-nav-minimal__inner > .nav-toggle {
+        display: inline-flex;
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+
+    .portal-nav-minimal:not(.navbar) .portal-nav-minimal__links,
+    .portal-nav-minimal:not(.navbar) .portal-nav-minimal__actions {
+        display: none;
+        grid-column: 1 / -1;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        padding: 0.5rem 0 0;
+        margin: 0;
+        border-top: 1px solid rgba(27, 94, 32, 0.1);
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .portal-nav-minimal:not(.navbar) .portal-nav-minimal__links .portal-nav-minimal__link {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .portal-nav-minimal:not(.navbar) .portal-nav-minimal__actions {
+        gap: 0.5rem;
+        padding-bottom: 0.625rem;
+        border-top-color: rgba(27, 94, 32, 0.08);
+    }
+
+    .portal-nav-minimal:not(.navbar).nav-open .portal-nav-minimal__inner > .portal-nav-minimal__links {
+        display: flex;
+        grid-row: 2;
+    }
+
+    .portal-nav-minimal:not(.navbar).nav-open .portal-nav-minimal__inner > .portal-nav-minimal__actions {
+        display: flex;
+        grid-row: 3;
+    }
+
+    .portal-nav-minimal:not(.navbar).nav-open {
+        box-shadow: 0 8px 24px rgba(27, 94, 32, 0.1);
+    }
 }
 
 .portal-nav-minimal .nav-logo {
@@ -257,34 +340,9 @@
     outline-offset: 2px;
 }
 
-/* Mobile: secondary link row */
+/* Legacy mobile link row — replaced by burger drawer */
 .portal-nav-minimal__mobile-links {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0 1rem 0.5rem;
-    gap: 0.125rem;
-    justify-content: center;
-    width: 100%;
-    max-width: min(1280px, 100%);
-    margin-left: auto;
-    margin-right: auto;
-    box-sizing: border-box;
-    border-top: 1px solid rgba(27, 94, 32, 0.08);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.12) 100%);
-}
-
-@media (min-width: 768px) {
-    .portal-nav-minimal__mobile-links {
-        display: none;
-    }
-}
-
-.portal-nav-minimal__mobile-links .portal-nav-minimal__link {
-    flex: 1;
-    justify-content: center;
-    padding: 0.4375rem 0.5rem;
-    font-size: 0.8125rem;
+    display: none !important;
 }
 
 html.dark .portal-nav-minimal {
@@ -342,16 +400,29 @@ html.dark .portal-nav-minimal__action--text {
     }
 }
 
-@media (max-width: 767px) {
-    nav.portal-nav-minimal.public-nav-tribal:has(.portal-nav-minimal__mobile-links) {
+@media (max-width: 768px) {
+    nav.portal-nav-minimal.public-nav-tribal:not(.navbar):not(.nav-open) {
+        height: var(--app-topbar-height-mobile, 3.5rem) !important;
+        min-height: var(--app-topbar-height-mobile, 3.5rem) !important;
+        max-height: var(--app-topbar-height-mobile, 3.5rem) !important;
+    }
+
+    nav.portal-nav-minimal.public-nav-tribal:not(.navbar).nav-open {
         height: auto !important;
-        min-height: var(--app-topbar-height, 5.75rem) !important;
+        min-height: var(--app-topbar-height-mobile, 3.5rem) !important;
         max-height: none !important;
     }
 
-    .navbar.portal-nav-minimal.public-nav-tribal {
+    .navbar.portal-nav-minimal.public-nav-tribal:not(.nav-open) {
+        height: var(--app-topbar-height-mobile, 3.5rem) !important;
+        min-height: var(--app-topbar-height-mobile, 3.5rem) !important;
+        max-height: var(--app-topbar-height-mobile, 3.5rem) !important;
+        box-sizing: border-box;
+    }
+
+    .navbar.portal-nav-minimal.public-nav-tribal.nav-open {
         height: auto !important;
-        min-height: var(--app-topbar-height, 4rem) !important;
+        min-height: var(--app-topbar-height-mobile, 3.5rem) !important;
         max-height: none !important;
         box-sizing: border-box;
     }
@@ -385,26 +456,25 @@ body.client-nav-page {
     --client-nav-safe-offset: calc(var(--app-topbar-height, 4.5rem) + clamp(1.75rem, 2.5vw, 2.5rem));
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     body.explore-portal-page,
     body.portal-landing-page,
     body.about-portal-page,
-    body.tenant-landing-page {
-        --app-topbar-height: 5.75rem;
-        --app-topbar-height-mobile: 5.75rem;
-        --app-main-top-offset: 5.75rem;
-        --portal-public-nav-offset: 5.75rem;
-        --portal-content-below-nav: calc(5.75rem + clamp(1rem, 2vw, 1.5rem));
-    }
-
+    body.tenant-landing-page,
     body.owner-nav-page,
     body.admin-central-portal,
     body.client-nav-page {
-        --app-topbar-height: 4.5rem;
-        --app-topbar-height-mobile: 4.5rem;
-        --app-main-top-offset: 4.5rem;
-        --app-content-offset: calc(4.5rem + clamp(1rem, 2vw, 1.25rem));
-        --client-nav-offset: calc(var(--app-topbar-height, 4.5rem) + clamp(1rem, 2vw, 1.25rem));
-        --client-nav-safe-offset: calc(var(--app-topbar-height, 4.5rem) + clamp(1.5rem, 2vw, 2rem));
+        --app-topbar-height: 3.5rem;
+        --app-topbar-height-mobile: 3.5rem;
+        --app-main-top-offset: 3.5rem;
+        --portal-public-nav-offset: 3.5rem;
+        --portal-content-below-nav: calc(3.5rem + clamp(1rem, 2vw, 1.5rem));
+        --app-content-offset: calc(3.5rem + clamp(1rem, 2vw, 1.25rem));
+        --owner-topbar-height: 3.5rem;
+        --owner-content-offset: var(--app-content-offset);
+        --client-nav-offset: calc(3.5rem + clamp(1rem, 2vw, 1.25rem));
+        --client-nav-safe-offset: calc(3.5rem + clamp(1.5rem, 2vw, 2rem));
     }
 }
+
+@include('partials.mobile-nav-unified-styles')

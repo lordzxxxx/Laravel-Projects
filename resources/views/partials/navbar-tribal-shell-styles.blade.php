@@ -45,9 +45,9 @@ nav.public-nav-tribal.fixed {
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .public-nav-tribal:not(.portal-nav-minimal) {
-        min-height: var(--app-topbar-height-mobile, 72px);
+        min-height: var(--app-topbar-height-mobile, 3.5rem);
         padding-left: 12px !important;
         padding-right: 12px !important;
     }
@@ -65,15 +65,12 @@ nav.public-nav-tribal.fixed {
 .navbar .navbar-tribal-accent__canvas,
 .public-nav-tribal .navbar-tribal-accent__canvas {
     position: absolute;
-    left: 50%;
-    top: 50%;
+    inset: 0;
     width: 100%;
-    height: max(100vw, 100%);
-    min-height: 100%;
-    transform: translate(-50%, -50%) rotate(-90deg);
-    transform-origin: center center;
-    background-repeat: repeat;
-    background-size: auto 100%;
+    height: 100%;
+    transform: none;
+    background-repeat: no-repeat;
+    background-size: cover;
     background-position: center center;
     opacity: var(--nav-tribal-pattern-opacity, 0.8);
 }

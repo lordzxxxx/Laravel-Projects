@@ -11,23 +11,26 @@
         margin: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.65rem;
+        gap: clamp(0.65rem, 1.25vw, 0.85rem);
+        width: 100%;
+        max-width: 100%;
+        min-height: 0;
     }
 
     .avail-cal-toolbar {
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
+        align-items: flex-end;
         justify-content: space-between;
-        gap: 0.5rem 0.75rem;
-        padding-bottom: 0.65rem;
-        border-bottom: 1px solid var(--gray-200, #e5e7eb);
+        gap: 0.65rem 0.85rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--app-surface-border, rgba(15, 23, 42, 0.08));
+        flex-shrink: 0;
     }
 
     .avail-cal-toolbar__unit {
-        flex: 1 1 10rem;
-        min-width: min(100%, 9rem);
-        max-width: 16rem;
+        flex: 1 1 12rem;
+        min-width: min(100%, 10rem);
     }
 
     .avail-cal-label {
@@ -42,9 +45,9 @@
 
     .availability-calendar-wrap .availability-select {
         width: 100%;
-        padding: 0.4rem 0.55rem;
-        border-radius: 0.375rem;
-        border: 1px solid var(--gray-200, #e5e7eb);
+        padding: 0.5rem 0.65rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--app-surface-border, rgba(15, 23, 42, 0.12));
         font-size: 0.8125rem;
         font-weight: 500;
         color: var(--gray-800, #1f2937);
@@ -61,19 +64,18 @@
     .avail-cal-toolbar__nav {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.35rem;
         flex-shrink: 0;
     }
 
     .availability-calendar-wrap .month-nav-btn {
-        width: 1.75rem;
-        height: 1.75rem;
-        border-radius: 0.375rem;
-        border: 1px solid var(--gray-200, #e5e7eb);
-        background: #fff;
-        color: var(--gray-700, #374151);
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--app-surface-border, rgba(15, 23, 42, 0.1));
+        background: var(--app-surface-bg, #fff);
+        color: var(--gray-600, #4b5563);
         font-size: 0.75rem;
-        font-weight: 600;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -83,153 +85,100 @@
 
     .availability-calendar-wrap .month-nav-btn:hover {
         border-color: var(--green-primary, #457359);
-        background: var(--green-white, #edf4ea);
+        background: color-mix(in srgb, var(--green-primary, #457359) 8%, #fff);
         color: var(--green-dark, #14532d);
     }
 
     .availability-month-label {
-        min-width: 6.5rem;
-        padding: 0 0.15rem;
+        min-width: 7.5rem;
+        padding: 0 0.35rem;
         text-align: center;
         font-weight: 600;
-        font-size: 0.8125rem;
-        letter-spacing: -0.01em;
+        font-size: 0.875rem;
+        letter-spacing: -0.02em;
         color: var(--ink-900, var(--gray-900, #0f172a));
     }
 
     .avail-cal-grid-shell {
         width: 100%;
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
     }
 
     .availability-grid {
         display: grid;
         grid-template-columns: repeat(7, minmax(0, 1fr));
-        gap: 0.25rem;
+        gap: 0.3rem;
         width: 100%;
-        max-width: 18.5rem;
     }
 
     .availability-dow {
-        font-size: 0.5625rem;
+        font-size: 0.625rem;
         font-weight: 600;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
         text-align: center;
         color: var(--gray-400, #9ca3af);
-        padding: 0 0 0.2rem;
+        padding: 0 0 0.15rem;
     }
 
     .availability-day {
         width: 100%;
         aspect-ratio: 1;
-        max-height: 1.65rem;
-        min-height: 0;
+        min-height: 1.75rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 0.3rem;
-        font-size: 0.6875rem;
-        font-weight: 600;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 500;
         color: var(--gray-700, #374151);
-        background: #fff;
-        border: 1px solid var(--gray-200, #e5e7eb);
-        transition: border-color 0.12s ease, background 0.12s ease;
+        background: transparent;
+        border: none;
+        transition: background-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
     }
 
     .availability-day.empty {
         visibility: hidden;
-        background: transparent;
-        border: none;
+        pointer-events: none;
         min-height: 0;
     }
 
-    .availability-day:not(.empty):not(.blocked) {
-        background: var(--gray-50, #f9fafb);
+    .availability-day.available {
+        background: color-mix(in srgb, var(--gray-100, #f1f5f9) 65%, transparent);
+        color: var(--gray-700, #374151);
     }
 
     .availability-day.blocked {
-        background: #fef2f2;
-        border-color: #fecaca;
+        background: color-mix(in srgb, #f87171 22%, #fff);
         color: #b91c1c;
+        font-weight: 600;
     }
 
     .availability-day.today {
-        border-color: var(--green-primary, #457359);
-        box-shadow: 0 0 0 1px color-mix(in srgb, var(--green-primary, #457359) 35%, transparent);
+        box-shadow: inset 0 0 0 2px var(--green-primary, #457359);
         color: var(--green-dark, #14532d);
         font-weight: 700;
+    }
+
+    .availability-day.today.blocked {
+        box-shadow: inset 0 0 0 2px #dc2626;
     }
 
     .availability-legend {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        gap: 0.5rem 0.85rem;
-        padding-top: 0.1rem;
+        gap: 0.65rem 1rem;
+        padding-top: 0.65rem;
+        margin-top: auto;
+        flex-shrink: 0;
+        border-top: 1px solid var(--app-surface-border, rgba(15, 23, 42, 0.06));
         color: var(--gray-500, #6b7280);
         font-size: 0.6875rem;
         font-weight: 500;
-    }
-
-    /* Compact card variant (owner dashboard) */
-    .availability-calendar-wrap.avail-cal--compact {
-        gap: 0.55rem;
-    }
-
-    .avail-cal--compact .avail-cal-toolbar {
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        padding-bottom: 0.5rem;
-        gap: 0.45rem;
-    }
-
-    .avail-cal--compact .avail-cal-toolbar__unit {
-        max-width: 100%;
-        width: 100%;
-        flex: 1 1 auto;
-    }
-
-    .avail-cal--compact .avail-cal-label {
-        text-align: center;
-    }
-
-    .avail-cal--compact .avail-cal-toolbar__nav {
-        justify-content: center;
-    }
-
-    .avail-cal--compact .avail-cal-grid-shell {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }
-
-    .avail-cal--compact .availability-grid {
-        grid-template-columns: repeat(7, 1.5rem);
-        justify-content: center;
-        gap: 0.2rem;
-        max-width: none;
-        width: max-content;
-        margin-inline: auto;
-    }
-
-    .avail-cal--compact .availability-legend {
-        justify-content: center;
-        width: 100%;
-    }
-
-    .avail-cal--compact .availability-day {
-        width: 1.5rem;
-        height: 1.5rem;
-        max-height: 1.5rem;
-        aspect-ratio: unset;
-        font-size: 0.625rem;
-        border-radius: 0.25rem;
-    }
-
-    .avail-cal--compact .availability-dow {
-        width: 1.5rem;
-        font-size: 0.5rem;
     }
 
     .availability-legend__item {
@@ -239,19 +188,76 @@
     }
 
     .availability-dot {
-        width: 0.5rem;
-        height: 0.5rem;
-        border-radius: 999px;
+        width: 0.625rem;
+        height: 0.625rem;
+        border-radius: 0.2rem;
         flex-shrink: 0;
     }
 
     .availability-dot.available {
-        background: var(--gray-300, #d1d5db);
-        box-shadow: inset 0 0 0 1px var(--gray-200, #e5e7eb);
+        background: color-mix(in srgb, var(--gray-100, #f1f5f9) 65%, #cbd5e1);
     }
 
     .availability-dot.blocked {
-        background: #f87171;
+        background: color-mix(in srgb, #f87171 55%, #fecaca);
+    }
+
+    /* Owner sidebar / dashboard compact card */
+    .availability-calendar-wrap.avail-cal--compact {
+        flex: 1 1 auto;
+        min-height: 0;
+        gap: clamp(0.55rem, 1vw, 0.75rem);
+    }
+
+    .avail-cal--compact .avail-cal-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.55rem;
+    }
+
+    .avail-cal--compact .avail-cal-toolbar__unit {
+        max-width: none;
+        width: 100%;
+    }
+
+    .avail-cal--compact .avail-cal-toolbar__nav {
+        width: 100%;
+        justify-content: space-between;
+        padding: 0.15rem 0;
+    }
+
+    .avail-cal--compact .availability-month-label {
+        flex: 1;
+        text-align: center;
+        font-size: 0.9375rem;
+    }
+
+    .avail-cal--compact .avail-cal-grid-shell {
+        flex: 1 1 auto;
+        justify-content: stretch;
+        min-height: 10rem;
+    }
+
+    .avail-cal--compact .availability-grid {
+        flex: 1;
+        align-content: start;
+        gap: clamp(0.25rem, 0.8vw, 0.4rem);
+    }
+
+    .avail-cal--compact .availability-day {
+        min-height: clamp(1.65rem, 4vw, 2.35rem);
+        font-size: clamp(0.6875rem, 1.4vw, 0.8125rem);
+        border-radius: 0.45rem;
+    }
+
+    .avail-cal--compact .availability-dow {
+        font-size: 0.5625rem;
+        padding-bottom: 0.25rem;
+    }
+
+    .avail-cal--compact .availability-legend {
+        justify-content: flex-start;
+        width: 100%;
     }
 
     .sr-only {
@@ -267,22 +273,14 @@
     }
 
     @media (max-width: 640px) {
+        .avail-cal-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
         .avail-cal-toolbar__nav {
-            margin-left: auto;
-        }
-
-        .avail-cal--compact .availability-grid {
-            grid-template-columns: repeat(7, minmax(1.35rem, 1fr));
             width: 100%;
-            max-width: 16.5rem;
-        }
-
-        .avail-cal--compact .availability-day,
-        .avail-cal--compact .availability-dow {
-            width: auto;
-            height: auto;
-            max-height: 1.45rem;
-            aspect-ratio: 1;
+            justify-content: space-between;
         }
     }
 
@@ -298,25 +296,24 @@
         color: var(--ink-500) !important;
     }
 
-    html.dark .availability-day:not(.empty):not(.blocked) {
-        background: var(--app-surface-muted-bg) !important;
-        border-color: var(--app-surface-border) !important;
+    html.dark .availability-day.available {
+        background: color-mix(in srgb, var(--app-surface-muted-bg) 80%, transparent) !important;
         color: var(--ink-700) !important;
     }
 
     html.dark .availability-day.today {
         color: var(--green-dark) !important;
-        border-color: var(--green-primary) !important;
+        box-shadow: inset 0 0 0 2px var(--green-primary) !important;
     }
 
     html.dark .availability-day.blocked {
-        background: color-mix(in srgb, var(--status-danger) 18%, var(--app-surface-muted-bg)) !important;
-        border-color: color-mix(in srgb, var(--status-danger) 35%, transparent) !important;
+        background: color-mix(in srgb, var(--status-danger, #ef4444) 22%, var(--app-surface-muted-bg)) !important;
         color: #fca5a5 !important;
     }
 
     html.dark .availability-legend {
         color: var(--ink-500) !important;
+        border-color: var(--app-surface-border) !important;
     }
 
     html.dark .avail-cal-toolbar {
@@ -420,9 +417,13 @@
             const isBlocked = blockedSet.has(key);
             const isToday = key === today;
             const classes = ['availability-day'];
-            if (isBlocked) classes.push('blocked');
+            if (isBlocked) {
+                classes.push('blocked');
+            } else {
+                classes.push('available');
+            }
             if (isToday) classes.push('today');
-            const label = isBlocked ? 'Not available' : 'Available';
+            const label = isBlocked ? 'Booked or pending' : 'Available';
             cells.push(`<div class="${classes.join(' ')}" role="gridcell" title="${label}" aria-label="${monthStart.toLocaleDateString(undefined, { month: 'long' })} ${day}, ${label}">${day}</div>`);
         }
         gridEl.innerHTML = cells.join('');

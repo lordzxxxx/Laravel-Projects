@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
+    @include('partials.app-vite-head')
     <title>Monthly Tenant Report - ImpaStay</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
@@ -395,13 +396,24 @@
             .filter-actions { width: 100%; }
             .filter-actions .btn { flex: 1; justify-content: center; }
             .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .surface-header { padding: 14px 16px; flex-direction: column; align-items: flex-start; }
-            .surface-body, .filters-card { padding: 16px; }
-            thead th, tbody td, tfoot td { padding: 12px 16px; }
-            .chart-canvas-wrap { height: 220px; }
+            .surface-header { padding: var(--app-card-pad); flex-direction: column; align-items: flex-start; }
+            .surface-body, .filters-card { padding: var(--app-card-pad); }
+            .kpi { padding: var(--app-card-pad); }
+            .kpi-value { font-size: var(--text-fluid-lg) !important; }
+            .kpi-label { font-size: var(--text-fluid-xs); }
+            thead th, tbody td, tfoot td {
+                padding: var(--app-table-pad-y) var(--app-table-pad-x);
+                font-size: var(--app-table-font);
+            }
+            .chart-canvas-wrap { height: 200px; }
+            .empty-state { padding: 2rem 1rem 2.5rem; }
+            .empty-state-icon { width: 56px; height: 56px; font-size: var(--text-fluid-xl); }
+            .empty-state h4 { font-size: var(--text-fluid-base); }
+            .empty-state p { font-size: var(--text-fluid-sm); }
         }
         @media (max-width: 480px) {
             .kpi-grid { grid-template-columns: 1fr; }
+            .kpi-value { font-size: var(--text-fluid-base) !important; }
         }
     </style>
 </head>
@@ -540,8 +552,8 @@
                 </div>
 
                 @if($dailyBreakdown->count() > 0)
-                    <div class="table-wrap">
-                        <table>
+                    <div class="table-wrap app-table-responsive" role="region" aria-label="Monthly report" tabindex="0">
+                        <table class="app-data-table">
                             <thead>
                                 <tr>
                                     <th>Date</th>

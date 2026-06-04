@@ -481,7 +481,7 @@
                                          x-transition:enter-start="opacity-0 -translate-y-1"
                                          x-transition:enter-end="opacity-100 translate-y-0"
                                          class="mt-3 overflow-hidden rounded-xl border border-gray-200 bg-white">
-                                        <table class="diff-table">
+                                        <div class="app-table-responsive"><table class="diff-table app-data-table">
                                             <thead>
                                                 <tr>
                                                     <th class="w-[26%]">Field</th>
@@ -507,6 +507,7 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
+                                        </div>
                                     </div>
                                 @endif
                             </div>

@@ -46,6 +46,18 @@ trait ListsClientAccommodations
             });
         }
 
-        return (clone $query)->latest()->paginate(12);
+        $perPage = $this->clientAccommodationsPerPage($request);
+
+        return (clone $query)->latest()->paginate($perPage)->withQueryString();
+    }
+
+    /**
+     * Explore / guest listing page size: 5 on small screens (via ?per_page=5), 12 otherwise.
+     */
+    protected function clientAccommodationsPerPage(Request $request): int
+    {
+        $perPage = (int) $request->input('per_page', 12);
+
+        return in_array($perPage, [5, 12], true) ? $perPage : 12;
     }
 }

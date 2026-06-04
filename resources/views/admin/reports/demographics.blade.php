@@ -13,7 +13,7 @@
 
         body {  margin: 0; }
         .report-page { background: var(--app-page-bg, #F3F4F6); color: var(--ink-800, #1F2937); min-height: 100vh; }
-        .report-page .report-container { max-width: 1180px; margin: 24px auto; padding: 0 20px 30px; }
+        .report-page .report-container { max-width: min(var(--app-content-max-wide, 96rem), 100%); margin: 24px auto; padding: 0 clamp(1rem, 3vw, 2rem) 30px; box-sizing: border-box; }
         .report-page .card { background: var(--app-surface-bg, #fff); border: 1px solid var(--app-surface-border, #E5E7EB); border-radius: 14px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm, 0 4px 16px rgba(15, 23, 42, 0.05)); color: var(--ink-800); }
         .report-page .title { color: var(--chrome-icon-color, #166534); margin-bottom: 6px; font-size: 1.25rem; }
         .report-page .section-title { color: var(--chrome-icon-color, #166534); margin: 0 0 8px; font-size: 1rem; }
@@ -51,7 +51,7 @@
         .report-page td { color: var(--ink-700); }
         .report-page .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
         .report-page .table-wrap { max-height: 360px; overflow: auto; border: 1px solid var(--app-surface-border, #EEF2F7); border-radius: 10px; background: var(--app-surface-bg, #fff); }
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
             .report-page .summary, .report-page .filters-grid, .report-page .cols { grid-template-columns: 1fr; }
         }
     </style>
@@ -126,8 +126,8 @@
         <div class="cols">
             <div class="card">
                 <h3 class="section-title">Gender Distribution</h3>
-                <div class="table-wrap">
-                <table>
+                <div class="table-wrap app-table-responsive">
+                <table class="app-data-table">
                     <thead><tr><th>Gender</th><th>Bookings</th></tr></thead>
                     <tbody>
                     @foreach($demographics['gender']['raw'] as $label => $count)
@@ -139,8 +139,8 @@
             </div>
             <div class="card">
                 <h3 class="section-title">Age Distribution</h3>
-                <div class="table-wrap">
-                <table>
+                <div class="table-wrap app-table-responsive">
+                <table class="app-data-table">
                     <thead><tr><th>Age Bucket</th><th>Bookings</th></tr></thead>
                     <tbody>
                     @foreach($demographics['age']['raw'] as $bucket => $count)
@@ -155,8 +155,8 @@
         <div class="cols">
             <div class="card">
                 <h3 class="section-title">Location Totals</h3>
-                <div class="table-wrap">
-                <table>
+                <div class="table-wrap app-table-responsive">
+                <table class="app-data-table">
                     <thead><tr><th>Location Type</th><th>Bookings</th></tr></thead>
                     <tbody>
                     @foreach($demographics['location']['raw'] as $label => $count)
@@ -168,8 +168,8 @@
             </div>
             <div class="card">
                 <h3 class="section-title">Local / Foreign Breakdown</h3>
-                <div class="table-wrap">
-                <table>
+                <div class="table-wrap app-table-responsive">
+                <table class="app-data-table">
                     <thead><tr><th>Area</th><th>Count</th></tr></thead>
                     <tbody>
                     @forelse($demographics['location']['breakdown']['local_labels'] as $i => $place)

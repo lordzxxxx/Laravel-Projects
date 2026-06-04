@@ -393,3 +393,19 @@ body.client-nav-page .guest-bookings-main {
 .guest-bookings-main > .alert {
     margin: 0;
 }
+
+@media (max-width: 768px) {
+    .guest-bookings-card { font-size: var(--text-fluid-sm); }
+    .guest-bookings-card__title { font-size: var(--app-card-title); }
+    .guest-bookings-card__meta { font-size: var(--app-card-meta); }
+    .guest-bookings-card__body { padding: var(--app-card-pad); }
+    .guest-bookings-empty__card { padding: clamp(1.25rem, 4vw, 2rem) 1rem; }
+    .guest-bookings-empty__card i { font-size: 1.5rem; }
+    .guest-bookings-empty__card h3 { font-size: var(--text-fluid-base); }
+    .guest-bookings-empty__card p { font-size: var(--text-fluid-sm); }
+    .guest-bookings-empty__cta { font-size: var(--text-fluid-sm); }
+}
+
+@media (max-width: 480px) {
+    .guest-bookings-card__media { max-height: var(--app-card-media-max-height, 8.5rem); }
+}

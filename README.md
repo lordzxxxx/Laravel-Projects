@@ -239,6 +239,9 @@ This module ensures the system remains updated, customizable, and maintainable.
 - **Tenant managers** (owner or tenant-scoped admin): **New conversation** at `/messages/create` to message clients, team, or central support (proxy user in the tenant DB)
 - Optional `IMPASTAY_CENTRAL_SUPPORT_NOTIFY_EMAIL`: plain-text mail when a tenant manager messages central support
 - Shared **client top navbar** styles (`client/partials/top-navbar-styles`) and content offsets for fixed navigation across client pages
+- **Responsive UI** (320px–4K): fluid typography/tables/cards via `resources/css/responsive-tokens.css`; unified mobile nav at **768px** with burger menus and symmetric padding
+- **Owner portal** full-width shells: dashboard (bookings-only trend chart), My Properties, accommodation edit, messages inbox split layout, room availability calendar
+- **Navbar user menu**: Profile / Settings / Logout in a dropdown on admin, owner, and client top bars (Settings removed from main nav links)
 - Profile management with additional user details and avatar upload
 - Admin dashboards for tenants, bookings, messages, and monitoring
 - Admin tenant management: update tenant plan (Basic/Plus/Pro)
@@ -362,7 +365,46 @@ php artisan optimize:clear
 - `config/impastay.php`: ImpaStay-specific options (central support notify email)
 - `database/migrations` and `database/seeders`: landlord + tenant migrations, sample data
 - `resources/views`: Blade for guest/client/owner/admin; shared nav partials under `client/partials`, `owner/partials`, `admin/partials`
-- `routes/web.php`: central vs tenant host groups, messages, owner routes
+- `resources/css/responsive-tokens.css`: viewport-tier CSS variables (typography, tables, cards, page padding)
+- `tests/Feature/ResponsiveViewportTest.php`: smoke tests for responsive markup and owner layout shells
+
+### Routes layout
+
+`routes/web.php` is the only file registered in `bootstrap/app.php`. It loads:
+
+**Central hosts** (`CENTRAL_DOMAIN`, `localhost`, `127.0.0.1`, `::1`) → `routes/central.php`:
+
+| File | Middleware | Purpose |
+|------|------------|---------|
+| `routes/central/shared.php` | `portal.port:any` | Landing, auth, explore, dashboard router, profile, messages |
+| `routes/central/admin.php` | `portal.port:admin` | Platform admin (CA): tenants, releases, reports, payments |
+| `routes/central/guest.php` | `portal.port:public` | Municipality guest stays/bookings; central owner portal |
+
+`routes/_central_portal_routes.php` is a deprecated shim that `require`s `central.php` for backward compatibility.
+
+**Tenant hosts** (subdomain / custom domain) → `routes/tenant.php` inside the tenant middleware stack:
+
+| File | Purpose |
+|------|---------|
+| `routes/tenant/public.php` | Landing, browse accommodations (no auth) |
+| `routes/tenant/guest.php` | Client bookings, messages, profile, update tickets |
+| `routes/tenant/owner.php` | Owner / tenant manager portal (`/owner/*`) |
+| `routes/tenant/shared.php` | Notifications, secure media (authenticated) |
+| `routes/auth.php` | Tenant login, register, password reset, verify email |
+
+Route names, URIs, and middleware were **not changed** during the split—only file organization.
+
+### Key view partials (UI)
+
+| Area | Partial / asset |
+|------|-----------------|
+| Mobile nav | `partials/mobile-nav-unified-styles.blade.php`, `partials/nav-burger-toggle.blade.php` |
+| Owner shell | `owner/partials/owner-shell-styles.blade.php`, `owner-responsive-styles.blade.php`, `owner-nav-mobile-styles.blade.php` |
+| Admin shell | `admin/partials/admin-shell-styles.blade.php`, `admin-responsive-styles.blade.php` |
+| Guest shell | `client/partials/guest-shell-styles.blade.php` and per-page guest `*-styles` partials |
+| Messages inbox | `messages/partials/messages-inbox-split.blade.php`, `owner/partials/owner-messages-index-styles.blade.php` |
+| Availability | `partials/availability-calendar.blade.php`, `owner/partials/owner-availability-card.blade.php` |
+| Explore stays | `partials/explore-stays-filters.blade.php`, tiered card tokens in `app.css` |
 
 ## Admin Tenant Management
 
@@ -376,11 +418,11 @@ Changing plan updates subscription lifecycle values, and disabling a domain bloc
 
 ## Messaging (tenant host)
 
-Routes live in the tenant domain group in `routes/web.php` (see `messages.*` names).
+Tenant messages routes live in `routes/tenant/guest.php` (see `messages.*` names). The owner portal reuses the same inbox with `owner-messages-*` layout styles on `messages/index.blade.php`.
 
 | Method | Path | Who |
 |--------|------|-----|
-| GET | `/messages` | Authenticated users on the tenant app |
+| GET | `/messages` | Authenticated tenant users (clients; managers use owner-styled inbox) |
 | GET | `/messages/create` | Tenant **owner** or **tenant admin** (`tenant.manager`) |
 | POST | `/messages` | New thread: managers send `recipient_key` (`central` or `user:{id}`); others use legacy `receiver_id` where applicable |
 | GET | `/messages/{message}` | Participant in thread |
@@ -400,10 +442,14 @@ To publish a companion SHA-256 checksum for the central package:
 
 - `php artisan system-updates:publish-checksum`
 
-Tenant owner/admin update page:
+Tenant owner/admin update page (tenant host or central public port):
 
-- `GET /owner/system-updates`
-- `GET /admin/system-updates`
+- `GET /owner/settings/updates` (`owner.settings.updates.index`)
+- `POST /owner/settings/updates/apply` (`owner.settings.updates.apply`)
+
+Central admin releases UI:
+
+- `GET /admin/system-updates` (`admin.updates.index`)
 
 Persistent update logs are stored in `update_logs` (landlord connection), including check status and install acknowledgement timestamps.
 
@@ -413,6 +459,108 @@ Persistent update logs are stored in `update_logs` (landlord connection), includ
 - Run php artisan config:cache and php artisan route:cache
 - Ensure storage and bootstrap/cache are writable
 - Use a process manager for queue workers if queue processing is enabled
+
+## Responsive QA
+
+The UI targets **320px through 4K UHD (3840×2160)** using shared tokens in `resources/css/responsive-tokens.css` and components in `resources/css/app.css`.
+
+### Layout tokens
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--app-content-max` | `80rem` | Default main column (guest, forms) |
+| `--app-content-max-wide` | `96rem` | Admin/owner dashboards, data pages |
+| `--text-fluid-base` | clamp ~12–16px | Body text (smaller ≤768px; capped ≥1920px) |
+| `--app-page-pad-inline` | fluid | Page side padding (tighter on phones) |
+
+### Screen-size scaling (typography, tables, cards)
+
+Tokens in `responsive-tokens.css` (mirrored in `partials/typography-system.blade.php` for Blade-only pages) change at **≤768px**, **≤480px**, and **≥1920px**:
+
+| Token | Use |
+|-------|-----|
+| `--text-fluid-xs` … `--text-fluid-3xl` | Headings and UI copy |
+| `--app-table-font`, `--app-table-pad-y/x`, `--app-table-header-font` | All data tables (use `.app-data-table` + wrapper) |
+| `--app-card-pad`, `--app-card-title`, `--app-card-price`, `--app-card-meta` | Listing/dashboard cards |
+| `--app-card-media-ratio`, `--app-card-media-max-height` | Explore stay cards (shorter images on phones) |
+
+Prefer `var(--text-fluid-sm)` and `var(--app-table-font)` in new CSS instead of fixed `px`/`rem` so size tracks the viewport.
+
+### Markup patterns
+
+- Centered main: wrap content in `.app-page-shell` or `.app-page-shell--wide` (admin/owner shells apply this on `.main-content`).
+- Data tables: wrap `<table>` in `.app-table-responsive` and add class `app-data-table` on the table (horizontal scroll on small screens; fluid cell padding/font).
+
+### Manual device matrix
+
+| Preset | Resolution | Check |
+|--------|------------|-------|
+| Galaxy S10+ | 360×760 | Explore cards compact; table text ~10–11px |
+| iPhone SE | 375×667 | No body horizontal scroll; nav drawer works |
+| iPad | 768×1024 | Grids stack; tables scroll inside wrapper |
+| Laptop | 1280×800 | Multi-column dashboards |
+| 1080p TV | 1920×1080 | Content centered; nav not at screen edges |
+| 4K TV | 3840×2160 | Same max content width as laptop; extra side padding only |
+
+### Typography and tables
+
+- Body text stays between ~12px and ~16px equivalent (fluid `clamp` scale).
+- Tables keep column alignment; use wrapper scroll, not `display: block` on `<table>`.
+- Long cell content uses `word-break` / `.app-data-table__cell-long`.
+
+Run optional smoke tests:
+
+~~~bash
+php artisan test --filter=ResponsiveViewport
+php artisan test tests/Feature/RoutingTest.php
+~~~
+
+`RoutingTest` covers central/tenant landing, login, owner dashboard redirects, and auth guards. Note: `GET /register` on the central app returns **302** to `/register/guest` by design.
+
+## Recent changes (workspace)
+
+Summary of the current uncommitted work in this repository (UI + routes refactor; safe to deploy after your usual QA):
+
+### Routing
+
+- Split monolithic `routes/web.php` and `_central_portal_routes.php` into `routes/central/*` and `routes/tenant/*` (move-only; same route map).
+- `php artisan route:list` should still show all named routes; run `php artisan route:clear` if you use route caching.
+
+### Responsive & navigation
+
+- Added `resources/css/responsive-tokens.css` and wired tokens through `app.css`, `typography-system`, and portal shell partials.
+- Unified mobile breakpoint at **768px** (nav height `3.5rem`, symmetric horizontal padding).
+- Admin, owner, and client navbars: user pill dropdown (Profile / Logout); Settings removed from primary nav where applicable.
+- Fixed owner dashboard CSS leak (nested `<style>` in included responsive partials).
+
+### Owner portal (tenant host)
+
+- **Dashboard**: full-width layout; monthly chart shows **bookings only** (revenue removed from chart); improved data tables and mobile card layout; edit links use relative URLs (`route(..., false)`).
+- **My Properties** (`/owner/accommodations`): full-width grid + sidebar availability card.
+- **Edit accommodation** (`/owner/accommodations/{id}/edit`): multi-section form, listing preview column, sticky save bar.
+- **Messages** (`/messages`): owner inbox matches users-page shell; shared `messages-inbox-split` partial for owner and guest.
+- **Room availability calendar**: borderless grid, status fills, full-width in sidebar.
+
+### Guest / client portal
+
+- Guest dashboard, stays browse, bookings, messages, and profile pages aligned to minimal full-viewport shells.
+- Explore accommodations: tiered stay cards and filter partials.
+
+### Admin / central
+
+- Admin pages inherit responsive table wrappers and shell spacing tokens.
+- Central public nav: burger + minimal styles aligned with tribal/portal nav.
+
+### Backend (minor)
+
+- `Owner/DashboardController`: trend API returns bookings series only (no revenue in chart payload).
+- `config/about_team.php`: tourism officer image path correction.
+
+### Tests
+
+- `tests/Feature/ResponsiveViewportTest.php`: viewport meta, explore cards, owner dashboard/messages/edit layout markers.
+
+After pulling these changes locally: `npm run build` (or `npm run dev`), hard-refresh the browser, and smoke-test `http://{tenant}.localhost:8000/owner/*` plus central `localhost:8000`.
 
 ## License
 

@@ -31,10 +31,7 @@
             'brandSubtitle' => '| Admin Dashboard',
         ])
 
-        <button type="button" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"
-                onclick="var n=document.getElementById('appNavbar');var o=n.classList.toggle('nav-open');this.setAttribute('aria-expanded',o?'true':'false');">
-            <i class="fas fa-bars"></i>
-        </button>
+        @include('partials.nav-burger-toggle', ['targetId' => 'appNavbar'])
 
         <ul class="nav-links">
             <li><a href="{{ $dashboardHref }}" class="{{ $current === 'dashboard' ? 'active' : '' }}"><i class="fas fa-chart-line"></i> Dashboard</a></li>

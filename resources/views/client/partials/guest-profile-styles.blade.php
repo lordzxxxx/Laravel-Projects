@@ -159,3 +159,20 @@ body.client-nav-page .guest-profile-main .role-chip.client {
     background: var(--ui-accent-surface, var(--accent-pink-soft, #F9DEE5));
     color: var(--ui-accent-color, var(--accent-pink-deep, #B0436E));
 }
+
+@media (max-width: 768px) {
+    body.client-nav-page .guest-profile-main {
+        font-size: var(--text-fluid-sm);
+    }
+    body.client-nav-page .guest-profile-main .profile-panel__head h2,
+    body.client-nav-page .guest-profile-main .settings-panel__head h2 {
+        font-size: var(--text-fluid-sm);
+    }
+    body.client-nav-page .guest-profile-main .field label {
+        font-size: var(--text-fluid-xs);
+    }
+    body.client-nav-page .guest-profile-main .field input,
+    body.client-nav-page .guest-profile-main .field textarea {
+        font-size: var(--text-fluid-sm);
+    }
+}

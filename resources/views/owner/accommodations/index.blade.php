@@ -430,17 +430,15 @@
         }
 
         .owner-units-aside .owner-avail-card .availability-calendar-wrap {
-            flex: 1;
+            flex: 1 1 auto;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            min-height: 0;
+            justify-content: flex-start;
+            min-height: 12rem;
         }
 
-        .owner-units-aside .owner-avail-card .availability-legend {
-            margin-top: auto;
-            flex-shrink: 0;
-            padding-top: 0.35rem;
+        .owner-units-aside .owner-avail-card .avail-cal-grid-shell {
+            flex: 1 1 auto;
         }
 
         .owner-units-empty {

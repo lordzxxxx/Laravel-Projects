@@ -112,7 +112,7 @@
             flex-direction: column;
             gap: clamp(1rem, 2vw, 1.5rem);
             flex: 1;
-            --stay-max: 78rem; /* medium, readable cards/tables on wide screens */
+            --stay-max: var(--app-content-max, 78rem);
         }
 
         .explore-stay-show__crumb,
@@ -707,13 +707,20 @@
             .navbar { padding: 0 20px; height: 60px; }
             .nav-links { display: none; }
             @endif
-            .main-image { height: min(48vw, 260px); }
-            .features-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .explore-stay-show__crumb { font-size: var(--text-fluid-xs); }
+            .explore-stay-show h1, .explore-stay-panel h2 { font-size: var(--text-fluid-lg) !important; }
+            .explore-stay-panel, .explore-stay-book-card { font-size: var(--text-fluid-sm); padding: var(--app-card-pad); }
+            .main-image { height: min(42vw, 200px); }
+            .features-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; font-size: var(--text-fluid-xs); }
             .form-row { grid-template-columns: 1fr; }
+            .form-row input, .form-row select, .form-row textarea { font-size: var(--text-fluid-sm); }
+            .explore-stay-book-card .price-display { font-size: var(--text-fluid-base) !important; }
         }
 
         @media (max-width: 480px) {
             .features-grid { grid-template-columns: 1fr; }
+            .main-image { height: min(50vw, 180px); }
+            .explore-stay-show h1 { font-size: var(--text-fluid-base) !important; }
         }
     </style>
 </head>

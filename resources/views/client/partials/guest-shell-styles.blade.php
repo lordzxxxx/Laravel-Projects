@@ -25,7 +25,7 @@ body.client-nav-page.msg-thread-page {
     z-index: 1;
     flex: 1 0 auto;
     width: 100%;
-    max-width: min(1280px, 100%);
+    max-width: min(var(--app-content-max, 80rem), 100%);
     margin-left: auto;
     margin-right: auto;
     padding-top: var(
@@ -40,7 +40,7 @@ body.client-nav-page.msg-thread-page {
 }
 
 .client-guest-main--wide {
-    max-width: min(1800px, 100%);
+    max-width: min(var(--app-content-max-wide, 96rem), 100%);
 }
 
 .client-guest-main--full {
@@ -48,6 +48,21 @@ body.client-nav-page.msg-thread-page {
     width: 100%;
     padding-left: clamp(0.75rem, 2vw, 1.75rem);
     padding-right: clamp(0.75rem, 2vw, 1.75rem);
+}
+
+.client-guest-main--full > .app-page-shell,
+.client-guest-main--full > .booking-show-inner,
+.client-guest-main--full .explore-stay-show__crumb,
+.client-guest-main--full .explore-stay-hero,
+.client-guest-main--full .explore-stay-show__content {
+    --stay-max: var(--app-content-max, 80rem);
+}
+
+@media (min-width: 2560px) {
+    .client-guest-main--full {
+        padding-left: clamp(1rem, 4vw, 3rem);
+        padding-right: clamp(1rem, 4vw, 3rem);
+    }
 }
 
 /* Central portal pages — offset matches app navbars */
@@ -65,4 +80,45 @@ body.client-nav-page .client-guest-surface {
     border: 1px solid var(--app-surface-border, rgba(255, 255, 255, 0.65));
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+}
+
+@media (max-width: 768px) {
+    body.client-nav-page .client-guest-main,
+    body.explore-portal-page .portal-public-main.explore-stays-main {
+        font-size: var(--text-fluid-sm);
+        padding-left: var(--app-page-pad-inline);
+        padding-right: var(--app-page-pad-inline);
+    }
+
+    body.client-nav-page .client-guest-surface {
+        padding: var(--app-card-pad);
+        font-size: var(--text-fluid-sm);
+    }
+
+    body.client-nav-page .client-guest-main :where(h1) {
+        font-size: var(--text-fluid-lg, 0.8125rem) !important;
+    }
+
+    body.client-nav-page .client-guest-main :where(h2, h3) {
+        font-size: var(--text-fluid-sm, 0.6875rem) !important;
+    }
+
+    body.client-nav-page .client-guest-main table,
+    body.client-nav-page .client-guest-main .app-data-table {
+        font-size: var(--app-table-font, 0.6875rem);
+    }
+
+    body.client-nav-page .client-guest-main table th,
+    body.client-nav-page .client-guest-main table td {
+        padding: var(--app-table-pad-y, 0.375rem) var(--app-table-pad-x, 0.5rem);
+        line-height: 1.3;
+    }
+
+    .portal-public-main {
+        font-size: var(--text-fluid-sm, 0.6875rem);
+    }
+
+    .portal-public-main table {
+        font-size: var(--app-table-font, 0.6875rem);
+    }
 }

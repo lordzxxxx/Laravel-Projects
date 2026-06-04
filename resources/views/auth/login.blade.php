@@ -284,16 +284,21 @@
         /* Responsive */
         @media (max-width: 768px) {
             .branding-section { display: none; }
-            
             .form-section {
                 flex: 1;
-                padding: 20px;
+                padding: var(--app-page-pad-inline, 16px);
             }
-            
             .form-container {
                 max-width: 100%;
-                padding: 30px;
+                padding: 1.25rem;
             }
+            .form-container h2 { font-size: var(--text-fluid-xl, 1.125rem); }
+            .form-container p, label, input, button { font-size: var(--text-fluid-sm, 0.8125rem); }
+        }
+
+        @media (max-width: 480px) {
+            .form-container { padding: 1rem; }
+            .form-container h2 { font-size: var(--text-fluid-lg, 1rem); }
         }
     </style>
 </head>

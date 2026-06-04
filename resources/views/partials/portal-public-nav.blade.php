@@ -26,13 +26,14 @@
     @include('partials.navbar-tribal-shell-styles')
     @include('partials.portal-public-nav-minimal-styles')
 </style>
-<nav class="portal-nav-minimal public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
+<nav id="portalPublicNav" class="portal-nav-minimal public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
     @include('partials.navbar-tribal-accent')
     <div class="portal-nav-minimal__inner">
         @include('partials.navbar-brand-block', [
             'brandHref' => route('portal.landing'),
             'brandSubtitle' => $brandSubtitle,
         ])
+        @include('partials.nav-burger-toggle', ['targetId' => 'portalPublicNav'])
         <ul class="portal-nav-minimal__links">
             <li>
                 <a
@@ -65,29 +66,6 @@
             ><i class="fas fa-home" aria-hidden="true"></i> Host</a>
         </div>
     </div>
-    <ul class="portal-nav-minimal__mobile-links" aria-label="Sections">
-        <li>
-            <a
-                href="{{ $homeUrl }}"
-                class="portal-nav-minimal__link {{ in_array($active, ['home', 'landing'], true) ? 'is-active' : '' }}"
-                @if(in_array($active, ['home', 'landing'], true)) aria-current="page" @endif
-            ><i class="fas fa-house" aria-hidden="true"></i> Home</a>
-        </li>
-        <li>
-            <a
-                href="{{ $exploreUrl }}"
-                class="portal-nav-minimal__link {{ $active === 'browse' ? 'is-active' : '' }}"
-                @if($active === 'browse') aria-current="page" @endif
-            ><i class="fas fa-compass" aria-hidden="true"></i> Explore</a>
-        </li>
-        <li>
-            <a
-                href="{{ $aboutUrl }}"
-                class="portal-nav-minimal__link {{ $active === 'about' ? 'is-active' : '' }}"
-                @if($active === 'about') aria-current="page" @endif
-            ><i class="fas fa-circle-info" aria-hidden="true"></i> About</a>
-        </li>
-    </ul>
 </nav>
 @else
 <style>
@@ -105,37 +83,43 @@
             --portal-content-below-nav: calc(var(--app-topbar-height-mobile, 72px) + clamp(1.25rem, 2vw, 1.875rem));
         }
     }
+    @include('partials.public-nav-burger-styles')
 </style>
-<nav class="public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col items-stretch justify-between bg-white/95 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md md:flex-row md:items-center">
+<nav id="portalDefaultNav" class="public-nav-tribal public-nav-burgerable fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col items-stretch justify-between bg-white/95 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md md:flex-row md:items-center">
     @include('partials.navbar-tribal-accent')
-    @include('partials.navbar-brand-block', [
-        'brandHref' => route('portal.landing'),
-        'brandSubtitle' => $brandSubtitle,
-    ])
-    <ul class="hidden list-none items-center gap-2 md:flex lg:gap-5">
-        <li>
-            <a href="{{ $homeUrl }}" class="{{ $linkBase }} {{ in_array($active, ['home', 'landing'], true) ? $linkActive : $linkDefault }}">
-                <i class="fas fa-house text-sm opacity-90" aria-hidden="true"></i> Home
+    <div class="public-nav-burgerable__bar">
+        @include('partials.navbar-brand-block', [
+            'brandHref' => route('portal.landing'),
+            'brandSubtitle' => $brandSubtitle,
+        ])
+        @include('partials.nav-burger-toggle', ['targetId' => 'portalDefaultNav'])
+    </div>
+    <div class="public-nav-burgerable__menu">
+        <ul class="hidden list-none items-center gap-2 md:flex lg:gap-5">
+            <li>
+                <a href="{{ $homeUrl }}" class="{{ $linkBase }} {{ in_array($active, ['home', 'landing'], true) ? $linkActive : $linkDefault }}">
+                    <i class="fas fa-house text-sm opacity-90" aria-hidden="true"></i> Home
+                </a>
+            </li>
+            <li>
+                <a href="{{ $exploreUrl }}" class="{{ $linkBase }} {{ $active === 'browse' ? $linkActive : $linkDefault }}">
+                    <i class="fas fa-compass text-sm opacity-90" aria-hidden="true"></i> Explore
+                </a>
+            </li>
+            <li>
+                <a href="{{ $aboutUrl }}" class="{{ $linkBase }} {{ $active === 'about' ? $linkActive : $linkDefault }}">
+                    <i class="fas fa-circle-info text-sm opacity-90" aria-hidden="true"></i> About Us
+                </a>
+            </li>
+        </ul>
+        <div class="public-nav-burgerable__actions flex flex-wrap items-center gap-2.5">
+            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-4 py-2 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
+                <i class="fas fa-sign-in-alt text-sm"></i> {{ $loginLabel }}
             </a>
-        </li>
-        <li>
-            <a href="{{ $exploreUrl }}" class="{{ $linkBase }} {{ $active === 'browse' ? $linkActive : $linkDefault }}">
-                <i class="fas fa-compass text-sm opacity-90" aria-hidden="true"></i> Explore
+            <a href="{{ $registerOwnerUrl }}" {{ $registerHighlight === 'host' ? 'aria-current="page"' : '' }} class="{{ $hostRegisterClasses }}inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_3px_12px_rgba(46,125,50,0.25)] transition-all hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
+                <i class="fas fa-home text-sm" aria-hidden="true"></i> Host
             </a>
-        </li>
-        <li>
-            <a href="{{ $aboutUrl }}" class="{{ $linkBase }} {{ $active === 'about' ? $linkActive : $linkDefault }}">
-                <i class="fas fa-circle-info text-sm opacity-90" aria-hidden="true"></i> About Us
-            </a>
-        </li>
-    </ul>
-    <div class="flex flex-wrap items-center gap-2.5">
-        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-lg border-2 border-brand-primary bg-transparent px-4 py-2 text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
-            <i class="fas fa-sign-in-alt text-sm"></i> {{ $loginLabel }}
-        </a>
-        <a href="{{ $registerOwnerUrl }}" {{ $registerHighlight === 'host' ? 'aria-current="page"' : '' }} class="{{ $hostRegisterClasses }}inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-brand-dark to-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_3px_12px_rgba(46,125,50,0.25)] transition-all hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
-            <i class="fas fa-home text-sm" aria-hidden="true"></i> Host
-        </a>
+        </div>
     </div>
 </nav>
 @endif

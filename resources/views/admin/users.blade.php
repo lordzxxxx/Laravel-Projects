@@ -389,7 +389,17 @@
         @media (max-width: 768px) {
             .navbar { padding: 0 20px; height: 60px; }
             .nav-links { display: none; }
-            .main-content { padding: 20px; }
+            .main-content { padding: var(--app-page-pad-inline, 14px); }
+            .card-header { padding: var(--app-card-pad, 12px 14px); }
+            .card-header h3 { font-size: var(--text-fluid-sm) !important; }
+            .search-input, .filter-select { font-size: var(--text-fluid-sm); padding: 8px 12px; }
+            table, .app-data-table { font-size: var(--app-table-font); }
+            table th, table td { padding: var(--app-table-pad-y) var(--app-table-pad-x); }
+        }
+
+        @media (max-width: 480px) {
+            .main-content { padding: 10px; }
+            .page-header h1 { font-size: var(--text-fluid-base) !important; }
         }
 
         @include('partials.ui-foundation-styles')
@@ -437,8 +447,8 @@
                     <span style="font-size: 0.8rem; color: var(--gray-600);">Each owner subdomain</span>
                 </div>
                 <div class="card-body">
-                    <div class="table-container">
-                        <table>
+                    <div class="app-table-responsive" role="region" aria-label="Owner domains" tabindex="0">
+                        <table class="app-data-table">
                             <thead>
                                 <tr>
                                     <th>Owner</th>
@@ -494,8 +504,8 @@
                     <button class="btn btn-secondary btn-sm">Export CSV</button>
                 </div>
                 <div class="card-body">
-                    <div class="table-container">
-                        <table>
+                    <div class="app-table-responsive" role="region" aria-label="Owner domains" tabindex="0">
+                        <table class="app-data-table">
                             <thead>
                                 <tr>
                                     <th>User</th>

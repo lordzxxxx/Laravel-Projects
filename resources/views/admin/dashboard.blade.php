@@ -609,22 +609,36 @@
             transform: rotate(90deg);
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1280px) {
             .content-grid { grid-template-columns: 1fr; }
             .pbi-demographics-charts { grid-template-columns: 1fr; }
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1024px) {
             .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
 
         @media (max-width: 768px) {
             .kpi-grid { grid-template-columns: 1fr; }
             .pbi-breakdown-grid { grid-template-columns: 1fr; }
-            .pbi-kpi-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .pbi-kpi-table thead th { font-size: 0.6rem; padding: 8px 8px; }
-            .pbi-kpi-table tbody td { padding: 12px 8px; }
-            .pbi-kpi-value { font-size: 1.15rem; }
+            .pbi-kpi-value { font-size: var(--text-fluid-lg); }
+            .kpi-info h3 { font-size: var(--text-fluid-lg) !important; }
+            .kpi-info h3.kpi-value-compact { font-size: var(--text-fluid-base) !important; }
+            .kpi-info h3.kpi-value-empty { font-size: var(--text-fluid-sm) !important; }
+            .kpi-icon { width: 40px; height: 40px; font-size: var(--text-fluid-base) !important; }
+            .quick-stat-card { padding: 12px 14px; min-height: auto; }
+            .quick-stat-card h4 { font-size: var(--text-fluid-base) !important; }
+            .quick-stat-card .icon { font-size: var(--text-fluid-lg) !important; }
+            .quick-stat-card p { font-size: var(--text-fluid-xs); }
+            .dashboard-card { padding: 14px; }
+            .dashboard-card h3 { font-size: var(--text-fluid-sm) !important; }
+            .data-table { font-size: var(--app-table-font); }
+            .data-table th, .data-table td { padding: var(--app-table-pad-y) var(--app-table-pad-x); }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-info h3 { font-size: var(--text-fluid-base) !important; }
+            .quick-stat-card h4 { font-size: var(--text-fluid-sm) !important; }
         }
         
         /* Animations */
@@ -765,7 +779,8 @@
                     @endif
 
                     <div class="pbi-demographics-inner">
-                        <table class="pbi-kpi-table" aria-label="Demographics summary for selected scope">
+                        <div class="app-table-responsive" role="region" aria-label="Demographics summary" tabindex="0">
+                        <table class="pbi-kpi-table app-data-table" aria-label="Demographics summary for selected scope">
                             <thead>
                                 <tr>
                                     <th scope="col">Bookings in scope</th>
@@ -783,6 +798,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
 
                         <div class="pbi-demographics-charts">
                             <div class="pbi-chart-panel">
@@ -956,7 +972,8 @@
                 <h3><i class="fas fa-users-check icon"></i>Today's Tenant Bookings</h3>
                 <p class="table-note"><i class="fas fa-info-circle"></i> Shows number of guests per tenant with active check-ins today</p>
                 @if(isset($tenantBookingsToday) && count($tenantBookingsToday) > 0)
-                    <table class="data-table">
+                    <div class="app-table-responsive" role="region" aria-label="Today's tenant bookings" tabindex="0">
+                    <table class="data-table app-data-table">
                         <thead>
                             <tr>
                                 <th><i class="fas fa-building"></i> Tenant Name</th>
@@ -994,6 +1011,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 @else
                     <div style="text-align: center; padding: 40px; color: var(--gray-400);">
                         <i class="fas fa-calendar-alt" style="font-size: 3rem; margin-bottom: 15px; color: var(--gray-300);"></i>

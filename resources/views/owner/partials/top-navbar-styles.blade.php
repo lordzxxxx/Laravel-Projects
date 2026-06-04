@@ -8,6 +8,8 @@
 
 @include('owner.partials.owner-shell-styles')
 @include('owner.partials.owner-dark-styles')
+@include('partials.mobile-nav-unified-styles')
+@include('owner.partials.owner-nav-mobile-styles')
 
 body.owner-nav-page .dashboard-layout {
     padding-top: var(--app-content-offset) !important;

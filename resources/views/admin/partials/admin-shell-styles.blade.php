@@ -33,7 +33,7 @@ body {
 }
 
 .main-content {
-    padding: 28px 36px;
+    /* Padding handled by admin-responsive-styles shell */
 }
 
 .main-content-narrow {
@@ -58,7 +58,7 @@ body {
     align-items: center;
     gap: 0.875rem;
     font-family: var(--app-font-display);
-    font-size: 1.75rem;
+    font-size: var(--text-fluid-2xl, 1.75rem);
     font-weight: 800;
     color: var(--ink-900, #0F172A);
     line-height: 1.2;
@@ -88,9 +88,18 @@ body {
     margin: 0.5rem 0 0 3.65rem;
 }
 
-@media (max-width: 640px) {
-    .page-header h1 { font-size: 1.4rem; }
-    .page-header p { margin-left: 0; }
+@media (max-width: 768px) {
+    .page-header h1 { font-size: var(--text-fluid-lg, 0.8125rem); }
+    .page-header p {
+        margin-left: 0;
+        font-size: var(--text-fluid-xs, 0.6875rem);
+    }
+    .page-header h1 .page-title-icon,
+    .page-header h1 > .icon-wrap {
+        width: 36px;
+        height: 36px;
+        font-size: 0.875rem;
+    }
 }
 
 .page-header-row {
@@ -223,6 +232,6 @@ body {
     border: 1px solid #86efac;
 }
 
+@include('admin.partials.admin-responsive-styles')
 @include('admin.partials.top-navbar-styles')
-
 @include('admin.partials.central-portal-background-styles')

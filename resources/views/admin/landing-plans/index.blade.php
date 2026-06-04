@@ -88,8 +88,8 @@
             </div>
 
             <div class="card">
-                <div class="overflow-x-auto border-t border-emerald-100/90 bg-white">
-                    <table class="min-w-[720px] w-full border-collapse text-left text-sm text-gray-800">
+                <div class="app-table-responsive border-t border-emerald-100/90 bg-white" role="region" aria-label="Landing plans" tabindex="0">
+                    <table class="app-data-table min-w-[720px] w-full border-collapse text-left text-gray-800">
                         <thead>
                             <tr class="border-b border-gray-200 bg-gradient-to-r from-emerald-50 via-green-50/90 to-emerald-50/70">
                                 <th class="whitespace-nowrap px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-600">Order</th>

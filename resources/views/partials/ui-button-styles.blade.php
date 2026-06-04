@@ -124,6 +124,18 @@
     padding-right: 0.75rem;
 }
 
+.ui-btn,
+.ui-btn-responsive-stack .ui-btn {
+    font-size: var(--text-fluid-sm, 0.8125rem);
+}
+
+@media (min-width: 768px) {
+    .ui-btn,
+    .ui-btn-responsive-stack .ui-btn {
+        font-size: var(--text-fluid-base, 0.9375rem);
+    }
+}
+
 @media (max-width: 480px) {
     .ui-btn-responsive-stack {
         width: 100%;
