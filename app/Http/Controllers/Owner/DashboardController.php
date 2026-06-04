@@ -70,7 +70,7 @@ class DashboardController extends Controller
         }
 
         $ownerId = $isTenantAdmin ? null : $user->id;
-        [$trendLabels, $revenueTrend, $bookingsTrend] = $this->buildMonthlyTrendData($dashboardTenant?->id, $ownerId);
+        [$trendLabels, $bookingsTrend] = $this->buildMonthlyBookingsTrend($dashboardTenant?->id, $ownerId);
         $bookingStatusBreakdown = $this->buildBookingStatusBreakdown($dashboardTenant?->id, $ownerId);
 
         if ($isTenantAdmin && $currentTenant) {
@@ -111,7 +111,6 @@ class DashboardController extends Controller
             'recent_bookings',
             'unread_messages',
             'trendLabels',
-            'revenueTrend',
             'bookingsTrend',
             'bookingStatusBreakdown',
             'availabilityAccommodations',
@@ -120,14 +119,16 @@ class DashboardController extends Controller
         ));
     }
 
-    private function buildMonthlyTrendData(?int $tenantId, ?int $ownerId): array
+    /**
+     * @return array{0: list<string>, 1: list<int>}
+     */
+    private function buildMonthlyBookingsTrend(?int $tenantId, ?int $ownerId): array
     {
-        // Show 1-month trend using daily points from the last 30 days.
-        $days = collect(range(29, 0))->map(function (int $offset) {
-            return Carbon::now()->subDays($offset)->startOfDay();
-        })->push(Carbon::now()->startOfDay());
+        $months = collect(range(11, 0))->map(
+            fn (int $offset) => Carbon::now()->startOfMonth()->subMonths($offset)
+        );
 
-        $labels = $days->map(fn (Carbon $day) => $day->format('M d'));
+        $labels = $months->map(fn (Carbon $month) => $month->format('M Y'))->values()->all();
 
         $baseQuery = Booking::query()->whereIn('status', [
             Booking::STATUS_CONFIRMED,
@@ -141,25 +142,20 @@ class DashboardController extends Controller
             $baseQuery->forOwner($ownerId);
         }
 
-        $groupedRevenue = (clone $baseQuery)
-            ->selectRaw('DATE(created_at) as trend_date, SUM(total_price) as total_revenue')
-            ->groupBy('trend_date')
-            ->pluck('total_revenue', 'trend_date');
+        $rangeStart = $months->first()->copy()->startOfMonth();
+        $rangeEnd = $months->last()->copy()->endOfMonth();
 
-        $groupedBookings = (clone $baseQuery)
-            ->selectRaw('DATE(created_at) as trend_date, COUNT(*) as total_bookings')
-            ->groupBy('trend_date')
-            ->pluck('total_bookings', 'trend_date');
+        $countsByMonth = (clone $baseQuery)
+            ->whereBetween('created_at', [$rangeStart, $rangeEnd])
+            ->get(['created_at'])
+            ->countBy(fn (Booking $booking) => $booking->created_at->format('Y-m'));
 
-        $revenueTrend = $days->map(function (Carbon $day) use ($groupedRevenue) {
-            return (float) ($groupedRevenue[$day->toDateString()] ?? 0);
-        });
+        $bookingsTrend = $months
+            ->map(fn (Carbon $month) => (int) ($countsByMonth[$month->format('Y-m')] ?? 0))
+            ->values()
+            ->all();
 
-        $bookingsTrend = $days->map(function (Carbon $day) use ($groupedBookings) {
-            return (int) ($groupedBookings[$day->toDateString()] ?? 0);
-        });
-
-        return [$labels->values()->all(), $revenueTrend->values()->all(), $bookingsTrend->values()->all()];
+        return [$labels, $bookingsTrend];
     }
 
     private function buildBookingStatusBreakdown(?int $tenantId, ?int $ownerId): array

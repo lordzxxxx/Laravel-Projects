@@ -46,12 +46,9 @@
             @include('admin.partials.top-navbar-styles')
         @endif
 
-        @media (max-width: 768px) {
-            @if($useLegacyMessagesNav)
-            .navbar { padding: 0 20px; height: 60px; }
-            .nav-links { display: none; }
-            @endif
-        }
+        @if($useLegacyMessagesNav)
+            @include('partials.legacy-navbar-responsive')
+        @endif
 
         @include('partials.messaging-ui-styles')
 
@@ -98,7 +95,7 @@
     @elseif($authUser?->isAdmin())
         @include('admin.partials.top-navbar', ['active' => 'messages'])
     @else
-    <nav class="navbar">
+    <nav class="navbar legacy-navbar-responsive">
         <a href="{{ route('dashboard') }}" class="nav-logo">
             <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
             <span>Impasugong</span>
@@ -123,6 +120,10 @@
                 <li><a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.edit') ? 'active' : '' }}">Settings</a></li>
             @endif
         </ul>
+
+        <button type="button" class="legacy-nav-toggle" aria-label="Open menu" aria-expanded="false">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
 
         <div class="nav-actions">
             <form action="/logout" method="POST">

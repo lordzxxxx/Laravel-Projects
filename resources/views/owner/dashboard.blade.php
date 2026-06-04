@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.tenant-favicon')
     <title>Owner Dashboard - ImpaStay</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        @include('partials.typography-system')
         @include('owner.partials.owner-page-fonts')
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -529,7 +531,301 @@
         }
 
         @media (max-width: 640px) {
-            .owner-dash-kpis { grid-template-columns: 1fr; }
+            .owner-dashboard-main {
+                gap: 0.65rem;
+            }
+
+            .owner-dashboard-main .owner-dash-top {
+                gap: 0.5rem;
+            }
+
+            .owner-dashboard-main .owner-page-hero__title {
+                font-size: 1.25rem;
+            }
+
+            .owner-dashboard-main .owner-page-hero__lede {
+                font-size: 0.8125rem;
+                line-height: 1.4;
+            }
+
+            .owner-dashboard-main .owner-page-hero__eyebrow {
+                font-size: 0.625rem;
+            }
+
+            .owner-dashboard-main .business-status-pill {
+                width: 100%;
+                padding: 0.45rem 0.65rem;
+                font-size: 0.6875rem;
+                border-radius: 0.5rem;
+            }
+
+            .owner-dashboard-main .owner-dash-kpis {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.5rem;
+            }
+
+            .owner-dashboard-main .owner-dash-kpi {
+                padding: 0.65rem 0.75rem;
+                gap: 0.55rem;
+                border-radius: 0.625rem;
+            }
+
+            .owner-dashboard-main .owner-dash-kpi__icon {
+                width: 2rem;
+                height: 2rem;
+                font-size: 0.75rem;
+            }
+
+            .owner-dashboard-main .owner-dash-kpi__value {
+                font-size: 1.0625rem;
+            }
+
+            .owner-dashboard-main .owner-dash-kpi__label {
+                font-size: 0.5625rem;
+            }
+
+            .owner-dashboard-main .owner-dash-body,
+            .owner-dashboard-main .owner-dash-primary,
+            .owner-dashboard-main .owner-dash-aside,
+            .owner-dashboard-main .owner-dash-charts,
+            .owner-dashboard-main .owner-dash-tables {
+                gap: 0.65rem;
+            }
+
+            .owner-dashboard-main .owner-dash-block {
+                border-radius: 0.625rem;
+            }
+
+            .owner-dashboard-main .owner-dash-block__head {
+                padding: 0.6rem 0.75rem;
+            }
+
+            .owner-dashboard-main .owner-dash-block__head h2,
+            .owner-dashboard-main .owner-dash-block__head h3 {
+                font-size: 0.75rem;
+            }
+
+            .owner-dashboard-main .owner-dash-block__caption {
+                font-size: 0.625rem;
+            }
+
+            .owner-dashboard-main .owner-dash-block__body {
+                padding: 0.65rem 0.75rem 0.75rem;
+            }
+
+            .owner-dashboard-main .chart-container {
+                min-height: 170px;
+            }
+
+            .owner-dashboard-main .owner-dash-table-scroll {
+                overflow: visible;
+            }
+
+            .owner-dashboard-main .owner-units-table thead,
+            .owner-dashboard-main .owner-bookings-table thead {
+                display: none;
+            }
+
+            .owner-dashboard-main .owner-units-table tbody tr {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                grid-template-areas:
+                    "property edit"
+                    "type status"
+                    "price bookings";
+                gap: 0.35rem 0.5rem;
+                padding: 0.65rem 0.75rem;
+                border-bottom: 1px solid var(--gray-100);
+            }
+
+            .owner-dashboard-main .owner-units-table tbody tr td {
+                padding: 0;
+                border: none;
+            }
+
+            .owner-dashboard-main .owner-units-table tbody tr td:nth-child(1) { grid-area: property; }
+            .owner-dashboard-main .owner-units-table tbody tr td:nth-child(2) { grid-area: type; }
+            .owner-dashboard-main .owner-units-table tbody tr td:nth-child(3) {
+                grid-area: price;
+                font-size: 0.75rem;
+            }
+
+            .owner-dashboard-main .owner-units-table tbody tr td:nth-child(3)::before {
+                content: "Rate: ";
+                font-weight: 600;
+                color: var(--gray-500);
+            }
+
+            .owner-dashboard-main .owner-units-table tbody tr td:nth-child(4) {
+                grid-area: bookings;
+                justify-self: end;
+                font-size: 0.75rem;
+                color: var(--gray-600);
+            }
+
+            .owner-dashboard-main .owner-units-table tbody tr td:nth-child(4)::before {
+                content: "Bookings: ";
+                font-weight: 600;
+                color: var(--gray-500);
+            }
+
+            .owner-dashboard-main .owner-units-table tbody tr td:nth-child(5) {
+                grid-area: status;
+                justify-self: end;
+            }
+
+            .owner-dashboard-main .owner-units-table tbody tr td:nth-child(6) {
+                grid-area: edit;
+                justify-self: end;
+                align-self: start;
+            }
+
+            .owner-dashboard-main .owner-units-table .property-thumb {
+                width: 2.75rem;
+                height: 2.75rem;
+            }
+
+            .owner-dashboard-main .owner-units-table .property-name {
+                font-size: 0.8125rem;
+            }
+
+            .owner-dashboard-main .owner-units-table .property-address {
+                font-size: 0.6875rem;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .owner-dashboard-main .owner-units-table .property-type-pill {
+                font-size: 0.625rem;
+                padding: 0.15rem 0.4rem;
+            }
+
+            .owner-dashboard-main .owner-units-table .property-edit-btn {
+                padding: 0.35rem 0.55rem;
+                font-size: 0.6875rem;
+            }
+
+            .owner-dashboard-main .owner-bookings-table tbody tr {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                grid-template-areas:
+                    "guest status"
+                    "property property"
+                    "checkin amount";
+                gap: 0.35rem 0.5rem;
+                padding: 0.65rem 0.75rem;
+                border-bottom: 1px solid var(--gray-100);
+            }
+
+            .owner-dashboard-main .owner-bookings-table tbody tr td {
+                padding: 0;
+                border: none;
+                font-size: 0.75rem;
+            }
+
+            .owner-dashboard-main .owner-bookings-table tbody tr td:nth-child(1) {
+                grid-area: guest;
+                font-weight: 600;
+                color: var(--gray-800);
+            }
+
+            .owner-dashboard-main .owner-bookings-table tbody tr td:nth-child(2) {
+                grid-area: property;
+                color: var(--gray-600);
+            }
+
+            .owner-dashboard-main .owner-bookings-table tbody tr td:nth-child(3) {
+                grid-area: checkin;
+                color: var(--gray-500);
+            }
+
+            .owner-dashboard-main .owner-bookings-table tbody tr td:nth-child(4) {
+                grid-area: amount;
+                justify-self: end;
+            }
+
+            .owner-dashboard-main .owner-bookings-table tbody tr td:nth-child(5) {
+                grid-area: status;
+                justify-self: end;
+            }
+
+            .owner-dashboard-main .status-badge {
+                padding: 0.15rem 0.45rem;
+                font-size: 0.5625rem;
+            }
+
+            .owner-dashboard-main .owner-dash-actions {
+                padding: 0.65rem;
+                gap: 0.35rem;
+            }
+
+            .owner-dashboard-main .owner-dash-action {
+                padding: 0.5rem 0.55rem;
+            }
+
+            .owner-dashboard-main .owner-dash-action__icon {
+                width: 1.75rem;
+                height: 1.75rem;
+                font-size: 0.6875rem;
+            }
+
+            .owner-dashboard-main .owner-dash-action__title {
+                font-size: 0.75rem;
+            }
+
+            .owner-dashboard-main .owner-dash-action__desc {
+                font-size: 0.625rem;
+            }
+
+            .owner-dashboard-main .owner-avail-card {
+                padding: 0.65rem 0.75rem;
+            }
+
+            .owner-dashboard-main .owner-avail-card__head h3 {
+                font-size: 0.75rem;
+            }
+
+            .owner-dashboard-main .owner-avail-card__head p {
+                font-size: 0.5625rem;
+            }
+
+            .owner-dashboard-main .owner-dash-pagination {
+                padding: 0 0.65rem 0.65rem;
+            }
+
+            .owner-dashboard-main .owner-dash-empty {
+                padding: 1.5rem 0.75rem;
+            }
+
+            .owner-dashboard-main .owner-dash-empty i {
+                font-size: 2rem;
+            }
+
+            .owner-dashboard-main .owner-dash-btn-primary {
+                width: 100%;
+                justify-content: center;
+                padding: 0.55rem 0.85rem;
+                font-size: 0.8125rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .owner-dashboard-main .owner-page-hero__lede,
+            .owner-dashboard-main .owner-avail-card__head p,
+            .owner-dashboard-main .owner-dash-action__desc {
+                display: none;
+            }
+
+            .owner-dashboard-main .owner-units-table .property-thumb {
+                width: 2.35rem;
+                height: 2.35rem;
+            }
+
+            .owner-dashboard-main .business-status-pill .biz-label {
+                display: none;
+            }
         }
 
         @include('partials.pbi-visual-surface-styles')
@@ -539,7 +835,7 @@
 <body class="owner-nav-page">
     @include('owner.partials.top-navbar')
     
-        <main class="main-content with-owner-nav owner-app-main owner-dashboard-main">
+        <main class="main-content app-container with-owner-nav owner-app-main owner-dashboard-main">
             <header class="owner-dash-top owner-page-top">
                 <div class="owner-page-hero owner-page-hero--flush">
                     <p class="owner-page-hero__eyebrow">Overview</p>
@@ -591,8 +887,8 @@
                     <div class="owner-dash-charts">
                         <section class="owner-dash-block" aria-labelledby="owner-trend-heading">
                             <div class="owner-dash-block__head">
-                                <h2 id="owner-trend-heading"><i class="fas fa-chart-line" aria-hidden="true"></i> Revenue &amp; bookings</h2>
-                                <p class="owner-dash-block__caption">Last 30 days</p>
+                                <h2 id="owner-trend-heading"><i class="fas fa-chart-line" aria-hidden="true"></i> Bookings per month</h2>
+                                <p class="owner-dash-block__caption">Last 12 months</p>
                             </div>
                             <div class="owner-dash-block__body">
                                 <div class="chart-container">
@@ -620,8 +916,8 @@
                             </div>
                             <div class="owner-dash-block__body owner-dash-block__body--flush">
                             @if(isset($properties) && count($properties) > 0)
-                                <div class="owner-dash-table-scroll">
-                                    <table class="property-table">
+                                <div class="owner-dash-table-scroll app-scroll-x app-scroll-x--hint" role="region" aria-label="Recent bookings" tabindex="0">
+                                    <table class="property-table owner-units-table">
                                         <thead>
                                             <tr>
                                                 <th>Property</th>
@@ -687,8 +983,8 @@
                             </div>
                             <div class="owner-dash-block__body owner-dash-block__body--flush">
                             @if(isset($recent_bookings) && count($recent_bookings) > 0)
-                                <div class="owner-dash-table-scroll">
-                                    <table class="property-table">
+                                <div class="owner-dash-table-scroll app-scroll-x app-scroll-x--hint" role="region" aria-label="Recent bookings" tabindex="0">
+                                    <table class="property-table owner-bookings-table">
                                         <thead>
                                             <tr>
                                                 <th>Guest</th>
@@ -778,27 +1074,17 @@
         const trendCtx = document.getElementById('ownerTrendChart');
         if (trendCtx) {
             new Chart(trendCtx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: @json($trendLabels ?? []),
                     datasets: [
                         {
-                            label: 'Revenue (PHP)',
-                            data: @json($revenueTrend ?? []),
-                            borderColor: '#457359',
-                            backgroundColor: 'rgba(46, 125, 50, 0.15)',
-                            tension: 0.35,
-                            fill: true,
-                            yAxisID: 'yRevenue'
-                        },
-                        {
                             label: 'Bookings',
                             data: @json($bookingsTrend ?? []),
-                            borderColor: '#047857',
-                            backgroundColor: 'rgba(4, 120, 87, 0.12)',
-                            tension: 0.35,
-                            fill: false,
-                            yAxisID: 'yBookings'
+                            borderColor: '#457359',
+                            backgroundColor: 'rgba(69, 115, 89, 0.55)',
+                            borderRadius: 6,
+                            maxBarThickness: 48
                         }
                     ]
                 },
@@ -807,30 +1093,40 @@
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
                     plugins: {
-                        legend: { position: 'top', labels: { color: '#334155', font: { size: 11, weight: '600' } } },
+                        legend: { display: false },
                         tooltip: {
                             backgroundColor: 'rgba(15, 61, 36, 0.94)',
                             titleColor: '#ecfdf5',
                             bodyColor: '#d1fae5',
                             padding: 12,
-                            cornerRadius: 8
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    var count = context.parsed.y ?? 0;
+                                    return count + (count === 1 ? ' booking' : ' bookings');
+                                }
+                            }
                         }
                     },
                     scales: {
-                        yRevenue: {
-                            type: 'linear',
-                            position: 'left',
+                        x: {
                             ticks: {
-                                callback: function(value) {
-                                    return 'P' + Number(value).toLocaleString();
-                                }
-                            }
+                                color: '#64748b',
+                                font: { size: 10, weight: '600' },
+                                maxRotation: 45,
+                                minRotation: 0
+                            },
+                            grid: { display: false }
                         },
-                        yBookings: {
-                            type: 'linear',
-                            position: 'right',
-                            grid: { drawOnChartArea: false },
-                            ticks: { precision: 0 }
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0, color: '#64748b' },
+                            title: {
+                                display: true,
+                                text: 'Bookings',
+                                color: '#475569',
+                                font: { size: 11, weight: '600' }
+                            }
                         }
                     }
                 }

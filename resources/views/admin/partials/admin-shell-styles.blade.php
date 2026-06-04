@@ -36,6 +36,22 @@ body {
     padding: 28px 36px;
 }
 
+/* Width cap + horizontal padding: also applied via .app-container in app.css (Vite) */
+.main-content.app-container,
+.dashboard-layout > main.main-content {
+    width: 100%;
+    max-width: min(var(--page-max, 78rem), 100%);
+    margin-inline: auto;
+    padding-inline: clamp(0.75rem, 2.5vw, 2rem);
+    box-sizing: border-box;
+}
+
+@media (max-width: 960px) {
+    .main-content {
+        padding: clamp(1rem, 3vw, 1.25rem);
+    }
+}
+
 .main-content-narrow {
     max-width: 720px;
     margin-left: auto;

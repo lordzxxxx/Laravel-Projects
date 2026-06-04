@@ -112,6 +112,17 @@
             flex-direction: column;
             gap: clamp(1rem, 2vw, 1.5rem);
             flex: 1;
+            --stay-max: 78rem; /* medium, readable cards/tables on wide screens */
+        }
+
+        .explore-stay-show__crumb,
+        .explore-stay-hero,
+        .explore-stay-show__content,
+        .explore-stay-show__calendar {
+            width: 100%;
+            max-width: var(--stay-max);
+            margin-left: auto;
+            margin-right: auto;
         }
 
         body.explore-portal-page .explore-stay-show.portal-public-main,
@@ -169,12 +180,19 @@
             width: 100%;
         }
 
-        .explore-stay-show__summary {
+        .explore-stay-hero {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 20rem);
-            gap: clamp(1rem, 2.5vw, 1.5rem);
+            grid-template-columns: minmax(0, 1fr) minmax(20rem, 22rem);
+            gap: clamp(1rem, 2.5vw, 1.75rem);
             align-items: start;
             width: 100%;
+        }
+
+        .explore-stay-hero__main {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.85rem, 2vw, 1.25rem);
         }
 
         .explore-stay-show__intro {
@@ -186,8 +204,21 @@
 
         .explore-stay-show__book-wrap {
             width: 100%;
-            max-width: 20rem;
+            max-width: 22rem;
             justify-self: end;
+            position: sticky;
+            top: calc(var(--app-topbar-height, 84px) + 1rem);
+        }
+
+        @media (max-width: 900px) {
+            .explore-stay-hero {
+                grid-template-columns: 1fr;
+            }
+
+            .explore-stay-show__book-wrap {
+                position: static;
+                max-width: none;
+            }
         }
 
         .explore-stay-show__content {
@@ -234,7 +265,7 @@
         }
         .main-image {
             width: 100%;
-            height: clamp(240px, min(42vh, 38vw), 500px);
+            height: clamp(280px, min(52vh, 42vw), 560px);
             border-radius: 0;
             object-fit: cover;
             cursor: zoom-in;
@@ -671,11 +702,19 @@
             }
         }
 
+        @if($showLegacyNav)
+            @include('partials.legacy-navbar-responsive')
+        @endif
+
         @media (max-width: 768px) {
             @if($showLegacyNav)
-            .navbar { padding: 0 20px; height: 60px; }
-            .nav-links { display: none; }
+            .navbar.legacy-navbar-responsive { padding: 0 clamp(0.75rem, 3vw, 1.25rem); min-height: 70px; height: auto; }
+            body:not(.owner-nav-page):not(.client-nav-page):not(.explore-portal-page) .main-container {
+                padding-top: 5.5rem;
+            }
             @endif
+            .explore-stay-show__summary { min-width: 0; }
+            .explore-stay-show__meta { overflow-wrap: anywhere; }
             .main-image { height: min(48vw, 260px); }
             .features-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .form-row { grid-template-columns: 1fr; }
@@ -699,7 +738,7 @@
             'navLayout' => 'minimal',
         ])
     @else
-    <nav class="navbar">
+    <nav class="navbar legacy-navbar-responsive">
         <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('dashboard') }}" class="nav-logo">
             <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM">
             <span class="nav-brand-text">
@@ -730,6 +769,10 @@
                 @endif
             @endauth
         </ul>
+
+        <button type="button" class="legacy-nav-toggle" aria-label="Open menu" aria-expanded="false">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
         
         @auth
         <div class="nav-actions">
@@ -747,99 +790,97 @@
     </nav>
     @endif
     
-    <!-- Main Container -->
-    <div class="main-container {{ $isTenantManager ? 'with-owner-nav' : '' }}">
-        <!-- Breadcrumb -->
-        <div class="breadcrumb animate">
-            <a href="{{ ($portalDirectory ?? false) ? route('portal.landing') : route('landing') }}">Home</a>
-            <span>›</span>
-            <a href="{{ ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index') }}">Accommodations</a>
-            <span>›</span>
-            <span>{{ $accommodation->name }}</span>
-        </div>
-        
-        <!-- Image Gallery (carousel + lightbox) -->
-        <div class="gallery-container animate delay-1">
-            @php
-                $galleryImages = $accommodation->galleryImageUrls();
-                if (count($galleryImages) === 0) {
-                    $galleryImages = [asset('COMMUNAL.jpg')];
-                }
-                $galleryCount = count($galleryImages);
-                $primaryImageUrl = $galleryImages[0];
-            @endphp
-            <script type="application/json" id="accommodation-gallery-data">@json($galleryImages)</script>
-            <div class="gallery-carousel" id="accommodationGallery">
-                @if($galleryCount > 1)
-                    <button type="button" class="carousel-btn prev" id="carouselPrev" aria-label="Previous photo">‹</button>
-                    <button type="button" class="carousel-btn next" id="carouselNext" aria-label="Next photo">›</button>
-                @endif
-                <div class="carousel-main-wrap">
-                    @if($galleryCount > 1)
-                        <span class="carousel-counter" id="carouselCounter" aria-live="polite">1 / {{ $galleryCount }}</span>
-                    @endif
-                    <img src="{{ $galleryImages[0] }}"
-                         alt="{{ $accommodation->name }}"
-                         class="main-image"
-                         id="carouselMain"
-                         data-accommodation-name="{{ e($accommodation->name) }}"
-                         tabindex="0"
-                         role="button"
-                         aria-label="View full size photo. Use arrow keys to change slide when focused.">
-                    <span class="carousel-hint">Click for full size</span>
-                </div>
-            </div>
-            @if($galleryCount > 1)
-                <div class="thumbnail-row" id="carouselThumbnails" role="tablist" aria-label="Photo thumbnails">
-                    @foreach($galleryImages as $index => $imageUrl)
-                        <img src="{{ $imageUrl }}" 
-                             alt=""
-                             class="thumbnail {{ $index === 0 ? 'active' : '' }}"
-                             data-index="{{ $index }}"
-                             role="tab"
-                             tabindex="0"
-                             aria-selected="{{ $index === 0 ? 'true' : 'false' }}"
-                             aria-label="Show photo {{ $index + 1 }} of {{ $galleryCount }}">
-                    @endforeach
-                </div>
-            @endif
-        </section>
+    @php
+        $showMainClass = $isTenantManager
+            ? 'main-container with-owner-nav explore-stay-show'
+            : ($showClientNav
+                ? 'client-guest-main client-guest-main--full explore-stay-show'
+                : ($showPortalPublicNav
+                    ? 'portal-public-main explore-stay-show'
+                    : 'main-container explore-stay-show'));
+        $listingsUrl = ($portalDirectory ?? false) ? route('portal.accommodations.index') : route('accommodations.index');
+        $homeUrl = ($portalDirectory ?? false) ? route('portal.landing') : route('landing');
+    @endphp
+    <main class="{{ $showMainClass }}">
+        <nav class="explore-stay-show__crumb" aria-label="Breadcrumb">
+            <a href="{{ $homeUrl }}">{{ ($portalDirectory ?? false) ? 'Explore' : 'Home' }}</a>
+            <span aria-hidden="true">/</span>
+            <a href="{{ $listingsUrl }}">Accommodations</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{{ $accommodation->name }}</span>
+        </nav>
 
-        <div class="lightbox" id="photoLightbox" role="dialog" aria-modal="true" aria-label="Full size photos">
-            <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close full screen photo">×</button>
-            @if($galleryCount > 1)
-                <button type="button" class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous photo">‹</button>
-                <button type="button" class="lightbox-nav next" id="lightboxNext" aria-label="Next photo">›</button>
-            @endif
-            <img src="" alt="" class="lightbox-img" id="lightboxImg">
-            @if($galleryCount > 1)
-                <p class="lightbox-caption" id="lightboxCaption"></p>
-            @endif
-        </div>
-        
-        <header class="explore-stay-show__summary">
-            <div class="explore-stay-show__intro property-header">
-                <span class="type-badge {{ $accommodation->type }}">{{ str_replace('-', ' ', $accommodation->type) }}</span>
-                <h1>{{ $accommodation->name }}</h1>
-                <div class="property-location">
-                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                    {{ $accommodation->address }}@if($accommodation->barangay), Brgy. {{ $accommodation->barangay }}@endif
+        <header class="explore-stay-hero">
+            <div class="explore-stay-hero__main">
+                <div class="explore-stay-show__intro property-header">
+                    <span class="type-badge {{ $accommodation->type }}">{{ str_replace('-', ' ', $accommodation->type) }}</span>
+                    <h1>{{ $accommodation->name }}</h1>
+                    <div class="property-location">
+                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                        {{ $accommodation->address }}@if($accommodation->barangay), Brgy. {{ $accommodation->barangay }}@endif
+                    </div>
+                    <div class="rating">
+                        <span class="rating-stars" aria-hidden="true">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= floor($accommodation->rating))
+                                    <i class="fa-solid fa-star"></i>
+                                @elseif($i - 0.5 <= $accommodation->rating)
+                                    <i class="fa-solid fa-star-half-stroke"></i>
+                                @else
+                                    <i class="fa-regular fa-star"></i>
+                                @endif
+                            @endfor
+                        </span>
+                        <span class="rating-value">{{ number_format($accommodation->rating, 1) }}</span>
+                        <span class="rating-count">({{ $accommodation->total_reviews }} reviews)</span>
+                    </div>
                 </div>
-                <div class="rating">
-                    <span class="rating-stars" aria-hidden="true">
-                        @for($i = 1; $i <= 5; $i++)
-                            @if($i <= floor($accommodation->rating))
-                                <i class="fa-solid fa-star"></i>
-                            @elseif($i - 0.5 <= $accommodation->rating)
-                                <i class="fa-solid fa-star-half-stroke"></i>
-                            @else
-                                <i class="fa-regular fa-star"></i>
+
+                <section class="explore-stay-show__gallery gallery-container" aria-label="Property photos">
+                    @php
+                        $galleryImages = $accommodation->galleryImageUrls();
+                        if (count($galleryImages) === 0) {
+                            $galleryImages = [asset('COMMUNAL.jpg')];
+                        }
+                        $galleryCount = count($galleryImages);
+                        $primaryImageUrl = $galleryImages[0];
+                    @endphp
+                    <script type="application/json" id="accommodation-gallery-data">@json($galleryImages)</script>
+                    <div class="gallery-carousel" id="accommodationGallery">
+                        @if($galleryCount > 1)
+                            <button type="button" class="carousel-btn prev" id="carouselPrev" aria-label="Previous photo">‹</button>
+                            <button type="button" class="carousel-btn next" id="carouselNext" aria-label="Next photo">›</button>
+                        @endif
+                        <div class="carousel-main-wrap">
+                            @if($galleryCount > 1)
+                                <span class="carousel-counter" id="carouselCounter" aria-live="polite">1 / {{ $galleryCount }}</span>
                             @endif
-                        @endfor
-                    </span>
-                    <span class="rating-value">{{ number_format($accommodation->rating, 1) }}</span>
-                    <span class="rating-count">({{ $accommodation->total_reviews }} reviews)</span>
-                </div>
+                            <img src="{{ $galleryImages[0] }}"
+                                 alt="{{ $accommodation->name }}"
+                                 class="main-image"
+                                 id="carouselMain"
+                                 data-accommodation-name="{{ e($accommodation->name) }}"
+                                 tabindex="0"
+                                 role="button"
+                                 aria-label="View full size photo. Use arrow keys to change slide when focused.">
+                            <span class="carousel-hint">Click for full size</span>
+                        </div>
+                    </div>
+                    @if($galleryCount > 1)
+                        <div class="thumbnail-row" id="carouselThumbnails" role="tablist" aria-label="Photo thumbnails">
+                            @foreach($galleryImages as $index => $imageUrl)
+                                <img src="{{ $imageUrl }}"
+                                     alt=""
+                                     class="thumbnail {{ $index === 0 ? 'active' : '' }}"
+                                     data-index="{{ $index }}"
+                                     role="tab"
+                                     tabindex="0"
+                                     aria-selected="{{ $index === 0 ? 'true' : 'false' }}"
+                                     aria-label="Show photo {{ $index + 1 }} of {{ $galleryCount }}">
+                            @endforeach
+                        </div>
+                    @endif
+                </section>
             </div>
 
             <aside class="explore-stay-show__book-wrap" aria-label="Book this stay">
@@ -953,15 +994,33 @@
                             </div>
                         </div>
                     @else
-                        <div style="text-align: center; padding: 30px 0;">
-                            <p style="color: var(--gray-500); margin-bottom: 20px;">Sign in to book, save to wishlist, or message the host.</p>
-                            <a href="{{ route('login').'?'.http_build_query(['intended' => url()->full()]) }}" class="btn btn-primary btn-book">Login</a>
-                            <a href="{{ route('register') }}" class="btn btn-wishlist">Create account</a>
+                        <div class="explore-stay-book__guest-cta">
+                            <p>Sign in to book, save to wishlist, or message the host.</p>
+                            <a
+                                href="{{ $tenantGuestLoginUrl ?? route('login').'?'.http_build_query(['intended' => url()->full()]) }}"
+                                class="btn btn-primary btn-book"
+                            >Log in</a>
+                            <a
+                                href="{{ $tenantGuestRegisterUrl ?? (($portalDirectory ?? false) ? route('register.guest') : route('register')) }}"
+                                class="btn btn-wishlist"
+                            >Create account</a>
                         </div>
                     @endauth
                 </div>
             </aside>
         </header>
+
+        <div class="lightbox" id="photoLightbox" role="dialog" aria-modal="true" aria-label="Full size photos">
+            <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close full screen photo">×</button>
+            @if($galleryCount > 1)
+                <button type="button" class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous photo">‹</button>
+                <button type="button" class="lightbox-nav next" id="lightboxNext" aria-label="Next photo">›</button>
+            @endif
+            <img src="" alt="" class="lightbox-img" id="lightboxImg">
+            @if($galleryCount > 1)
+                <p class="lightbox-caption" id="lightboxCaption"></p>
+            @endif
+        </div>
 
         <div class="explore-stay-show__content content-grid">
             <div class="explore-stay-show__panels explore-stay-show__panels--split">

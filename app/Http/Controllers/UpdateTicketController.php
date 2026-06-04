@@ -186,7 +186,12 @@ class UpdateTicketController extends Controller
         $tenant = Tenant::current();
 
         abort_unless($user instanceof User && $user->isClient(), 403);
-        abort_unless($tenant && (int) ($user->tenant_id ?? 0) === (int) $tenant->id, 403);
+        abort_unless($tenant, 404);
+
+        // Municipality-wide guests (tenant_id null) may submit tickets on any tenant domain.
+        if ($user->tenant_id !== null) {
+            abort_unless((int) $user->tenant_id === (int) $tenant->id, 403);
+        }
         abort_unless($user->tenantClientMaySubmitUpdateTickets(), 403);
     }
 

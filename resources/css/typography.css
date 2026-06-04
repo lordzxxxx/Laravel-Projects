@@ -58,8 +58,16 @@
         line-height: var(--leading-tight);
     }
 
-    :where(button, input, textarea, select, optgroup) {
+    :where(button, input, textarea, select, optgroup, label) {
         font-family: inherit;
+    }
+
+    :where(.profile-panel__head h2, .settings-panel__head h2, .panel-eyebrow, .section-eyebrow) {
+        font-family: var(--app-font-sans);
+        font-size: var(--text-sm);
+        font-weight: 700;
+        letter-spacing: var(--tracking-wider);
+        text-transform: uppercase;
     }
 
     :where(code, kbd, samp, pre) {

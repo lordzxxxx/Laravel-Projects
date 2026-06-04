@@ -8,9 +8,13 @@
     --nav-heading-accent: var(--brand-800, #34543F);
 }
 
-.navbar,
-.public-nav-tribal {
+.navbar:not(.portal-nav-minimal),
+.public-nav-tribal:not(.portal-nav-minimal) {
     overflow: hidden;
+}
+
+.navbar.portal-nav-minimal.public-nav-tribal {
+    overflow: visible;
 }
 
 /* Portal/public top bars use Tailwind `fixed` — do not override with relative */
@@ -19,7 +23,9 @@ nav.public-nav-tribal.fixed {
     top: 0;
     left: 0;
     right: 0;
-    width: 100%;
+    width: 100vw;
+    max-width: 100vw;
+    margin: 0;
     z-index: 1100;
     box-sizing: border-box;
 }
@@ -56,7 +62,15 @@ nav.public-nav-tribal.fixed {
 .navbar .navbar-tribal-accent,
 .public-nav-tribal .navbar-tribal-accent {
     position: absolute;
-    inset: 0;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    right: auto;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100%;
+    margin: 0;
+    transform: translateX(-50%);
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
@@ -65,28 +79,31 @@ nav.public-nav-tribal.fixed {
 .navbar .navbar-tribal-accent__canvas,
 .public-nav-tribal .navbar-tribal-accent__canvas {
     position: absolute;
-    left: 50%;
-    top: 50%;
+    inset: 0;
     width: 100%;
-    height: max(100vw, 100%);
-    min-height: 100%;
-    transform: translate(-50%, -50%) rotate(-90deg);
-    transform-origin: center center;
-    background-repeat: repeat;
-    background-size: auto 100%;
+    height: 100%;
+    transform: none;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
     background-position: center center;
-    opacity: var(--nav-tribal-pattern-opacity, 0.8);
+    opacity: var(--nav-tribal-pattern-opacity, 0.85);
 }
 
 .navbar::after,
 .public-nav-tribal::after {
     content: '';
     position: absolute;
-    inset: 0;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    right: auto;
+    width: 100vw;
+    max-width: 100vw;
+    transform: translateX(-50%);
     z-index: 1;
     pointer-events: none;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.62) 50%, rgba(255, 255, 255, 0.70) 100%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.48) 50%, rgba(255, 255, 255, 0.52) 100%),
         rgba(15, 23, 42, 0.02);
 }
 

@@ -108,7 +108,7 @@
         .hero {
             width: 100%;
             box-sizing: border-box;
-            min-height: min(820px, calc(100dvh - var(--app-topbar-height, 4rem)));
+            min-height: min(70dvh, calc(100dvh - var(--app-topbar-height, 4rem)));
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -207,16 +207,35 @@
         }
         .carousel-header p { font-size: 1rem; color: var(--ink-600); }
 
-        .carousel-container { max-width: 1400px; margin: 0 auto; position: relative; overflow: hidden; }
-        .carousel-track { display: flex; transition: transform 0.5s ease-in-out; }
-        .carousel-slide { min-width: 320px; margin: 0 15px; }
+        .featured-accommodations {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr));
+            gap: clamp(1rem, 2.5vw, 1.5rem);
+            align-items: stretch;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .featured-grid__empty {
+            grid-column: 1 / -1;
+        }
 
         .property-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 100%;
             background: var(--white);
             border-radius: var(--radius-2xl);
             overflow: hidden;
             box-shadow: var(--shadow-md);
-            transition: all 0.4s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid rgba(226, 232, 240, 0.95);
         }
         .property-card:hover {
@@ -224,12 +243,29 @@
             box-shadow: 0 22px 55px -38px rgba(15, 23, 42, 0.45);
         }
 
-        .property-img { width: 100%; height: 200px; object-fit: cover; }
-        .property-content { padding: 22px; }
+        .property-img {
+            width: 100%;
+            height: clamp(11rem, 28vw, 12.5rem);
+            min-height: 11rem;
+            object-fit: cover;
+            object-position: center;
+            background: var(--ink-100, #f1f5f9);
+            flex-shrink: 0;
+        }
+
+        .property-content {
+            display: flex;
+            flex: 1 1 auto;
+            flex-direction: column;
+            padding: clamp(1rem, 2.5vw, 1.375rem);
+            min-height: 0;
+        }
+
         .property-type {
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            align-self: flex-start;
             background: rgba(15, 23, 42, 0.04);
             color: var(--ink-700);
             padding: 6px 14px;
@@ -238,32 +274,77 @@
             font-weight: 600;
             margin-bottom: 12px;
         }
-        .property-content h3 { font-size: 1.15rem; color: var(--ink-900); margin-bottom: 8px; font-weight: 800; letter-spacing: -0.01em; }
-        .property-location { display: flex; align-items: center; gap: 6px; color: var(--ink-600); font-size: 0.85rem; margin-bottom: 15px; }
-        .property-features { display: flex; gap: 15px; margin-bottom: 18px; padding-bottom: 15px; border-bottom: 1px solid rgba(226, 232, 240, 0.9); }
-        .feature { display: flex; align-items: center; gap: 6px; color: var(--ink-700); font-size: 0.85rem; }
-        .property-footer { display: flex; justify-content: space-between; align-items: center; }
-        .property-price { font-size: 1.4rem; font-weight: 700; color: var(--green-primary); }
-        .property-price span { font-size: 0.85rem; font-weight: 500; color: var(--ink-500); }
-        .property-rating { display: flex; align-items: center; gap: 5px; }
-        .stars { color: #F59E0B; }
 
-        .carousel-controls { display: flex; justify-content: center; gap: 12px; margin-top: 40px; }
-        .carousel-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: rgba(15, 23, 42, 0.04);
-            color: var(--ink-800);
-            border: 1px solid rgba(226, 232, 240, 0.95);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .property-content h3 {
+            font-size: clamp(1rem, 2vw, 1.15rem);
+            color: var(--ink-900);
+            margin: 0 0 8px;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            min-height: 2.6em;
+        }
+
+        .property-location {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            color: var(--ink-600);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .property-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 0.875rem;
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+        }
+
+        .feature {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--ink-700);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .property-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 0.75rem;
+            margin-top: auto;
+            padding-top: 0.25rem;
+        }
+
+        .property-price {
+            font-size: clamp(1.15rem, 2.5vw, 1.4rem);
+            font-weight: 700;
+            color: var(--green-primary);
+            line-height: 1.2;
+        }
+
+        .property-price span { font-size: 0.85rem; font-weight: 500; color: var(--ink-500); }
+
+        .property-rating {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: var(--ink-600);
+            flex-shrink: 0;
         }
-        .carousel-btn:hover { background: var(--green-primary); color: var(--white); transform: translateY(-1px); border-color: transparent; }
+
+        .stars { color: #F59E0B; }
 
         .about {
             padding: 76px 0 90px;
@@ -328,8 +409,8 @@
             .hero p { font-size: 1rem; }
             .hero-buttons { flex-direction: column; align-items: center; }
             .carousel-section, .about { padding: 50px 20px; }
-            .carousel-slide { min-width: 280px; }
             .carousel-header h2, .about-card h2 { font-size: 1.6rem; }
+            .property-features { gap: 0.5rem; }
         }
 
         @media (max-width: 768px) {
@@ -361,7 +442,7 @@
             <p class="animate delay-2">{{ $settings['hero_subtitle'] }}</p>
 
             <div class="hero-buttons animate delay-2">
-                <a href="{{ route('dashboard') }}" class="btn btn-primary"><i class="fas fa-rocket" aria-hidden="true"></i> {{ $settings['cta_text'] }}</a>
+                <a href="{{ route('portal.accommodations.index') }}" class="btn btn-primary"><i class="fas fa-rocket" aria-hidden="true"></i> {{ $settings['cta_text'] }}</a>
                 <a href="#properties" class="btn btn-outline"><i class="fas fa-search" aria-hidden="true"></i> Browse Properties</a>
             </div>
         </div>
@@ -374,8 +455,8 @@
             <p>Curated stays from {{ $tenant->name }}</p>
         </div>
 
-        <div class="carousel-container">
-            <div class="carousel-track" id="carouselTrack">
+        <div class="featured-accommodations">
+            <div class="featured-grid" id="featuredGrid">
                 @forelse(($featuredAccommodations ?? collect()) as $accommodation)
                     @php
                         $typeIcon = match ($accommodation->type) {
@@ -386,41 +467,32 @@
                         $priceAmount = $accommodation->price_per_night ?: $accommodation->price_per_day;
                         $priceUnit = $accommodation->price_per_night ? 'night' : 'day';
                     @endphp
-                    <div class="carousel-slide">
-                        <div class="property-card">
-                            <img src="{{ $accommodation->primary_image_url }}" alt="{{ $accommodation->name }}" class="property-img" loading="lazy">
-                            <div class="property-content">
-                                <span class="property-type"><i class="{{ $typeIcon }}"></i> {{ $accommodation->type_label }}</span>
-                                <h3>{{ $accommodation->name }}</h3>
-                                <div class="property-location"><i class="fas fa-map-marker-alt"></i> Brgy. {{ $accommodation->barangay ?: 'Impasugong' }}</div>
-                                <div class="property-features">
-                                    <span class="feature"><i class="fas fa-bed"></i> {{ (int) ($accommodation->bedrooms ?? 0) }} Beds</span>
-                                    <span class="feature"><i class="fas fa-bath"></i> {{ (int) ($accommodation->bathrooms ?? 0) }} Baths</span>
-                                    <span class="feature"><i class="fas fa-users"></i> {{ (int) ($accommodation->max_guests ?? 1) }} Guests</span>
-                                </div>
-                                <div class="property-footer">
-                                    <div class="property-price">₱{{ number_format((float) $priceAmount, 0) }} <span>/ {{ $priceUnit }}</span></div>
-                                    <div class="property-rating">
-                                        <span class="stars"><i class="fas fa-star"></i></span>
-                                        <span>{{ number_format((float) ($accommodation->rating ?? 0), 1) }} ({{ (int) ($accommodation->total_reviews ?? 0) }})</span>
-                                    </div>
+                    <article class="property-card">
+                        <img src="{{ $accommodation->primary_image_url }}" alt="{{ $accommodation->name }}" class="property-img" loading="lazy" decoding="async">
+                        <div class="property-content">
+                            <span class="property-type"><i class="{{ $typeIcon }}" aria-hidden="true"></i> {{ $accommodation->type_label }}</span>
+                            <h3>{{ $accommodation->name }}</h3>
+                            <div class="property-location"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Brgy. {{ $accommodation->barangay ?: 'Impasugong' }}</div>
+                            <div class="property-features">
+                                <span class="feature"><i class="fas fa-bed" aria-hidden="true"></i> {{ (int) ($accommodation->bedrooms ?? 0) }} Beds</span>
+                                <span class="feature"><i class="fas fa-bath" aria-hidden="true"></i> {{ (int) ($accommodation->bathrooms ?? 0) }} Baths</span>
+                                <span class="feature"><i class="fas fa-users" aria-hidden="true"></i> {{ (int) ($accommodation->max_guests ?? 1) }} Guests</span>
+                            </div>
+                            <div class="property-footer">
+                                <div class="property-price">₱{{ number_format((float) $priceAmount, 0) }} <span>/ {{ $priceUnit }}</span></div>
+                                <div class="property-rating">
+                                    <span class="stars"><i class="fas fa-star" aria-hidden="true"></i></span>
+                                    <span>{{ number_format((float) ($accommodation->rating ?? 0), 1) }} ({{ (int) ($accommodation->total_reviews ?? 0) }})</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </article>
                 @empty
-                    <div class="carousel-slide" style="min-width: 100%; margin: 0;">
-                        <div class="property-card" style="padding: 32px; text-align: center;">
-                            <h3 style="margin-bottom: 12px;">No Accommodations Yet</h3>
-                            <p style="color: var(--green-medium);">This tenant has no published accommodations yet.</p>
-                        </div>
-                    </div>
+                    <article class="property-card featured-grid__empty" style="padding: 32px; text-align: center;">
+                        <h3 style="margin-bottom: 12px;">No Accommodations Yet</h3>
+                        <p style="color: var(--green-medium);">This tenant has no published accommodations yet.</p>
+                    </article>
                 @endforelse
-            </div>
-
-            <div class="carousel-controls">
-                <button class="carousel-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
-                <button class="carousel-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
         </div>
@@ -432,38 +504,5 @@
         <p><strong>{{ $tenant->name }}</strong> · Hosted on {{ $tenant->domain }}:{{ env('CENTRAL_PORT', 8000) }}</p>
     </footer>
 
-    <script>
-        const carouselTrack = document.getElementById('carouselTrack');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-
-        let currentIndex = 0;
-        const slides = document.querySelectorAll('.carousel-slide');
-        const totalSlides = slides.length;
-        const visibleSlides = window.innerWidth < 768 ? 1 : 3;
-        const slideWidth = 350;
-
-        function updateCarousel() {
-            const maxIndex = Math.max(0, totalSlides - visibleSlides);
-            currentIndex = Math.min(currentIndex, maxIndex);
-            const offset = -currentIndex * slideWidth;
-            carouselTrack.style.transform = `translateX(${offset}px)`;
-        }
-
-        prevBtn.addEventListener('click', function() {
-            if (currentIndex > 0) { currentIndex--; updateCarousel(); }
-        });
-
-        nextBtn.addEventListener('click', function() {
-            const maxIndex = Math.max(0, totalSlides - visibleSlides);
-            if (currentIndex < maxIndex) { currentIndex++; updateCarousel(); }
-        });
-
-        setInterval(function() {
-            const maxIndex = Math.max(0, totalSlides - visibleSlides);
-            if (currentIndex < maxIndex) { currentIndex++; } else { currentIndex = 0; }
-            updateCarousel();
-        }, 5000);
-    </script>
 </body>
 </html>

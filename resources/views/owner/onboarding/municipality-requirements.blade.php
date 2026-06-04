@@ -10,9 +10,13 @@
     <style>
         @include('partials.app-typography-styles')
         body { min-height: 100vh; background: linear-gradient(135deg, #E8F5E9, #fff); }
-        .card { max-width: 520px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 1rem; box-shadow: 0 10px 40px rgba(27,94,32,0.12); border: 1px solid #C8E6C9; }
+        .card { max-width: min(520px, 100%); margin: 3rem auto; padding: clamp(1rem, 4vw, 2rem); background: #fff; border-radius: 1rem; box-shadow: 0 10px 40px rgba(27,94,32,0.12); border: 1px solid #C8E6C9; }
         label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #374151; margin-top: 1rem; }
-        input[type="file"] { margin-top: 0.35rem; width: 100%; font-size: 0.875rem; }
+        input[type="file"] { margin-top: 0.35rem; width: 100%; max-width: 100%; font-size: 0.875rem; }
+        @media (max-width: 768px) {
+            .card { margin: 1.25rem auto; width: calc(100% - 1.5rem); }
+            body { overflow-x: hidden; }
+        }
     </style>
 </head>
 <body>

@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    @include('partials.responsive-page-head', ['pageTitle' => 'Profile — Impasugong Accommodations', 'includeTypographyInline' => false])
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('partials.tenant-favicon')
-    <title>Profile — Impasugong Accommodations</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     @include('partials.appearance-boot')
     @php
         $authUser = auth()->user();
@@ -489,10 +486,239 @@
             .profile-grid__danger { grid-column: 1; }
         }
 
+        @media (max-width: 768px) {
+            input, select, textarea, button { max-width: 100%; }
+            .field { max-width: 100% !important; }
+        }
+
         @media (max-width: 640px) {
-            .field-row { grid-template-columns: 1fr; }
-            .profile-user { flex-direction: column; align-items: flex-start; }
-            .profile-actions .btn-save { width: 100%; justify-content: center; }
+            .profile-main {
+                padding-left: clamp(12px, 3vw, 16px);
+                padding-right: clamp(12px, 3vw, 16px);
+                padding-bottom: 1.25rem;
+                gap: 0.75rem;
+            }
+
+            .page-header {
+                margin-bottom: 0;
+            }
+
+            .page-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .page-header p {
+                font-size: 0.8125rem;
+            }
+
+            .owner-page-hero,
+            .guest-profile-hero {
+                padding-bottom: 0.35rem;
+            }
+
+            .owner-page-hero__title,
+            .guest-profile-hero__title {
+                font-size: 1.25rem;
+            }
+
+            .owner-page-hero__lede,
+            .guest-profile-hero__lede {
+                font-size: 0.8125rem;
+                line-height: 1.4;
+            }
+
+            .profile-grid,
+            .profile-stack {
+                gap: 0.65rem;
+            }
+
+            .profile-panel {
+                border-radius: 0.625rem;
+            }
+
+            .profile-panel__head {
+                padding: 0.65rem 0.75rem;
+            }
+
+            .profile-panel__head h2 {
+                font-size: 0.75rem;
+            }
+
+            .profile-panel__head p {
+                font-size: 0.6875rem;
+                margin-top: 0.2rem;
+            }
+
+            .profile-panel__body {
+                padding: 0.75rem;
+                gap: 0.65rem;
+            }
+
+            .profile-user {
+                flex-direction: row;
+                align-items: center;
+                gap: 0.65rem;
+                padding-bottom: 0.65rem;
+                margin-bottom: 0;
+            }
+
+            .profile-user__avatar {
+                width: 3rem;
+                height: 3rem;
+                font-size: 0.9375rem;
+            }
+
+            .profile-user__name {
+                font-size: 0.9375rem;
+                gap: 0.35rem;
+            }
+
+            .profile-user__email {
+                font-size: 0.75rem;
+                margin-bottom: 0.35rem;
+            }
+
+            .profile-user__meta {
+                gap: 0.25rem;
+            }
+
+            .meta-pill {
+                padding: 0.2rem 0.45rem;
+                font-size: 0.625rem;
+            }
+
+            .role-chip {
+                font-size: 0.5625rem;
+                padding: 0.15rem 0.4rem;
+            }
+
+            .avatar-upload {
+                flex-direction: row;
+                align-items: center;
+                gap: 0.65rem;
+                padding: 0.6rem;
+            }
+
+            .avatar-upload__preview {
+                width: 2.75rem;
+                height: 2.75rem;
+                font-size: 0.75rem;
+            }
+
+            .avatar-upload__meta p {
+                font-size: 0.6875rem;
+            }
+
+            .btn-upload {
+                margin-top: 0.35rem;
+                padding: 0.35rem 0.55rem;
+                font-size: 0.6875rem;
+            }
+
+            .field-row { grid-template-columns: 1fr; gap: 0.65rem; }
+
+            .field label {
+                font-size: 0.75rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .field input[type="text"],
+            .field input[type="email"],
+            .field input[type="tel"],
+            .field input[type="password"],
+            .field textarea {
+                padding: 0.5rem 0.65rem;
+                font-size: 0.8125rem;
+                border-radius: 0.5rem;
+            }
+
+            .field textarea {
+                min-height: 4.25rem;
+            }
+
+            .notify-item {
+                padding: 0.5rem 0.65rem;
+                gap: 0.5rem;
+            }
+
+            .notify-item__label {
+                font-size: 0.75rem;
+                gap: 0.45rem;
+            }
+
+            .notify-item__icon {
+                width: 1.65rem;
+                height: 1.65rem;
+                font-size: 0.6875rem;
+            }
+
+            .appearance-theme-card {
+                padding: 0.65rem;
+                gap: 0.45rem;
+                border-radius: 0.5rem;
+            }
+
+            .appearance-swatch {
+                height: 18px;
+            }
+
+            .appearance-theme-name {
+                font-size: 0.8125rem;
+            }
+
+            .appearance-theme-desc {
+                font-size: 0.6875rem;
+            }
+
+            .appearance-mode-option > span {
+                padding: 0.4rem 0.65rem;
+                font-size: 0.75rem;
+            }
+
+            .profile-actions {
+                padding: 0.65rem 0.75rem;
+                gap: 0.5rem;
+            }
+
+            .profile-actions .btn-save,
+            .profile-actions .btn-secondary {
+                width: 100%;
+                justify-content: center;
+                padding: 0.55rem 0.85rem;
+                font-size: 0.8125rem;
+            }
+
+            .btn-secondary,
+            .btn-danger {
+                padding: 0.55rem 0.85rem;
+                font-size: 0.8125rem;
+            }
+
+            .danger-box {
+                padding: 0.75rem;
+            }
+
+            .danger-box p {
+                font-size: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .profile-flash {
+                padding: 0.6rem 0.75rem;
+                font-size: 0.8125rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .owner-page-hero__lede,
+            .guest-profile-hero__lede,
+            .page-header p {
+                display: none;
+            }
+
+            .profile-user__meta .meta-pill:last-child {
+                display: none;
+            }
         }
 
         @if($usesOwnerShell)

@@ -27,9 +27,14 @@
     gap: 0 !important;
     background: transparent !important;
     border-bottom: 1px solid rgba(27, 94, 32, 0.1);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.65), 0 8px 32px rgba(27, 94, 32, 0.06) !important;
+    box-shadow: 0 4px 20px rgba(27, 94, 32, 0.08) !important;
     backdrop-filter: blur(10px) saturate(1.05);
     -webkit-backdrop-filter: blur(10px) saturate(1.05);
+}
+
+/* App navbars (admin/owner/client): allow mobile menu to extend below the bar */
+.navbar.portal-nav-minimal.public-nav-tribal {
+    overflow: visible !important;
 }
 
 .portal-nav-minimal .navbar-tribal-accent {
@@ -38,19 +43,16 @@
     justify-content: center;
 }
 
-/* Portrait tribal asset rotated to span the bar; crop stays centered in the nav */
+/* Horizontal tribal strip — stretch to full navbar box (width × height) */
 .portal-nav-minimal .navbar-tribal-accent__canvas {
     position: absolute;
-    left: 50%;
-    top: 50%;
+    inset: 0;
     width: 100%;
-    height: max(100%, 100vw);
-    min-height: 100%;
+    height: 100%;
     margin: 0;
-    transform: translate(-50%, -50%) rotate(-90deg);
-    transform-origin: center center;
+    transform: none;
     background-repeat: no-repeat;
-    background-size: auto 100%;
+    background-size: 100% 100%;
     background-position: center center;
     opacity: var(--nav-tribal-pattern-opacity, 0.42);
 }
@@ -183,6 +185,68 @@
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+    /* Keep login/signup visible beside long tenant titles (avoid clipping in overflow:hidden nav) */
+    .portal-nav-minimal__inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.5rem 0.625rem;
+        justify-content: stretch;
+    }
+
+    .portal-nav-minimal__inner > .nav-logo {
+        grid-column: 1;
+        min-width: 0;
+        max-width: 100%;
+        flex-shrink: 1;
+        overflow: hidden;
+    }
+
+    .portal-nav-minimal__inner > .nav-logo .nav-brand-text {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .portal-nav-minimal__inner > .nav-logo .nav-brand-title,
+    .portal-nav-minimal__inner > .nav-logo .nav-brand-subtitle {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+
+    .portal-nav-minimal__inner > .portal-nav-minimal__links {
+        display: none !important;
+    }
+
+    .portal-nav-minimal__inner > .portal-nav-minimal__actions {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+}
+
+@media (max-width: 400px) {
+    .portal-nav-minimal__actions {
+        gap: 0.375rem;
+    }
+
+    .portal-nav-minimal__actions .portal-nav-minimal__action {
+        padding: 0.4375rem 0.5rem;
+        font-size: 0;
+        gap: 0;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+    }
+
+    .portal-nav-minimal__actions .portal-nav-minimal__action i {
+        font-size: 0.875rem;
+        margin: 0;
+    }
 }
 
 @media (min-width: 640px) {
@@ -343,9 +407,15 @@ html.dark .portal-nav-minimal__action--text {
 }
 
 @media (max-width: 767px) {
-    nav.portal-nav-minimal.public-nav-tribal:has(.portal-nav-minimal__mobile-links) {
+    nav.portal-nav-minimal.public-nav-tribal:has(.portal-nav-minimal__mobile-links):not(.portal-nav-minimal--burger) {
         height: auto !important;
         min-height: var(--app-topbar-height, 5.75rem) !important;
+        max-height: none !important;
+    }
+
+    nav.portal-nav-minimal.portal-nav-minimal--burger.public-nav-tribal {
+        height: auto !important;
+        min-height: var(--app-topbar-height, 4.5rem) !important;
         max-height: none !important;
     }
 
@@ -388,13 +458,20 @@ body.client-nav-page {
 @media (max-width: 767px) {
     body.explore-portal-page,
     body.portal-landing-page,
-    body.about-portal-page,
+    body.about-portal-page {
+        --app-topbar-height: 4.5rem;
+        --app-topbar-height-mobile: 4.5rem;
+        --app-main-top-offset: 4.5rem;
+        --portal-public-nav-offset: 4.5rem;
+        --portal-content-below-nav: calc(4.5rem + clamp(1rem, 2vw, 1.25rem));
+    }
+
     body.tenant-landing-page {
-        --app-topbar-height: 5.75rem;
-        --app-topbar-height-mobile: 5.75rem;
-        --app-main-top-offset: 5.75rem;
-        --portal-public-nav-offset: 5.75rem;
-        --portal-content-below-nav: calc(5.75rem + clamp(1rem, 2vw, 1.5rem));
+        --app-topbar-height: 4.5rem;
+        --app-topbar-height-mobile: 4.5rem;
+        --app-main-top-offset: 4.5rem;
+        --portal-public-nav-offset: 4.5rem;
+        --portal-content-below-nav: calc(4.5rem + clamp(1rem, 2vw, 1.25rem));
     }
 
     body.owner-nav-page,

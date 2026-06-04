@@ -34,8 +34,25 @@
 .msg-admin-page .main-content {
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - var(--app-main-top-offset, 108px));
+    min-height: calc(100dvh - var(--app-main-top-offset, 108px));
     padding-bottom: 24px;
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 960px) {
+    .msg-admin-page .dashboard-layout {
+        padding-top: var(--app-content-offset, calc(4rem + 1.25rem));
+    }
+
+    .msg-admin-page .main-content {
+        padding-left: clamp(0.75rem, 3vw, 1.25rem);
+        padding-right: clamp(0.75rem, 3vw, 1.25rem);
+    }
+
+    .msg-admin-page .page-header p {
+        margin-left: 0;
+    }
 }
 
 .msg-admin-main {
@@ -77,6 +94,28 @@
     .msg-admin-layout {
         grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
         gap: 1.5rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .msg-admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .msg-compose-sticky {
+        position: static;
+    }
+
+    .msg-admin-workspace .msg-inbox-panel,
+    .msg-admin-workspace .msg-compose-panel {
+        min-height: min(50dvh, 420px);
+    }
+}
+
+@media (max-width: 767px) {
+    .msg-admin-page .msg-bubble-row__in,
+    .msg-admin-page .msg-bubble-row__out {
+        max-width: 100%;
     }
 }
 

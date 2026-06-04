@@ -14,6 +14,7 @@ use App\Support\PortalDetector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Support\StripeCheckoutErrors;
 use Stripe\Exception\AuthenticationException;
 use Stripe\StripeClient;
 
@@ -328,10 +329,10 @@ class BookingController extends Controller
             ]);
 
             if ($exception instanceof AuthenticationException) {
-                return back()->with('error', 'Stripe authentication failed. Please re-check STRIPE_SECRET in .env.');
+                return back()->with('error', StripeCheckoutErrors::userFacingMessage($exception));
             }
 
-            return back()->with('error', 'Unable to start Stripe checkout at the moment.');
+            return back()->with('error', StripeCheckoutErrors::userFacingMessage($exception));
         }
     }
 

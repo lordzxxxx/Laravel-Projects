@@ -267,6 +267,16 @@
                 padding: 2.25rem 2.5rem;
             }
         }
+        @media (max-width: 768px) {
+            .landing-plan-editor input,
+            .landing-plan-editor textarea,
+            .landing-plan-editor select {
+                max-width: 100%;
+            }
+            .landing-plan-editor .plan-form-shell.card-padded {
+                padding: 1rem 1rem;
+            }
+        }
     </style>
 </head>
 <body class="admin-central-portal">

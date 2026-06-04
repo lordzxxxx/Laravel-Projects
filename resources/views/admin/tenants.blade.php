@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @include('partials.responsive-page-head', ['pageTitle' => 'Tenant Management - Admin Dashboard', 'faviconStem' => 'love'])
     @include('admin.partials.favicon')
-    <title>Tenant Management - Admin Dashboard</title>
-    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @include('admin.partials.admin-shell-styles')
@@ -180,13 +177,232 @@
         }
 
         [x-cloak] { display: none !important; }
+
+        @media (max-width: 640px) {
+            .admin-tenants-page .page-header {
+                margin-bottom: 0.75rem !important;
+                gap: 0.5rem !important;
+            }
+
+            .admin-tenants-page .page-header h1 {
+                font-size: 1.125rem;
+            }
+
+            .admin-tenants-page .page-header h1 .page-title-icon {
+                width: 2rem;
+                height: 2rem;
+                font-size: 0.875rem;
+            }
+
+            .admin-tenants-page .page-header p {
+                font-size: 0.75rem;
+                line-height: 1.4;
+            }
+
+            .admin-tenants-page .page-header a {
+                width: 100%;
+                justify-content: center;
+                padding: 0.5rem 0.75rem;
+                font-size: 0.6875rem;
+            }
+
+            .admin-tenants-page .tenant-stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.5rem;
+                margin-bottom: 0.75rem !important;
+            }
+
+            .admin-tenants-page .tenant-stats-grid > div {
+                padding: 0.65rem !important;
+                border-radius: 0.625rem;
+            }
+
+            .admin-tenants-page .tenant-stats-grid .h-11.w-11 {
+                width: 2rem !important;
+                height: 2rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            .admin-tenants-page .tenant-stats-grid .text-2xl {
+                font-size: 1.125rem !important;
+            }
+
+            .admin-tenants-page .tenant-gcash-notice {
+                margin-bottom: 0.75rem !important;
+                padding: 0.65rem 0.75rem !important;
+            }
+
+            .admin-tenants-page .tenant-gcash-notice__icon {
+                width: 2rem !important;
+                height: 2rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            .admin-tenants-page .tenant-gcash-notice__body {
+                font-size: 0.6875rem !important;
+            }
+
+            .admin-tenants-page .card-header {
+                padding: 0.65rem 0.75rem;
+            }
+
+            .admin-tenants-page .card-header h3 {
+                font-size: 0.875rem;
+            }
+
+            .admin-tenants-page .card-header p {
+                font-size: 0.6875rem;
+            }
+
+            .admin-tenants-page .tenant-filters {
+                padding: 0.65rem 0.75rem;
+            }
+
+            .admin-tenants-page .tenant-filter-input {
+                padding: 0.45rem 0.6rem;
+                font-size: 0.8125rem;
+            }
+
+            .admin-tenants-page .tenant-filter-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.45rem;
+            }
+
+            .admin-tenants-page .tenant-filter-actions .flex.items-center {
+                width: 100%;
+            }
+
+            .admin-tenants-page .tenant-filter-actions a,
+            .admin-tenants-page .tenant-filter-actions button {
+                flex: 1;
+                width: auto !important;
+                padding: 0.45rem 0.65rem !important;
+                font-size: 0.6875rem !important;
+            }
+
+            .admin-tenants-page .tenants-table-head {
+                display: none;
+            }
+
+            .admin-tenants-page .tenant-row-hover {
+                overflow: visible;
+            }
+
+            .admin-tenants-page .tenant-data-row {
+                min-width: 0 !important;
+                width: 100%;
+                display: grid !important;
+                grid-template-columns: 1fr auto;
+                grid-template-areas:
+                    "name actions"
+                    "owner owner"
+                    "domain onboarding"
+                    "bandwidth bandwidth";
+                align-items: start;
+                gap: 0.35rem 0.5rem;
+                padding: 0.65rem 0.75rem !important;
+            }
+
+            .admin-tenants-page .tenant-cell {
+                width: auto !important;
+                min-width: 0;
+            }
+
+            .admin-tenants-page .tenant-cell--name { grid-area: name; }
+            .admin-tenants-page .tenant-cell--owner { grid-area: owner; }
+            .admin-tenants-page .tenant-cell--domain { grid-area: domain; }
+            .admin-tenants-page .tenant-cell--onboarding {
+                grid-area: onboarding;
+                justify-self: end;
+            }
+            .admin-tenants-page .tenant-cell--bandwidth { grid-area: bandwidth; }
+            .admin-tenants-page .tenant-cell--db,
+            .admin-tenants-page .tenant-cell--period {
+                display: none;
+            }
+
+            .admin-tenants-page .tenant-cell--actions {
+                grid-area: actions;
+                margin-left: 0 !important;
+                width: auto !important;
+            }
+
+            .admin-tenants-page .tenant-cell--actions button {
+                width: 4.75rem;
+                padding: 0.4rem 0.45rem;
+                font-size: 0.625rem;
+            }
+
+            .admin-tenants-page .tenant-name {
+                font-size: 0.8125rem;
+            }
+
+            .admin-tenants-page .tenant-sub {
+                font-size: 0.625rem;
+            }
+
+            .admin-tenants-page .tenant-cell--owner .text-sm {
+                font-size: 0.75rem !important;
+            }
+
+            .admin-tenants-page .tenant-cell--domain .text-sm {
+                font-size: 0.6875rem !important;
+            }
+
+            .admin-tenants-page .tenant-cell--bandwidth .text-sm {
+                font-size: 0.75rem !important;
+            }
+
+            .admin-tenants-page .tenant-cell--bandwidth p:last-child {
+                font-size: 0.5625rem !important;
+            }
+
+            .admin-tenants-page .admin-actions-shell {
+                padding: 0.65rem 0.75rem !important;
+            }
+
+            .admin-tenants-page .admin-actions-shell .mb-4.flex {
+                margin-bottom: 0.5rem !important;
+            }
+
+            .admin-tenants-page .admin-actions-shell .text-xs {
+                font-size: 0.6875rem;
+            }
+
+            .admin-tenants-page .admin-actions-grid,
+            .admin-tenants-page .admin-actions-shell .grid.grid-cols-1 {
+                gap: 0.5rem !important;
+            }
+
+            .admin-tenants-page .admin-actions-shell .rounded-xl.border.p-4,
+            .admin-tenants-page .admin-actions-shell .rounded-xl.border.p-5 {
+                padding: 0.65rem !important;
+            }
+
+            .admin-tenants-page .pagination {
+                padding: 0.65rem 0.75rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .admin-tenants-page .page-header p,
+            .admin-tenants-page .tenant-gcash-notice__body,
+            .admin-tenants-page .card-header p {
+                display: none;
+            }
+
+            .admin-tenants-page .tenant-stats-grid > div p:last-child {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="admin-central-portal">
     @include('admin.partials.top-navbar', ['active' => 'tenants'])
 
     <div class="dashboard-layout">
-        <main class="main-content">
+        <main class="main-content admin-tenants-page">
             @if(session('success'))
                 <div class="flash">{{ session('success') }}</div>
             @endif
@@ -224,7 +440,7 @@
             </div>
 
             {{-- Stat overview tiles --}}
-            <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="tenant-stats-grid mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md hover:border-emerald-200">
                     <div class="flex items-start gap-3.5">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100">
@@ -356,7 +572,7 @@
                 </div>
 
                 @php
-                    $tenantRowScroll = 'overflow-x-auto overscroll-x-contain';
+                    $tenantRowScroll = 'app-scroll-x overscroll-x-contain';
                     // Fixed column widths + gap-3 gaps — keeps one horizontal table row
                     $tenantRowFlex = 'flex min-w-[1032px] shrink-0 items-center gap-3 px-4';
                 @endphp
@@ -414,16 +630,16 @@
                         <div class="group" x-data="{ open: false }">
                             {{-- Summary: single horizontal flex row (scroll if viewport is narrow) --}}
                             <div class="{{ $tenantRowScroll }} tenant-row-hover transition-colors">
-                                <div class="{{ $tenantRowFlex }} tenant-summary-row py-4">
-                                    <div class="w-40 shrink-0">
+                                <div class="{{ $tenantRowFlex }} tenant-data-row tenant-summary-row py-4">
+                                    <div class="tenant-cell tenant-cell--name w-40 shrink-0">
                                         <p class="tenant-name leading-tight">{{ $tenant->name }}</p>
                                         <p class="tenant-sub truncate font-mono">{{ $tenant->slug }}</p>
                                     </div>
-                                    <div class="w-44 shrink-0">
+                                    <div class="tenant-cell tenant-cell--owner w-44 shrink-0">
                                         <p class="truncate text-sm font-semibold text-gray-900">{{ $tenant->owner?->name ?? 'Unassigned' }}</p>
                                         <p class="tenant-sub truncate" title="{{ $tenant->owner?->email }}">{{ $tenant->owner?->email ?? '—' }}</p>
                                     </div>
-                                    <div class="w-52 min-w-0 shrink-0">
+                                    <div class="tenant-cell tenant-cell--domain w-52 min-w-0 shrink-0">
                                         @if($domainEnabled)
                                             <a href="{{ $tenant->publicUrl() }}" class="block truncate text-sm font-semibold text-emerald-700 underline-offset-2 hover:text-emerald-800 hover:underline" target="_blank" rel="noopener noreferrer">{{ $domainLabel }}</a>
                                         @else
@@ -431,13 +647,13 @@
                                         @endif
                                         <span class="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-gray-400">{{ $domainEnabled ? 'Enabled' : 'Disabled' }}</span>
                                     </div>
-                                    <div class="flex w-36 shrink-0 items-center">
+                                    <div class="tenant-cell tenant-cell--onboarding flex w-36 shrink-0 items-center">
                                         <span class="{{ $badgeBase }} {{ $onboardingBadgeClass }}">{{ $onboardingStatusLabel }}</span>
                                     </div>
-                                    <div class="flex w-16 shrink-0 items-center justify-end">
+                                    <div class="tenant-cell tenant-cell--db flex w-16 shrink-0 items-center justify-end">
                                         <span class="tabular-nums text-sm font-medium text-gray-800">{{ is_null($dbUsed) ? '—' : number_format((float) $dbUsed, 2) }}</span>
                                     </div>
-                                    <div class="w-36 shrink-0">
+                                    <div class="tenant-cell tenant-cell--bandwidth w-36 shrink-0">
                                         <p class="text-sm font-semibold text-gray-900">@fileSize($bwUsed)</p>
                                         <p class="text-[10px] text-gray-500">
                                             @if($bwQuota)
@@ -452,10 +668,10 @@
                                             </div>
                                         @endif
                                     </div>
-                                    <div class="flex w-24 shrink-0 items-center">
+                                    <div class="tenant-cell tenant-cell--period flex w-24 shrink-0 items-center">
                                         <span class="text-sm text-gray-700">{{ $periodEnds ? $periodEnds->format('M j, Y') : '—' }}</span>
                                     </div>
-                                    <div class="ml-auto flex w-[100px] shrink-0 justify-end">
+                                    <div class="tenant-cell tenant-cell--actions ml-auto flex w-[100px] shrink-0 justify-end">
                                         <button type="button" @click="open = !open" :aria-expanded="open"
                                                 :class="open ? 'border-emerald-300 bg-emerald-50 text-emerald-800' : 'border-gray-200 bg-white text-gray-700 hover:border-emerald-300 hover:bg-emerald-50/60 hover:text-emerald-800'"
                                                 class="inline-flex w-[88px] items-center justify-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-500/30">

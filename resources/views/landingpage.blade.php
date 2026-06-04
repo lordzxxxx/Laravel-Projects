@@ -4,7 +4,7 @@
     @include('partials.central-public-head', ['pageTitle' => 'IMPASUGONG TOURISM | Impasugong Accommodations'])
 </head>
 <body
-    class="flex min-h-screen flex-col font-sans text-brand-dark antialiased bg-cover bg-center bg-fixed"
+    class="app-bg-fixed-safe flex min-h-[100dvh] flex-col font-sans text-brand-dark antialiased bg-cover bg-center bg-fixed"
     style="background-image: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, rgba(27, 94, 32, 0.1) 100%), url('/COMMUNAL.jpg');"
 >
     @include('partials.central-public-nav', ['active' => 'landing'])
@@ -18,7 +18,7 @@
             <img src="/Lgu%20Socmed%20Template-02.png" alt="LGU Impasugong" class="h-[102px] w-[102px] object-contain md:h-[200px] md:w-[200px]">
         </div>
 
-        <h1 class="mb-5 text-3xl font-extrabold tracking-tight text-brand-dark opacity-0 animate-fade-in-up-d1 md:text-5xl lg:text-[3.5rem]">
+        <h1 class="app-ultrawide-cap mb-5 max-w-[min(100%,52rem)] text-[clamp(1.75rem,5vw,3.5rem)] font-extrabold tracking-tight text-brand-dark opacity-0 animate-fade-in-up-d1">
             Find Your Perfect <span class="text-brand-primary">Stay</span>
         </h1>
 

@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Register - Impasugong Accommodations</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    @include('partials.responsive-page-head', ['pageTitle' => 'Register - Impasugong Accommodations', 'includeTypographyInline' => true])
     <style>
-        @include('partials.typography-system')
         * {
             margin: 0;
             padding: 0;
@@ -27,17 +23,30 @@
 
         html,
         body {
-            min-height: 100%;
-            overflow: hidden;
-            overflow-x: hidden;
+            min-height: 100dvh;
+        }
+
+        @media (min-width: 1024px) {
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
+            }
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
             min-height: 100dvh;
             display: flex;
+            flex-direction: column;
             background: linear-gradient(135deg, var(--green-white) 0%, var(--white) 50%, var(--green-soft) 100%);
+        }
+
+        @media (min-width: 1024px) {
+            body {
+                flex-direction: row;
+                height: 100vh;
+            }
         }
         
         /* Left Side - Branding */
@@ -48,10 +57,17 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px;
+            padding: clamp(1.25rem, 4vw, 2.5rem);
             color: var(--white);
             position: relative;
             overflow: hidden;
+        }
+
+        @media (max-width: 1023px) {
+            .branding-section {
+                min-height: auto;
+                flex: 0 0 auto;
+            }
         }
         
         .branding-section::before {
@@ -140,7 +156,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px;
+            padding: clamp(1.25rem, 4vw, 2.5rem);
             max-height: 100vh;
             overflow-y: auto;
         }
@@ -398,7 +414,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            padding: 40px;
+            padding: clamp(1.25rem, 4vw, 2.5rem);
             border: 2px dashed var(--green-soft);
             border-radius: 10px;
             background: var(--cream);

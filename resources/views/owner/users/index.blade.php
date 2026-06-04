@@ -360,7 +360,7 @@
             <div class="panel-header border-b border-slate-200 px-5 py-4">
                 <h1 class="text-2xl font-bold tracking-tight text-green-900">Tenant Users</h1>
             </div>
-            <div class="section-body table-wrap px-5 py-4">
+            <div class="section-body table-wrap app-scroll-x app-scroll-x--hint px-5 py-4" role="region" aria-label="Team users table" tabindex="0">
                 <table>
                     <thead>
                         <tr>

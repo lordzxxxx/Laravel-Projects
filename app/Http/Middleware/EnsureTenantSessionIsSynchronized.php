@@ -23,7 +23,13 @@ class EnsureTenantSessionIsSynchronized
         $sessionTenantId = (string) $request->session()->get($sessionKey, '');
 
         if ($sessionTenantId !== '' && $sessionTenantId !== $currentTenantId && Auth::check()) {
-            Auth::guard('web')->logout();
+            $user = $request->user();
+
+            // Guests/travellers may move between tenant domains using one account.
+            // Only tenant managers must be forced to re-auth when changing domains.
+            if (! $user || ! method_exists($user, 'isClient') || ! $user->isClient()) {
+                Auth::guard('web')->logout();
+            }
         }
 
         $request->session()->put($sessionKey, $tenant->getKey());

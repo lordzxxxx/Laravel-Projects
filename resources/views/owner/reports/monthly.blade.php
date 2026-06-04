@@ -540,7 +540,7 @@
                 </div>
 
                 @if($dailyBreakdown->count() > 0)
-                    <div class="table-wrap">
+                    <div class="table-wrap app-scroll-x app-scroll-x--hint" role="region" aria-label="Daily breakdown table" tabindex="0">
                         <table>
                             <thead>
                                 <tr>

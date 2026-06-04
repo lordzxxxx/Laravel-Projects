@@ -22,10 +22,8 @@ class EnsureUserIsClient
 
         $currentTenant = Tenant::current();
 
-        if ($currentTenant && (int) ($user->tenant_id ?? 0) !== (int) $currentTenant->id) {
-            return redirect('/')
-                ->with('error', 'You do not have access to this tenant.');
-        }
+        // Client accounts may access any tenant domain (tenant scoping happens at the data/query layer).
+        // Do not block them based on `tenant_id`, since traveller accounts can be municipality-wide.
 
         // Default-deny: only `client` may proceed. Unknown roles are rejected outright.
         if ($user->role !== 'client') {

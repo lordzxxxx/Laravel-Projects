@@ -1,68 +1,82 @@
 @php
     $active = $active ?? '';
-    $linkBase = 'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-brand-soft';
+    $linkBase = 'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-brand-soft min-h-[44px]';
     $linkDefault = 'text-brand-dark';
     $linkActive = 'border-b-2 border-brand-primary text-brand-primary bg-brand-soft/50';
 @endphp
 <style>
     @include('partials.navbar-tribal-shell-styles')
+    @include('partials.portal-public-nav-minimal-styles')
     :root {
         --app-topbar-height: 84px;
         --app-topbar-height-mobile: 72px;
         --app-main-top-offset: 100px;
+        --portal-public-nav-offset: var(--app-main-top-offset);
     }
     @media (max-width: 768px) {
-        :root { --app-main-top-offset: 88px; }
+        :root {
+            --app-main-top-offset: 5.75rem;
+            --app-topbar-height: 5.75rem;
+        }
     }
-    .public-nav-tribal { position: relative; overflow: hidden; }
-    .public-nav-tribal > *:not(.navbar-tribal-accent) { position: relative; z-index: 2; }
-    .public-nav-tribal .navbar-tribal-accent { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-    .public-nav-tribal .navbar-tribal-accent__canvas {
-        position: absolute; left: 50%; top: 50%;
-        width: 100%; height: max(100vw, 100%); min-height: 100%;
-        transform: translate(-50%, -50%) rotate(-90deg);
-        transform-origin: center center;
-        background-repeat: repeat;
-        background-size: auto 100%;
-        background-position: center center;
-        opacity: var(--nav-tribal-pattern-opacity, 0.8);
-    }
-    .public-nav-tribal::after {
-        content: '';
-        position: absolute; inset: 0; z-index: 1; pointer-events: none;
-        background:
-            linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.62) 50%, rgba(255,255,255,0.70) 100%),
-            rgba(15, 23, 42, 0.02);
-    }
-    .public-nav-tribal a,
-    .public-nav-tribal span,
-    .public-nav-tribal li {
-        text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+    .public-nav-tribal.central-public-nav { position: relative; overflow: hidden; }
+    .public-nav-tribal.central-public-nav > *:not(.navbar-tribal-accent) { position: relative; z-index: 2; }
+    .central-public-nav__desktop-links { display: none; }
+    @media (min-width: 768px) {
+        .central-public-nav__desktop-links { display: flex; }
+        .central-public-nav .portal-nav-minimal__mobile-links { display: none !important; }
     }
 </style>
-<nav class="public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col items-stretch justify-between bg-white/95 shadow-[0_2px_12px_rgba(27,94,32,0.08)] backdrop-blur-md md:flex-row md:items-center">
+<nav class="portal-nav-minimal public-nav-tribal central-public-nav fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
     @include('partials.navbar-tribal-accent')
-    <a href="{{ route('portal.landing') }}" class="flex min-w-0 items-center gap-3 no-underline md:gap-3.5">
-        <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM" class="h-11 w-auto shrink-0 rounded-lg md:h-[48px]">
-        <div class="min-w-0 leading-tight">
-            <span class="block text-base font-extrabold tracking-tight text-brand-dark md:text-lg">IMPASUGONG TOURISM</span>
-            <span class="block text-[0.68rem] font-medium leading-none text-brand-medium md:text-[0.75rem]">| Impasugong Accommodations</span>
+    <div class="portal-nav-minimal__inner">
+        <a href="{{ route('portal.landing') }}" class="flex min-w-0 items-center gap-3 no-underline">
+            <img src="/SYSTEMLOGO.png" alt="IMPASUGONG TOURISM" class="h-11 w-auto shrink-0 rounded-lg md:h-12">
+            <div class="min-w-0 leading-tight">
+                <span class="block text-base font-extrabold tracking-tight text-brand-dark md:text-lg">IMPASUGONG TOURISM</span>
+                <span class="block text-[0.68rem] font-medium leading-none text-brand-medium md:text-[0.75rem]">| Impasugong Accommodations</span>
+            </div>
+        </a>
+        <ul class="central-public-nav__desktop-links list-none items-center gap-2 lg:gap-5">
+            <li>
+                <a href="{{ route('portal.landing') }}" class="{{ $linkBase }} {{ in_array($active, ['home', 'landing'], true) ? $linkActive : $linkDefault }}">
+                    <i class="fas fa-house text-sm opacity-90" aria-hidden="true"></i> Home
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('portal.accommodations.index') }}" class="{{ $linkBase }} {{ $active === 'browse' ? $linkActive : $linkDefault }}">
+                    <i class="fas fa-compass text-sm opacity-90" aria-hidden="true"></i> Explore
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('portal.about') }}" class="{{ $linkBase }} {{ $active === 'about' ? $linkActive : $linkDefault }}">
+                    <i class="fas fa-circle-info text-sm opacity-90" aria-hidden="true"></i> About Us
+                </a>
+            </li>
+        </ul>
+        <div class="portal-nav-minimal__actions">
+            <a href="{{ route('login') }}" class="portal-nav-minimal__action portal-nav-minimal__action--text">
+                <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Login
+            </a>
+            <a href="{{ route('register') }}" class="portal-nav-minimal__action portal-nav-minimal__action--primary">
+                <i class="fas fa-user-plus" aria-hidden="true"></i> Register
+            </a>
         </div>
-    </a>
-    <ul class="hidden list-none items-center gap-2 md:flex lg:gap-5">
+    </div>
+    <ul class="portal-nav-minimal__mobile-links" aria-label="Sections">
         <li>
-            <a href="{{ route('portal.landing') }}" class="{{ $linkBase }} {{ in_array($active, ['home', 'landing'], true) ? $linkActive : $linkDefault }}">
-                <i class="fas fa-house text-sm opacity-90" aria-hidden="true"></i> Home
+            <a href="{{ route('portal.landing') }}" class="portal-nav-minimal__link {{ in_array($active, ['home', 'landing'], true) ? 'is-active' : '' }}">
+                <i class="fas fa-house" aria-hidden="true"></i> Home
             </a>
         </li>
         <li>
-            <a href="{{ route('portal.accommodations.index') }}" class="{{ $linkBase }} {{ $active === 'browse' ? $linkActive : $linkDefault }}">
-                <i class="fas fa-compass text-sm opacity-90" aria-hidden="true"></i> Explore
+            <a href="{{ route('portal.accommodations.index') }}" class="portal-nav-minimal__link {{ $active === 'browse' ? 'is-active' : '' }}">
+                <i class="fas fa-compass" aria-hidden="true"></i> Explore
             </a>
         </li>
         <li>
-            <a href="{{ route('portal.about') }}" class="{{ $linkBase }} {{ $active === 'about' ? $linkActive : $linkDefault }}">
-                <i class="fas fa-circle-info text-sm opacity-90" aria-hidden="true"></i> About Us
+            <a href="{{ route('portal.about') }}" class="portal-nav-minimal__link {{ $active === 'about' ? 'is-active' : '' }}">
+                <i class="fas fa-circle-info" aria-hidden="true"></i> About
             </a>
         </li>
     </ul>

@@ -19,8 +19,8 @@
         $isPaid = in_array($booking->status, ['paid', 'completed'], true);
         $isCancelled = $booking->status === 'cancelled';
         $canPay = ! $isPaid && ! $isCancelled;
-        $checkIn = optional($booking->check_in_date);
-        $checkOut = optional($booking->check_out_date);
+        $checkIn = $booking->check_in_date;
+        $checkOut = $booking->check_out_date;
         $nights = ($checkIn && $checkOut) ? max(1, $checkIn->diffInDays($checkOut)) : null;
     @endphp
     <style>
@@ -32,13 +32,20 @@
         :root {
             @include('partials.tenant-theme-css-vars')
         }
+
+        @media (max-width: 768px) {
+            .client-guest-main { padding-left: clamp(0.75rem, 3vw, 1.25rem); padding-right: clamp(0.75rem, 3vw, 1.25rem); }
+            input, select, textarea, button { max-width: 100%; }
+        }
+
+        @include('client.partials.guest-booking-detail-styles')
     </style>
 </head>
 <body class="client-nav-page font-sans text-slate-800 antialiased">
     @include('client.partials.top-navbar', ['active' => 'bookings', 'portalDirectory' => $portalDirectory])
 
-    <main class="client-guest-main client-guest-main--full flex min-h-0 flex-1 flex-col">
-        <div class="mx-auto flex w-full min-h-0 flex-1 flex-col gap-5">
+    <main class="booking-payment-page client-guest-main client-guest-main--full flex min-h-0 flex-1 flex-col">
+        <div class="booking-payment-inner mx-auto flex w-full min-h-0 flex-1 flex-col gap-5">
             @include('partials.flash-alerts')
 
             <a
@@ -49,8 +56,8 @@
                 Back to booking details
             </a>
 
-            <article class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-emerald-100/90 bg-white shadow-lg">
-                <header class="shrink-0 bg-gradient-to-r from-emerald-900 to-emerald-700 px-5 py-6 text-white sm:px-8 sm:py-8">
+            <article class="booking-payment-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-emerald-100/90 bg-white shadow-lg">
+                <header class="booking-payment-card__header shrink-0 bg-gradient-to-r from-emerald-900 to-emerald-700 px-5 py-6 text-white sm:px-8 sm:py-8">
                     <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                         <div class="min-w-0">
                             <p class="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200/90">Secure checkout</p>
@@ -63,7 +70,7 @@
                                 {{ ucfirst($booking->status) }}
                             </p>
                         </div>
-                        <div class="shrink-0 rounded-2xl bg-white/10 px-5 py-4 ring-1 ring-inset ring-white/20 backdrop-blur-sm sm:min-w-[12rem]">
+                        <div class="booking-payment-card__total shrink-0 rounded-2xl bg-white/10 px-5 py-4 ring-1 ring-inset ring-white/20 backdrop-blur-sm sm:min-w-[12rem]">
                             <p class="text-xs font-semibold uppercase tracking-wide text-emerald-100">Amount due</p>
                             <p class="mt-1 text-3xl font-bold tabular-nums tracking-tight sm:text-4xl">
                                 ₱{{ number_format((float) $booking->total_price, 2) }}
@@ -77,7 +84,7 @@
 
                 <div class="flex min-h-0 flex-1 flex-col lg:flex-row">
                     {{-- Booking summary --}}
-                    <section class="flex flex-col border-b border-slate-100 p-5 sm:p-8 lg:w-[min(100%,22rem)] lg:shrink-0 lg:border-b-0 lg:border-r xl:w-80">
+                    <section class="booking-payment-card__summary flex flex-col border-b border-slate-100 p-5 sm:p-8 lg:w-[min(100%,22rem)] lg:shrink-0 lg:border-b-0 lg:border-r xl:w-80">
                         <h2 class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Reservation</h2>
 
                         <dl class="mt-5 flex flex-1 flex-col gap-4">
@@ -125,7 +132,7 @@
                     </section>
 
                     {{-- Payment methods --}}
-                    <section class="flex min-h-0 flex-1 flex-col gap-8 p-5 sm:p-8">
+                    <section class="booking-payment-card__methods flex min-h-0 flex-1 flex-col gap-8 p-5 sm:p-8">
                         <div>
                             <h2 class="text-lg font-bold text-slate-900">Payment options</h2>
                             <p class="mt-1 max-w-xl text-sm leading-relaxed text-slate-600">
@@ -134,7 +141,7 @@
                         </div>
 
                         {{-- Stripe --}}
-                        <div class="rounded-2xl border border-slate-200/90 bg-slate-50/60 p-5 sm:p-6">
+                        <div class="booking-payment-option rounded-2xl border border-slate-200/90 bg-slate-50/60 p-5 sm:p-6">
                             <div class="flex flex-wrap items-start justify-between gap-3">
                                 <div class="flex items-center gap-3">
                                     <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
@@ -174,7 +181,7 @@
                         </div>
 
                         {{-- GCash --}}
-                        <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm sm:p-6">
+                        <div class="booking-payment-option rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm sm:p-6">
                             <div class="flex items-center gap-3">
                                 <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-600 text-white shadow-sm">
                                     <i class="fas fa-mobile-screen text-lg" aria-hidden="true"></i>
@@ -191,7 +198,7 @@
                                         href="{{ $gcashQrUrl }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        class="mx-auto shrink-0 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm ring-1 ring-slate-100 sm:mx-0"
+                                        class="booking-payment-qr mx-auto shrink-0 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm ring-1 ring-slate-100 sm:mx-0"
                                     >
                                         <img
                                             src="{{ $gcashQrUrl }}"
@@ -210,7 +217,7 @@
                                             action="{{ route($bookingRouteGroup.'.payment-proof.upload', $booking, false) }}"
                                             method="POST"
                                             enctype="multipart/form-data"
-                                            class="rounded-xl border border-dashed border-emerald-200 bg-emerald-50/30 p-4"
+                                            class="booking-payment-proof-form rounded-xl border border-dashed border-emerald-200 bg-emerald-50/30 p-4"
                                             data-loading-form
                                         >
                                             @csrf
@@ -280,7 +287,7 @@
                             @endif
                         </div>
 
-                        <div class="mt-auto flex flex-wrap gap-3 border-t border-slate-100 pt-6">
+                        <div class="booking-payment-card__footer mt-auto flex flex-wrap gap-3 border-t border-slate-100 pt-6">
                             <a
                                 href="{{ $showRoute }}"
                                 class="inline-flex items-center justify-center rounded-xl border-2 border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"

@@ -449,7 +449,16 @@ class User extends Authenticatable
      */
     public function tenantClientMaySubmitUpdateTickets(): bool
     {
-        return $this->isClient() && $this->hasPermission(self::PERM_UPDATES_TICKETS_USE);
+        if (! $this->isClient()) {
+            return false;
+        }
+
+        // Municipality-wide guests (tenant_id null) may file support tickets from any tenant domain.
+        if ($this->tenant_id === null) {
+            return true;
+        }
+
+        return $this->hasPermission(self::PERM_UPDATES_TICKETS_USE);
     }
 
     /**
@@ -494,7 +503,15 @@ class User extends Authenticatable
             return;
         }
 
-        abort_unless((int) ($this->tenant_id ?? 0) === (int) $tenant->id, 403);
+        // Municipality-wide guests (tenant_id null) always have default access.
+        if ($this->tenant_id === null) {
+            return;
+        }
+
+        // Municipality-wide guests (tenant_id null) may use profile tools on any tenant subdomain.
+        if ($this->tenant_id !== null) {
+            abort_unless((int) $this->tenant_id === (int) $tenant->id, 403);
+        }
         abort_unless($this->hasPermission(self::PERM_PROFILE_SELF), 403);
     }
 
@@ -509,7 +526,15 @@ class User extends Authenticatable
             return;
         }
 
-        abort_unless((int) ($this->tenant_id ?? 0) === (int) $tenant->id, 403);
+        // Municipality-wide guests (tenant_id null) always have default access.
+        if ($this->tenant_id === null) {
+            return;
+        }
+
+        // Municipality-wide guests (tenant_id null) may message within any tenant subdomain.
+        if ($this->tenant_id !== null) {
+            abort_unless((int) $this->tenant_id === (int) $tenant->id, 403);
+        }
         abort_unless($this->hasPermission(self::PERM_MESSAGES_USE), 403);
     }
 

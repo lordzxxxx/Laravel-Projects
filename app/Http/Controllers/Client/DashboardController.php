@@ -17,7 +17,6 @@ class DashboardController extends Controller
     public function index(Request $request): View|\Illuminate\Http\RedirectResponse
     {
         $user = $request->user();
-        $currentTenant = Tenant::current();
         $onTenantHost = Tenant::checkCurrent();
 
         if ($user && $onTenantHost) {
@@ -27,6 +26,24 @@ class DashboardController extends Controller
             }
         }
 
+        return $this->browseView($request);
+    }
+
+    /**
+     * Public guest browse from tenant landing CTAs — never redirects staff to owner/admin dashboards.
+     */
+    public function guestBrowse(Request $request): View
+    {
+        abort_unless(Tenant::checkCurrent(), 404);
+
+        return $this->browseView($request);
+    }
+
+    private function browseView(Request $request): View
+    {
+        $user = $request->user();
+        $currentTenant = Tenant::current();
+        $onTenantHost = Tenant::checkCurrent();
         $portalDirectory = PortalDetector::isPublicPortal($request) || ! $onTenantHost;
 
         $accommodations = $this->paginatedClientAccommodations($request);

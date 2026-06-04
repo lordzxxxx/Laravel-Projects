@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use App\Support\StripeCheckoutErrors;
 use Stripe\Exception\AuthenticationException;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
@@ -116,10 +117,10 @@ class OnboardingPaymentController extends Controller
             ]);
 
             if ($exception instanceof AuthenticationException) {
-                return back()->with('error', 'Stripe authentication failed. Please re-check STRIPE_SECRET.');
+                return back()->with('error', StripeCheckoutErrors::userFacingMessage($exception));
             }
 
-            return back()->with('error', 'Unable to start Stripe checkout at the moment.');
+            return back()->with('error', StripeCheckoutErrors::userFacingMessage($exception));
         }
     }
 

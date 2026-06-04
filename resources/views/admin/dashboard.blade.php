@@ -653,6 +653,288 @@
             .pbi-kpi-table tbody td { padding: 12px 8px; }
             .pbi-kpi-value { font-size: 1.15rem; }
         }
+
+        @media (max-width: 640px) {
+            .admin-dashboard-page .page-header {
+                margin-bottom: 0.75rem;
+            }
+
+            .admin-dashboard-page .page-header h1 {
+                font-size: 1.125rem;
+            }
+
+            .admin-dashboard-page .page-header h1 .page-title-icon {
+                width: 2rem;
+                height: 2rem;
+                font-size: 0.875rem;
+            }
+
+            .admin-dashboard-page .page-header p {
+                font-size: 0.75rem;
+                line-height: 1.4;
+            }
+
+            .admin-dashboard-page .filter-card,
+            .admin-dashboard-page .dashboard-card {
+                padding: 0.75rem;
+                margin-bottom: 0.65rem;
+                border-radius: 0.625rem;
+            }
+
+            .admin-dashboard-page .filter-card h3,
+            .admin-dashboard-page .dashboard-card h3 {
+                font-size: 0.875rem;
+                margin-bottom: 0.5rem;
+                gap: 0.5rem;
+            }
+
+            .admin-dashboard-page .filters-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .admin-dashboard-page .filter-field label {
+                font-size: 0.625rem;
+                margin-bottom: 0.35rem;
+            }
+
+            .admin-dashboard-page .filter-field input,
+            .admin-dashboard-page .filter-field select {
+                padding: 0.45rem 0.6rem;
+                font-size: 0.8125rem;
+            }
+
+            .admin-dashboard-page .filter-field--actions {
+                display: flex;
+                flex-direction: column;
+                gap: 0.45rem;
+            }
+
+            .admin-dashboard-page .btn-filter {
+                width: 100%;
+                min-height: 2.25rem;
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+            .admin-dashboard-page .demographics-report-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.45rem;
+                margin-top: 0.65rem;
+                padding-top: 0.65rem;
+            }
+
+            .admin-dashboard-page .demographics-report-actions .btn-filter,
+            .admin-dashboard-page .demographics-report-actions form {
+                width: 100%;
+            }
+
+            .admin-dashboard-page .demographics-meta {
+                font-size: 0.6875rem;
+            }
+
+            .admin-dashboard-page .kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.5rem;
+            }
+
+            .admin-dashboard-page .kpi-card {
+                padding: 0.65rem 0.75rem;
+                gap: 0.65rem;
+                border-radius: 0.625rem;
+            }
+
+            .admin-dashboard-page .kpi-icon {
+                width: 2.25rem;
+                height: 2.25rem;
+                font-size: 0.875rem;
+                border-radius: 0.5rem;
+            }
+
+            .admin-dashboard-page .kpi-info h3 {
+                font-size: 1.125rem;
+            }
+
+            .admin-dashboard-page .kpi-info p {
+                font-size: 0.6875rem;
+            }
+
+            .admin-dashboard-page .pbi-visual-header {
+                padding: 0.65rem 0.75rem;
+                gap: 0.45rem;
+            }
+
+            .admin-dashboard-page .pbi-visual-title {
+                font-size: 0.8125rem;
+                gap: 0.5rem;
+            }
+
+            .admin-dashboard-page .pbi-visual-meta {
+                font-size: 0.625rem;
+                text-align: left;
+                width: 100%;
+            }
+
+            .admin-dashboard-page .pbi-demographics-inner {
+                padding: 0.65rem;
+                gap: 0.65rem;
+            }
+
+            .admin-dashboard-page .pbi-kpi-table thead th {
+                font-size: 0.5625rem;
+                padding: 0.45rem 0.35rem;
+            }
+
+            .admin-dashboard-page .pbi-kpi-table tbody td {
+                padding: 0.55rem 0.35rem;
+            }
+
+            .admin-dashboard-page .pbi-kpi-value {
+                font-size: 0.9375rem;
+            }
+
+            .admin-dashboard-page .pbi-chart-panel-head {
+                padding: 0.5rem 0.65rem;
+                font-size: 0.75rem;
+            }
+
+            .admin-dashboard-page .pbi-chart-panel-body {
+                padding: 0.45rem 0.5rem 0.65rem;
+            }
+
+            .admin-dashboard-page .chart-container {
+                height: 200px;
+            }
+
+            .admin-dashboard-page .chart-container-sm,
+            .admin-dashboard-page .pbi-chart-panel-body .chart-container-sm {
+                height: 170px;
+            }
+
+            .admin-dashboard-page .content-grid,
+            .admin-dashboard-page .content-left,
+            .admin-dashboard-page .content-right {
+                gap: 0.65rem;
+            }
+
+            .admin-dashboard-page .quick-stats-grid {
+                gap: 0.45rem;
+            }
+
+            .admin-dashboard-page .quick-stat-card {
+                padding: 0.65rem;
+                min-height: 0;
+                border-radius: 0.5rem;
+            }
+
+            .admin-dashboard-page .quick-stat-card .icon {
+                font-size: 1.125rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .admin-dashboard-page .quick-stat-card h4 {
+                font-size: 1rem;
+            }
+
+            .admin-dashboard-page .quick-stat-card p {
+                font-size: 0.6875rem;
+            }
+
+            .admin-dashboard-page .table-note {
+                font-size: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .admin-dashboard-page .admin-tenant-bookings-scroll {
+                overflow: visible;
+            }
+
+            .admin-dashboard-page .admin-tenant-bookings-table thead {
+                display: none;
+            }
+
+            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                grid-template-areas:
+                    "name guests"
+                    "bookings pdf";
+                gap: 0.35rem 0.5rem;
+                padding: 0.65rem 0;
+            }
+
+            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td {
+                padding: 0;
+                border: none;
+            }
+
+            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(1) {
+                grid-area: name;
+                font-size: 0.8125rem;
+            }
+
+            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(2) {
+                grid-area: bookings;
+                font-size: 0.75rem;
+                color: var(--ink-500, #6b7280);
+            }
+
+            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(2)::before {
+                content: "Bookings: ";
+                font-weight: 600;
+                color: var(--ink-600, #475569);
+            }
+
+            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(3) {
+                grid-area: guests;
+                justify-self: end;
+            }
+
+            .admin-dashboard-page .admin-tenant-bookings-table tbody tr:not(.tenant-bookings-total-row) td:nth-child(4) {
+                grid-area: pdf;
+                justify-self: end;
+            }
+
+            .admin-dashboard-page .pill-guest-count {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.625rem;
+            }
+
+            .admin-dashboard-page .btn-pdf-sm {
+                padding: 0.35rem 0.55rem;
+                font-size: 0.6875rem;
+            }
+
+            .admin-dashboard-page .tenant-bookings-total-row {
+                display: block;
+                padding: 0.65rem 0;
+            }
+
+            .admin-dashboard-page .tenant-bookings-total-row td {
+                display: block;
+                padding: 0;
+                border: none;
+                font-size: 0.75rem;
+            }
+
+            .admin-dashboard-page .tenant-bookings-total-row td:first-child {
+                margin-bottom: 0.25rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .admin-dashboard-page .page-header p,
+            .admin-dashboard-page .table-note,
+            .admin-dashboard-page .pbi-visual-meta .pbi-meta-subtle,
+            .admin-dashboard-page .kpi-info .kpi-sub {
+                display: none;
+            }
+
+            .admin-dashboard-page .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         
         /* Animations */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -671,7 +953,7 @@
     <!-- Dashboard Layout -->
     <div class="dashboard-layout">
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content app-container admin-dashboard-page">
             @include('partials.flash-alerts')
 
             <!-- Page Header -->
@@ -703,7 +985,7 @@
                         <label for="end_date">End Date</label>
                         <input id="end_date" type="date" name="end_date" value="{{ optional($demographicsEndDate)->toDateString() }}">
                     </div>
-                    <div class="filter-field" style="display:flex; gap:8px;">
+                    <div class="filter-field filter-field--actions">
                         <button type="submit" class="btn-filter primary"><i class="fas fa-chart-line"></i> Apply</button>
                         <a href="{{ route('admin.dashboard', [], false) }}" class="btn-filter secondary">Reset</a>
                     </div>
@@ -829,7 +1111,7 @@
                         @endif
                     </div>
                 </div>
-            </section>
+            </div>
 
             <div id="admin-demographics" class="dashboard-card pbi-visual animate delay-1 scroll-target">
                 <div class="pbi-visual-header">
@@ -856,7 +1138,7 @@
                         </div>
                     @endif
 
-                    <div class="pbi-demographics-inner">
+                    <div class="pbi-demographics-inner app-scroll-x app-scroll-x--hint" role="region" aria-label="Demographics summary" tabindex="0">
                         <table class="pbi-kpi-table" aria-label="Demographics summary for selected scope">
                             <thead>
                                 <tr>
@@ -900,6 +1182,7 @@
                                     <div class="pbi-breakdown-grid">
                                         <div class="pbi-mini-table-wrap">
                                             <p class="pbi-mini-table-title">Local places</p>
+                                            <div class="app-scroll-x app-scroll-x--hint" role="region" aria-label="Local places breakdown" tabindex="0">
                                             <table class="pbi-mini-table">
                                                 <thead>
                                                     <tr>
@@ -920,9 +1203,11 @@
                                                     @endforelse
                                                 </tbody>
                                             </table>
+                                            </div>
                                         </div>
                                         <div class="pbi-mini-table-wrap">
                                             <p class="pbi-mini-table-title">Foreign countries</p>
+                                            <div class="app-scroll-x app-scroll-x--hint" role="region" aria-label="Foreign countries breakdown" tabindex="0">
                                             <table class="pbi-mini-table">
                                                 <thead>
                                                     <tr>
@@ -943,6 +1228,7 @@
                                                     @endforelse
                                                 </tbody>
                                             </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1048,7 +1334,8 @@
                 <h3><i class="fas fa-users-check icon"></i>Today's Tenant Bookings</h3>
                 <p class="table-note"><i class="fas fa-info-circle"></i> Shows number of guests per tenant with active check-ins today</p>
                 @if(isset($tenantBookingsToday) && count($tenantBookingsToday) > 0)
-                    <table class="data-table">
+                    <div class="app-scroll-x app-scroll-x--hint admin-tenant-bookings-scroll table-responsive" role="region" aria-label="Today's tenant bookings" tabindex="0">
+                    <table class="data-table admin-tenant-bookings-table">
                         <thead>
                             <tr>
                                 <th><i class="fas fa-building"></i> Tenant Name</th>
@@ -1075,7 +1362,7 @@
                                     </td>
                                 </tr>
                             @endforeach
-                            <tr style="background: var(--cream); font-weight: 600;">
+                            <tr class="tenant-bookings-total-row" style="background: var(--cream); font-weight: 600;">
                                 <td colspan="1"><strong>Total This Month:</strong></td>
                                 <td colspan="3">
                                     <span style="color: var(--green-dark);">
@@ -1086,6 +1373,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 @else
                     <div style="text-align: center; padding: 40px; color: var(--gray-400);">
                         <i class="fas fa-calendar-alt" style="font-size: 3rem; margin-bottom: 15px; color: var(--gray-300);"></i>

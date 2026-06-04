@@ -80,23 +80,18 @@
 
         @include('client.partials.guest-stays-browse-styles')
 
-        @media (max-width: 768px) {
-            @if($showLegacyNav)
-            .navbar { padding: 0 20px; height: 60px; }
-            .nav-logo img { width: 38px; height: 38px; }
-            .nav-logo span { font-size: 1.1rem; }
-            .nav-links { display: none; }
-            @endif
-        }
+        @if($showLegacyNav)
+            @include('partials.legacy-navbar-responsive')
+        @endif
     </style>
 </head>
-<body class="{{ $showClientNav ? 'client-nav-page font-sans text-gray-800' : 'min-h-screen font-sans text-gray-800 bg-cover bg-center bg-fixed' }}"@if(! $showClientNav) style="background-image: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, rgba(27, 94, 32, 0.1) 100%), url('/COMMUNAL.jpg');"@endif>
+<body class="{{ $showClientNav ? 'client-nav-page font-sans text-gray-800' : 'app-bg-fixed-safe min-h-[100dvh] font-sans text-gray-800 bg-cover bg-center bg-fixed' }}"@if(! $showClientNav) style="background-image: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, rgba(27, 94, 32, 0.1) 100%), url('/COMMUNAL.jpg');"@endif>
     @if($showClientNav)
         @include('client.partials.top-navbar', ['active' => 'dashboard', 'portalDirectory' => $portalDirectory])
     @elseif($showPortalPublicNav)
         @include('partials.portal-public-nav', ['active' => 'browse', 'municipalityName' => config('portals.municipality_name', 'Impasug-ong')])
     @else
-        <nav class="navbar">
+        <nav class="navbar legacy-navbar-responsive">
             <a href="{{ $portalDirectory ? route('portal.landing') : route('dashboard') }}" class="nav-logo">
                 <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
                 <span>Impasugong</span>
@@ -112,6 +107,10 @@
                     <li><a href="{{ $listingUrl }}" class="active">Browse</a></li>
                 @endauth
             </ul>
+
+            <button type="button" class="legacy-nav-toggle" aria-label="Open menu" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
 
             <div class="nav-actions">
                 @auth

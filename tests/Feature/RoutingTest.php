@@ -270,3 +270,22 @@ test('authenticated tenant owner visiting guest dashboard is redirected to owner
         ->get(tenantUrl($tenant, '/dashboard'))
         ->assertRedirect('/owner/dashboard');
 });
+
+test('tenant landing browse CTA links to central explore accommodations', function () {
+    skipIfLandlordMemoryDb();
+
+    $tenant = ensureRoutingTenantFixture();
+
+    Tenant::forgetCurrent();
+    $tenant->makeCurrent();
+
+    $explorePath = parse_url(route('portal.accommodations.index'), PHP_URL_PATH) ?: '/explore/accommodations';
+
+    $this->get(tenantUrl($tenant, '/'))
+        ->assertOk()
+        ->assertSee($explorePath, false)
+        ->assertDontSee('/browse-accommodations', false)
+        ->assertDontSee('href="/admin/dashboard"', false);
+
+    Tenant::forgetCurrent();
+});

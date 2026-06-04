@@ -11,10 +11,14 @@
         if ($currentUser->isOwner()) {
             $canUseTenantPortal = (int) ($currentUser->tenant_id ?? 0) === (int) $tenant->id
                 || (int) optional($currentUser->ownedTenant)->id === (int) $tenant->id;
-        } elseif ($currentUser->isAdmin() || $currentUser->isClient()) {
-            $canUseTenantPortal = (int) ($currentUser->tenant_id ?? 0) === (int) $tenant->id;
+            } elseif ($currentUser->isAdmin()) {
+                $canUseTenantPortal = (int) ($currentUser->tenant_id ?? 0) === (int) $tenant->id;
+            } elseif ($currentUser->isClient()) {
+                // Municipality-wide guests (tenant_id null) may browse any tenant domain.
+                $canUseTenantPortal = $currentUser->tenant_id === null
+                    || (int) ($currentUser->tenant_id ?? 0) === (int) $tenant->id;
+            }
         }
-    }
 
     $loginLabel = $settings['login_text'] ?? 'Login';
     $signupLabel = $settings['signup_text'] ?? 'Sign up';
@@ -37,6 +41,13 @@
         color: rgba(15, 23, 42, 0.65);
         cursor: default;
         pointer-events: none;
+    }
+
+    /* Single-row nav on phones — Properties lives in hero (#properties); extra row caused overlap */
+    @media (max-width: 767px) {
+        body.tenant-landing-page nav.portal-nav-minimal.public-nav-tribal {
+            min-height: var(--app-topbar-height, 4rem) !important;
+        }
     }
 </style>
 <nav class="portal-nav-minimal public-nav-tribal fixed left-0 right-0 top-0 z-[1000] flex w-full flex-col" aria-label="Site">
@@ -75,12 +86,4 @@
             @endif
         </div>
     </div>
-    <ul class="portal-nav-minimal__mobile-links" aria-label="Sections">
-        <li>
-            <a
-                href="#properties"
-                class="portal-nav-minimal__link {{ $active === 'properties' ? 'is-active' : '' }}"
-            ><i class="fas fa-building" aria-hidden="true"></i> Properties</a>
-        </li>
-    </ul>
 </nav>

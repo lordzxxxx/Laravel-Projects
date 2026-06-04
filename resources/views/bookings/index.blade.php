@@ -28,6 +28,10 @@
         @include('partials.ui-foundation-styles')
 
         @if($useLegacyBookingsNav)
+            @include('partials.legacy-navbar-responsive')
+        @endif
+
+        @if($useLegacyBookingsNav)
         .navbar {
             background: var(--nav-bar-bg, var(--white));
             padding: 0 40px;
@@ -272,8 +276,7 @@
         /* Responsive */
         @media (max-width: 768px) {
             @if($useLegacyBookingsNav)
-            .navbar { padding: 0 20px; height: 60px; }
-            .nav-links { display: none; }
+            .navbar.legacy-navbar-responsive { padding: 0 clamp(0.75rem, 3vw, 1.25rem); min-height: 70px; height: auto; }
             @endif
             .main-content {
                 padding-top: calc(var(--client-nav-offset) - 10px);
@@ -281,11 +284,143 @@
                 padding-right: 14px;
                 padding-bottom: 24px;
             }
-            .booking-body { flex-direction: column; }
-            .property-image { width: 100%; height: 200px; }
-            .booking-footer { flex-direction: column; gap: 15px; align-items: stretch; }
-            .action-btns { justify-content: center; }
-            .owner-bookings-grid { grid-template-columns: 1fr; }
+            .page-header {
+                margin-bottom: 1rem;
+                padding: 1rem !important;
+            }
+            .page-header h1 {
+                font-size: 1.25rem;
+            }
+            .page-header p {
+                font-size: 0.8125rem;
+            }
+            .filter-tabs {
+                gap: 0.35rem;
+                padding: 0.35rem !important;
+            }
+            .filter-tab {
+                padding: 0.4rem 0.65rem;
+                font-size: 0.75rem;
+            }
+            .booking-card:hover {
+                transform: none;
+            }
+            .booking-header {
+                padding: 0.65rem 0.75rem;
+            }
+            .booking-body {
+                flex-direction: row;
+                align-items: stretch;
+                gap: 0.65rem;
+                padding: 0.65rem 0.75rem;
+            }
+            .property-image {
+                width: clamp(6.75rem, 32vw, 7.75rem);
+                height: auto;
+                aspect-ratio: 1 / 1;
+                flex-shrink: 0;
+                border-radius: 0.5rem;
+            }
+            .property-name {
+                font-size: 0.875rem;
+                margin-bottom: 0.25rem;
+            }
+            .property-location {
+                font-size: 0.6875rem;
+                margin-bottom: 0.5rem;
+            }
+            .booking-info {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.35rem;
+                margin-bottom: 0.35rem;
+            }
+            .info-item {
+                padding: 0.35rem 0.45rem;
+                border-radius: 0.4375rem;
+            }
+            .info-label {
+                font-size: 0.5625rem;
+                margin-bottom: 0.05rem;
+            }
+            .info-value {
+                font-size: 0.6875rem;
+            }
+            .booking-footer {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch;
+                padding: 0.65rem 0.75rem;
+            }
+            .status-badge,
+            .payment-badge {
+                padding: 0.25rem 0.55rem;
+                font-size: 0.6875rem;
+            }
+            .action-btns {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 0.35rem;
+            }
+            .btn {
+                padding: 0.4rem 0.65rem;
+                font-size: 0.75rem;
+            }
+            .toggle-actions-btn {
+                padding: 0.4rem 0.65rem;
+                font-size: 0.75rem;
+            }
+            .owner-bookings-grid {
+                grid-template-columns: 1fr;
+                gap: 0.65rem;
+            }
+            .owner-bookings-grid .booking-header {
+                padding: 0.55rem 0.65rem;
+            }
+            .owner-bookings-grid .booking-body {
+                flex-direction: row;
+                gap: 0.55rem;
+                padding: 0.55rem 0.65rem;
+            }
+            .owner-bookings-grid .property-image {
+                width: clamp(6.75rem, 32vw, 7.75rem);
+                height: auto;
+                aspect-ratio: 1 / 1;
+                flex-shrink: 0;
+            }
+            .owner-bookings-grid .property-name {
+                font-size: 0.8125rem;
+            }
+            .owner-bookings-grid .property-location {
+                font-size: 0.6875rem;
+                margin-bottom: 0.35rem;
+            }
+            .owner-bookings-grid .booking-info {
+                gap: 0.25rem;
+            }
+            .owner-bookings-grid .info-item {
+                padding: 0.3rem 0.35rem;
+            }
+            .owner-bookings-grid .info-label {
+                font-size: 0.5rem;
+            }
+            .owner-bookings-grid .info-value {
+                font-size: 0.6875rem;
+            }
+            .owner-bookings-grid .booking-footer {
+                padding: 0.5rem 0.65rem;
+                gap: 0.45rem;
+            }
+            .owner-bookings-grid .btn {
+                padding: 0.35rem 0.55rem;
+                font-size: 0.6875rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .property-image,
+            .owner-bookings-grid .property-image {
+                width: 6.25rem;
+            }
         }
 
     </style>
@@ -298,7 +433,7 @@
     @if(auth()->user()?->isClient())
         @include('client.partials.top-navbar', ['active' => 'bookings', 'portalDirectory' => $portalDirectory ?? false])
     @else
-    <nav class="navbar">
+    <nav class="navbar legacy-navbar-responsive">
         <a href="{{ route('dashboard') }}" class="nav-logo">
             <img src="/SYSTEMLOGO.png" alt="ImpaStay Logo">
             <span>Impasugong</span>
@@ -320,6 +455,10 @@
             <li><a href="{{ route('messages.index', [], false) }}" class="{{ request()->routeIs('messages.*') ? 'active' : '' }}">Messages</a></li>
             <li><a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.edit') ? 'active' : '' }}">Settings</a></li>
         </ul>
+
+        <button type="button" class="legacy-nav-toggle" aria-label="Open menu" aria-expanded="false">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
         
         <div class="nav-actions">
             <form action="/logout" method="POST">

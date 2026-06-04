@@ -1,5 +1,6 @@
 /* Central admin portal page scrim — watermark lives on .main-content via main-content-watermark-styles */
 body.admin-central-portal {
+    margin: 0;
     background: var(--app-page-bg, #f4f8f5);
     min-height: 100vh;
 }

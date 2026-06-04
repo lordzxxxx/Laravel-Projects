@@ -31,7 +31,15 @@ class TenantUserController extends Controller
         $this->bootstrapTenantSpatieRbac();
 
         $users = User::query()
-            ->where('tenant_id', $currentTenant->id)
+            ->where(function ($query) use ($currentTenant): void {
+                $query->where('tenant_id', $currentTenant->id)
+                    // Municipality-wide guests (tenant_id null) can book/message across tenant domains,
+                    // so include them in the tenant users list for visibility.
+                    ->orWhere(function ($sub): void {
+                        $sub->whereNull('tenant_id')
+                            ->where('role', User::ROLE_CLIENT);
+                    });
+            })
             ->where('email', 'not like', '__impastay_central_support.tenant-%')
             ->when($customRbacReady, fn ($query) => $query->with(['tenantCustomRole.permissions']))
             ->orderByDesc('id')

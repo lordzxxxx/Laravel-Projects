@@ -6,7 +6,9 @@
     left: 0;
     right: 0;
     z-index: 1000;
-    width: 100%;
+    width: 100vw;
+    max-width: 100vw;
+    margin: 0;
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
@@ -299,7 +301,7 @@ html.dark .navbar > .nav-links a.active {
     position: absolute;
     right: 0;
     top: calc(100% + 10px);
-    z-index: 50;
+    z-index: 2000;
     width: max-content;
     min-width: 220px;
     padding: 8px;
@@ -494,110 +496,84 @@ html.dark .navbar .imp-notify-btn {
     background: transparent;
     border: 1px solid var(--chrome-surface-border, var(--green-soft));
     color: var(--nav-brand-color, var(--green-dark));
-    width: 40px;
-    height: 40px;
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0;
     border-radius: 10px;
     cursor: pointer;
     align-items: center;
     justify-content: center;
+    align-self: center;
     font-size: 1.05rem;
+    line-height: 1;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 .nav-toggle:focus-visible { outline: 2px solid var(--chrome-focus-ring, var(--green-primary)); outline-offset: 2px; }
 
 @media (max-width: 960px) {
     .navbar {
         grid-template-columns: minmax(0, 1fr) auto;
-        grid-auto-rows: auto;
-        height: auto;
-        min-height: var(--app-topbar-height-mobile, 64px);
-        padding: 10px 14px;
-        align-content: center;
+        padding: 0 14px;
     }
-    .navbar.nav-open {
-        align-content: start;
-        max-height: 100dvh;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-    }
-    .nav-logo {
-        max-width: 100%;
-    }
-    .nav-logo-text,
-    .nav-brand-text,
-    .nav-logo > span {
+
+    .navbar > .nav-logo {
+        grid-column: 1;
+        justify-self: start;
         min-width: 0;
     }
-    .nav-toggle { display: inline-flex; order: 2; justify-self: end; }
+
+    .nav-toggle {
+        display: inline-flex;
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+        align-self: center;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .navbar.portal-nav-minimal > .nav-logo {
+        align-self: center;
+    }
     .nav-links {
         display: none;
-        grid-column: 1 / -1;
-        position: static;
-        background: var(--white);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--app-surface-bg, var(--white));
         flex-direction: column;
         align-items: stretch;
-        padding: 12px 0 0;
+        padding: 12px 14px;
         gap: 6px;
-        border-top: 1px solid var(--green-soft);
-        box-shadow: none;
-        max-height: none;
-        overflow: visible;
-        width: 100%;
+        box-shadow: var(--shadow-md, 0 10px 25px rgba(27, 94, 32, 0.12));
+        border-top: 1px solid var(--app-surface-border, var(--green-soft));
+        max-height: calc(100vh - 64px);
+        overflow-y: auto;
     }
-    .nav-links a {
-        width: 100%;
-        justify-content: flex-start;
-        white-space: normal;
-    }
+    .navbar > .nav-links a { width: 100%; text-shadow: none; }
     #appNavbar.nav-open .nav-links { display: flex; }
     .nav-actions { display: none; }
     #appNavbar.nav-open .nav-actions {
         display: flex;
-        grid-column: 1 / -1;
-        justify-self: stretch;
-        position: static;
-        padding: 10px 0 2px;
-        background: var(--white);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        padding: 0 14px 14px;
+        background: var(--app-surface-bg, var(--white));
         flex-wrap: wrap;
         gap: 10px;
-        box-shadow: none;
-        transform: none;
-        width: 100%;
-    }
-    #appNavbar.nav-open .nav-actions > * {
-        min-width: 0;
-    }
-    #appNavbar.nav-open .nav-actions form,
-    #appNavbar.nav-open .nav-actions .nav-btn {
-        width: 100%;
-    }
-    #appNavbar.nav-open .nav-actions .nav-btn {
-        justify-content: center;
+        box-shadow: var(--shadow-md, 0 10px 25px rgba(27, 94, 32, 0.12));
+        transform: translateY(calc(100% + 1px));
     }
 }
 
 @media (max-width: 768px) {
-    .navbar { padding: 10px 12px; }
+    .navbar:not(.portal-nav-minimal) { padding: 0 12px; height: var(--app-topbar-height-mobile, 64px); }
+    .navbar.portal-nav-minimal { padding: 0 !important; }
     .user-display { max-width: 170px; }
-}
-
-@media (max-width: 420px) {
-    .nav-logo img {
-        width: 40px;
-        height: 40px;
-    }
-    .nav-logo span,
-    .nav-logo-title {
-        font-size: 0.95rem;
-    }
-    .nav-logo-subtitle,
-    .nav-brand-subtitle {
-        display: none;
-    }
-    .user-display {
-        width: 100%;
-        max-width: 100%;
-    }
-    .user-name {
-        max-width: min(220px, calc(100vw - 110px));
-    }
 }

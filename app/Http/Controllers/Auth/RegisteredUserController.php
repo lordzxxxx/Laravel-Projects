@@ -109,14 +109,19 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $role,
-            'tenant_id' => $isTenantSignup ? $tenant?->getKey() : null,
+            // Keep guest accounts municipality-wide so one login works across tenant domains.
+            'tenant_id' => null,
             'phone' => $request->phone,
         ]);
 
         $user->syncRbacFromLegacyRole();
 
         if ($isTenantSignup && $tenant) {
-            $user->syncEffectiveTenantPermissions($tenant);
+            // Keep it best-effort: some installations may require per-tenant permission sync even for tenant_id null.
+            try {
+                $user->syncEffectiveTenantPermissions($tenant);
+            } catch (\Throwable) {
+            }
         }
 
         if (! $isTenantSignup && $user->isOwner()) {

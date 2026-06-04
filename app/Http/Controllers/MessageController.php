@@ -126,7 +126,7 @@ class MessageController extends Controller
 
         $isManager = $this->userIsTenantManager($user, $currentTenant);
         $isClientComposer = $user->isClient()
-            && (int) ($user->tenant_id ?? 0) === (int) $currentTenant->id;
+            && ($user->tenant_id === null || (int) $user->tenant_id === (int) $currentTenant->id);
 
         abort_unless($isManager || $isClientComposer, 403);
 
@@ -246,7 +246,7 @@ class MessageController extends Controller
                 return $this->storeTenantManagerOutbound($request, $user, $currentTenant);
             }
             if ($user->isClient()
-                && (int) ($user->tenant_id ?? 0) === (int) $currentTenant->id) {
+                && ($user->tenant_id === null || (int) $user->tenant_id === (int) $currentTenant->id)) {
                 return $this->storeClientToTeamOutbound($request, $user, $currentTenant);
             }
 
@@ -270,7 +270,9 @@ class MessageController extends Controller
         }
 
         if ($user->isClient() && $currentTenant) {
-            abort_unless((int) ($user->tenant_id ?? 0) === (int) $currentTenant->id, 403);
+            if ($user->tenant_id !== null) {
+                abort_unless((int) $user->tenant_id === (int) $currentTenant->id, 403);
+            }
             $this->assertClientCanMessageTeamMember($user, $receiver, $currentTenant);
         }
 
