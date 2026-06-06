@@ -453,6 +453,12 @@ Central admin releases UI:
 
 Persistent update logs are stored in `update_logs` (landlord connection), including check status and install acknowledgement timestamps.
 
+## Technology transfer
+
+Full inventory of database tables, enumerated lists (roles, plans, statuses, permissions), seed catalogs, environment keys, and demo data markers:
+
+- [`docs/technology-transfer-data-inventory.md`](docs/technology-transfer-data-inventory.md)
+
 ## Deployment Notes
 
 - Set APP_ENV=production and APP_DEBUG=false in .env
